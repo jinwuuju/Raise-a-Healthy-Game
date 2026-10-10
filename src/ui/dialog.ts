@@ -2,6 +2,7 @@ import { portrait } from '../art/character';
 import type { Look } from '../domain/appearance';
 import type { Line } from '../application/story';
 import { button, el, pixelCanvas } from './dom';
+import { trapTab } from './focus';
 
 export type Choice = { id: string; label: string; sub: string; disabled: boolean };
 
@@ -14,12 +15,16 @@ export class Dialog {
   private textEl: HTMLElement | null = null;
   private choices: Choice[] = [];
   private done: ((v: string | null) => void) | null = null;
+  private before: HTMLElement | null = null;
+  private onKey = (e: KeyboardEvent) => { if (this.root) trapTab(this.root, e); };
   constructor(private lookOf: (npc: string | null) => Look | null) {}
 
   get open(): boolean { return this.root !== null; }
 
   show(lines: Line[], choices: Choice[] = []): Promise<string | null> {
     this.close(null);
+    this.before = document.activeElement as HTMLElement | null;
+    document.addEventListener('keydown', this.onKey, true);
     this.lines = lines; this.index = 0; this.choices = choices;
     return new Promise(resolve => { this.done = resolve; this.render(); });
   }
@@ -44,6 +49,8 @@ export class Dialog {
   close(v: string | null): void {
     if (this.typing) { clearInterval(this.typing); this.typing = 0; }
     this.root?.remove(); this.root = null;
+    document.removeEventListener('keydown', this.onKey, true);
+    this.before?.focus({ preventScroll: true }); this.before = null;
     const d = this.done; this.done = null; d?.(v);
   }
 
@@ -58,7 +65,8 @@ export class Dialog {
     if (!line) { this.close(null); return; }
     this.root?.remove();
     const root = el('div', 'dialog glass');
-    root.setAttribute('role', 'dialog'); root.setAttribute('aria-live', 'polite');
+    root.tabIndex = -1;
+    root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', line.who); root.setAttribute('aria-live', 'polite');
     const look = this.lookOf(line.npc);
     const face = el('div', 'face');
     if (look) face.append(pixelCanvas(portrait(look))); else face.classList.add('hidden');
@@ -69,6 +77,7 @@ export class Dialog {
     const next = el('div', 'next', '▼'); root.append(next);
     document.body.append(root);
     this.root = root; this.textEl = text; this.full = line.text;
+    root.focus({ preventScroll: true });
     let i = 0;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) { text.textContent = this.full; this.showChoicesIfLast(); return; }

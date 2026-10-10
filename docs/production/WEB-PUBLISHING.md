@@ -7,7 +7,7 @@
 저장소: [jinwuuju/Raise-a-Healthy-Game](https://github.com/jinwuuju/Raise-a-Healthy-Game).
 사이트 주소: [Raise a Healthy Game](https://jinwuuju.github.io/Raise-a-Healthy-Game/).
 
-현재 사이트는 설계 v0.2를 읽고 캐릭터·전신·레벨·생활 경제 방향을 살펴보는 **설계실**이다. Phaser RPG가 실행되는 페이지는 아직 아니다. 사이트에서 모든 미래 기능을 구현된 것처럼 표시하지 않는다.
+현재 루트는 Canvas 2D 기반 redesign-1 게임이며 `/design/`은 설계 v0.2의 **설계실**이다. Q001 입구는 검수 전 모형이다. 현재 실행 범위와 미구현·미검증은 [STATUS](STATUS.md)에서 구분한다.
 
 ## 원본과 배포의 관계
 
@@ -23,10 +23,10 @@ GitHub Pages 설정에서 Source를 **GitHub Actions**로 1회 지정해야 한�
 ## 함께 수정할 때
 
 1. 로컬/작업 브랜치에서 docs/data/site 원본을 수정한다.
-2. `python3 tools/render_levels.py`로 레벨 표를 갱신한다.
+2. 수치를 바꿨다면 `python3 tools/render_levels.py`로 레벨 표를 갱신한다.
 3. `python3 tools/check_design.py`로 설계 일관성을 확인한다.
 4. `python3 tools/build_site.py` 후 `python3 tools/check_site.py`를 실행한다.
-5. 필요한 브라우저 화면/동작을 확인한다.
+5. 게임 변경은 `npm run typecheck`, `npm test`, `npm run build`를 통과시킨다. 입력/저장/화면 변경은 관련 `npm run test:e2e`도 확인한다. CI의 단위·빌드 검사와 로컬 브라우저 검사를 구분한다.
 6. 변경을 커밋하고 main에 push 또는 PR merge한다.
 7. Pages workflow 성공과 배포 URL의 변경 내용을 확인한다.
 

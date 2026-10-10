@@ -34,7 +34,11 @@ export function newState(): GameState {
 
 const dirs: Dir[] = ['down', 'up', 'left', 'right'];
 const integer = (v: unknown): v is number => typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
-const strings = (v: unknown): v is string[] => Array.isArray(v) && v.length <= 2000 && v.every(x => typeof x === 'string' && x.length <= 100) && new Set(v).size === v.length;
+function strings(v: unknown, max = 2000): v is string[] {
+  if (!Array.isArray(v) || v.length > max) return false;
+  for (const x of v) if (typeof x !== 'string' || x.length > 100) return false;
+  return new Set(v).size === v.length;
+}
 const date = (v: unknown): v is string => typeof v === 'string' && Number.isFinite(Date.parse(v));
 
 export function validateState(value: unknown): GameState {
@@ -51,7 +55,7 @@ export function validateState(value: unknown): GameState {
   const look = validateAppearance(a.look, preset, true);
   if (!strings(s.owned) || !s.owned.every(id => Object.hasOwn(outfits, id)) || !s.owned.includes(look.outfit)) throw new Error('옷장 기록이 잘못되었습니다.');
   if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir) || !canStand(at.room as RoomId, { x: at.x, y: at.y })) throw new Error('저장된 위치가 올바르지 않습니다.');
-  if (!integer(s.totalXp) || !integer(s.gold) || !strings(s.ledger) || !strings(s.inspected) || !strings(s.flags)) throw new Error('진행 기록이 잘못되었습니다.');
+  if (!integer(s.totalXp) || !integer(s.gold) || !strings(s.ledger, Infinity) || !strings(s.inspected) || !strings(s.flags)) throw new Error('진행 기록이 잘못되었습니다.');
   if (!cafe || typeof cafe.welcomeUsed !== 'boolean' || !integer(cafe.orderCount) || (cafe.restedAt !== null && !date(cafe.restedAt))) throw new Error('카페 기록이 잘못되었습니다.');
   const lo = cafe.lastOrder as Record<string, unknown> | null;
   if (lo !== null && (!lo || typeof lo.itemId !== 'string' || !integer(lo.price) || !date(lo.orderedAt))) throw new Error('카페 주문 기록이 잘못되었습니다.');
@@ -71,5 +75,6 @@ export function validateState(value: unknown): GameState {
 export function grantOnce(state: GameState, key: string, reward: { xp: number; gold: number }): GameState {
   if (!key || key.length > 100 || ![reward.xp, reward.gold].every(n => Number.isSafeInteger(n) && n >= 0)) throw new Error('잘못된 보상입니다.');
   if (state.ledger.includes(key)) return state;
+  if (!integer(state.totalXp + reward.xp) || !integer(state.gold + reward.gold)) throw new Error('보상 합계가 저장 가능한 범위를 넘었어요.');
   return { ...state, totalXp: state.totalXp + reward.xp, gold: state.gold + reward.gold, ledger: [...state.ledger, key] };
 }

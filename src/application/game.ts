@@ -13,7 +13,8 @@ type Listener = (s: GameState) => void;
 export class Game {
   state: GameState;
   private listeners = new Set<Listener>();
-  private dirtyPosition = false;
+  private dirty = false;
+  private positionDirty = false;
   /** Set after import/restart: the page is about to reload, so the old world must not write its position back. */
   private hold = false;
   lastError: string | null = null;
@@ -29,21 +30,29 @@ export class Game {
   private commit(next: GameState, persist = true): void {
     const s = { ...next, revision: next.revision + 1, updatedAt: new Date().toISOString() };
     this.state = validateState(s);
+    this.dirty = true;
+    this.positionDirty = false;
     if (persist) this.persist();
     for (const fn of this.listeners) fn(this.state);
   }
 
   persist(): boolean {
-    try { this.store.save(this.state); this.dirtyPosition = false; this.lastError = null; return true; }
-    catch (e) { this.lastError = e instanceof Error ? e.message : '저장하지 못했어요.'; return false; }
+    const before = this.lastError;
+    let saved = false;
+    try {
+      const s = this.positionDirty ? validateState({ ...this.state, revision: this.state.revision + 1, updatedAt: new Date().toISOString() }) : this.state;
+      this.store.save(s); this.state = s; this.dirty = false; this.positionDirty = false; this.lastError = null; saved = true;
+    }
+    catch (e) { this.lastError = e instanceof Error ? e.message : '저장하지 못했어요.'; }
+    if (before !== this.lastError) for (const fn of this.listeners) fn(this.state);
+    return saved;
   }
 
   begin(name: string, preset: Preset, look: Appearance): void {
     const trimmed = name.trim().slice(0, 12) || '새 기자';
     const base = this.state.started ? this.state : newState();
     const valid = validateAppearance(look, preset);
-    const owned = base.owned.includes(valid.outfit) ? base.owned : base.owned;
-    if (!owned.includes(valid.outfit)) throw new Error('아직 갖고 있지 않은 옷이에요.');
+    if (!base.owned.includes(valid.outfit)) throw new Error('아직 갖고 있지 않은 옷이에요.');
     this.commit({ ...base, started: true, avatar: { preset, name: trimmed, look: valid } });
   }
 
@@ -55,9 +64,10 @@ export class Game {
     const at = this.state.at;
     if (at.room === room && Math.abs(at.x - x) < 0.01 && Math.abs(at.y - y) < 0.01 && at.facing === facing) return;
     this.state = { ...this.state, at: { room, x, y, facing } };
-    this.dirtyPosition = true;
+    this.dirty = true;
+    this.positionDirty = true;
   }
-  get needsSave(): boolean { return this.dirtyPosition; }
+  get needsSave(): boolean { return this.dirty; }
 
   enter(room: RoomId, x: number, y: number, facing: Dir): void {
     if (!rooms[room] || !canStand(room, { x, y })) throw new Error('이동할 수 없는 위치예요.');
@@ -107,16 +117,19 @@ export class Game {
 
   importState(raw: unknown): void {
     const s = validateState(raw);
-    this.state = s; this.hold = true; this.persist();
+    this.replace(s);
+  }
+
+  private replace(s: GameState): void {
+    try { this.store.replace(s, this.state); }
+    catch (e) { this.lastError = e instanceof Error ? e.message : '저장하지 못했어요.'; for (const fn of this.listeners) fn(this.state); throw e; }
+    this.state = s; this.hold = true; this.dirty = false; this.positionDirty = false; this.lastError = null;
     for (const fn of this.listeners) fn(this.state);
   }
 
   backups(): GameState[] { return this.store.backups(); }
 
   restart(): void {
-    this.state = newState();
-    this.hold = true;
-    this.persist();
-    for (const fn of this.listeners) fn(this.state);
+    this.replace(newState());
   }
 }

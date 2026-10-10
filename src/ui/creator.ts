@@ -5,12 +5,15 @@ import {
 } from '../domain/appearance';
 import type { Dir } from '../world/types';
 import { button, el, pixelCanvas } from './dom';
+import { trapTab } from './focus';
 
 type Opts = { mode: 'new' | 'edit'; name: string; preset: Preset; look: Appearance; owned: OutfitId[]; onDone: (name: string, preset: Preset, look: Appearance) => void; onCancel: () => void };
 
 export function openCreator(o: Opts): void {
   let preset = o.preset, look: Appearance = { ...o.look }, name = o.name;
   const root = el('div', 'creator');
+  const before = document.activeElement as HTMLElement | null;
+  root.tabIndex = -1; root.setAttribute('aria-modal', 'true');
   root.setAttribute('role', 'dialog'); root.setAttribute('aria-label', o.mode === 'new' ? '기자 만들기' : '외형 꾸미기');
   const card = el('div', 'card');
   const stage = el('div', 'stage');
@@ -59,10 +62,12 @@ export function openCreator(o: Opts): void {
   function group(label: string, body: HTMLElement): HTMLElement { const f = el('div', 'f'); f.style.display = 'grid'; f.style.gap = '7px'; f.append(el('span', 'lab', label), body); return f; }
 
   function render(): void {
+    const focusKey = (document.activeElement as HTMLElement | null)?.dataset.focusKey;
     sections.textContent = '';
     const presetRow = el('div', 'opts');
     for (const p of presets) {
       const b = button('opt preset', '', () => { if (preset === p) return; preset = p; look = { ...defaultAppearance(p), outfit: o.owned.includes(look.outfit) ? look.outfit : 'reporter' }; render(); });
+      b.dataset.focusKey = 'preset:' + p;
       b.setAttribute('aria-pressed', String(preset === p));
       b.append(pixelCanvas(portrait(defaultAppearance(p))), el('span', '', presetNames[p]));
       presetRow.append(b);
@@ -72,6 +77,7 @@ export function openCreator(o: Opts): void {
       const row = el('div', 'opts');
       for (const id of ids) {
         const b = button('opt', table[id] ?? id, () => { set(id); render(); });
+        b.dataset.focusKey = table[id] ?? id;
         b.setAttribute('aria-pressed', String(cur === id)); b.disabled = disabled(id);
         if (b.disabled) b.textContent = (table[id] ?? id) + ' 🔒';
         row.append(b);
@@ -82,6 +88,7 @@ export function openCreator(o: Opts): void {
       const row = el('div', 'opts');
       for (const id of ids) {
         const b = button('sw', '', () => { set(id); render(); }, table[id] ?? id);
+        b.dataset.focusKey = table[id] ?? id;
         b.style.background = color(id); b.title = table[id] ?? id; b.setAttribute('aria-pressed', String(cur === id));
         b.append(el('span', '', table[id] ?? id));
         row.append(b);
@@ -94,6 +101,7 @@ export function openCreator(o: Opts): void {
     sections.append(group('눈매', chips<FaceId>(faceFor(preset), faceStyles, look.face, v => { look.face = v; })));
     sections.append(group('피부', swatches<SkinId>(skinFor(preset), skinColors, skinSwatch, look.skin, v => { look.skin = v; })));
     sections.append(group('옷', chips<OutfitId>(Object.keys(outfits) as OutfitId[], outfits, look.outfit, v => { look.outfit = v; }, v => !o.owned.includes(v))));
+    if (focusKey) [...sections.querySelectorAll<HTMLButtonElement>('button')].find(b => b.dataset.focusKey === focusKey)?.focus({ preventScroll: true });
   }
 
   let raf = 0;
@@ -111,7 +119,15 @@ export function openCreator(o: Opts): void {
   ro?.observe(stage);
   window.addEventListener('resize', layout);
   layout();
-  const stop = () => { cancelAnimationFrame(raf); ro?.disconnect(); window.removeEventListener('resize', layout); root.remove(); };
+  const onKey = (e: KeyboardEvent) => {
+    trapTab(root, e);
+    if (e.key === 'Escape') {
+      e.preventDefault(); e.stopPropagation();
+      if (o.mode === 'edit') { stop(); o.onCancel(); }
+    }
+  };
+  document.addEventListener('keydown', onKey, true);
+  const stop = () => { cancelAnimationFrame(raf); ro?.disconnect(); window.removeEventListener('resize', layout); document.removeEventListener('keydown', onKey, true); root.remove(); before?.focus({ preventScroll: true }); };
   function finish(): void {
     const n = name.trim() || '새 기자';
     stop(); o.onDone(n.slice(0, 12), preset, { ...look });

@@ -1,4 +1,5 @@
 import { button, el } from './dom';
+import { trapTab } from './focus';
 
 let current: { close: () => void } | null = null;
 
@@ -10,6 +11,7 @@ export function openSheet(title: string, build: (content: HTMLElement, close: ()
   const before = document.activeElement as HTMLElement | null;
   const scrim = el('div', 'scrim');
   const sheet = el('section', 'sheet');
+  sheet.tabIndex = -1;
   sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-modal', 'true'); sheet.setAttribute('aria-label', title);
   const head = el('header');
   head.append(el('h2', '', title));
@@ -17,7 +19,7 @@ export function openSheet(title: string, build: (content: HTMLElement, close: ()
     if (!scrim.isConnected) return;
     scrim.remove(); document.removeEventListener('keydown', onKey, true); current = null; onClose(); before?.focus?.();
   };
-  const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } };
+  const onKey = (e: KeyboardEvent) => { trapTab(sheet, e); if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } };
   const x = button('x', '✕', close, '닫기');
   head.append(x);
   const content = el('div', 'content');

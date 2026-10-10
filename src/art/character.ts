@@ -62,15 +62,27 @@ function palette(look: Look): Record<string, string> {
 }
 
 const cache = new Map<string, HTMLCanvasElement>();
+const CACHE_LIMIT = 256;
+export const characterCacheStats = () => ({ size: cache.size, limit: CACHE_LIMIT });
+function cached(key: string): HTMLCanvasElement | undefined {
+  const c = cache.get(key);
+  if (c) { cache.delete(key); cache.set(key, c); }
+  return c;
+}
+function remember(key: string, c: HTMLCanvasElement): HTMLCanvasElement {
+  cache.set(key, c);
+  if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value!);
+  return c;
+}
 export function lookKey(look: Look): string {
   return [look.build, look.hair, look.face, look.shape, look.skin, look.hairColor, look.outfit, look.glasses ? 'g' : ''].join('.');
 }
 
 export function characterFrame(look: Look, dir: Dir, frame: number): HTMLCanvasElement {
   const key = lookKey(look) + '|' + dir + '|' + frame;
-  const hit = cache.get(key);
+  const hit = cached(key);
   if (hit) return hit;
-  if (dir === 'left') { const c = mirror(characterFrame(look, 'right', frame)); cache.set(key, c); return c; }
+  if (dir === 'left') return remember(key, mirror(characterFrame(look, 'right', frame)));
   const grid = paintGrid(look, dir, frame);
   const pal = palette(look);
   const { c, g } = makeCanvas(CW, CH);
@@ -79,20 +91,18 @@ export function characterFrame(look: Look, dir: Dir, frame: number): HTMLCanvasE
     if (code) { g.fillStyle = pal[code] ?? '#ff00ff'; g.fillRect(x, y, 1, 1); }
   }
   softOutline(c);
-  cache.set(key, c);
-  return c;
+  return remember(key, c);
 }
 
 /** Head-and-shoulders crop used by HUD portraits and dialogs. */
 export function portrait(look: Look): HTMLCanvasElement {
   const key = lookKey(look) + '|portrait';
-  const hit = cache.get(key);
+  const hit = cached(key);
   if (hit) return hit;
   const src = characterFrame(look, 'down', 0);
   const { c, g } = makeCanvas(20, 22);
   g.drawImage(src, 0, OY - 2, 20, 22, 0, 0, 20, 22);
-  cache.set(key, c);
-  return c;
+  return remember(key, c);
 }
 
 export const WALK_CYCLE = [1, 0, 2, 0];

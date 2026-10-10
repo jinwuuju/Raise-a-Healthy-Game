@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canStand, doorAt, moveWithCollision } from '../../src/world/collision';
-import { findPath } from '../../src/world/path';
+import { clearLine, findPath } from '../../src/world/path';
 import { rooms } from '../../src/world/rooms';
 import { inRect, roomIds } from '../../src/world/types';
 
@@ -38,6 +38,21 @@ describe('map integrity', () => {
 });
 
 describe('street rules', () => {
+  it('every returned segment is traversable, including the first grid connection', () => {
+    for (const id of roomIds) {
+      const room = rooms[id];
+      for (let y = 24; y < room.rows * 16; y += 24) for (let x = 24; x < room.cols * 16; x += 24) {
+        if (!canStand(id, { x, y })) continue;
+        const from = { x, y };
+        const path = findPath(id, from, room.spawn);
+        let prev = from;
+        for (const next of path) {
+          expect(clearLine(id, prev, next), JSON.stringify({ id, from, prev, next })).toBe(true);
+          prev = next;
+        }
+      }
+    }
+  });
   it('wide roads are crossed only on crosswalks', () => {
     expect(canStand('street', { x: 432, y: 300 })).toBe(false);
     expect(canStand('street', { x: 432, y: 432 })).toBe(true);

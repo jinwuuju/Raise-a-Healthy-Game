@@ -8,7 +8,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 ## 조작
 
-- PC: 방향키/WASD 이동 · 클릭한 곳으로 걷기 · E/Space 대화·살펴보기 · J 수첩 · M 지도 · Esc 메뉴.
+- PC: 방향키/WASD 이동 · 클릭한 곳으로 걷기 · E/Space 대화·살펴보기 · J 수첩 · M 지도 · Esc 메뉴. 취재 의뢰를 받은 뒤 바디스코프 앞에서 기기를 바라보고 멈추면 입장 창이 자동으로 열린다.
 - 마우스·터치: 화면을 누르면 그곳으로 걷고, 꾹 누른 채 움직이면 손가락 쪽으로 계속 걷는다. 사람·사물을 누르면 다가가서 말을 건다. 대화창·창은 아무 곳이나 누르면 넘어가거나 닫힌다.
 - 큰길 횡단보도는 보행 신호가 초록불일 때만 건널 수 있다. 깜빡이면 새로 건너지 않는다.
 - 저장은 자동. 메뉴 → 기록·저장에서 파일로 내보내기/불러오기/백업 복구.
@@ -40,7 +40,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 [현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음은 **사용자 플레이 피드백으로 그래픽·조작감 조정**, 그다음 첫 취재 흐름이다.
 
 - 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 이 Mac의 셸에 Node가 없으면 `bash tools/npm-local.sh run dev`.
-- 검증: `npm run typecheck`, `npm test`(단위 42개), `npm exec playwright test`(브라우저 2개), `npm run build`.
+- 검증: `npm run typecheck`, `npm test`(단위 78개), `npm run test:e2e`(브라우저 17개), `npm run build`. [오류 점검·수정 기록](docs/production/CODE-AUDIT-2026-10-11.md).
 - 설계 검사: `python3 tools/check_design.py`. 수치 변경 시 data/balance 원본과 문서를 함께 고친다.
 - 배포: `main`에 push하면 GitHub Actions가 테스트·빌드 후 Pages에 게임(루트)과 설계실(/design/)을 올린다. 1~2분 뒤 같은 주소를 새로고침하면 최신 버전이다.
 - 의학 내용은 검수 전 초안이며 출처 확인과 검수 이후에만 공개 콘텐츠로 사용한다.

@@ -62,6 +62,7 @@ export class World {
     this.roomId = roomId; this.room = rooms[roomId];
     this.player.x = x; this.player.y = y; this.player.facing = facing; this.player.moving = false;
     this.vel = { x: 0, y: 0 }; this.path = []; this.pendingTarget = null; this.marker = null; this.cam.ready = false; this.leaves = [];
+    this.stuck = 0; this.waitingAt = null;
     const d = doorAt(roomId, { x, y }); this.doorLatch = d ? d.id : null;
     this.loadNpcs();
     this.near = null; this.onNear(null);
@@ -118,13 +119,15 @@ export class World {
     p.facing = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
   }
 
-  update(dt: number, input: Input): void {
+  update(dt: number, input: Input, inputEnabled = true): void {
     dt = Math.min(dt, motion.maxFrameMilliseconds / 1000);
     this.time += dt;
     const p = this.player;
+    const locked = this.locked || !inputEnabled;
+    if (locked) this.stop();
     let dx = 0, dy = 0;
-    const manual = !this.locked && (input.vx !== 0 || input.vy !== 0 || input.steer !== null);
-    if (!this.locked) {
+    const manual = !locked && (input.vx !== 0 || input.vy !== 0 || input.steer !== null);
+    if (!locked) {
       if (input.vx || input.vy) { dx = input.vx; dy = input.vy; }
       else if (input.steer) { const ex = input.steer.x - p.x, ey = input.steer.y - 10 - p.y, d = Math.hypot(ex, ey); if (d > 7) { dx = ex / d; dy = ey / d; } }
       if (manual && (this.path.length || this.pendingTarget)) { this.path = []; this.pendingTarget = null; this.marker = null; }
@@ -164,10 +167,10 @@ export class World {
     if (this.waitingAt && this.traffic.walk(this.waitingAt.road) === 'walk') this.waitingAt = null;
 
     const door = doorAt(this.roomId, p);
-    if (door && this.doorLatch !== door.id && !this.locked) { this.doorLatch = door.id; this.stop(); this.onDoor(door); return; }
+    if (door && this.doorLatch !== door.id && !locked) { this.doorLatch = door.id; this.stop(); this.onDoor(door); return; }
     if (!door) this.doorLatch = null;
 
-    const near = this.locked ? null : nearestTarget(this.roomId, p) ?? null;
+    const near = locked ? null : nearestTarget(this.roomId, p) ?? null;
     if ((near?.id ?? null) !== (this.near?.id ?? null)) { this.near = near; this.onNear(near); }
 
     this.updateNpcs(dt);
@@ -214,8 +217,8 @@ export class World {
   }
 
   private updateLeaves(dt: number): void {
+    const trees = this.room.props.filter(pr => pr.kind === 'ginkgo');
     while (this.leaves.length < 22) {
-      const trees = this.room.props.filter(pr => pr.kind === 'ginkgo');
       const tr = trees[Math.floor(Math.random() * trees.length)];
       if (!tr) break;
       this.leaves.push({ x: tr.x - 12 + Math.random() * 24, y: tr.y - 40 + Math.random() * 18, vx: 4 + Math.random() * 6, vy: 6 + Math.random() * 6, c: Math.random() < 0.5 ? '#f4d75c' : '#e8b83a', life: 2.5 + Math.random() * 3 });

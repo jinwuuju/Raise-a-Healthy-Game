@@ -20,7 +20,7 @@ export function objective(s: GameState, room: RoomId): string {
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
   if (!has(Q1.observed)) {
     if (room === 'heart') return '심장 모형 관찰하기 (' + q1Seen(s).length + '/2) · 표식이 나가는 곳과 들어오는 곳';
-    return room === 'newsroom' ? '바디스코프를 눌러 심장 모형으로 들어가기' : '편집국의 바디스코프로 가기';
+    return room === 'newsroom' ? '바디스코프 앞에 서서 심장 모형으로 들어가기' : '편집국의 바디스코프로 가기';
   }
   if (room === 'heart') return '귀환 장치를 눌러 편집국으로 돌아가기';
   if (!has(Q1.briefed)) return room === 'newsroom' ? '편집장에게 관찰 결과 알리기' : '편집국으로 돌아가 편집장에게 알리기';

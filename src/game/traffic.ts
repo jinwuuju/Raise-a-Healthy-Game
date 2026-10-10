@@ -93,7 +93,9 @@ export class Traffic {
       const target = limit < 1 ? 0 : limit < 40 ? CRUISE * Math.max(0, limit) / 40 : CRUISE;
       car.speed += (target - car.speed) * Math.min(1, dt * (target < car.speed ? 6 : 1.5));
       if (limit < 0.5) car.speed = Math.min(car.speed, 0);
-      car.pos += sign * car.speed * dt;
+      const requested = car.speed * dt, step = Math.min(requested, Math.max(0, limit));
+      car.pos += sign * step;
+      if (step < requested) car.speed = 0;
     }
     for (let i = this.cars.length - 1; i >= 0; i--) {
       const car = this.cars[i]!;

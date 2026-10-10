@@ -19,6 +19,8 @@ export class Hud {
   private banner = el('div', 'banner glass');
   private levelEl = el('span', '', 'Lv.1 수습기자');
   private toastEl = el('div', 'toast glass');
+  private saveError = el('div', 'save-error glass hidden');
+  private lastSaveError: string | null | undefined;
   private hintEl = el('div', 'hint glass', '화면을 누르면 걸어가요 · 사람이나 물건을 누르면 다가가서 말을 걸어요');
   private lookKey = '';
   private toastTimer = 0;
@@ -44,15 +46,27 @@ export class Hud {
     this.mini.append(this.miniCanvas);
     this.mini.setAttribute('role', 'button'); this.mini.setAttribute('aria-label', '동네 지도 크게 보기'); this.mini.tabIndex = 0;
     this.mini.addEventListener('click', e => { e.stopPropagation(); a.onMap(); });
+    this.mini.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); a.onMap(); } });
     tr.append(row, this.mini);
 
-    this.root.append(this.chip, this.quest, tr, this.banner, this.toastEl, this.hintEl);
+    this.saveError.setAttribute('role', 'status');
+    this.root.append(this.chip, this.quest, tr, this.banner, this.toastEl, this.hintEl, this.saveError);
     this.root.addEventListener('pointerdown', e => { if (e.target !== this.root) e.stopPropagation(); });
     document.body.append(this.root);
     window.setTimeout(() => { this.hintEl.style.opacity = '0'; }, 9000);
   }
 
   setVisible(v: boolean): void { this.root.classList.toggle('hidden', !v); }
+  focusReporter(): void { this.chip.focus({ preventScroll: true }); }
+
+  setSaveError(error: string | null): void {
+    if (this.lastSaveError === error) return;
+    this.lastSaveError = error;
+    const text = error ? '저장 주의 · ' + error : '';
+    if (this.saveError.textContent !== text) this.saveError.textContent = text;
+    this.saveError.classList.toggle('hidden', !error);
+    this.hintEl.classList.toggle('hidden', !!error);
+  }
 
   update(s: GameState): void {
     this.nameEl.textContent = s.avatar.name;

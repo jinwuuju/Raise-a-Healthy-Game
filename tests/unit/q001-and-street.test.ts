@@ -52,6 +52,37 @@ describe('reporter sprites', () => {
     const s = validateState({ ...newState(), avatar: { preset: 'female', name: '기자', look: old } });
     expect(s.avatar.look.build).toBe('f');
   });
+  it('hands swing in opposite directions and swap on the next step in front/back views', () => {
+    for (const preset of presets) for (const dir of ['down', 'up'] as const) {
+      // Short hair exposes both hands, including in the back view.
+      const look = defaultAppearance(preset); if (preset === 'female') look.hair = 'pixie';
+      const hands = (f: number, left: boolean) => {
+        const g = paintGrid(look, dir, f);
+        const u = f === 1 || f === 2 ? -1 : 0;
+        const ys: number[] = [];
+        for (let r = 14; r <= 20; r++) for (let x = left ? 3 : 12; x <= (left ? 7 : 16); x++) {
+          if (['s', 'S'].includes(g[(OY + u + r) * CW + x] ?? '')) ys.push(r);
+        }
+        return ys.reduce((a, b) => a + b, 0) / ys.length + u;
+      };
+      const left1 = hands(1, true), right1 = hands(1, false), left2 = hands(2, true), right2 = hands(2, false);
+      expect((left1 - right1) * (left2 - right2)).toBeLessThan(0);
+      expect((left1 - hands(0, true)) * (right1 - hands(0, false))).toBeLessThan(0);
+      expect(left1).toBe(right2); expect(right1).toBe(left2);
+    }
+  });
+  it('profile has a visible far hand swinging opposite the near hand and the near leg', () => {
+    for (const preset of presets) for (const f of [1, 2]) {
+      const look = defaultAppearance(preset); if (preset === 'female') look.hair = 'pixie';
+      const g = paintGrid(look, 'right', f), y = OY - 1 + 18;
+      const far = [...Array(CW).keys()].filter(x => g[y * CW + x] === 'S');
+      const near = [...Array(CW).keys()].filter(x => g[y * CW + x] === 's');
+      expect(far.length).toBeGreaterThan(0); expect(near.length).toBeGreaterThan(0);
+      const fx = far[0]!, nx = near[0]!;
+      expect((fx - 9) * (nx - 9)).toBeLessThan(0);
+      expect(f === 1 ? nx < 9 : nx > 9).toBe(true);
+    }
+  });
 });
 
 describe('Q001 entry', () => {

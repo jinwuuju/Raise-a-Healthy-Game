@@ -1,8 +1,27 @@
-import { rooms, tileAt, walkableTile, type Crossing, type Door, type Target } from './rooms';
+import { rooms, tileAt, walkableTile, type Crossing, type Door, type Room, type Target } from './rooms';
 import { TILE, inRect, overlap, type Point, type Rect, type RoomId } from './types';
 
 /** Feet box: the character only collides with a small footprint, never with its head. */
 export function footRect(p: Point): Rect { return { x: p.x - 4, y: p.y - 3, w: 8, h: 4 }; }
+
+// Fixed map solids are indexed by tile so footsteps do not scan the whole room.
+const solidIndexes = new WeakMap<Room, Map<number, Rect[]>>();
+function solidsByTile(room: Room): Map<number, Rect[]> {
+  let index = solidIndexes.get(room);
+  if (index) return index;
+  index = new Map();
+  for (const solid of room.solids) {
+    const left = Math.max(0, Math.floor(solid.x / TILE)), right = Math.min(room.cols - 1, Math.floor((solid.x + solid.w) / TILE));
+    const top = Math.max(0, Math.floor(solid.y / TILE)), bottom = Math.min(room.rows - 1, Math.floor((solid.y + solid.h) / TILE));
+    for (let y = top; y <= bottom; y++) for (let x = left; x <= right; x++) {
+      const key = y * room.cols + x;
+      const bucket = index.get(key);
+      if (bucket) bucket.push(solid); else index.set(key, [solid]);
+    }
+  }
+  solidIndexes.set(room, index);
+  return index;
+}
 
 export function canStand(roomId: RoomId, p: Point): boolean {
   const room = rooms[roomId];
@@ -11,7 +30,11 @@ export function canStand(roomId: RoomId, p: Point): boolean {
   if (f.x < 0 || f.y < 0 || f.x + f.w > room.cols * TILE || f.y + f.h > room.rows * TILE) return false;
   const xs = [f.x, f.x + f.w - 0.01], ys = [f.y, f.y + f.h - 0.01];
   for (const x of xs) for (const y of ys) if (!walkableTile(tileAt(room, Math.floor(x / TILE), Math.floor(y / TILE)))) return false;
-  for (const s of room.solids) if (overlap(f, s)) return false;
+  const index = solidsByTile(room);
+  for (const x of xs) for (const y of ys) {
+    const solids = index.get(Math.floor(y / TILE) * room.cols + Math.floor(x / TILE));
+    if (solids) for (const s of solids) if (overlap(f, s)) return false;
+  }
   return true;
 }
 
@@ -55,9 +78,9 @@ export function moveWithCollision(roomId: RoomId, from: Point, dx: number, dy: n
 }
 
 function nudge(roomId: RoomId, x: number, y: number, axis: 'x' | 'y'): number | null {
-  for (let k = 1; k <= 4; k++) for (const s of [k, -k]) {
+  for (const s of [1, -1]) {
     const p = axis === 'x' ? { x: x + s, y } : { x, y: y + s };
-    if (canStand(roomId, p)) return (axis === 'x' ? x : y) + Math.sign(s) * Math.min(1, Math.abs(s));
+    if (canStand(roomId, p)) return (axis === 'x' ? x : y) + s;
   }
   return null;
 }

@@ -276,6 +276,15 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
     else leg(true, legC, 'b', 0);
   }
 
+  // Far arm is drawn behind the torso and swings opposite the near arm in profile.
+  if (side && (frame === 1 || frame === 2)) {
+    const sign = frame === 1 ? 1 : -1;
+    for (const [dx, r] of [[0, 14], [1, 15], [2, 16], [3, 17]] as const) {
+      set(10 + sign * dx, A(r), 'J'); set(10 + sign * dx + sign, A(r), 'J');
+    }
+    set(10 + sign * 4, A(18), 'S');
+  }
+
   // 3. Torso (7 rows).
   if (!side) {
     row(A(13), 7, 12, 'j');
@@ -293,29 +302,37 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
   outfit(set, row, look.outfit, view, A);
 
   // 4. Arms.
-  if (!side) {
-    // frame 1: left leg steps, so the right arm swings forward and the left arm back (and vice versa).
-    const pose = (left: boolean): 'n' | 'f' | 'b' => frame === 1 ? (left ? 'b' : 'f') : frame === 2 ? (left ? 'f' : 'b') : 'n';
-    const arm = (x: number, inward: number, c: string, st: 'n' | 'f' | 'b') => {
-      const seam = x + inward;
-      if (st === 'f') {
-        set(x, A(14), c); set(x, A(15), c); set(seam, A(16), c);
-        set(seam, A(17), 's'); set(seam + inward, A(17), 's');
-      } else {
+  const drawArms = () => {
+    if (!side) {
+      // frame 1: left leg steps, so the right arm swings forward and the left arm back (and vice versa).
+      const pose = (left: boolean): 'n' | 'f' | 'b' => frame === 1 ? (left ? 'b' : 'f') : frame === 2 ? (left ? 'f' : 'b') : 'n';
+      const back = view === 'back';
+      const arm = (x: number, inward: number, c: string, st: 'n' | 'f' | 'b') => {
+        const seam = x + inward;
         for (let r = 15; r <= 17; r++) set(seam, A(r), 'd');
-        for (let r = 14; r <= 17; r++) set(x, A(r), c);
-        if (st === 'b') { set(x - inward, A(17), c); set(x - inward, A(18), 'S'); }
-        else set(x, A(18), 's');
-      }
-    };
-    const back = view === 'back';
-    arm(5, 1, 'k', pose(!back));
-    arm(14, -1, 'J', pose(back));
-  } else {
-    const pts: [number, number][] = frame === 1 ? [[9, 14], [9, 15], [8, 16], [7, 17]] : frame === 2 ? [[9, 14], [10, 15], [10, 16], [11, 17]] : [[9, 14], [9, 15], [9, 16], [9, 17]];
-    for (const [x, r] of pts) { set(x, A(r), 'k'); set(x + 1, A(r), 'j'); }
-    const [hx, hr] = pts[pts.length - 1]!; set(hx, A(hr + 1), 's'); set(hx + 1, A(hr + 1), 's');
-  }
+        const low = st !== 'n' && (back ? st === 'b' : st === 'f');
+        if (low) {
+          for (let r = 14; r <= 17; r++) set(x, A(r), c);
+          set(seam, A(18), c); set(seam, A(19), c);
+          set(seam, A(20), 's'); set(seam + inward, A(20), 's');
+        } else if (st !== 'n') {
+          set(x, A(14), c); set(x, A(15), c);
+          set(x - inward, A(16), c); set(x - inward, A(17), c);
+          set(x - inward, A(18), 'S'); set(x, A(18), 'S');
+        } else {
+          for (let r = 14; r <= 17; r++) set(x, A(r), c);
+          set(x, A(18), 's');
+        }
+      };
+      arm(5, 1, 'k', pose(true));
+      arm(14, -1, 'J', pose(false));
+    } else {
+      const pts: [number, number][] = frame === 1 ? [[9, 14], [8, 15], [7, 16], [6, 17]] : frame === 2 ? [[9, 14], [10, 15], [11, 16], [12, 17]] : [[9, 14], [9, 15], [9, 16], [9, 17]];
+      for (const [x, r] of pts) { set(x, A(r), 'k'); set(x + 1, A(r), 'j'); }
+      const [hx, hr] = pts[pts.length - 1]!; set(hx, A(hr + 1), 's'); set(hx + 1, A(hr + 1), 's');
+    }
+  };
+  if (view === 'back') drawArms();
 
   // 5. Neck and head.
   set(side ? 8 : 9, A(12), 'S'); set(side ? 9 : 10, A(12), 'S');
@@ -337,6 +354,8 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
       set(x, A(rr), c);
     }
   });
+  // Near arms pass in front of long hair rather than disappearing under it.
+  if (view !== 'back') drawArms();
 
   // 7. Round glasses.
   if (look.glasses && view !== 'back') {

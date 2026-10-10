@@ -24,9 +24,22 @@ class MemoryStorage implements Storage {
   removeItem(k: string) { this.m.delete(k); }
   setItem(k: string, v: string) { this.m.set(k, v); }
 }
-function storage(): Storage { try { localStorage.setItem('mq.probe', '1'); localStorage.removeItem('mq.probe'); return localStorage; } catch { return new MemoryStorage(); } }
+async function storage(): Promise<SaveStore> {
+  let durable: Storage;
+  try { durable = window.localStorage; }
+  catch { return new SaveStore(new MemoryStorage(), '자동 저장을 사용할 수 없어요. 메뉴에서 기록을 파일로 내보내 주세요.'); }
+  // Do not write a probe: full storage must still allow reading an existing save.
+  if (!navigator.locks) return new SaveStore(durable, '이 브라우저에서는 안전한 자동 저장을 사용할 수 없어요. 메뉴에서 기록을 파일로 내보내 주세요.');
+  const reason = await new Promise<string | null>(resolve => {
+    void navigator.locks.request('medical-quest.v4.writer', { ifAvailable: true }, async lock => {
+      resolve(lock ? null : '다른 탭이 기록을 저장하고 있어요. 이 탭의 기록은 파일로 내보낼 수 있어요. 저장하려면 다른 탭을 닫고 새로고침해 주세요.');
+      if (lock) await new Promise<void>(() => {}); // Browser releases the lock when this document ends.
+    }).catch(() => resolve('저장 잠금을 확보하지 못했어요. 기록을 파일로 내보내고 새로고침해 주세요.'));
+  });
+  return new SaveStore(durable, reason);
+}
 
-const game = new Game(new SaveStore(storage()));
+const game = new Game(await storage());
 const canvas = el('canvas'); canvas.id = 'view'; canvas.tabIndex = 0; canvas.setAttribute('aria-label', '게임 화면');
 document.querySelector('#app')!.append(canvas);
 const ctx = canvas.getContext('2d', { alpha: false })!;
@@ -50,9 +63,10 @@ const keys = new Set<string>();
 const pointer = { id: -1, sx: 0, sy: 0, x: 0, y: 0, t: 0, steering: false };
 const dpr = () => Math.min(3, window.devicePixelRatio || 1);
 const busy = () => dialog.open || sheetOpen() || !world || world.locked || document.querySelector('.creator') !== null;
+function pauseInput(): void { keys.clear(); pointer.id = -1; pointer.steering = false; world?.stop(); }
 
 window.addEventListener('keydown', e => {
-  if (document.querySelector('.creator') && e.key !== 'Escape') return;
+  if (document.querySelector('.creator')) return;
   const k = e.key.toLowerCase();
   if (dialog.open) {
     if (['e', ' ', 'enter'].includes(k) && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); dialog.advance(); }
@@ -67,7 +81,7 @@ window.addEventListener('keydown', e => {
   else if (k === 'm' && world?.roomId === 'street') openMap();
 });
 window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
-window.addEventListener('blur', () => { keys.clear(); pointer.id = -1; world?.stop(); });
+window.addEventListener('blur', pauseInput);
 
 // Any tap while a dialog is open advances it (and closes it after the last line), wherever it lands.
 let swallowClickUntil = 0;
@@ -122,13 +136,25 @@ function resize() {
 window.addEventListener('resize', resize); resize();
 
 let last = performance.now(), saveClock = 0, miniClock = 0;
+let scopePromptLatched = false, scopeStandTime = 0;
+function autoBodyscope(dt: number): void {
+  if (!world) return;
+  const t = world.room.targets.find(t => t.id === 'device'), p = world.player;
+  const inFront = world.roomId === 'newsroom' && t && Math.abs(p.x - t.x) <= 16 && p.y >= t.y - 3 && p.y <= t.y + t.r;
+  if (!inFront) { scopePromptLatched = false; scopeStandTime = 0; return; }
+  if (scopePromptLatched || busy() || canEnterHeart(game.state) || p.moving || p.facing !== 'up') { scopeStandTime = 0; return; }
+  scopeStandTime += dt;
+  if (scopeStandTime >= 0.15) { scopePromptLatched = true; scopeStandTime = 0; void interact(t); }
+}
 function frame(now: number) {
   const dt = Math.min(0.1, (now - last) / 1000); last = now;
   if (world) {
-    world.update(dt, inputState());
+    world.update(dt, inputState(), !busy());
     world.render(ctx, canvas.width, canvas.height, world.fitZoom(zoom, canvas.width, canvas.height), dpr());
     const p = world.player;
     game.setPosition(world.roomId, p.x, p.y, p.facing);
+    autoBodyscope(dt);
+    hud.setSaveError(game.lastError);
     saveClock += dt; miniClock += dt;
     if (saveClock > 8) { saveClock = 0; if (game.needsSave) game.persist(); }
     if (miniClock > 0.12) { miniClock = 0; hud.drawMinimap(p.x, p.y, now / 1000); }
@@ -136,7 +162,7 @@ function frame(now: number) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-document.addEventListener('visibilitychange', () => { if (document.hidden && game.needsSave) game.persist(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { pauseInput(); if (game.needsSave) game.persist(); } });
 window.addEventListener('pagehide', () => { if (game.needsSave) game.persist(); });
 
 // ---------- Game flow ----------
@@ -197,6 +223,7 @@ async function say(lines: Line[]) { if (lines.length) await dialog.show(lines); 
 async function interact(t: Target) {
   if (!world || world.locked || dialog.open) return;
   const w = world;
+  if (t.id === 'device') scopePromptLatched = true;
   w.stop(); w.locked = true; keys.clear(); pointer.id = -1;
   w.faceToward(t);
   try {
@@ -259,9 +286,14 @@ async function cafeOrder() {
 }
 
 // ---------- Sheets ----------
+function saveFeedback(c: HTMLElement): () => void {
+  const message = el('p', 'save-message'); message.setAttribute('role', 'status'); c.append(message);
+  const update = () => { message.textContent = game.lastError ?? ''; message.classList.toggle('hidden', !game.lastError); };
+  update(); return game.subscribe(update);
+}
 function openNotebook() {
-  if (!world || dialog.open) return;
-  world.stop();
+  if (busy() || !world) return;
+  pauseInput();
   const s = game.state;
   openSheet('취재 수첩', c => {
     const goal = el('div'); goal.append(el('h3', '', '지금 할 일'), el('p', '', objective(s, world!.roomId))); c.append(goal);
@@ -285,8 +317,8 @@ function openNotebook() {
 }
 
 function openReporter() {
-  if (!world || dialog.open) return;
-  world.stop();
+  if (busy() || !world) return;
+  pauseInput();
   const s = game.state;
   openSheet('기자 정보', (c, close) => {
     const st = el('div', 'stats');
@@ -302,16 +334,17 @@ function openReporter() {
 }
 
 function editLook() {
+  pauseInput();
   const s = game.state;
   hud.setVisible(false);
   openCreator({ mode: 'edit', name: s.avatar.name, preset: s.avatar.preset, look: s.avatar.look, owned: s.owned,
-    onDone: (name, preset, look) => { try { game.begin(name, preset, look); hud.toast('외형을 저장했어요.'); } catch (e) { hud.toast(e instanceof Error ? e.message : '저장 실패', true); } hud.setVisible(true); },
-    onCancel: () => hud.setVisible(true) });
+    onDone: (name, preset, look) => { try { game.begin(name, preset, look); hud.toast(game.lastError ? '외형은 반영했지만 저장하지 못했어요. 기록을 파일로 내보내 주세요.' : '외형을 저장했어요.', !!game.lastError); } catch (e) { hud.toast(e instanceof Error ? e.message : '저장 실패', true); } hud.setVisible(true); hud.focusReporter(); },
+    onCancel: () => { hud.setVisible(true); hud.focusReporter(); } });
 }
 
 function openMap() {
-  if (!world) return;
-  world.stop();
+  if (busy() || !world || world.roomId !== 'street') return;
+  pauseInput();
   openSheet('동네 지도 · 논현로 일대', c => {
     const cv = el('canvas'); const base = world!.minimapBase();
     cv.width = base.width * 4; cv.height = base.height * 4; cv.style.width = '100%'; cv.style.imageRendering = 'pixelated'; cv.style.borderRadius = '12px';
@@ -325,9 +358,11 @@ function openMap() {
 }
 
 function openMenu() {
-  if (!world || dialog.open) return;
-  world.stop();
+  if (busy() || !world) return;
+  pauseInput();
+  let stopFeedback = () => {};
   openSheet('메뉴', (c, close) => {
+    stopFeedback = saveFeedback(c);
     const saveSec = el('div'); saveSec.append(el('h3', '', '기록·저장'));
     const list = el('div', 'list');
     list.append(button('row', '지금 저장하기', () => { hud.toast(game.persist() ? '저장했어요.' : '저장 실패: ' + game.lastError, !game.lastError ? false : true); }));
@@ -347,25 +382,27 @@ function openMenu() {
     help.append(el('p', '', '마우스·터치: 화면을 누르면 그곳으로 걷고, 사람이나 물건을 누르면 다가가서 말을 걸어요. 꾹 누른 채 움직이면 손가락 쪽으로 계속 걸어요. 대화창·창은 아무 곳이나 누르면 넘어가거나 닫혀요.'));
     help.append(el('p', '', '큰길 횡단보도는 보행 신호가 초록불일 때만 건널 수 있어요. 깜빡이기 시작하면 새로 건너지 않아요.'));
     c.append(help);
-    const reset = el('div', 'list'); reset.append(button('row danger', '처음부터 다시 시작', () => { if (confirm('지금 기록을 지우고 새 기자로 시작할까요? 먼저 파일로 내보내 두는 것을 권해요.')) { close(); game.restart(); location.reload(); } }));
+    const reset = el('div', 'list'); reset.append(button('row danger', '처음부터 다시 시작', () => { if (confirm('지금 기록을 백업하고 새 기자로 시작할까요? 파일로 내보내 두는 것도 권해요.')) { try { game.restart(); close(); location.reload(); } catch (e) { hud.toast('새로 시작하지 못했어요: ' + (e instanceof Error ? e.message : '저장 오류'), true); } } }));
     c.append(reset);
     const docs = el('a', 'row', '설계실(기획 문서) 열기'); docs.href = './design/'; docs.target = '_blank'; docs.rel = 'noopener'; c.append(docs);
     c.append(el('p', 'muted', 'Medical Quest · redesign-1 · 기획·개발 진우주'));
-  });
+  }, () => stopFeedback());
 }
 
 function openBackups() {
+  let stopFeedback = () => {};
   openSheet('백업에서 복구', (c, close) => {
+    stopFeedback = saveFeedback(c);
     const backups = game.backups();
     if (!backups.length) { c.append(el('p', 'muted', '아직 백업이 없어요. 플레이하면서 자동으로 최근 기록 2개가 보관돼요.')); return; }
     const list = el('div', 'list');
     for (const b of backups) {
-      const row = button('row', b.avatar.name + ' · ' + rooms[b.at.room].title, () => { if (confirm('이 백업으로 되돌릴까요?')) { game.importState(b); close(); location.reload(); } });
+      const row = button('row', b.avatar.name + ' · ' + rooms[b.at.room].title, () => { if (confirm('이 백업으로 되돌릴까요?')) { try { game.importState(b); close(); location.reload(); } catch (e) { hud.toast('복구하지 못했어요: ' + (e instanceof Error ? e.message : '저장 오류'), true); } } });
       row.append(el('span', 'sub', new Date(b.updatedAt).toLocaleString('ko-KR')));
       list.append(row);
     }
     c.append(list);
-  });
+  }, () => stopFeedback());
 }
 
 function exportSave() {
@@ -381,9 +418,10 @@ function importSave(close: () => void) {
   input.addEventListener('change', async () => {
     const f = input.files?.[0]; if (!f) return;
     try {
+      if (f.size > 10 * 1024 * 1024) throw new Error('기록 파일은 10MB 이하만 불러올 수 있어요.');
       const raw = JSON.parse(await f.text());
       if (!confirm('불러온 기록으로 바꿀까요? 지금 기록은 자동 백업에 남아요.')) return;
-      game.persist(); game.importState(raw); close(); location.reload();
+      game.importState(raw); close(); location.reload();
     } catch (e) { hud.toast('불러오지 못했어요: ' + (e instanceof Error ? e.message : '형식 오류'), true); }
   });
   input.click();
