@@ -24,15 +24,24 @@ export function openCreator(o: Opts): void {
   const pg = preview.getContext('2d')!;
   // Draw at an integer number of device pixels per sprite pixel and stand the feet on the pedestal.
   let scale = 1;
+  const fitViewport = () => {
+    const v = window.visualViewport;
+    root.style.height = (v?.height ?? window.innerHeight) + 'px';
+    root.style.width = (v?.width ?? window.innerWidth) + 'px';
+    root.style.top = (v?.offsetTop ?? 0) + 'px'; root.style.left = (v?.offsetLeft ?? 0) + 'px';
+    root.classList.toggle('compact', (v?.height ?? window.innerHeight) < 480 && (v?.width ?? window.innerWidth) < 600);
+  };
   const layout = () => {
     const dpr = window.devicePixelRatio || 1;
     const base = window.matchMedia('(max-width: 760px)').matches ? 5 : 7;
-    scale = Math.max(1, Math.round(base * dpr));
+    const footY = ped.offsetTop + ped.offsetHeight / 2;
+    const top = title.offsetTop + title.offsetHeight + 8;
+    const fit = Math.min(base, (footY - top) / AY, (stage.clientWidth - 32) / CW);
+    scale = Math.max(1, Math.floor(fit * dpr));
     if (preview.width !== CW * scale) { preview.width = CW * scale; preview.height = CH * scale; }
     pg.imageSmoothingEnabled = false;
     preview.style.width = (CW * scale) / dpr + 'px';
     preview.style.height = (CH * scale) / dpr + 'px';
-    const footY = ped.offsetTop + ped.offsetHeight / 2;
     preview.style.top = Math.round(footY - (AY * scale) / dpr) + 'px';
   };
   const dirs: Dir[] = ['down', 'left', 'up', 'right'];
@@ -49,22 +58,24 @@ export function openCreator(o: Opts): void {
   input.addEventListener('input', () => { name = input.value; });
   nameField.append(input);
   const sections = el('div'); sections.style.display = 'grid'; sections.style.gap = '16px';
-  form.append(nameField, sections);
+  form.setAttribute('aria-label', '외형 선택');
+  form.append(nameField, el('p', 'scroll-hint', '아래로 스크롤해 머리·얼굴·색·옷을 골라 주세요.'), sections);
   const actions = el('div', 'actions');
   if (o.mode === 'edit') actions.append(button('secondary', '취소', () => { stop(); o.onCancel(); }));
   const go = button('primary', o.mode === 'new' ? '첫 출근하기' : '저장하기', () => finish());
   actions.append(go);
-  form.append(actions, el('p', 'note', '외형은 언제든 왼쪽 위 기자 정보에서 다시 바꿀 수 있어요. 도시 코트는 옷가게가 열리면 얻을 수 있어요.'));
-  card.append(stage, form);
+  form.append(el('p', 'note', '외형은 언제든 왼쪽 위 기자 정보에서 다시 바꿀 수 있어요. 도시 코트는 옷가게가 열리면 얻을 수 있어요.'));
+  card.append(stage, form, actions);
   root.append(card);
   document.body.append(root);
+  fitViewport();
 
   function group(label: string, body: HTMLElement): HTMLElement { const f = el('div', 'f'); f.style.display = 'grid'; f.style.gap = '7px'; f.append(el('span', 'lab', label), body); return f; }
 
   function render(): void {
     const focusKey = (document.activeElement as HTMLElement | null)?.dataset.focusKey;
     sections.textContent = '';
-    const presetRow = el('div', 'opts');
+    const presetRow = el('div', 'opts types');
     for (const p of presets) {
       const b = button('opt preset', '', () => { if (preset === p) return; preset = p; look = { ...defaultAppearance(p), outfit: o.owned.includes(look.outfit) ? look.outfit : 'reporter' }; render(); });
       b.dataset.focusKey = 'preset:' + p;
@@ -117,7 +128,10 @@ export function openCreator(o: Opts): void {
   // The stage stretches when the option list renders or the window changes, so re-anchor on every resize.
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => layout()) : null;
   ro?.observe(stage);
-  window.addEventListener('resize', layout);
+  const onResize = () => { fitViewport(); layout(); };
+  window.addEventListener('resize', onResize);
+  window.visualViewport?.addEventListener('resize', onResize);
+  window.visualViewport?.addEventListener('scroll', onResize);
   layout();
   const onKey = (e: KeyboardEvent) => {
     trapTab(root, e);
@@ -127,7 +141,7 @@ export function openCreator(o: Opts): void {
     }
   };
   document.addEventListener('keydown', onKey, true);
-  const stop = () => { cancelAnimationFrame(raf); ro?.disconnect(); window.removeEventListener('resize', layout); document.removeEventListener('keydown', onKey, true); root.remove(); before?.focus({ preventScroll: true }); };
+  const stop = () => { cancelAnimationFrame(raf); ro?.disconnect(); window.removeEventListener('resize', onResize); window.visualViewport?.removeEventListener('resize', onResize); window.visualViewport?.removeEventListener('scroll', onResize); document.removeEventListener('keydown', onKey, true); root.remove(); before?.focus({ preventScroll: true }); };
   function finish(): void {
     const n = name.trim() || '새 기자';
     stop(); o.onDone(n.slice(0, 12), preset, { ...look });

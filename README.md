@@ -40,7 +40,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 [현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음은 **사용자 플레이 피드백으로 그래픽·조작감 조정**, 그다음 첫 취재 흐름이다.
 
 - 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 이 Mac의 셸에 Node가 없으면 `bash tools/npm-local.sh run dev`.
-- 검증: `npm run typecheck`, `npm test`(단위 78개), `npm run test:e2e`(브라우저 17개), `npm run build`. [오류 점검·수정 기록](docs/production/CODE-AUDIT-2026-10-11.md).
+- 검증: `npm run typecheck`, `npm test`(단위 79개), `npm run test:e2e`(브라우저 23개), `npm run build`. [오류 점검·수정 기록](docs/production/CODE-AUDIT-2026-10-11.md) · [뒷모습·모바일 생성 화면](docs/production/MOBILE-CREATOR-AND-REAR-WALK.md).
 - 설계 검사: `python3 tools/check_design.py`. 수치 변경 시 data/balance 원본과 문서를 함께 고친다.
 - 배포: `main`에 push하면 GitHub Actions가 테스트·빌드 후 Pages에 게임(루트)과 설계실(/design/)을 올린다. 1~2분 뒤 같은 주소를 새로고침하면 최신 버전이다.
 - 의학 내용은 검수 전 초안이며 출처 확인과 검수 이후에만 공개 콘텐츠로 사용한다.

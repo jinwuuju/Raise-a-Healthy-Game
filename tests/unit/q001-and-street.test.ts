@@ -83,6 +83,19 @@ describe('reporter sprites', () => {
       expect(f === 1 ? nx < 9 : nx > 9).toBe(true);
     }
   });
+  it('rear arms have separate silhouettes and never show a palm across the back', () => {
+    for (const preset of presets) for (const f of [0, 1, 2]) {
+      const look = defaultAppearance(preset); if (preset === 'female') look.hair = 'pixie';
+      const front = paintGrid(look, 'down', f), back = paintGrid(look, 'up', f), u = f ? -1 : 0;
+      const armMask = (g: typeof front) => {
+        const out: boolean[] = [];
+        for (let r = 14; r <= 20; r++) for (const x of [3, 4, 5, 6, 7, 12, 13, 14, 15, 16]) out.push(!!g[(OY + u + r) * CW + x]);
+        return out;
+      };
+      expect(armMask(back)).not.toEqual(armMask(front));
+      for (let r = 14; r <= 20; r++) for (let x = 6; x <= 13; x++) expect(['s', 'S'].includes(back[(OY + u + r) * CW + x] ?? '')).toBe(false);
+    }
+  });
 });
 
 describe('Q001 entry', () => {

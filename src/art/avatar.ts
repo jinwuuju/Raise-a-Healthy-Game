@@ -303,14 +303,31 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
 
   // 4. Arms.
   const drawArms = () => {
-    if (!side) {
+    if (view === 'back') {
+      // Rear shoulders, sleeve backs and knuckles: no front-facing palm across the back.
+      const arm = (left: boolean) => {
+        const x = left ? 5 : 14, outward = left ? -1 : 1;
+        const toward = frame === 1 ? left : frame === 2 ? !left : null;
+        set(x, A(14), 'j'); set(x, A(15), 'J');
+        if (toward === true) {
+          for (let r = 16; r <= 19; r++) set(x + outward, A(r), 'J');
+          set(x + outward, A(20), 's'); set(x, A(20), 'S');
+        } else if (toward === false) {
+          for (let r = 16; r <= 17; r++) set(x, A(r), 'J');
+          set(x, A(18), 'S');
+        } else {
+          for (let r = 16; r <= 17; r++) set(x + outward, A(r), 'J');
+          set(x + outward, A(18), 'S');
+        }
+      };
+      arm(true); arm(false);
+    } else if (!side) {
       // frame 1: left leg steps, so the right arm swings forward and the left arm back (and vice versa).
       const pose = (left: boolean): 'n' | 'f' | 'b' => frame === 1 ? (left ? 'b' : 'f') : frame === 2 ? (left ? 'f' : 'b') : 'n';
-      const back = view === 'back';
       const arm = (x: number, inward: number, c: string, st: 'n' | 'f' | 'b') => {
         const seam = x + inward;
         for (let r = 15; r <= 17; r++) set(seam, A(r), 'd');
-        const low = st !== 'n' && (back ? st === 'b' : st === 'f');
+        const low = st === 'f';
         if (low) {
           for (let r = 14; r <= 17; r++) set(x, A(r), c);
           set(seam, A(18), c); set(seam, A(19), c);
