@@ -97,3 +97,21 @@ test('no corner action button; windows close by tapping anywhere', async ({ brow
   await expect(page.getByRole('dialog', { name: '취재 수첩' })).toHaveCount(0);
   await page.close();
 });
+
+test('creator preview stands on the pedestal with crisp integer pixels', async ({ browser }) => {
+  for (const [w, h, dpr] of [[390, 844, 2.625], [1280, 900, 1], [412, 915, 3]] as const) {
+    const page = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: dpr });
+    await page.goto('/');
+    await page.waitForTimeout(250);
+    const m = await page.evaluate(() => {
+      const c = document.querySelector('.creator .preview') as HTMLCanvasElement;
+      const p = document.querySelector('.creator .pedestal') as HTMLElement;
+      const cb = c.getBoundingClientRect(), pb = p.getBoundingClientRect();
+      return { feet: cb.top + (cb.height * 33) / 34, ped: pb.top + pb.height / 2, ratio: c.width / 20, css: cb.width, dpr: window.devicePixelRatio };
+    });
+    expect(Math.abs(m.feet - m.ped), `${w}x${h}@${dpr}`).toBeLessThan(3);
+    expect(Number.isInteger(m.ratio)).toBe(true);
+    expect(Math.abs(m.css * m.dpr - m.ratio * 20)).toBeLessThan(0.5);
+    await page.close();
+  }
+});

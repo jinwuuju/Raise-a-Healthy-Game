@@ -1,4 +1,4 @@
-import { CH, CW, WALK_CYCLE, characterFrame, hairSwatch, portrait, skinSwatch } from '../art/character';
+import { AY, CH, CW, WALK_CYCLE, characterFrame, hairSwatch, portrait, skinSwatch } from '../art/character';
 import {
   defaultAppearance, faceFor, faceShapes, faceStyles, hairColors, hairFor, hairStyles, outfits, presetNames, presets, shapeFor, skinColors, skinFor,
   type Appearance, type FaceId, type HairColorId, type HairId, type OutfitId, type Preset, type ShapeId, type SkinId,
@@ -17,8 +17,21 @@ export function openCreator(o: Opts): void {
   const title = el('div', 'title');
   title.append(el('small', '', 'MEDICAL QUEST'), el('b', '', o.mode === 'new' ? '의학기자 키우기' : '외형 꾸미기'));
   const ped = el('div', 'pedestal');
-  const preview = el('canvas', 'preview'); preview.width = CW; preview.height = CH;
-  const pg = preview.getContext('2d')!; pg.imageSmoothingEnabled = false;
+  const preview = el('canvas', 'preview');
+  const pg = preview.getContext('2d')!;
+  // Draw at an integer number of device pixels per sprite pixel and stand the feet on the pedestal.
+  let scale = 1;
+  const layout = () => {
+    const dpr = window.devicePixelRatio || 1;
+    const base = window.matchMedia('(max-width: 760px)').matches ? 5 : 7;
+    scale = Math.max(1, Math.round(base * dpr));
+    if (preview.width !== CW * scale) { preview.width = CW * scale; preview.height = CH * scale; }
+    pg.imageSmoothingEnabled = false;
+    preview.style.width = (CW * scale) / dpr + 'px';
+    preview.style.height = (CH * scale) / dpr + 'px';
+    const footY = ped.offsetTop + ped.offsetHeight / 2;
+    preview.style.top = Math.round(footY - (AY * scale) / dpr) + 'px';
+  };
   const dirs: Dir[] = ['down', 'left', 'up', 'right'];
   let dirIndex = 0, auto = true, t0 = performance.now();
   const rot = el('div', 'rot');
@@ -88,18 +101,24 @@ export function openCreator(o: Opts): void {
     const t = (now - t0) / 1000;
     if (auto) dirIndex = Math.floor(t / 1.6) % 4;
     const frame = auto ? WALK_CYCLE[Math.floor(t * 7) % 4]! : (Math.floor(t * 1.6) % 2 ? 3 : 0);
-    pg.clearRect(0, 0, CW, CH);
-    pg.drawImage(characterFrame(look, dirs[dirIndex]!, frame), 0, 0);
+    pg.clearRect(0, 0, preview.width, preview.height);
+    pg.drawImage(characterFrame(look, dirs[dirIndex]!, frame), 0, 0, CW * scale, CH * scale);
     raf = requestAnimationFrame(loop);
   };
   raf = requestAnimationFrame(loop);
-  const stop = () => { cancelAnimationFrame(raf); root.remove(); };
+  // The stage stretches when the option list renders or the window changes, so re-anchor on every resize.
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => layout()) : null;
+  ro?.observe(stage);
+  window.addEventListener('resize', layout);
+  layout();
+  const stop = () => { cancelAnimationFrame(raf); ro?.disconnect(); window.removeEventListener('resize', layout); root.remove(); };
   function finish(): void {
     const n = name.trim() || '새 기자';
     stop(); o.onDone(n.slice(0, 12), preset, { ...look });
   }
   t0 = performance.now();
   render();
+  layout();
   if (o.mode === 'new') { input.select(); }
   go.focus({ preventScroll: true });
 }
