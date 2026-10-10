@@ -57,7 +57,7 @@ function palette(look: Look): Record<string, string> {
   return {
     o: OUTLINE, s: sk[0], S: sk[1], r: sk[2], m: '#c4566a', e: alien ? '#28365a' : '#33243f', i: alien ? '#5a8fd0' : '#7a5aa0', E: '#ffffff',
     h: hr[0], H: hr[1], L: hr[2], R: '#ef5a7a',
-    j: o.j, J: o.J, k: o.k, w: o.w, W: o.W, p: o.p, P: o.P, b: o.b, B: o.B, c: shade(o.b, 0.3), g: o.g,
+    j: o.j, J: o.J, d: shade(o.J, -0.3), k: o.k, w: o.w, W: o.W, p: o.p, P: o.P, b: o.b, B: o.B, c: shade(o.b, 0.3), g: o.g,
   };
 }
 

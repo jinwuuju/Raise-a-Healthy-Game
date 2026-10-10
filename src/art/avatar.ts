@@ -26,42 +26,42 @@ const BRAID = ['14:hLh', '14:hhH'];
 
 export const HAIR: Partial<Record<string, HairArt>> = {
   comma: {
-    front: T(1, ...CAP, '3:hhhhhhh 11:hhhhH', '3:Hhhh 13:hhhH', '3:HH 15:HH', '3:H 16:H'),
+    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '3:hhLhhhhhhhhhhH', '3:HhhhhH 11:HhhhhH', '3:Hh 6:hhH 11:Hhh 15:hH', '3:Hh 8:H 11:H 15:hH', '3:Hh 15:hH', '3:H 16:H'),
     side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 14:hhH', '2:Hhhhh 16:H', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   short: {
-    front: T(1, ...CAP, '3:hhhhhhhhhhhhhH', '3:Hh 8:hhhhhhhhH', '3:H 14:hhH', '3:H 16:H'),
+    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '3:hhLhhhhhhhhhhH', '3:hhhhLhhhhhhhhH', '3:Hh 7:hhhHhhhhhH', '3:Hh 10:H 15:hH', '3:Hh 15:hH', '3:H 16:H'),
     side: T(1, ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   part: {
-    front: T(1, '5:hhhhhhhhh', '4:hhHLLLhhhhhh', '3:hhhHhLLhhhhhhH', '3:hhh 7:hhhhhhhhhH', '3:Hh 7:hhhhhhhhhH', '3:H 10:hhhhhH', '3:H 14:hhH', '16:H'),
+    front: T(1, '5:hhhhhhhhh', '4:hhHLLLhhhhhh', '3:hhhHhLLhhhhhhH', '3:hhh 7:hhhhhhhhhH', '3:Hh 7:hhhhLhhhhH', '3:Hh 10:hhhhhhH', '3:Hh 14:hhH', '3:Hh 15:hH', '3:H 16:H'),
     side: T(1, ...SIDE_CAP, '2:hhhhhhhh 11:hhhhhH', '2:hhhhhhh 14:hhH', '2:Hhhhh 16:H', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   mash: {
-    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '3:hhLhhhhhhhhhhH', '3:hhhhhhhhhhhhhH', '3:hhhhhhhhhhhhhH', '3:hh 15:hH', '3:hh 15:hH', '3:HH 15:HH'),
+    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '3:hhLhhhhhhhhhhH', '3:hhhhhhhhhhhhhH', '3:hHhhHhhHhhHhhH', '3:Hh 15:hH', '3:Hh 15:hH', '3:HH 15:HH'),
     side: T(1, ...SIDE_CAP, '2:hhhhhhhhhhhhhhH', '2:hhhhhh', '2:hhhhh', '2:HHHH'),
     nape: 10, sheet: 10,
   },
   spiky: {
-    front: T(-1, '6:h 9:h 12:h', '5:hh 8:hh 11:hhh', ...CAP, '3:Hhh 7:hh 10:h 12:hh 15:hH', '3:H 7:h 12:h 16:H'),
+    front: T(-1, '6:h 9:h 12:h', '5:hh 8:hh 11:hhh', '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '3:hhLhhhhhhhhhhH', '3:HhhhhhhhhhhhhH', '3:Hh 6:hH 9:hh 12:Hh 15:hH', '3:H 7:H 12:H 16:H'),
     side: T(-1, '5:h 8:h 11:h', '4:hh 7:hh 10:hh', ...SIDE_CAP, '2:hhhhhhhh 13:h 15:hH', '2:hhhhhhh 16:H', '2:Hhhhh', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   curly: {
-    front: T(0, '6:hhhhhhhh', '4:hhLhhhLhhhhh', '3:hLhhLhhhhLhhhH', '2:hhhLhhhhLhhhLhhH', '2:hhhhhhhhhhhhhhhH', '2:HhhLhhhhLhhhhLhH', '2:Hhh 6:hh 9:h 11:h 13:hh 15:hhH', '2:Hh 16:hH', '2:H 17:H'),
+    front: T(0, '6:hhhhhhhh', '4:hhLhhhLhhhhh', '3:hLhhLhhhhLhhhH', '3:hhhLhhhhLhhhLH', '3:HhLhhhLhhhhLhH', '3:Hhh 7:hh 10:hhH 14:hhH', '3:Hh 8:H 11:H 15:hH', '3:Hh 15:hH', '3:H 16:H'),
     side: T(0, '6:hhhhh', '4:hhLhhhhhh', '3:hhLLhhLhhhh', '2:hLhhLhhhhLhhh', '1:hhLhhhLhhhhLhhH', '1:hhhhhhhhhhhhhhhH', '1:Hhhhhhhhh 13:hh 15:hhH', '1:HhhhhhhH 16:H', '1:HhhhhH', '2:HhH', '5:H'),
     nape: 9, sheet: 9,
   },
   messy: {
-    front: T(0, '6:h 9:hh 13:h', '5:hhhhhhhhhh', '3:hhhLLhhhhhhhh', '2:hhLLhhhhhhhhhhhH', '2:hhhhhhhhhhhhhhhH', '2:Hh 5:hhh 9:hh 12:hhh 16:hH', '2:H 6:h 10:h 13:h 17:H', '2:H 17:H'),
+    front: T(0, '6:h 9:hh 13:h', '5:hhhhhhhhhh', '4:hhLLhhhhhhhh', '3:hLhhhhhhhhhhhH', '3:hhhhhhhhhhhhhH', '3:Hh 6:hhh 10:hh 13:hhhH', '3:H 7:h 10:H 14:h 16:H', '3:H 16:H'),
     side: T(0, '5:h 8:hh 12:h', '5:hhhhhhh', ...SIDE_CAP.slice(1), '2:hhhhhhhh 12:hh 15:hH', '1:Hhhhhhhh 16:H', '2:hHhh', '2:H 4:H'),
     nape: 9, sheet: 9,
   },
   slick: {
-    front: T(1, '6:hhhhhhhh', '4:hhhLLLLhhhhh', '3:hhLLLhhhhhhhhH', '3:HhhhhhhhhhhhhH', '3:H 16:H'),
+    front: T(1, '6:hhhhhhhh', '4:hhhLLLLhhhhh', '3:hhLLLhhhhhhhhH', '3:HhhhhhhhhhhhhH', '3:H 16:H', '3:H 16:H'),
     side: T(1, '6:hhhhhh', '4:hhhLLLLhhh', '3:hhLLLLhhhhhh', '2:hhhhhhhhhhhhH', '2:hhhhhhhhH', '2:hhhhhhh', '2:Hhhhh', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
@@ -71,23 +71,23 @@ export const HAIR: Partial<Record<string, HairArt>> = {
     nape: 8, sheet: 8,
   },
   wolf: {
-    front: T(1, ...CAP, '3:hhhhhhh 11:hhhhH', '3:Hhh 13:hhhH', ...rep('3:Hh 15:hH', 3), '3:H 16:H', '5:1 14:1', '5:2 14:2'),
+    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '3:hhLhhhhhhhhhhH', '3:HhhhhH 11:HhhhhH', '3:Hh 6:hH 12:Hh 15:hH', '3:Hh 15:hH', '3:Hh 15:hH', '3:Hh 15:hH', '3:H 16:H', '', '5:1 14:1', '5:2 14:2'),
     side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 14:hhH', '2:hhhhhh', '2:hhhhhh', '2:Hhhhh', '2:hhh', '3:HhH', '3:H 5:H'),
     nape: 11, sheet: 11,
   },
   // Idol trend cuts (D049). Side views keep the flat face line: hair stops at the forehead in front.
   leaf: {
-    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '2:hhLhhhhhhhhhhhhH', '2:hhhhhhhhhhhhhhhH', '2:hhhhhhh 10:hhhhhhhH', '2:hhH 15:Hhh', '2:hH 16:Hh', '3:H 16:H'),
+    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '3:hhLhhhhhhhhhhH', '3:hhhhhhhLhhhhhH', '3:Hhhhhhh 11:hhhhhH', '3:HhH 14:Hhh', '3:Hh 15:hH', '3:H 16:H'),
     side: T(1, ...SIDE_CAP, '2:hhhhhhhhhhhhH', '2:hhhhhhh', '2:hhhhhh', '2:hhhhh', '2:Hhhh', '4:HhhH', '6:HH'),
     nape: 11, sheet: 11,
   },
   shadow: {
-    front: T(0, '6:hhhhhhhh', '4:hhLhhhhLhhhh', '3:hLhhLLhhhhLhhH', '2:hhLhhhhhhLhhhhhH', '2:hhhhLhhhhhhhLhhH', '2:HhhhhhhHhhhhhhhH', '2:Hhh 6:hhH 10:hhH 14:hhhH', '2:hH 9:H 16:Hh', '2:Hh 16:hH', '3:H 16:H'),
+    front: T(0, '6:hhhhhhhh', '4:hhLhhhhLhhhh', '3:hLhhLLhhhhLhhH', '3:hhLhhhhhLhhhhH', '3:HhhhLhhhhhLhhH', '3:Hhh 7:hhH 11:hhH 15:hH', '3:Hh 8:H 12:H 15:hH', '3:Hh 15:hH', '3:H 16:H'),
     side: T(0, '5:hhhhh', '3:hhLhhhhhh', '2:hLhhLLhhhhh', '1:hhLhhhhhLhhhH', '1:hhhhLhhhhhhhhH', '1:HhhhhhHhhhhhhhH', '1:Hhhhhhhh 11:hhH', '1:Hhhhhhh', '1:HhhhhH', '2:HhhH', '4:HH'),
     nape: 9, sheet: 9,
   },
   curtain: {
-    front: T(1, '6:hhhhhhhh', '4:hhLLhHhhhhhh', '3:hLLhhhHhhhhhhH', '2:hhLhhhhHhhhhhhhH', '2:hhhhhhh 11:hhhhhhH', '2:hhhhh 13:hhhhH', ...rep('2:hhh 15:hhH', 4), '3:HhH 14:HhH', '4:HH 14:HH'),
+    front: T(1, '6:hhhhhhhh', '4:hhLLhHhhhhhh', '3:hLLhhhHhhhhhhH', '3:hhLhhhHhhhhhhH', '3:hhhhhh 11:hhhhhH', '3:hhhH 13:Hhhh', '3:hhH 14:Hhh', '3:hh 15:hh', '3:hh 15:hh', '3:hh 15:hh', '4:hH 14:Hh', '5:H 14:H'),
     side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhH', '2:hhhhhhh', '2:hhhhhhh', '2:hhhhhhh', '2:hhhhhh', '3:hhhhH', '4:HHH'),
     nape: 11, sheet: 12,
   },
@@ -294,10 +294,23 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
 
   // 4. Arms.
   if (!side) {
-    const sw = frame === 1 ? 1 : frame === 2 ? -1 : 0;
-    const arm = (x: number, o: number, c: string) => { for (let r = 14; r <= 17 + o; r++) set(x, A(r), c); set(x, A(18 + o), 's'); };
-    arm(5, view === 'front' ? sw : -sw, 'k');
-    arm(14, view === 'front' ? -sw : sw, 'J');
+    // frame 1: left leg steps, so the right arm swings forward and the left arm back (and vice versa).
+    const pose = (left: boolean): 'n' | 'f' | 'b' => frame === 1 ? (left ? 'b' : 'f') : frame === 2 ? (left ? 'f' : 'b') : 'n';
+    const arm = (x: number, inward: number, c: string, st: 'n' | 'f' | 'b') => {
+      const seam = x + inward;
+      if (st === 'f') {
+        set(x, A(14), c); set(x, A(15), c); set(seam, A(16), c);
+        set(seam, A(17), 's'); set(seam + inward, A(17), 's');
+      } else {
+        for (let r = 15; r <= 17; r++) set(seam, A(r), 'd');
+        for (let r = 14; r <= 17; r++) set(x, A(r), c);
+        if (st === 'b') { set(x - inward, A(17), c); set(x - inward, A(18), 'S'); }
+        else set(x, A(18), 's');
+      }
+    };
+    const back = view === 'back';
+    arm(5, 1, 'k', pose(!back));
+    arm(14, -1, 'J', pose(back));
   } else {
     const pts: [number, number][] = frame === 1 ? [[9, 14], [9, 15], [8, 16], [7, 17]] : frame === 2 ? [[9, 14], [10, 15], [10, 16], [11, 17]] : [[9, 14], [9, 15], [9, 16], [9, 17]];
     for (const [x, r] of pts) { set(x, A(r), 'k'); set(x + 1, A(r), 'j'); }
@@ -320,6 +333,7 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
       if (BEHIND[c]) continue;
       // Keep the profile flat-fronted: at most 1px of hair in front of the face line, none over the eye or cheek.
       if (side && (x >= 15 || (!alien && rr >= 7 && x >= 11))) continue;
+      if (side && look.build === 'm' && x < (rr <= 7 ? 3 : rr <= 9 ? 4 : rr <= 11 ? 5 : 6)) continue;
       set(x, A(rr), c);
     }
   });
