@@ -1,0 +1,24 @@
+{
+  "id": "concept.cardio.circulation-loop",
+  "schemaVersion": 1,
+  "contentVersion": "0.1.0-draft",
+  "locale": "ko-KR",
+  "title": "순환 경로의 연속성",
+  "status": "draft",
+  "runtimeReady": false,
+  "updatedAt": "2026-10-10",
+  "prerequisiteConceptIds": [],
+  "definition": "작성·검수 예정",
+  "normalFunction": "작성·검수 예정",
+  "dysfunction": null,
+  "relatedDiseaseIds": [],
+  "simplificationLimits": [
+    "게임의 흐름 모형은 해부학적 축척과 생리 수치를 재현하지 않음"
+  ],
+  "misconceptions": [],
+  "linkedQuestIds": [
+    "quest.cardio.first-delivery"
+  ],
+  "references": [],
+  "review": null
+}

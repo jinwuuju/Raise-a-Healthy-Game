@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "status": "design_only",
+  "balanceVersion": "0.1",
+  "quests": [
+    {
+      "id": "Q001",
+      "title": "사라진 혈액 배달표",
+      "startLevel": 1,
+      "endLevel": 2,
+      "xp": 100,
+      "gold": 100,
+      "reputation": 1,
+      "targetMinutes": 10,
+      "completionKey": "quest.Q001.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    },
+    {
+      "id": "Q002",
+      "title": "네 방의 주소",
+      "startLevel": 2,
+      "endLevel": 3,
+      "xp": 150,
+      "gold": 120,
+      "reputation": 1,
+      "targetMinutes": 8,
+      "completionKey": "quest.Q002.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    },
+    {
+      "id": "Q003",
+      "title": "거꾸로 열리는 문",
+      "startLevel": 3,
+      "endLevel": 4,
+      "xp": 200,
+      "gold": 150,
+      "reputation": 1,
+      "targetMinutes": 10,
+      "completionKey": "quest.Q003.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    },
+    {
+      "id": "Q004",
+      "title": "두 갈래 배송 노선",
+      "startLevel": 4,
+      "endLevel": 5,
+      "xp": 250,
+      "gold": 170,
+      "reputation": 1,
+      "targetMinutes": 12,
+      "completionKey": "quest.Q004.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    },
+    {
+      "id": "Q005",
+      "title": "박자를 전하는 길",
+      "startLevel": 5,
+      "endLevel": 6,
+      "xp": 300,
+      "gold": 200,
+      "reputation": 1,
+      "targetMinutes": 10,
+      "completionKey": "quest.Q005.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    },
+    {
+      "id": "Q006",
+      "title": "펌프도 배달이 필요해",
+      "startLevel": 6,
+      "endLevel": 7,
+      "xp": 350,
+      "gold": 220,
+      "reputation": 1,
+      "targetMinutes": 12,
+      "completionKey": "quest.Q006.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    },
+    {
+      "id": "Q007",
+      "title": "좁아진 모형 통로",
+      "startLevel": 7,
+      "endLevel": 8,
+      "xp": 400,
+      "gold": 260,
+      "reputation": 1,
+      "targetMinutes": 12,
+      "completionKey": "quest.Q007.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    },
+    {
+      "id": "Q008",
+      "title": "하나의 숫자로 충분할까",
+      "startLevel": 8,
+      "endLevel": 9,
+      "xp": 450,
+      "gold": 300,
+      "reputation": 1,
+      "targetMinutes": 12,
+      "completionKey": "quest.Q008.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    },
+    {
+      "id": "Q009",
+      "title": "독자에게 설명하는 순환",
+      "startLevel": 9,
+      "endLevel": 10,
+      "xp": 500,
+      "gold": 350,
+      "reputation": 1,
+      "targetMinutes": 14,
+      "completionKey": "quest.Q009.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    },
+    {
+      "id": "Q010",
+      "title": "첫 기획: 심장이 일하는 방식",
+      "startLevel": 10,
+      "endLevel": 10,
+      "xp": 0,
+      "gold": 400,
+      "reputation": 3,
+      "targetMinutes": 15,
+      "completionKey": "quest.Q010.first",
+      "repeatXp": 0,
+      "repeatGold": 0
+    }
+  ],
+  "purchaseScenario": [
+    {
+      "id": "notebook",
+      "price": 250,
+      "afterQuest": "Q003"
+    },
+    {
+      "id": "desk",
+      "price": 600,
+      "afterQuest": "Q006"
+    }
+  ],
+  "expectedTotals": {
+    "xp": 2700,
+    "gold": 2270,
+    "reputation": 12,
+    "targetMinutes": 115,
+    "balanceAfterPurchases": 1420
+  }
+}

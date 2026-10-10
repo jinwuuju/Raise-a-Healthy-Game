@@ -1,0 +1,64 @@
+{
+  "id": "quest.cardio.first-delivery",
+  "displayId": "Q001",
+  "schemaVersion": 1,
+  "contentVersion": "0.1.0-draft",
+  "locale": "ko-KR",
+  "title": "사라진 혈액 배달표",
+  "status": "draft",
+  "runtimeReady": false,
+  "updatedAt": "2026-10-10",
+  "references": [],
+  "review": null,
+  "prerequisites": [],
+  "conceptIds": [
+    "concept.cardio.circulation-loop"
+  ],
+  "steps": [
+    {
+      "id": "observe",
+      "action": "observe_two_points",
+      "xp": 20
+    },
+    {
+      "id": "apply",
+      "action": "connect_flow_and_transfer",
+      "xp": 30
+    },
+    {
+      "id": "publish",
+      "action": "publish_structured_article",
+      "xp": 50
+    }
+  ],
+  "evidenceRequirements": [
+    "two_observations",
+    "applied_flow"
+  ],
+  "articleRubric": {
+    "requiredSlots": [
+      "observation",
+      "mechanism",
+      "conclusion"
+    ],
+    "allowedLinksStatus": "to_be_authored"
+  },
+  "rewards": {
+    "gold": 100,
+    "reputation": 1,
+    "xpTotal": 100,
+    "xpPolicy": "sum_of_step_xp_not_additional"
+  },
+  "repeatPolicy": {
+    "xp": 0,
+    "gold": 0
+  },
+  "completionKey": "quest.Q001.first",
+  "implementationMissing": [
+    "maps",
+    "puzzleVariants",
+    "semanticRubric",
+    "medicalReview",
+    "sources"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Raise a Healthy Game",
+  "koreanTitle": "메디컬 퀘스트: 의학기자 키우기",
+  "creator": "진우주",
+  "version": "0.2",
+  "date": "2026-10-10",
+  "stage": "설계·웹 설계실",
+  "repo": "https://github.com/jinwuuju/Raise-a-Healthy-Game",
+  "plannedPagesUrl": "https://jinwuuju.github.io/Raise-a-Healthy-Game/",
+  "targets": {
+    "levelCap": 99,
+    "specialties": 10,
+    "bodyHubs": 12,
+    "explorationMaps": 60,
+    "mainQuests": 120,
+    "optionalReports": 60,
+    "lifeQuests": 30,
+    "journalismPracticesIncluded": 40,
+    "concepts": 360,
+    "outfitDesigns": 80,
+    "furnitureDesigns": 120
+  },
+  "scopeStatus": "planning_targets_not_implemented"
+}
