@@ -1,0 +1,27 @@
+name: Validate web design studio
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'scripts/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify HTML, JS syntax, links, and assets
+        run: node scripts/check-site.mjs
+      - name: Confirm build output
+        run: node scripts/build.mjs
