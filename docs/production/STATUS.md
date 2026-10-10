@@ -15,7 +15,7 @@
 
 대상 저장소: [Raise-a-Healthy-Game](https://github.com/jinwuuju/Raise-a-Healthy-Game).
 
-원격 업로드와 실제 Pages 배포 결과는 실행 확인 후 이 항목에 기록한다. GitHub 설정 화면은 브라우저 보안 정책에 의해 접근이 거부되어 직접 설정 변경을 진행하지 않았다. 파일/워크플로 업로드와 Pages 활성화·성공은 별개다.
+2026-10-10 확인: 커밋 `ae01e3a`를 main에 push했다(기존 원격 이력 위에 추가, 강제 push 없음). Pages Source를 GitHub Actions로 지정한 뒤 재실행한 배포가 성공했고, [공개 주소](https://jinwuuju.github.io/Raise-a-Healthy-Game/)가 HTTP 200으로 응답한다. 생성 파일 40개의 원격 응답도 모두 200이었다. 브라우저 화면·조작 실측은 아직 미실시다.
 
 ## 게임 구현 상태
 
