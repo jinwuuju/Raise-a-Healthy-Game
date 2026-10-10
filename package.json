@@ -1,9 +1,9 @@
 {
   "name": "medical-quest",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Phaser 4 medical journalism RPG — P1 foundation prototype",
+  "description": "2.5D pixel-art health journalism RPG (Canvas 2D) — redesign-1",
   "scripts": {
     "check:design": "python3 tools/check_design.py",
     "render:levels": "python3 tools/render_levels.py",
@@ -23,9 +23,6 @@
     "node": ">=24.19.0 <25"
   },
   "packageManager": "npm@12.2.0",
-  "dependencies": {
-    "phaser": "4.2.1"
-  },
   "devDependencies": {
     "@playwright/test": "1.64.0",
     "@types/node": "26.6.5",

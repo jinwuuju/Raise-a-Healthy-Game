@@ -1,3 +1,12 @@
 # src
 
-P1 실행 기반: `app/main.ts`가 의존성을 연결하고 Phaser 장면과 HTML UI를 시작한다. domain 규칙과 application 명령을 통해 상태를 갱신한다. 실제 의료 콘텐츠/취재는 아직 없다. 계층별 역할은 [기술 설계](../docs/design/06-TECHNICAL-ARCHITECTURE.md)를 따른다.
+| 경로 | 역할 |
+|---|---|
+| `world/` | 지도 기하(타일·건물·소품·문·대상), 충돌, 길찾기. DOM/그래픽 없음 |
+| `domain/` | 저장 상태·외형·카페 규칙. 검증 함수가 유일한 입력 관문 |
+| `application/` | `Game`: 진행 상태를 바꾸는 유일한 계층, 대사·목표 문구 |
+| `infrastructure/` | localStorage 저장·백업·손상 원본 보관 |
+| `art/` | 코드로 그리는 픽셀 아트(인물·건물·바닥·소품·차량) |
+| `game/` | 월드 시뮬레이션·렌더러·교통 |
+| `ui/` | HUD·대화·시트·캐릭터 생성 (DOM) |
+| `main.ts` | 입력·루프·흐름 연결 |

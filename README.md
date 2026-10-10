@@ -1,9 +1,16 @@
 # 메디컬 퀘스트: 의학기자 키우기
 
-Phaser 4 + TypeScript + HTML/CSS로 만드는 **2.5D 픽셀아트 건강기자 생활·탐험 RPG**. 기획·개발: **진우주**.
+TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐험 RPG**. 기획·개발: **진우주**.
 
-> **현재는 P1 현대 서울 픽셀 RPG 시험판 / 2026-10-10.**
-> 유로프라자 안 편집국에서 시작해 로비·논현로 거리·비투비씨 카페를 걸어 다니고, 조사·주문·쉬기·저장/복원이 실행된다. Q001 취재·기사·실보상·전체 아트 승인·의학 검수는 아직 없다. [거리·이동 명세](docs/production/MOVEMENT-AND-STREET.md), [생성 자산/프롬프트](docs/production/PIXEL-ASSETS.md)를 참고한다. 기존 v0.2 설계와 1~99 레벨 계획 데이터는 유지한다.
+> **지금 바로 플레이:** https://jinwuuju.github.io/Raise-a-Healthy-Game/ (설계실: [/design/](https://jinwuuju.github.io/Raise-a-Healthy-Game/design/))
+>
+> **현재: redesign-1 / 2026-10-10.** 유로프라자 3층 편집국에서 시작해 로비·논현로 거리·쉼터·비투비씨 카페를 걸어 다니며 대화·살펴보기·주문·저장이 된다. 그래픽은 모두 코드로 그린 픽셀 아트다. 첫 취재(Q001)·의학 검수·아트 최종 승인은 아직 없다. [redesign-1 기록](docs/production/REDESIGN-1.md) · [거리·이동](docs/production/MOVEMENT-AND-STREET.md).
+
+## 조작
+
+- PC: 방향키/WASD 이동 · 클릭한 곳으로 걷기 · E/Space 대화·살펴보기 · J 수첩 · M 지도 · Esc 메뉴.
+- 모바일: 화면을 누르면 그곳으로 걷고, 꾹 누른 채 움직이면 손가락 쪽으로 계속 걷는다. 사람·사물을 누르면 다가가서 말을 건다. 오른쪽 아래 버튼으로도 대화.
+- 저장은 자동. 메뉴 → 기록·저장에서 파일로 내보내기/불러오기/백업 복구.
 
 ## 먼저 읽을 문서
 
@@ -29,16 +36,13 @@ Phaser 4 + TypeScript + HTML/CSS로 만드는 **2.5D 픽셀아트 건강기자 �
 
 ## 작업을 이어갈 때
 
-[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. **다음은 현재 조작감의 실제 플레이 피드백과 기반 잔여 검증**이다. 반경300m 지리 대조·내부 사진 반영·추가 상점은 후속 범위다. [내부 착수 검토](docs/production/P0-IMPLEMENTATION-ENTRY.md)와 [P1 구현 기록](docs/production/P1-FOUNDATION-REPORT.md)을 함께 읽는다. P0의 사용자 검토·의학 검수와 P2 아트 게이트는 완료로 처리하지 않았다.
+[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음은 **사용자 플레이 피드백으로 그래픽·조작감 조정**, 그다음 첫 취재 흐름이다.
 
-- 기획 수치: 초기 가설이며 플레이테스트로 조정한다.
-- 기술 사실: [공식 출처와 확인 범위](docs/references/SOURCES.md)를 참고한다.
-- 의학 내용: 기전과 퍼즐 아이디어는 검수 전 초안이다. 출처 확인과 검수 이후에만 공개 콘텐츠로 사용한다.
-- 현 단계 검사: `python3 tools/check_design.py` (문서 링크·레벨 데이터·초기 퀘스트 보상 일관성 검사).
-- 게임 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 로컬 주소는 터미널에 표시된다.
-- 이 Mac의 기본 셸에 Node/npm이 없으면 `bash tools/npm-local.sh run dev`로 앱 번들/사용자 캐시 도구를 사용할 수 있다.
-- 검증: `npm run typecheck`, `npm test`, `npm exec playwright install chromium`, `npm run test:e2e`, `npm run build`.
-- 방향키/WASD 길게 누르기로 연속 이동, 클릭으로 경로 이동, E/표식/조사 버튼으로 조사. 문으로 걸어가면 자동 출입한다. 생성 시 외형을 고르고 왼쪽 기자 칩에서 외형을 수정한다. 월드와 HUD는 같은 외형을 표시한다. 화면 방향 버튼은 제거했다. 모바일은 화면 탭으로 이동하며 관리 기능은 메뉴 → 기록·저장에 있다. 조사·전환은 자동 저장, 이동 후 위치는 ‘현재 위치 저장’. 기록은 파일로 내보내거나 최근 정상 백업으로 복구한다. 비투비씨는 첫 커피와 물을 무료로 이용할 수 있다.
+- 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 이 Mac의 셸에 Node가 없으면 `bash tools/npm-local.sh run dev`.
+- 검증: `npm run typecheck`, `npm test`(단위 42개), `npm exec playwright test`(브라우저 2개), `npm run build`.
+- 설계 검사: `python3 tools/check_design.py`. 수치 변경 시 data/balance 원본과 문서를 함께 고친다.
+- 배포: `main`에 push하면 GitHub Actions가 테스트·빌드 후 Pages에 게임(루트)과 설계실(/design/)을 올린다. 1~2분 뒤 같은 주소를 새로고침하면 최신 버전이다.
+- 의학 내용은 검수 전 초안이며 출처 확인과 검수 이후에만 공개 콘텐츠로 사용한다.
 
 ## 폴더 안내
 
@@ -51,16 +55,14 @@ Phaser 4 + TypeScript + HTML/CSS로 만드는 **2.5D 픽셀아트 건강기자 �
 | `data/balance/` | 레벨 및 초반 보상 설계의 수치 원본 |
 | `data/examples/` | 미검수 콘텐츠 계약 예시 (게임 빌드 제외) |
 | `data/schemas/` | 콘텐츠 JSON Schema 후속 작성 위치 |
-| `src/` | 게임 기반 코드의 계층별 디렉터리 |
-| `public/assets/` | 제작 원본·게임 배포 자산 구분 |
+| `src/` | 게임 코드 ([구조](src/README.md)) |
+| `public/assets/` | 향후 검수된 외부 자산 위치 (현재 게임은 사용 안 함) |
 | `tests/` | 단위·통합·브라우저 검증 |
 | `tools/` | 설계 및 콘텐츠 검증 도구 |
 | `artifacts/` | 로컬 검증 결과·성능 측정 (기본 Git 제외) |
 
 ## 설계 사이트
 
-[GitHub 저장소](https://github.com/jinwuuju/Raise-a-Healthy-Game) · [Pages 주소](https://jinwuuju.github.io/Raise-a-Healthy-Game/).
-
-사이트 공개 여부의 실제 확인 결과는 [현재 상태](docs/production/STATUS.md)에 기록한다. 로컬 생성은 `python3 tools/build_site.py`, 검증은 `python3 tools/check_site.py`, 미리보기는 `python3 -m http.server 4173 --directory _site`다. `main`에 push하면 GitHub Actions가 문서에서 사이트를 재생성한다. 로컬 파일 저장만으로 원격 사이트가 바뀌지는 않는다.
+[GitHub 저장소](https://github.com/jinwuuju/Raise-a-Healthy-Game) · [설계실](https://jinwuuju.github.io/Raise-a-Healthy-Game/design/). 로컬 생성은 `python3 tools/build_site.py`, 검증은 `python3 tools/check_site.py`. [배포 운영](docs/production/WEB-PUBLISHING.md).
 
 Copyright © 2026 진우주. All rights reserved. 자체 제작물의 권리 정책은 [LICENSE](LICENSE), 외부 구성요소는 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)를 따른다.

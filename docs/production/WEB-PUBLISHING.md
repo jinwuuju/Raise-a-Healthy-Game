@@ -1,5 +1,7 @@
 # GitHub Pages 설계실·업데이트 운영
 
+> **D038:** Pages 루트(`/`)에 게임, `/design/`에 이 설계실을 함께 배포한다. workflow는 설계 검사→설계실 생성→단위 테스트→게임 빌드→두 결과 합치기→배포 순서다.
+
 ## 배포 대상
 
 저장소: [jinwuuju/Raise-a-Healthy-Game](https://github.com/jinwuuju/Raise-a-Healthy-Game).

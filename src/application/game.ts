@@ -1,101 +1,97 @@
-import { defaultAppearance,validateAppearance,type Appearance } from '../domain/appearance';
-import movementRules from '../../data/balance/movement.v0.1.json';
+import { defaultAppearance, validateAppearance, type Appearance, type Preset } from '../domain/appearance';
 import { orderDrink } from '../domain/cafe';
-import { newState, presets, validateState, type GameState, type Preset } from '../domain/state';
-import { doorFor,canStand, rooms, targetInRange, type Point, type RoomId } from '../domain/world';
-import type { SaveStore } from '../infrastructure/save-store';
-export type Command = { type: 'start'; preset: Preset; name: string; appearance?:Appearance } | { type:'appearance'; appearance:Appearance } | {type:'equip'; outfitId:string} | { type: 'inspect'; target: string } | { type: 'travel'; target: string } | { type: 'order'; itemId: string; commandId: string } | { type: 'rest'; target: string } | { type: 'save' } | { type: 'import'; state: unknown };
-export class GameApplication {
-  private state: GameState;
-  private pose: Point;
-  private pending = false;
-  private virtualInput: Point = { x: 0, y: 0 };
-  private queuedSteps: Point[] = [];
-  private listeners = new Set<() => void>();
-  mode: 'world' | 'dialog' = 'dialog';
-  constructor(private store: SaveStore, state: GameState, readonly writable: boolean) {
-    this.state = validateState(state); this.pose = { x: state.safeLocation.x, y: state.safeLocation.y };
+import { newState, validateState, type GameState, type TimeMode } from '../domain/state';
+import type { SaveStore } from '../infrastructure/save';
+import { canStand } from '../world/collision';
+import { rooms } from '../world/rooms';
+import type { Dir, RoomId } from '../world/types';
+
+type Listener = (s: GameState) => void;
+
+/** The only place that changes persistent progress. Rendering and DOM read from here. */
+export class Game {
+  state: GameState;
+  private listeners = new Set<Listener>();
+  private dirtyPosition = false;
+  lastError: string | null = null;
+
+  constructor(private store: SaveStore) {
+    const loaded = store.load();
+    this.state = loaded.state ?? newState();
+    this.lastError = loaded.error;
   }
-  static async open(store: SaveStore, writable: boolean): Promise<GameApplication> {
-    let state = await store.load();
-    if (!state) { state = newState(); if (writable) await store.commit(state, null); }
-    return new GameApplication(store, state, writable);
+
+  subscribe(fn: Listener): () => void { this.listeners.add(fn); return () => this.listeners.delete(fn); }
+
+  private commit(next: GameState, persist = true): void {
+    const s = { ...next, revision: next.revision + 1, updatedAt: new Date().toISOString() };
+    this.state = validateState(s);
+    if (persist) this.persist();
+    for (const fn of this.listeners) fn(this.state);
   }
-  get snapshot(): GameState { return structuredClone(this.state); }
-  get directionInput(): Point { return { ...this.virtualInput }; }
-  get stepGoal(): Point | undefined { const goal=this.queuedSteps[0]; return goal ? { ...goal } : undefined; }
-  setDirectionInput(x:number,y:number): void {
-    this.virtualInput=this.writable && this.mode === 'world' && Number.isFinite(x) && Number.isFinite(y) ? {x:Math.sign(x),y:Math.sign(y)} : {x:0,y:0};
+
+  persist(): boolean {
+    try { this.store.save(this.state); this.dirtyPosition = false; this.lastError = null; return true; }
+    catch (e) { this.lastError = e instanceof Error ? e.message : '저장하지 못했어요.'; return false; }
   }
-  queueStep(x:number,y:number): void {
-    if(!this.writable || this.mode!=='world' || this.pending || this.queuedSteps.length>=32 || ![x,y].every(Number.isFinite))return;
-    const length=Math.hypot(x,y);if(!length)return;
-    const base=this.queuedSteps.at(-1) ?? this.pose;
-    const target={x:base.x+x/length*movementRules.buttonTapPixels,y:base.y+y/length*movementRules.buttonTapPixels};
-    if(canStand(this.room,target))this.queuedSteps.push(target);
+
+  begin(name: string, preset: Preset, look: Appearance): void {
+    const trimmed = name.trim().slice(0, 12) || '새 기자';
+    const base = this.state.started ? this.state : newState();
+    const valid = validateAppearance(look, preset);
+    const owned = base.owned.includes(valid.outfit) ? base.owned : base.owned;
+    if (!owned.includes(valid.outfit)) throw new Error('아직 갖고 있지 않은 옷이에요.');
+    this.commit({ ...base, started: true, avatar: { preset, name: trimmed, look: valid } });
   }
-  completeStep(): void { const goal=this.queuedSteps[0]; if(goal && Math.hypot(goal.x-this.pose.x,goal.y-this.pose.y)<.1 && canStand(this.room,goal))this.pose={...goal}; this.queuedSteps.shift(); }
-  cancelSteps(): void { this.queuedSteps=[]; }
-  get room(): RoomId { return this.state.safeLocation.room; }
-  get position(): Point { return { ...this.pose }; }
-  get busy(): boolean { return this.pending; }
-  subscribe(fn: () => void): () => void { this.listeners.add(fn); return () => this.listeners.delete(fn); }
-  move(dx: number, dy: number): void {
-    if (!this.writable || this.pending || this.mode !== 'world' || !this.state.started) return;
-    // Cap deltas to prevent tunnelling through furniture after a slow frame.
-    if (![dx, dy].every(Number.isFinite)) return;
-    const steps = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / 4));
-    if (steps > 100) return;
-    for (let i = 0; i < steps; i++) {
-      const x = { ...this.pose, x: this.pose.x + dx / steps };
-      if (canStand(this.state.safeLocation.room, x)) this.pose = x;
-      const y = { ...this.pose, y: this.pose.y + dy / steps };
-      if (canStand(this.state.safeLocation.room, y)) this.pose = y;
-    }
+
+  resetLook(preset: Preset): Appearance { return defaultAppearance(preset); }
+
+  /** Position updates are kept in memory and flushed by autosave, room changes and the menu. */
+  setPosition(room: RoomId, x: number, y: number, facing: Dir): void {
+    if (!canStand(room, { x, y })) return;
+    const at = this.state.at;
+    if (at.room === room && Math.abs(at.x - x) < 0.01 && Math.abs(at.y - y) < 0.01 && at.facing === facing) return;
+    this.state = { ...this.state, at: { room, x, y, facing } };
+    this.dirtyPosition = true;
   }
-  async execute(command: Command): Promise<void> {
-    if (!this.writable) throw new Error('다른 창에서 플레이 중입니다. 그 창을 닫고 새로고침해 주세요.');
-    if (this.pending) throw new Error('저장 중입니다. 잠시 뒤 다시 시도해 주세요.');
-    this.pending = true;
-    try {
-      let next = this.snapshot;
-      next.safeLocation = { ...this.pose, room: next.safeLocation.room };
-      if (command.type === 'start') {
-        if (next.started || !presets.includes(command.preset) || command.name.trim().length > 20) throw new Error('캐릭터 선택을 확인해 주세요.');
-        next.started = true; next.avatar = { preset: command.preset, name: command.name.trim() || '새 기자',appearance:validateAppearance(command.appearance ?? defaultAppearance(command.preset),command.preset) };
-      } else if(command.type==='appearance'){
-        const appearance=validateAppearance(command.appearance,next.avatar.preset);
-        if(!next.ownedCosmeticIds.includes(appearance.outfitId))throw new Error('가지고 있는 옷을 선택해 주세요.');
-        next.avatar.appearance=appearance;
-      } else if(command.type==='equip'){
-        if(!next.ownedCosmeticIds.includes(command.outfitId))throw new Error('가지고 있지 않은 옷입니다.');
-        next.avatar.appearance=validateAppearance({...next.avatar.appearance,outfitId:command.outfitId},next.avatar.preset);
-      } else if (command.type === 'inspect' || command.type === 'travel') {
-        if (!next.started || !(command.type==='travel' ? (()=>{const d=doorFor(next.safeLocation.room,command.target);return d&&Math.hypot(d.x-this.pose.x,d.y-this.pose.y)<=d.radius;})() : targetInRange(next.safeLocation.room,this.pose,command.target))) throw new Error('조금 더 가까이 다가가 주세요.');
-        if (command.type === 'inspect') {
-          const key = `${next.safeLocation.room}.${command.target}`;
-          if (!next.inspected.includes(key)) next.inspected.push(key);
-        } else {
-          const door=doorFor(next.safeLocation.room,command.target);
-          if(!door)throw new Error('출입구가 아닙니다.');
-          next.safeLocation={room:door.destination,...door.arrival};
-        }
-      } else if (command.type === 'order') {
-        if (!targetInRange(next.safeLocation.room, this.pose, 'barista')) throw new Error('주문 카운터 가까이 와 주세요.');
-        next = orderDrink(next, command.itemId, command.commandId);
-      } else if (command.type === 'rest') {
-        if (next.safeLocation.room !== 'cafe' || command.target !== 'table' || !targetInRange('cafe', this.pose, 'table')) throw new Error('테이블 가까이 와 주세요.');
-        next.cafe.restedAt = new Date().toISOString();
-      } else if (command.type === 'import') {
-        next = validateState(command.state);
-        // Keep this save identity and monotonic local revision on replacement.
-        next.saveId = this.state.saveId; next.createdAt = this.state.createdAt;
-      }
-      next.revision = this.state.revision + 1; next.updatedAt = new Date().toISOString();
-      await this.store.commit(next, this.state.revision);
-      this.queuedSteps=[]; this.virtualInput={x:0,y:0};
-      this.state = next; this.pose = { x: next.safeLocation.x, y: next.safeLocation.y };
-      this.listeners.forEach(fn => fn());
-    } finally { this.pending = false; }
+  get needsSave(): boolean { return this.dirtyPosition; }
+
+  enter(room: RoomId, x: number, y: number, facing: Dir): void {
+    if (!rooms[room] || !canStand(room, { x, y })) throw new Error('이동할 수 없는 위치예요.');
+    this.commit({ ...this.state, at: { room, x, y, facing } });
+  }
+
+  inspect(id: string): void {
+    if (this.state.inspected.includes(id)) { this.persist(); return; }
+    this.commit({ ...this.state, inspected: [...this.state.inspected, id] });
+  }
+
+  flag(name: string): void {
+    if (this.state.flags.includes(name)) return;
+    this.commit({ ...this.state, flags: [...this.state.flags, name] });
+  }
+  has(name: string): boolean { return this.state.flags.includes(name); }
+
+  order(itemId: string): void {
+    const id = (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : String(Date.now())).replaceAll('-', '').slice(0, 24);
+    this.commit(orderDrink(this.state, itemId, id));
+  }
+
+  rest(): void { this.commit({ ...this.state, cafe: { ...this.state.cafe, restedAt: new Date().toISOString() } }); }
+
+  setTime(time: TimeMode): void { this.commit({ ...this.state, settings: { ...this.state.settings, time } }); }
+
+  importState(raw: unknown): void {
+    const s = validateState(raw);
+    this.state = s; this.persist();
+    for (const fn of this.listeners) fn(this.state);
+  }
+
+  backups(): GameState[] { return this.store.backups(); }
+
+  restart(): void {
+    this.state = newState();
+    this.persist();
+    for (const fn of this.listeners) fn(this.state);
   }
 }

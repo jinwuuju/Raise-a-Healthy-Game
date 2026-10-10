@@ -1,3 +1,3 @@
 # tests/unit
 
-Vitest로 P1 저장 계약·발 충돌·격리된 보상 fixture 경계를 검사한다. `npm test`. 실제 XP 레벨/기사 계약은 P2 이후 추가한다.
+Vitest. `world.test.ts`: 모든 방의 스폰·문·대상 접근, 큰길 규칙, 경로·충돌. `domain.test.ts`: 저장 검증·보상 1회·카페 규칙·저장소 백업/손상 원본 보관.

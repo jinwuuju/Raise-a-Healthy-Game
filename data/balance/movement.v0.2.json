@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "status": "prototype_rules",
+  "note": "게임 논리 픽셀 단위(1타일=16px). 실제 거리·보행 속도가 아니다. redesign-1에서 타일을 32px에서 16px로 바꾸며 타일/초 기준 속도(약 3.5타일/초)는 유지했다.",
+  "logicalTilePixels": 16,
+  "walkPixelsPerSecond": 56,
+  "accelerationMilliseconds": 70,
+  "releaseMilliseconds": 50,
+  "maxFrameMilliseconds": 50,
+  "walkFramePixels": 6,
+  "holdToSteerMilliseconds": 220,
+  "holdToSteerCssPixels": 12
+}
