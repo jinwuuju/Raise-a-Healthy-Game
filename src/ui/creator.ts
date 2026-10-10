@@ -1,7 +1,7 @@
 import { CH, CW, WALK_CYCLE, characterFrame, hairSwatch, portrait, skinSwatch } from '../art/character';
 import {
-  defaultAppearance, faceStyles, hairColors, hairFor, hairStyles, outfits, presetNames, presets, skinColors, skinFor,
-  type Appearance, type FaceId, type HairColorId, type HairId, type OutfitId, type Preset, type SkinId,
+  defaultAppearance, faceFor, faceShapes, faceStyles, hairColors, hairFor, hairStyles, outfits, presetNames, presets, shapeFor, skinColors, skinFor,
+  type Appearance, type FaceId, type HairColorId, type HairId, type OutfitId, type Preset, type ShapeId, type SkinId,
 } from '../domain/appearance';
 import type { Dir } from '../world/types';
 import { button, el, pixelCanvas } from './dom';
@@ -77,8 +77,9 @@ export function openCreator(o: Opts): void {
     };
     sections.append(group('머리 모양', chips<HairId>(hairFor(preset), hairStyles, look.hair, v => { look.hair = v; })));
     sections.append(group(preset === 'alien' ? '안테나·털 색' : '머리 색', swatches<HairColorId>(Object.keys(hairColors) as HairColorId[], hairColors, hairSwatch, look.hairColor, v => { look.hairColor = v; })));
+    sections.append(group('얼굴형', chips<ShapeId>(shapeFor(preset), faceShapes, look.shape, v => { look.shape = v; })));
+    sections.append(group('눈매', chips<FaceId>(faceFor(preset), faceStyles, look.face, v => { look.face = v; })));
     sections.append(group('피부', swatches<SkinId>(skinFor(preset), skinColors, skinSwatch, look.skin, v => { look.skin = v; })));
-    sections.append(group('표정', chips<FaceId>(Object.keys(faceStyles) as FaceId[], faceStyles, look.face, v => { look.face = v; })));
     sections.append(group('옷', chips<OutfitId>(Object.keys(outfits) as OutfitId[], outfits, look.outfit, v => { look.outfit = v; }, v => !o.owned.includes(v))));
   }
 

@@ -1,14 +1,14 @@
 import motion from '../../data/balance/movement.v0.2.json';
 import { buildingArt } from '../art/buildings';
-import { AX, AY, WALK_CYCLE, characterFrame } from '../art/character';
+import { AX, AY, FIGURE_TOP, WALK_CYCLE, characterFrame } from '../art/character';
 import { bakeGround } from '../art/ground';
 import { ellipse, makeCanvas, pixelText, type Sprite } from '../art/pixel';
 import { propSprite } from '../art/props';
 import type { Look } from '../domain/appearance';
 import type { TimeMode } from '../domain/state';
-import { canStand, doorAt, moveWithCollision, nearestTarget } from '../world/collision';
+import { canStand, crossingAt, doorAt, moveWithCollision, nearestTarget } from '../world/collision';
 import { findPath } from '../world/path';
-import { T, rooms, tileAt, type Building, type Door, type Room, type Target } from '../world/rooms';
+import { T, rooms, tileAt, type Building, type Crossing, type Door, type Room, type Target } from '../world/rooms';
 import { TILE, type Dir, type Point, type RoomId } from '../world/types';
 import { Traffic } from './traffic';
 
@@ -30,6 +30,11 @@ export class World {
   locked = false;
   timeMode: TimeMode = 'day';
   questNpc: string | null = null;
+  /** Non-person targets that carry a quest marker (e.g. the Bodyscope, observation points). */
+  questTargets: string[] = [];
+  /** Waiting at a red pedestrian light: crossing being waited for. */
+  waitingAt: Crossing | null = null;
+  onSignalWait: (c: Crossing, seconds: number) => void = () => {};
   onDoor: (d: Door) => void = () => {};
   onNear: (t: Target | null) => void = () => {};
   onTarget: (t: Target) => void = () => {};
@@ -90,8 +95,8 @@ export class World {
     for (const t of this.room.targets) {
       if (t.npc) {
         const n = this.npcs.find(a => a.id === t.npc);
-        if (n && pt.x >= n.x - 9 && pt.x <= n.x + 9 && pt.y >= n.y - 30 && pt.y <= n.y + 3) return t;
-      } else if (Math.hypot(pt.x - t.x, pt.y - (t.y - 6)) < 13) return t;
+        if (n && pt.x >= n.x - 10 && pt.x <= n.x + 10 && pt.y >= n.y - FIGURE_TOP && pt.y <= n.y + 4) return t;
+      } else if (Math.hypot(pt.x - t.x, pt.y - (t.y - 6)) < 16) return t;
     }
     return null;
   }
@@ -140,17 +145,23 @@ export class World {
       const wp = this.path[0]!, rem = Math.hypot(wp.x - p.x, wp.y - p.y), st = Math.hypot(mx, my);
       if (st > rem && st > 0) { mx *= rem / st; my *= rem / st; }
     }
+    let waiting: Crossing | null = null;
     if (mx || my) {
       const r = moveWithCollision(this.roomId, p, mx, my);
+      waiting = this.lightBlocks(p, r);
+      if (waiting) { r.x = p.x; r.y = p.y; this.vel = { x: 0, y: 0 }; }
       const moved = Math.hypot(r.x - p.x, r.y - p.y);
       p.x = r.x; p.y = r.y; p.walk += moved; p.moving = moved > 0.02;
       if (r.blockedX) this.vel.x = 0;
       if (r.blockedY) this.vel.y = 0;
       const fx = dx || this.vel.x, fy = dy || this.vel.y;
       if (Math.abs(fx) > 0.05 || Math.abs(fy) > 0.05) p.facing = Math.abs(fx) > Math.abs(fy) * 1.08 ? (fx > 0 ? 'right' : 'left') : (fy > 0 ? 'down' : 'up');
-      this.stuck = moved < 0.05 && this.path.length ? this.stuck + dt : 0;
+      this.stuck = moved < 0.05 && this.path.length && !waiting ? this.stuck + dt : 0;
       if (this.stuck > 0.5) { this.path = []; this.pendingTarget = null; this.stuck = 0; }
     } else p.moving = false;
+    if (waiting && waiting.id !== this.waitingAt?.id) this.onSignalWait(waiting, this.traffic.waitFor(waiting.road));
+    this.waitingAt = waiting ?? (this.waitingAt && (input.vx || input.vy || input.steer || this.path.length) ? this.waitingAt : null);
+    if (this.waitingAt && this.traffic.walk(this.waitingAt.road) === 'walk') this.waitingAt = null;
 
     const door = doorAt(this.roomId, p);
     if (door && this.doorLatch !== door.id && !this.locked) { this.doorLatch = door.id; this.stop(); this.onDoor(door); return; }
@@ -161,6 +172,14 @@ export class World {
 
     this.updateNpcs(dt);
     if (this.roomId === 'street') { this.traffic.update(dt, [p, ...this.npcs]); this.updateLeaves(dt); }
+  }
+
+  /** A person may step onto a crosswalk only on a green pedestrian light; once on it they may finish crossing. */
+  private lightBlocks(from: { x: number; y: number }, to: { x: number; y: number }): Crossing | null {
+    if (!this.room.crossings.length) return null;
+    const c = crossingAt(this.roomId, to);
+    if (!c || crossingAt(this.roomId, from)?.id === c.id) return null;
+    return this.traffic.walk(c.road) === 'walk' ? null : c;
   }
 
   private arrive(): void {
@@ -188,6 +207,7 @@ export class World {
       }
       if (Math.hypot(p.x - (n.x + ex / d * 10), p.y - (n.y + ey / d * 10)) < 9) { n.moving = false; continue; }
       const step = Math.min(d, n.speed * dt);
+      if (this.lightBlocks(n, { x: n.x + ex / d * (step + 1), y: n.y + ey / d * (step + 1) })) { n.moving = false; n.facing = Math.abs(ex) > Math.abs(ey) ? (ex > 0 ? 'right' : 'left') : (ey > 0 ? 'down' : 'up'); continue; }
       n.x += ex / d * step; n.y += ey / d * step; n.walk += step; n.moving = true;
       n.facing = Math.abs(ex) > Math.abs(ey) ? (ex > 0 ? 'right' : 'left') : (ey > 0 ? 'down' : 'up');
     }
@@ -248,20 +268,22 @@ export class World {
       ellipse(g, this.marker.x - cx, this.marker.y - cy, r + 1, Math.max(1, Math.round((r + 1) / 2)), 'rgba(255,240,190,0.55)');
     }
 
+    if (room.flow) this.drawFlow(g, cx, cy);
     const items: Drawable[] = [];
     const inView = (x: number, y: number, w: number, h: number) => x + w > cx - 8 && x < cx + vw + 8 && y + h > cy - 8 && y < cy + vh + 8;
     for (const b of room.buildings) {
       if (!inView(b.x, b.y - b.h, b.w, b.d + b.h)) continue;
       items.push({ y: b.y + b.d, x: b.x, occluder: { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, draw: () => this.drawBuilding(g, b, cx, cy, tod === 'night') });
     }
-    const frame4 = Math.floor(this.time * 6) % 4;
+    const frame4 = Math.floor(this.time * 6) % 4, beat4 = Math.floor(this.time * 4.4) % 4;
     for (const pr of room.props) {
-      const s = propSprite(pr.kind, pr.v, pr.kind === 'fountain' || pr.kind === 'bodyscope' ? frame4 : 0);
+      const s = propSprite(pr.kind, pr.v, pr.kind === 'heartcore' ? beat4 : pr.kind === 'fountain' || pr.kind === 'bodyscope' || pr.kind === 'robot' || pr.kind === 'pad' ? frame4 : 0);
       if (!inView(pr.x - s.ax, pr.y - s.ay, s.c.width, s.c.height)) continue;
-      const tall = pr.kind === 'ginkgo' || pr.kind === 'parktree' || pr.kind === 'bookshelf' || pr.kind === 'lamp';
+      const tall = pr.kind === 'ginkgo' || pr.kind === 'parktree' || pr.kind === 'bookshelf' || pr.kind === 'lamp' || pr.kind === 'heartcore';
       items.push({ y: pr.y, x: pr.x, occluder: tall ? { x: pr.x - s.ax + 3, y: pr.y - s.ay, w: s.c.width - 6, h: s.c.height - 10 } : null, draw: () => {
         this.blit(g, s, pr.x, pr.y, cx, cy);
         if (pr.kind === 'signal') this.drawSignal(g, pr.x, pr.y, pr.v === 1 ? 'EW' : 'NS', cx, cy);
+        if (pr.kind === 'pedsignal') this.drawPedSignal(g, pr.x, pr.y, pr.v === 1 ? 'EW' : 'NS', cx, cy);
       } });
     }
     for (const n of this.npcs) items.push({ y: n.y, x: n.x, occluder: null, draw: () => this.drawActor(g, n, cx, cy) });
@@ -274,13 +296,14 @@ export class World {
     items.push(me);
     items.sort((a, b) => a.y - b.y || a.x - b.x);
     for (const it of items) it.draw();
-    const pr = { x: p.x - 9, y: p.y - 30, w: 18, h: 30 };
+    const pr = { x: p.x - 9, y: p.y - FIGURE_TOP, w: 18, h: FIGURE_TOP };
     const hidden = items.some(it => it.occluder && it.y > p.y && it.occluder.x < pr.x + pr.w && it.occluder.x + it.occluder.w > pr.x && it.occluder.y < pr.y + pr.h && it.occluder.y + it.occluder.h > pr.y);
     if (hidden) { g.globalAlpha = 0.45; this.drawActor(g, p, cx, cy, false); g.globalAlpha = 1; }
 
     for (const l of this.leaves) { g.fillStyle = l.c; g.fillRect(Math.round(l.x - cx), Math.round(l.y - cy), 2, 1); }
     if (room.interior) for (const pd of room.interior.pendants) this.drawPendant(g, pd.x - cx, pd.y - cy);
     if (!room.interior && tod !== 'day') this.applyLight(g, vw, vh, cx, cy, tod);
+    if (this.roomId === 'heart') { const pulse = Math.max(0, Math.sin(this.time * Math.PI * 2 * 1.1)) ** 3; g.fillStyle = `rgba(220,40,80,${(0.03 + pulse * 0.07).toFixed(3)})`; g.fillRect(0, 0, vw, vh); }
 
     out.imageSmoothingEnabled = false;
     out.drawImage(buf.c, 0, 0, vw * zoom, vh * zoom);
@@ -327,6 +350,40 @@ export class World {
     const lx = ph === 'red' ? 2 : ph === 'yellow' ? 6 : 10;
     g.fillStyle = ph === 'red' ? '#ff4a3a' : ph === 'yellow' ? '#ffc23a' : '#3ae07a';
     g.fillRect(Math.round(x - 7 + lx - cx), Math.round(y - 47 + 3 - cy), 2, 2);
+  }
+
+  /** Pedestrian head: red standing figure on top, green walking figure below (blinks before turning red). */
+  private drawPedSignal(g: CanvasRenderingContext2D, x: number, y: number, road: 'NS' | 'EW', cx: number, cy: number): void {
+    const ph = this.traffic.walk(road);
+    const ox = Math.round(x - 5 - cx), oy = Math.round(y - 39 - cy);
+    const fig = (rows: string[], top: number, color: string) => {
+      g.fillStyle = color;
+      rows.forEach((r, j) => { for (let i = 0; i < r.length; i++) if (r[i] === '#') g.fillRect(ox + 2 + i, oy + top + j, 1, 1); });
+    };
+    if (ph === 'stop') fig(['..##..', '.####.', '..##..', '.#..#.'], 2, '#ff4a3a');
+    else if (ph === 'walk' || Math.floor(this.time * 4) % 2 === 0) fig(['...##.', '..###.', '.#.#..', '#...#.'], 9, '#3ae07a');
+  }
+
+  /** Moving blood markers along the model loop; every other one carries a white delivery slip. */
+  private drawFlow(g: CanvasRenderingContext2D, cx: number, cy: number): void {
+    const pts = this.room.flow!;
+    const seg: number[] = [];
+    let total = 0;
+    for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i]!.x - pts[i - 1]!.x, pts[i]!.y - pts[i - 1]!.y); seg.push(d); total += d; }
+    const offset = this.time * 30 + 3 * Math.sin(this.time * Math.PI * 2 * 1.1);
+    const n = 18;
+    for (let k = 0; k < n; k++) {
+      let d = (offset + (k * total) / n) % total;
+      let i = 0;
+      while (i < seg.length - 1 && d > seg[i]!) { d -= seg[i]!; i++; }
+      const a = pts[i]!, b = pts[i + 1]!, t = seg[i] ? d / seg[i]! : 0;
+      const x = a.x + (b.x - a.x) * t, y = a.y + (b.y - a.y) * t;
+      if (this.room.flowHidden.some(h => x >= h.x && x < h.x + h.w && y >= h.y && y < h.y + h.h)) continue;
+      const sx = Math.round(x - cx), sy = Math.round(y - cy);
+      ellipse(g, sx, sy, 3, 2, '#7a1428'); ellipse(g, sx, sy - 1, 3, 2, '#ee3b55');
+      g.fillStyle = '#ff9aaa'; g.fillRect(sx - 2, sy - 2, 2, 1);
+      if (k % 2 === 0) { g.fillStyle = '#ffffff'; g.fillRect(sx, sy - 2, 2, 2); }
+    }
   }
 
   private drawPendant(g: CanvasRenderingContext2D, x: number, y: number): void {
@@ -381,13 +438,32 @@ export class World {
       out.lineWidth = 3.5 * dpr; out.strokeStyle = 'rgba(22,18,34,0.85)'; out.strokeText(text, sx, sy);
       out.fillStyle = color; out.fillText(text, sx, sy);
     };
-    for (const n of this.npcs) if (n.name) label(n.name, n.x, n.y - 33, this.near?.npc === n.id ? '#fff3c4' : '#f6d98a');
-    label(this.player.name, this.player.x, this.player.y - 33, '#ffffff');
+    const top = FIGURE_TOP + 2;
+    for (const n of this.npcs) if (n.name) label(n.name, n.x, n.y - top, this.near?.npc === n.id ? '#fff3c4' : '#f6d98a');
+    label(this.player.name, this.player.x, this.player.y - top, '#ffffff');
     const bob = Math.sin(this.time * 5) * 2;
+    const mark = (wx: number, wy: number) => {
+      const sx = (wx - cx) * zoom, sy = (wy - cy) * zoom + bob * dpr;
+      out.beginPath(); out.arc(sx, sy - 7 * dpr, 8 * dpr, 0, Math.PI * 2); out.fillStyle = '#f2b53a'; out.fill();
+      out.lineWidth = 2 * dpr; out.strokeStyle = '#3a2a12'; out.stroke();
+      out.fillStyle = '#3a2a12'; out.font = LABEL_FONT(Math.round(12 * dpr)); out.textBaseline = 'middle'; out.fillText('!', sx, sy - 7 * dpr);
+      out.font = LABEL_FONT(fs); out.textBaseline = 'bottom';
+    };
+    for (const id of this.questTargets) {
+      const t = this.room.targets.find(q => q.id === id);
+      if (t && this.near?.id !== id) mark(t.x, t.y - 34);
+    }
+    const nearNpc = this.near?.npc ? this.npcs.find(a => a.id === this.near!.npc) : null;
+    if (nearNpc && nearNpc.id !== this.questNpc && !this.locked) {
+      const sx = (nearNpc.x - cx) * zoom, sy = (nearNpc.y - top - 13 - cy) * zoom;
+      out.fillStyle = '#ffffff'; out.strokeStyle = 'rgba(22,18,34,0.85)'; out.lineWidth = 1.5 * dpr;
+      out.beginPath(); out.roundRect(sx - 11 * dpr, sy - 16 * dpr, 22 * dpr, 13 * dpr, 6 * dpr); out.fill(); out.stroke();
+      out.fillStyle = '#3a2a40'; for (const k of [-5, 0, 5]) { out.beginPath(); out.arc(sx + k * dpr, sy - 9.5 * dpr, 1.6 * dpr, 0, Math.PI * 2); out.fill(); }
+    }
     if (this.questNpc) {
       const n = this.npcs.find(a => a.id === this.questNpc);
       if (n) {
-        const sx = (n.x - cx) * zoom, sy = (n.y - 46 - cy) * zoom + bob * dpr;
+        const sx = (n.x - cx) * zoom, sy = (n.y - top - 13 - cy) * zoom + bob * dpr;
         out.beginPath(); out.arc(sx, sy - 7 * dpr, 8 * dpr, 0, Math.PI * 2); out.fillStyle = '#f2b53a'; out.fill();
         out.lineWidth = 2 * dpr; out.strokeStyle = '#3a2a12'; out.stroke();
         out.fillStyle = '#3a2a12'; out.font = LABEL_FONT(Math.round(12 * dpr)); out.textBaseline = 'middle'; out.fillText('!', sx, sy - 7 * dpr);

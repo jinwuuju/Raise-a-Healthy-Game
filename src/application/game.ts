@@ -1,5 +1,6 @@
 import { defaultAppearance, validateAppearance, type Appearance, type Preset } from '../domain/appearance';
 import { orderDrink } from '../domain/cafe';
+import { Q1, acceptQ1, briefQ1, canEnterHeart, observeQ1 } from '../domain/quest';
 import { newState, validateState, type GameState, type TimeMode } from '../domain/state';
 import type { SaveStore } from '../infrastructure/save';
 import { canStand } from '../world/collision';
@@ -13,6 +14,8 @@ export class Game {
   state: GameState;
   private listeners = new Set<Listener>();
   private dirtyPosition = false;
+  /** Set after import/restart: the page is about to reload, so the old world must not write its position back. */
+  private hold = false;
   lastError: string | null = null;
 
   constructor(private store: SaveStore) {
@@ -48,7 +51,7 @@ export class Game {
 
   /** Position updates are kept in memory and flushed by autosave, room changes and the menu. */
   setPosition(room: RoomId, x: number, y: number, facing: Dir): void {
-    if (!canStand(room, { x, y })) return;
+    if (this.hold || !canStand(room, { x, y })) return;
     const at = this.state.at;
     if (at.room === room && Math.abs(at.x - x) < 0.01 && Math.abs(at.y - y) < 0.01 && at.facing === facing) return;
     this.state = { ...this.state, at: { room, x, y, facing } };
@@ -77,13 +80,34 @@ export class Game {
     this.commit(orderDrink(this.state, itemId, id));
   }
 
+  acceptQuest(): void { this.commit(acceptQ1(this.state)); }
+
+  /** Moves into the Bodyscope heart model (safe entry point is saved). */
+  enterHeart(): void {
+    const why = canEnterHeart(this.state);
+    if (why) throw new Error(why);
+    const sp = rooms.heart.spawn;
+    const s = this.state.flags.includes(Q1.entered) ? this.state : { ...this.state, flags: [...this.state.flags, Q1.entered] };
+    this.commit({ ...s, at: { room: 'heart', x: sp.x, y: sp.y, facing: 'up' } });
+  }
+
+  /** Records an observation; returns whether it was new and whether it completed the checkpoint. */
+  observe(id: string): { first: boolean; done: boolean } {
+    const before = this.state, next = observeQ1(before, id);
+    if (next === before) { this.persist(); return { first: false, done: false }; }
+    this.commit(next);
+    return { first: next.inspected.length !== before.inspected.length, done: next.flags.includes(Q1.observed) && !before.flags.includes(Q1.observed) };
+  }
+
+  brief(): void { this.commit(briefQ1(this.state)); }
+
   rest(): void { this.commit({ ...this.state, cafe: { ...this.state.cafe, restedAt: new Date().toISOString() } }); }
 
   setTime(time: TimeMode): void { this.commit({ ...this.state, settings: { ...this.state.settings, time } }); }
 
   importState(raw: unknown): void {
     const s = validateState(raw);
-    this.state = s; this.persist();
+    this.state = s; this.hold = true; this.persist();
     for (const fn of this.listeners) fn(this.state);
   }
 
@@ -91,6 +115,7 @@ export class Game {
 
   restart(): void {
     this.state = newState();
+    this.hold = true;
     this.persist();
     for (const fn of this.listeners) fn(this.state);
   }

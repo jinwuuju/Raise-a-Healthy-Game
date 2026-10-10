@@ -1,9 +1,9 @@
-export type RoomId = 'newsroom' | 'lobby' | 'street' | 'cafe';
+export type RoomId = 'newsroom' | 'lobby' | 'street' | 'cafe' | 'heart';
 export type Dir = 'down' | 'up' | 'left' | 'right';
 export type Point = { x: number; y: number };
 export type Rect = { x: number; y: number; w: number; h: number };
 export const TILE = 16;
-export const roomIds: RoomId[] = ['newsroom', 'lobby', 'street', 'cafe'];
+export const roomIds: RoomId[] = ['newsroom', 'lobby', 'street', 'cafe', 'heart'];
 
 export function inRect(p: Point, r: Rect): boolean {
   return p.x >= r.x && p.x < r.x + r.w && p.y >= r.y && p.y < r.y + r.h;

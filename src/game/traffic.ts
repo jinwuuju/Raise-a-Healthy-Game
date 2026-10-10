@@ -17,24 +17,45 @@ const LANES: Lane[] = [
   { dir: 'left', fixed: 456, stop: 535, axis: 'EW' }, { dir: 'left', fixed: 480, stop: 535, axis: 'EW' },
 ];
 const MIN = -80, MAX = 720, CRUISE = 42;
+
+/*
+ * One 20 s cycle. NS cars: green 0-7, yellow 7-9, all red 9-10. EW cars: green 10-17, yellow 17-19, all red 19-20.
+ * People may cross a road only while that road's cars are held on red, with a one-second buffer on each side.
+ * The last three walking seconds blink and nobody may start crossing then.
+ */
+export const SIGNAL_CYCLE = 20;
+export type CarPhase = 'green' | 'yellow' | 'red';
+export type PedPhase = 'walk' | 'flash' | 'stop';
+export function carPhase(time: number, axis: 'NS' | 'EW'): CarPhase {
+  const t = (((time + (axis === 'NS' ? 0 : SIGNAL_CYCLE / 2)) % SIGNAL_CYCLE) + SIGNAL_CYCLE) % SIGNAL_CYCLE;
+  return t < 7 ? 'green' : t < 9 ? 'yellow' : 'red';
+}
+export function pedPhase(time: number, road: 'NS' | 'EW'): PedPhase {
+  // Crossing the NS road is safe while NS cars are red: cycle seconds 10-19 for NS, 0-9 for EW.
+  const t = (((time + (road === 'NS' ? SIGNAL_CYCLE / 2 : 0)) % SIGNAL_CYCLE) + SIGNAL_CYCLE) % SIGNAL_CYCLE;
+  return t < 5 ? 'walk' : t < 8 ? 'flash' : 'stop';
+}
+export function pedWait(time: number, road: 'NS' | 'EW'): number {
+  const t = (((time + (road === 'NS' ? SIGNAL_CYCLE / 2 : 0)) % SIGNAL_CYCLE) + SIGNAL_CYCLE) % SIGNAL_CYCLE;
+  return t < 5 ? 0 : SIGNAL_CYCLE - t;
+}
 const KINDS: CarKind[] = ['sedan', 'sedan', 'suv', 'taxi', 'sedan', 'taxi', 'suv', 'bus'];
 
 export class Traffic {
   cars: Car[] = [];
-  private t = 0;
+  t = 0;
   private seed = 7;
 
   constructor() {
     for (const lane of LANES) for (let i = 0; i < 2; i++) this.spawn(lane, MIN + 60 + i * 380 + this.rand() * 120);
   }
 
-  /** Signal phase for the north-south and east-west axes. */
-  phase(axis: 'NS' | 'EW'): 'green' | 'yellow' | 'red' {
-    const cycle = 30, t = this.t % cycle;
-    const ns = t < 10 ? 'green' : t < 12 ? 'yellow' : 'red';
-    const ew = t >= 15 && t < 25 ? 'green' : t >= 25 && t < 27 ? 'yellow' : 'red';
-    return axis === 'NS' ? ns : ew;
-  }
+  /** Signal phase for cars on the north-south and east-west roads. */
+  phase(axis: 'NS' | 'EW'): CarPhase { return carPhase(this.t, axis); }
+  /** Pedestrian signal for crosswalks that cross the given road. */
+  walk(road: 'NS' | 'EW'): PedPhase { return pedPhase(this.t, road); }
+  /** Seconds until the pedestrian light for this road turns green (0 while walking). */
+  waitFor(road: 'NS' | 'EW'): number { return pedWait(this.t, road); }
 
   private rand(): number { this.seed = (this.seed * 1103515245 + 12345) >>> 0; return (this.seed >>> 8) / 16777216; }
 

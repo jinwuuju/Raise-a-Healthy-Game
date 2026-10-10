@@ -1,4 +1,4 @@
-import { rooms, tileAt, walkableTile, type Door, type Target } from './rooms';
+import { rooms, tileAt, walkableTile, type Crossing, type Door, type Target } from './rooms';
 import { TILE, inRect, overlap, type Point, type Rect, type RoomId } from './types';
 
 /** Feet box: the character only collides with a small footprint, never with its head. */
@@ -60,4 +60,9 @@ function nudge(roomId: RoomId, x: number, y: number, axis: 'x' | 'y'): number | 
     if (canStand(roomId, p)) return (axis === 'x' ? x : y) + Math.sign(s) * Math.min(1, Math.abs(s));
   }
   return null;
+}
+
+/** The crosswalk (road part) under a foot point, if any. */
+export function crossingAt(roomId: RoomId, p: Point): Crossing | undefined {
+  return rooms[roomId].crossings.find(c => inRect(p, c.rect));
 }

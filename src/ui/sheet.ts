@@ -25,6 +25,11 @@ export function openSheet(title: string, build: (content: HTMLElement, close: ()
   scrim.append(sheet);
   scrim.addEventListener('pointerdown', e => { if (e.target === scrim) close(); });
   sheet.addEventListener('pointerdown', e => e.stopPropagation());
+  // Tapping anywhere that is not a control closes the window (scroll gestures do not produce a click).
+  sheet.addEventListener('click', e => {
+    const t = e.target as Element | null;
+    if (!t?.closest?.('button, a, input, select, textarea, label, summary, [role=button], .seg, .opts')) close();
+  });
   document.addEventListener('keydown', onKey, true);
   build(content, close);
   document.body.append(scrim);

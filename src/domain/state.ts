@@ -48,7 +48,7 @@ export function validateState(value: unknown): GameState {
   if (typeof s.saveId !== 'string' || !s.saveId || s.saveId.length > 100 || !integer(s.revision) || typeof s.started !== 'boolean' || !date(s.createdAt) || !date(s.updatedAt)) throw new Error('저장 기본 정보가 잘못되었습니다.');
   if (!a || !presets.includes(a.preset as Preset) || typeof a.name !== 'string' || !a.name.trim() || a.name.length > 12) throw new Error('기자 정보가 잘못되었습니다.');
   const preset = a.preset as Preset;
-  const look = validateAppearance(a.look, preset);
+  const look = validateAppearance(a.look, preset, true);
   if (!strings(s.owned) || !s.owned.every(id => Object.hasOwn(outfits, id)) || !s.owned.includes(look.outfit)) throw new Error('옷장 기록이 잘못되었습니다.');
   if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir) || !canStand(at.room as RoomId, { x: at.x, y: at.y })) throw new Error('저장된 위치가 올바르지 않습니다.');
   if (!integer(s.totalXp) || !integer(s.gold) || !strings(s.ledger) || !strings(s.inspected) || !strings(s.flags)) throw new Error('진행 기록이 잘못되었습니다.');

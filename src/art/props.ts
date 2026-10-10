@@ -74,6 +74,51 @@ function bodyscope(frame: number): Sprite {
   });
 }
 
+/** Stylised model heart (not anatomical): two lobes, an exit gate on the right and an entry gate on the left. */
+function heartcore(frame: number): Sprite {
+  const beat = [0, 1, 2, 1][frame % 4]!;
+  return sprite(72, 66, 36, 62, g => {
+    ellipse(g, 36, 56, 30, 6, '#a52a42');
+    const r = 15 + beat, cy = 26 - beat;
+    const inside = (x: number, y: number) => {
+      const l = (x - 24) ** 2 + (y - cy) ** 2 <= r * r, rr = (x - 48) ** 2 + (y - cy) ** 2 <= r * r;
+      const tri = y >= cy && y <= 58 - beat && Math.abs(x - 36) <= (58 - beat - y) * 1.15;
+      return l || rr || tri;
+    };
+    for (let y = 0; y < 66; y++) for (let x = 0; x < 72; x++) {
+      if (!inside(x, y)) continue;
+      const lit = -((x - 26) * 0.6 + (y - cy + 6) * 0.9) / 30;
+      px(g, x, y, lit > 0.45 ? '#ff9aa8' : lit > 0.05 ? '#f0596e' : lit > -0.45 ? '#d43c55' : '#a8293f');
+    }
+    for (const [x0, y0] of [[22, 18], [26, 15], [31, 14]] as [number, number][]) px(g, x0, y0 - beat, '#ffd6dc');
+    for (let i = 0; i < 9; i++) { px(g, 30 + i, 38 + Math.round(Math.sin(i * 0.9) * 2), '#b22d47'); }
+    // Gates: entry (left, blue arrow in) and exit (right, red arrow out).
+    rect(g, 2, 44, 12, 14, '#5c2134'); rect(g, 3, 45, 10, 12, '#f2dbe0'); rect(g, 4, 50, 6, 2, '#4a7fd0'); px(g, 10, 49, '#4a7fd0'); px(g, 10, 52, '#4a7fd0'); px(g, 11, 50, '#4a7fd0'); px(g, 11, 51, '#4a7fd0');
+    rect(g, 58, 44, 12, 14, '#5c2134'); rect(g, 59, 45, 10, 12, '#f2dbe0'); rect(g, 61, 50, 6, 2, '#e04a5e'); px(g, 67, 49, '#e04a5e'); px(g, 67, 52, '#e04a5e'); px(g, 68, 50, '#e04a5e'); px(g, 68, 51, '#e04a5e');
+  }, '#4a1424');
+}
+
+function robot(frame: number): Sprite {
+  const bob = [0, 1, 1, 0][frame % 4]!;
+  return sprite(20, 30, 10, 29, g => {
+    ellipse(g, 10, 27, 6, 2, 'rgba(60,20,40,0.35)');
+    const y0 = 4 - bob;
+    rect(g, 9, y0 - 3, 2, 3, '#8a93a6'); rect(g, 8, y0 - 5, 4, 2, frame % 2 ? '#7ff0f2' : '#a6fbfb');
+    ellipse(g, 10, y0 + 8, 8, 7, '#eef2f7'); ellipse(g, 9, y0 + 7, 6, 5, '#ffffff');
+    rect(g, 4, y0 + 6, 12, 5, '#2c3446'); rect(g, 6, y0 + 7, 2, 3, '#7ff0f2'); rect(g, 12, y0 + 7, 2, 3, '#7ff0f2');
+    ellipse(g, 10, y0 + 18, 5, 3, '#d8dee8'); rect(g, 8, y0 + 17, 4, 2, '#f06a8a');
+  }, '#3a3f52');
+}
+
+function pad(frame: number): Sprite {
+  const glow = ['#5fe0e8', '#7ff0f2', '#a6fbfb', '#7ff0f2'][frame % 4]!;
+  return sprite(34, 16, 17, 12, g => {
+    ellipse(g, 17, 9, 15, 5, '#9aa5b3'); ellipse(g, 17, 8, 15, 5, '#dfe5ec'); ellipse(g, 17, 8, 11, 3, glow);
+    ellipse(g, 17, 8, 7, 2, '#ffffff');
+    for (let a = 0; a < 24; a++) { const t = (a / 24) * Math.PI * 2; if ((a + frame) % 4 < 2) px(g, 17 + Math.cos(t) * 14, 8 + Math.sin(t) * 4.5, glow); }
+  }, '#363d4b');
+}
+
 const builders: Record<string, (v: number, frame: number) => Sprite> = {
   ginkgo: v => tree('ginkgo', v),
   parktree: v => tree('parktree', v),
@@ -96,6 +141,11 @@ const builders: Record<string, (v: number, frame: number) => Sprite> = {
     rect(g, 6, 7, 2, 39, '#40454f'); rect(g, 6, 7, 1, 39, '#5f6571'); rect(g, 5, 44, 4, 3, '#30343c');
     rect(g, 0, 1, 14, 6, '#262a32'); rect(g, 0, 1, 14, 1, '#3d424d');
     for (const x of [2, 6, 10]) rect(g, x, 3, 2, 2, '#4a4f58');
+  }, INK),
+  pedsignal: () => sprite(10, 40, 5, 39, g => {
+    rect(g, 4, 14, 2, 24, '#40454f'); rect(g, 4, 14, 1, 24, '#5f6571'); rect(g, 3, 37, 4, 2, '#30343c');
+    rect(g, 0, 0, 10, 15, '#262a32'); rect(g, 0, 0, 10, 1, '#3d424d'); rect(g, 1, 7, 8, 1, '#1a1d23');
+    rect(g, 2, 2, 6, 4, '#3a2a2a'); rect(g, 2, 9, 6, 4, '#24342a');
   }, INK),
   kiosk: () => sprite(20, 28, 10, 27, g => {
     rect(g, 4, 19, 2, 8, '#3d424c'); rect(g, 14, 19, 2, 8, '#3d424c');
@@ -253,11 +303,11 @@ export function propSprite(kind: PropKind, v: number, frame = 0): Sprite {
     if (!s) { s = carSprite(['sedan', 'suv', 'sedan', 'taxi', 'sedan'][v % 5] as 'sedan', CAR_COLORS[v % CAR_COLORS.length]!, 'up'); cache.set(key, s); }
     return s;
   }
-  const animated = kind === 'fountain' || kind === 'bodyscope';
+  const animated = kind === 'fountain' || kind === 'bodyscope' || kind === 'heartcore' || kind === 'robot' || kind === 'pad';
   const key = kind + ':' + v + ':' + (animated ? frame : 0);
   let s = cache.get(key);
   if (!s) {
-    s = kind === 'fountain' ? fountain(frame) : kind === 'bodyscope' ? bodyscope(frame) : (builders[kind] ?? builders.bench!)(v, frame);
+    s = kind === 'fountain' ? fountain(frame) : kind === 'bodyscope' ? bodyscope(frame) : kind === 'heartcore' ? heartcore(frame) : kind === 'robot' ? robot(frame) : kind === 'pad' ? pad(frame) : (builders[kind] ?? builders.bench!)(v, frame);
     cache.set(key, s);
   }
   return s;

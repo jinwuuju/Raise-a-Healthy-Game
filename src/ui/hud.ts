@@ -1,10 +1,10 @@
 import { portrait } from '../art/character';
+import { levelOf } from '../domain/quest';
 import type { GameState } from '../domain/state';
-import type { Target } from '../world/rooms';
 import type { RoomId } from '../world/types';
 import { ICONS, button, el } from './dom';
 
-export type HudActions = { onChip: () => void; onNote: () => void; onMenu: () => void; onMap: () => void; onAction: () => void };
+export type HudActions = { onChip: () => void; onNote: () => void; onMenu: () => void; onMap: () => void };
 
 export class Hud {
   root = el('div', 'hud');
@@ -17,11 +17,9 @@ export class Hud {
   private mini = el('div', 'minimap glass');
   private miniCanvas = el('canvas');
   private banner = el('div', 'banner glass');
-  private action: HTMLButtonElement;
-  private actionRing = el('span', 'ring');
-  private actionCap = el('span', 'cap');
+  private levelEl = el('span', '', 'Lv.1 수습기자');
   private toastEl = el('div', 'toast glass');
-  private hintEl = el('div', 'hint glass', '화면을 누르면 그곳으로 걸어가요 · 꾹 누른 채 움직이면 계속 걸어요');
+  private hintEl = el('div', 'hint glass', '화면을 누르면 걸어가요 · 사람이나 물건을 누르면 다가가서 말을 걸어요');
   private lookKey = '';
   private toastTimer = 0;
   private bannerTimer = 0;
@@ -30,7 +28,7 @@ export class Hud {
   constructor(private a: HudActions) {
     this.chip = button('chip glass', '', a.onChip, '기자 정보');
     const who = el('span', 'who');
-    const rank = el('span', 'rank'); rank.append(el('span', '', 'Lv.1 수습기자'), this.goldEl);
+    const rank = el('span', 'rank'); rank.append(this.levelEl, this.goldEl);
     who.append(this.nameEl, rank);
     this.chip.append(this.portraitBox, who);
 
@@ -48,9 +46,7 @@ export class Hud {
     this.mini.addEventListener('click', e => { e.stopPropagation(); a.onMap(); });
     tr.append(row, this.mini);
 
-    this.action = button('action hidden', '', a.onAction, '상호작용');
-    this.action.append(this.actionRing, this.actionCap);
-    this.root.append(this.chip, this.quest, tr, this.banner, this.action, this.toastEl, this.hintEl);
+    this.root.append(this.chip, this.quest, tr, this.banner, this.toastEl, this.hintEl);
     this.root.addEventListener('pointerdown', e => { if (e.target !== this.root) e.stopPropagation(); });
     document.body.append(this.root);
     window.setTimeout(() => { this.hintEl.style.opacity = '0'; }, 9000);
@@ -61,6 +57,8 @@ export class Hud {
   update(s: GameState): void {
     this.nameEl.textContent = s.avatar.name;
     this.goldEl.textContent = s.gold.toLocaleString('ko-KR') + 'G';
+    const lv = levelOf(s.totalXp);
+    this.levelEl.textContent = 'Lv.' + lv.level + ' 수습기자 · ' + lv.into + '/' + lv.need + 'XP';
     const key = JSON.stringify(s.avatar.look);
     if (key !== this.lookKey) {
       this.lookKey = key;
@@ -98,16 +96,6 @@ export class Hud {
     this.banner.classList.add('show');
     clearTimeout(this.bannerTimer);
     this.bannerTimer = window.setTimeout(() => this.banner.classList.remove('show'), 2600);
-  }
-
-  setAction(t: Target | null): void {
-    if (!t) { this.action.classList.add('hidden'); return; }
-    this.actionRing.textContent = t.verb;
-    this.actionCap.textContent = t.label;
-    this.action.setAttribute('aria-label', t.label + ' ' + t.verb + ' (E)');
-    const wasHidden = this.action.classList.contains('hidden');
-    this.action.classList.remove('hidden');
-    if (wasHidden) { this.action.classList.remove('enter'); void this.action.offsetWidth; this.action.classList.add('enter'); }
   }
 
   toast(text: string, error = false): void {

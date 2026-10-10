@@ -11,9 +11,9 @@ import type { Look } from '../domain/appearance';
 
 export const T = {
   VOID: 0, PAVE: 1, ROAD: 2, LANE: 3, CROSS: 4, GRASS: 5, GRAVEL: 6, PARKING: 7, DRIVE: 8,
-  PLAZA: 9, TURF: 10, TACTILE: 11, WOOD: 12, MARBLE: 13, HERRING: 14, WALL: 15,
+  PLAZA: 9, TURF: 10, TACTILE: 11, WOOD: 12, MARBLE: 13, HERRING: 14, WALL: 15, FLESH: 16, VESSEL: 17, BRIDGE: 18,
 } as const;
-const BLOCKED = new Set<number>([T.VOID, T.ROAD, T.WALL]);
+const BLOCKED = new Set<number>([T.VOID, T.ROAD, T.WALL, T.VESSEL]);
 export function walkableTile(t: number): boolean { return !BLOCKED.has(t); }
 
 export type BuildingKind = 'europlaza' | 'b2bc' | 'shop' | 'office' | 'hotel' | 'hospital';
@@ -23,7 +23,8 @@ export type PropKind =
   | 'ginkgo' | 'parktree' | 'lamp' | 'bench' | 'planter' | 'bollard' | 'signal' | 'kiosk' | 'signpost' | 'hydrant'
   | 'scooter' | 'bikes' | 'vending' | 'bin' | 'flowerbed' | 'fountain' | 'parkedcar' | 'booth'
   | 'desk' | 'editordesk' | 'chair' | 'bookshelf' | 'bodyscope' | 'sofa' | 'lowtable' | 'printer' | 'water' | 'plant'
-  | 'reception' | 'counter' | 'roundtable' | 'cafechair' | 'bar' | 'stool' | 'loungechair';
+  | 'reception' | 'counter' | 'roundtable' | 'cafechair' | 'bar' | 'stool' | 'loungechair'
+  | 'pedsignal' | 'heartcore' | 'robot' | 'pad';
 export type Prop = { kind: PropKind; x: number; y: number; v: number; solid: Rect | null };
 
 export type NpcSpec = { id: string; name: string; x: number; y: number; facing: Dir; look: Look; route: Point[] | null; speed: number };
@@ -31,12 +32,18 @@ export type Target = { id: string; label: string; verb: string; x: number; y: nu
 export type Door = { id: string; zone: Rect; to: RoomId; arrive: Point; facing: Dir; label: string };
 export type Marking = { kind: 'crossV' | 'crossH' | 'dashV' | 'dashH' | 'centerV' | 'centerH' | 'stop' | 'slow30' | 'stall'; x: number; y: number; w: number; h: number };
 export type WallDecor = { kind: 'window' | 'whiteboard' | 'clock' | 'elevator' | 'sign' | 'notice' | 'menu' | 'shelf' | 'poster' | 'mailbox' | 'neon'; x: number; w: number; text: string };
-export type Interior = { wall: 'office' | 'lobby' | 'cafe'; decor: WallDecor[]; bottom: 'wall' | 'glass'; door: [number, number]; pendants: Point[]; rugs: Rect[] };
+export type Interior = { wall: 'office' | 'lobby' | 'cafe' | 'heart'; decor: WallDecor[]; bottom: 'wall' | 'glass'; door: [number, number]; pendants: Point[]; rugs: Rect[] };
+
+/** Road part of a crosswalk. People may enter it only while the pedestrian light for `road` is green. */
+export type Crossing = { id: string; rect: Rect; road: 'NS' | 'EW' };
 
 export type Room = {
   id: RoomId; title: string; cols: number; rows: number; tiles: Uint8Array;
   buildings: Building[]; props: Prop[]; npcs: NpcSpec[]; targets: Target[]; doors: Door[];
   solids: Rect[]; markings: Marking[]; interior: Interior | null; spawn: Point; spawnFacing: Dir;
+  crossings: Crossing[];
+  /** Closed loop followed by the moving flow markers in model rooms, and spots where they pass under a bridge. */
+  flow: Point[] | null; flowHidden: Rect[];
 };
 
 function grid(cols: number, rows: number, base: number) {
@@ -77,6 +84,9 @@ function solidFor(kind: PropKind, x: number, y: number): Rect | null {
     case 'roundtable': return r(16, 6);
     case 'bar': return r(88, 6);
     case 'loungechair': return r(20, 8);
+    case 'pedsignal': return r(3, 3);
+    case 'heartcore': return r(56, 20);
+    case 'robot': return r(12, 5);
     default: return null;
   }
 }
@@ -88,7 +98,9 @@ const npc = (id: string, name: string, x: number, y: number, facing: Dir, look: 
 const target = (id: string, label: string, verb: string, x: number, y: number, r = 20, npcId: string | null = null): Target =>
   ({ id, label, verb, x, y, r, npc: npcId });
 
-function finish(room: Omit<Room, 'solids'>): Room {
+type RoomSpec = Omit<Room, 'solids' | 'crossings' | 'flow' | 'flowHidden'> & Partial<Pick<Room, 'crossings' | 'flow' | 'flowHidden'>>;
+function finish(spec: RoomSpec): Room {
+  const room = { crossings: [], flow: null, flowHidden: [], ...spec };
   const solids: Rect[] = [];
   for (const b of room.buildings) if (b.y + b.d <= room.rows * TILE) solids.push({ x: b.x, y: b.y, w: b.w, h: b.d });
   for (const p of room.props) if (p.solid) solids.push(p.solid);
@@ -97,12 +109,12 @@ function finish(room: Omit<Room, 'solids'>): Room {
 }
 
 const walkerLooks: Look[] = [
-  { hair: 'short', face: 'calm', skin: 'tan', hairColor: 'brown', outfit: 'casual' },
-  { hair: 'wave', face: 'smile', skin: 'peach', hairColor: 'ink', outfit: 'coat' },
-  { hair: 'bob', face: 'bright', skin: 'honey', hairColor: 'gold', outfit: 'knit' },
-  { hair: 'short', face: 'smile', skin: 'deep', hairColor: 'ink', outfit: 'hoodie' },
-  { hair: 'wave', face: 'calm', skin: 'peach', hairColor: 'brown', outfit: 'casual' },
-  { hair: 'short', face: 'bright', skin: 'peach', hairColor: 'chestnut', outfit: 'suit' },
+  { build: 'm', hair: 'curly', face: 'calm', shape: 'round', skin: 'tan', hairColor: 'brown', outfit: 'casual' },
+  { build: 'f', hair: 'wave', face: 'smile', shape: 'oval', skin: 'peach', hairColor: 'ink', outfit: 'coat' },
+  { build: 'f', hair: 'ponytail', face: 'bright', shape: 'round', skin: 'honey', hairColor: 'gold', outfit: 'knit' },
+  { build: 'm', hair: 'buzz', face: 'smile', shape: 'square', skin: 'deep', hairColor: 'ink', outfit: 'hoodie' },
+  { build: 'f', hair: 'bun', face: 'cat', shape: 'vline', skin: 'fair', hairColor: 'ash', outfit: 'casual' },
+  { build: 'm', hair: 'short', face: 'cool', shape: 'oval', skin: 'peach', hairColor: 'chestnut', outfit: 'suit' },
 ];
 
 function street(): Room {
@@ -152,6 +164,9 @@ function street(): Room {
   props.push(P('fountain', 224, 350));
   props.push(P('flowerbed', 264, 364), P('flowerbed', 184, 364, 1), P('flowerbed', 176, 302, 2), P('flowerbed', 272, 302));
   props.push(P('signal', 378, 444), P('signal', 490, 444, 1), P('signal', 378, 554, 1), P('signal', 490, 554));
+  // Pedestrian lights at both ends of every crosswalk (v: 0 = crossing Nonhyeon-ro, 1 = crossing Dosan-daero).
+  props.push(P('pedsignal', 372, 414), P('pedsignal', 492, 414), P('pedsignal', 372, 588), P('pedsignal', 492, 588));
+  props.push(P('pedsignal', 330, 444, 1), P('pedsignal', 330, 558, 1), P('pedsignal', 536, 444, 1), P('pedsignal', 536, 558, 1));
   props.push(P('kiosk', 344, 236), P('signpost', 376, 28), P('hydrant', 344, 300), P('scooter', 240, 152), P('bikes', 330, 300));
   props.push(P('vending', 528, 156), P('bin', 40, 250), P('bin', 528, 412), P('booth', 624, 176));
   props.push(P('parkedcar', 552, 234, 1), P('parkedcar', 584, 234, 4), P('parkedcar', 616, 234, 2));
@@ -184,6 +199,10 @@ function street(): Room {
 
   return finish({
     id: 'street', title: '논현로 · 을지병원 사거리', cols, rows, tiles, buildings, props, npcs, markings, interior: null,
+    crossings: [
+      { id: 'cross-n', rect: { x: 384, y: 416, w: 96, h: 32 }, road: 'NS' }, { id: 'cross-s', rect: { x: 384, y: 544, w: 96, h: 32 }, road: 'NS' },
+      { id: 'cross-w', rect: { x: 336, y: 448, w: 32, h: 96 }, road: 'EW' }, { id: 'cross-e', rect: { x: 496, y: 448, w: 32, h: 96 }, road: 'EW' },
+    ],
     spawn: { x: 292, y: 254 }, spawnFacing: 'down',
     targets: [
       target('street-notice', '거리 안내판', '보기', 344, 242, 18),
@@ -208,10 +227,10 @@ function interiorGrid(cols: number, rows: number, floor: number, door: [number, 
   return g;
 }
 
-export const editorLook: Look = { hair: 'short', face: 'calm', skin: 'honey', hairColor: 'silver', outfit: 'suit', glasses: true };
-export const seniorLook: Look = { hair: 'wave', face: 'bright', skin: 'peach', hairColor: 'chestnut', outfit: 'knit' };
-export const guardLook: Look = { hair: 'short', face: 'smile', skin: 'tan', hairColor: 'ink', outfit: 'uniform' };
-export const baristaLook: Look = { hair: 'bob', face: 'bright', skin: 'peach', hairColor: 'brown', outfit: 'apron' };
+export const editorLook: Look = { build: 'm', hair: 'short', face: 'calm', shape: 'square', skin: 'honey', hairColor: 'silver', outfit: 'suit', glasses: true };
+export const seniorLook: Look = { build: 'f', hair: 'ponytail', face: 'bright', shape: 'oval', skin: 'peach', hairColor: 'chestnut', outfit: 'reporter' };
+export const guardLook: Look = { build: 'm', hair: 'buzz', face: 'smile', shape: 'round', skin: 'tan', hairColor: 'ink', outfit: 'uniform' };
+export const baristaLook: Look = { build: 'f', hair: 'bob', face: 'doe', shape: 'round', skin: 'fair', hairColor: 'brown', outfit: 'apron' };
 
 function newsroom(): Room {
   const cols = 24, rows = 15;
@@ -303,7 +322,38 @@ function cafe(): Room {
   });
 }
 
-export const rooms: Record<RoomId, Room> = { newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe() };
+
+/*
+ * Bodyscope model room for Q001 (draft, not medically reviewed). One loop stands for the whole circulation:
+ * markers leave the heart on the right, travel round the room and come back on the left. Real anatomy
+ * (four chambers, two circuits, vessel lengths) is deliberately simplified and introduced in later quests.
+ */
+function heart(): Room {
+  const cols = 28, rows = 18;
+  const { tiles, fill } = interiorGrid(cols, rows, T.FLESH, [-1, -1]);
+  fill(5, 5, 22, 5, T.VESSEL); fill(5, 14, 22, 14, T.VESSEL); fill(5, 5, 5, 14, T.VESSEL); fill(22, 5, 22, 14, T.VESSEL);
+  fill(13, 14, 14, 14, T.BRIDGE);
+  return finish({
+    id: 'heart', title: '바디스코프 · 심장 모형 입구', cols, rows, tiles, buildings: [], markings: [], npcs: [],
+    props: [P('heartcore', 224, 100), P('robot', 256, 190), P('pad', 120, 258)],
+    targets: [
+      target('heart-out', '내보내는 문', '관찰', 272, 116, 20),
+      target('heart-in', '돌아오는 문', '관찰', 176, 116, 20),
+      target('guide', '안내 로봇 바디', '대화', 256, 198, 22),
+      target('return-pad', '귀환 장치', '귀환', 120, 258, 18),
+    ],
+    doors: [],
+    flow: [{ x: 224, y: 88 }, { x: 360, y: 88 }, { x: 360, y: 232 }, { x: 88, y: 232 }, { x: 88, y: 88 }, { x: 224, y: 88 }],
+    flowHidden: [{ x: 208, y: 224, w: 32, h: 16 }],
+    interior: {
+      wall: 'heart', bottom: 'wall', door: [-1, -1], pendants: [], rugs: [],
+      decor: [{ kind: 'neon', x: 40, w: 72, text: 'BODYSCOPE' }, { kind: 'sign', x: 168, w: 112, text: 'HEART MODEL' }, { kind: 'neon', x: 336, w: 72, text: 'LOOP' }],
+    },
+    spawn: { x: 224, y: 258 }, spawnFacing: 'up',
+  });
+}
+
+export const rooms: Record<RoomId, Room> = { newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), heart: heart() };
 export function tileAt(room: Room, tx: number, ty: number): number {
   if (tx < 0 || ty < 0 || tx >= room.cols || ty >= room.rows) return T.VOID;
   return room.tiles[ty * room.cols + tx] ?? T.VOID;

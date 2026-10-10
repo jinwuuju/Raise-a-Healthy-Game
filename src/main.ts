@@ -1,9 +1,10 @@
 import './ui/style.css';
 import motion from '../data/balance/movement.v0.2.json';
 import { Game } from './application/game';
-import { inspectLabels, lookText, objective, talk, type Line } from './application/story';
+import { inspectLabels, lookText, objective, q1Text, talk, type Line } from './application/story';
 import { outfits, presetNames, type Look } from './domain/appearance';
 import { cafeMenu, canOrder } from './domain/cafe';
+import { Q1, Q1_OBSERVATIONS, canEnterHeart, levelOf, obsKey, q1CanOffer, q1Seen } from './domain/quest';
 import { timeModes, type TimeMode } from './domain/state';
 import { SaveStore } from './infrastructure/save';
 import { World } from './game/world';
@@ -41,7 +42,6 @@ const hud = new Hud({
   onNote: () => openNotebook(),
   onMenu: () => openMenu(),
   onMap: () => openMap(),
-  onAction: () => { if (world?.near) interact(world.near); },
 });
 hud.setVisible(false);
 
@@ -68,6 +68,19 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
 window.addEventListener('blur', () => { keys.clear(); pointer.id = -1; world?.stop(); });
+
+// Any tap while a dialog is open advances it (and closes it after the last line), wherever it lands.
+let swallowClickUntil = 0;
+const onChoice = (e: Event) => !!(e.target as Element | null)?.closest?.('.dialog .choices button');
+document.addEventListener('pointerdown', e => {
+  if (!dialog.open || onChoice(e)) return;
+  e.preventDefault(); e.stopPropagation();
+  swallowClickUntil = performance.now() + 500;
+  dialog.tapAnywhere();
+}, true);
+document.addEventListener('click', e => {
+  if (performance.now() < swallowClickUntil && !onChoice(e)) { e.preventDefault(); e.stopPropagation(); }
+}, true);
 
 canvas.addEventListener('pointerdown', e => {
   if (busy()) return;
@@ -133,8 +146,12 @@ function refresh() {
   if (!world) return;
   world.player.look = s.avatar.look; world.player.name = s.avatar.name; world.timeMode = s.settings.time;
   hud.setObjective(objective(s, world.roomId));
-  const needEditor = !s.flags.includes('met-editor') || (s.cafe.welcomeUsed && !s.flags.includes('reported-back'));
+  const has = (f: string) => s.flags.includes(f);
+  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed));
   world.questNpc = world.roomId === 'newsroom' && needEditor ? 'editor' : null;
+  world.questTargets = [];
+  if (world.roomId === 'newsroom' && has(Q1.accepted) && !has(Q1.observed)) world.questTargets = ['device'];
+  if (world.roomId === 'heart') world.questTargets = has(Q1.observed) ? ['return-pad'] : Q1_OBSERVATIONS.filter(id => !s.inspected.includes(obsKey(id)));
 }
 game.subscribe(refresh);
 
@@ -142,7 +159,7 @@ function startWorld() {
   const s = game.state;
   world = new World(s.at.room, s.at.x, s.at.y, s.at.facing, s.avatar.look, s.avatar.name);
   world.onDoor = d => travel(d);
-  world.onNear = t => hud.setAction(t);
+  world.onSignalWait = (_c, sec) => hud.toast(sec > 0 ? '빨간불이에요. 초록불이 켜지면 건너요 · 약 ' + Math.ceil(sec) + '초' : '보행 신호가 곧 바뀌어요. 다음 초록불을 기다려요.');
   world.onTarget = t => interact(t);
   hud.setVisible(true);
   hud.setRoom(s.at.room, () => world!.minimapBase());
@@ -152,22 +169,27 @@ function startWorld() {
   if (game.lastError) hud.toast(game.lastError, true);
 }
 
-function travel(d: Door) {
+type Trip = Pick<Door, 'to' | 'arrive' | 'facing'> & { from?: string };
+let traveling = false;
+function travel(d: Trip) {
   if (!world) return;
   const w = world;
+  traveling = true;
   w.locked = true; keys.clear(); pointer.id = -1;
   fade.classList.add('on');
+  if (d.to === 'heart' || d.from === 'heart') fade.classList.add('scope');
   window.setTimeout(() => {
-    try { game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
+    try { if (d.to === 'heart') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
     catch (e) { hud.toast(e instanceof Error ? e.message : '이동하지 못했어요.', true); }
     w.setRoom(game.state.at.room, game.state.at.x, game.state.at.y, game.state.at.facing);
     hud.setRoom(w.roomId, () => w.minimapBase());
     refresh();
-    fade.classList.remove('on');
+    fade.classList.remove('on', 'scope');
     hud.showBanner(rooms[w.roomId].title);
+    if (w.roomId === 'heart') hud.toast(q1Text.disclaimer);
     if (!game.persist()) hud.toast('저장하지 못했어요: ' + game.lastError, true);
-    window.setTimeout(() => { w.locked = false; }, 120);
-  }, 210);
+    window.setTimeout(() => { w.locked = false; traveling = false; }, 120);
+  }, d.to === 'heart' || d.from === 'heart' ? 520 : 210);
 }
 
 async function say(lines: Line[]) { if (lines.length) await dialog.show(lines); }
@@ -182,7 +204,26 @@ async function interact(t: Target) {
       const script = talk(t.npc, game.state);
       await say(script.lines);
       if (script.flag) game.flag(script.flag);
+      if (script.action === 'offer-q1') await offerQ1();
+      if (script.action === 'brief-q1') { game.brief(); hud.toast('편집장 확인 완료 · 다음 단계는 곧 열려요'); }
       if (t.npc === 'barista') await cafeOrder();
+    } else if (t.id === 'device' && !canEnterHeart(game.state)) {
+      const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
+        [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
+      game.inspect(t.id);
+      if (go === 'enter') travel({ to: 'heart', arrive: rooms.heart.spawn, facing: 'up' });
+    } else if (t.id === 'heart-out' || t.id === 'heart-in') {
+      const obs = q1Text.observations[t.id];
+      await say([{ who: t.label, text: obs.text, npc: null }]);
+      const r = game.observe(t.id);
+      if (r.first) hud.toast('수첩에 적음 · ' + obs.note);
+      if (r.done) window.setTimeout(() => hud.toast('관찰 2개 완료! +20XP · 귀환 장치로 돌아가요'), 1600);
+    } else if (t.id === 'guide') {
+      await say(talk('guide', game.state).lines);
+    } else if (t.id === 'return-pad') {
+      const go = await dialog.show([{ who: '귀환 장치', text: q1Text.returnPad, npc: null }],
+        [{ id: 'go', label: q1Text.returnChoices.go, sub: q1Text.returnChoices.goSub, disabled: false }]);
+      if (go === 'go') travel({ to: 'newsroom', arrive: { x: 308, y: 152 }, facing: 'down', from: 'heart' });
     } else {
       const text = lookText[t.id] ?? '';
       await say([{ who: t.label, text, npc: null }]);
@@ -190,7 +231,18 @@ async function interact(t: Target) {
       game.inspect(t.id);
     }
   } catch (e) { hud.toast(e instanceof Error ? e.message : '문제가 생겼어요.', true); }
-  finally { w.locked = false; refresh(); }
+  finally { w.locked = traveling; refresh(); }
+}
+
+async function offerQ1() {
+  const lines: Line[] = q1Text.offer.map(l => ({ who: l.who, text: l.text, npc: l.who === '편집장' ? 'editor' : null }));
+  const c = q1Text.offerChoices;
+  const pick = await dialog.show(lines, [{ id: 'accept', label: c.accept, sub: c.acceptSub, disabled: false }, { id: 'later', label: c.later, sub: c.laterSub, disabled: false }]);
+  if (pick === 'accept') {
+    game.acceptQuest();
+    await say([{ who: '편집장', text: q1Text.accepted, npc: 'editor' }]);
+    hud.toast('새 취재 · ' + q1Text.title);
+  } else await say([{ who: '편집장', text: q1Text.later, npc: 'editor' }]);
 }
 
 async function cafeOrder() {
@@ -218,8 +270,17 @@ function openNotebook() {
     if (ids.length) { const ul = el('ul', 'notes'); for (const id of ids) ul.append(el('li', '', inspectLabels[id]!)); notes.append(ul); }
     else notes.append(el('p', 'muted', '아직 기록이 없어요. 반짝이는 표식이나 사람에게 다가가 살펴보세요.'));
     c.append(notes);
+    if (s.flags.includes(Q1.accepted)) {
+      const q = el('div'); q.append(el('h3', '', '첫 취재 · ' + q1Text.title));
+      q.append(el('p', '', q1Text.offer[1]!.text));
+      const seen = q1Seen(s);
+      const ul = el('ul', 'notes');
+      for (const id of Q1_OBSERVATIONS) ul.append(el('li', seen.includes(id) ? '' : 'muted', seen.includes(id) ? q1Text.observations[id].note : '아직 관찰하지 않음'));
+      q.append(ul, el('p', 'muted', q1Text.disclaimer + '. 기사 쓰기는 다음 업데이트에서 열려요.'));
+      c.append(q);
+    }
     const life = el('div'); life.append(el('h3', '', '생활'), el('p', '', '비투비씨 주문 ' + s.cafe.orderCount + '회 · 첫 방문 커피 ' + (s.cafe.welcomeUsed ? '받음' : '아직'))); c.append(life);
-    c.append(el('p', 'muted', '기사 작성·의학 도감은 첫 취재가 열리면 이 수첩에서 이어집니다.'));
+    c.append(el('p', 'muted', '기사 작성·의학 도감은 첫 기사를 쓴 뒤 이 수첩에서 이어집니다.'));
   });
 }
 
@@ -230,7 +291,8 @@ function openReporter() {
   openSheet('기자 정보', (c, close) => {
     const st = el('div', 'stats');
     const stat = (v: string, l: string) => { const d = el('div', 'stat'); d.append(el('b', '', v), el('span', '', l)); return d; };
-    st.append(stat('Lv.1', '수습기자'), stat(String(s.totalXp), '경험치'), stat(s.gold + 'G', '골드'));
+    const lv = levelOf(s.totalXp);
+    st.append(stat('Lv.' + lv.level, '수습기자'), stat(lv.into + '/' + lv.need, '경험치'), stat(s.gold + 'G', '골드'));
     c.append(st);
     const info = el('div'); info.append(el('h3', '', s.avatar.name), el('p', '', presetNames[s.avatar.preset] + ' · ' + outfits[s.avatar.look.outfit])); c.append(info);
     const list = el('div', 'list');
@@ -282,7 +344,8 @@ function openMenu() {
     view.append(seg); c.append(view);
     const help = el('div'); help.append(el('h3', '', '조작 안내'));
     help.append(el('p', '', 'PC: 방향키/WASD 이동 · E/Space 대화·살펴보기 · J 수첩 · M 지도 · Esc 메뉴'));
-    help.append(el('p', '', '모바일: 화면을 누르면 그곳으로 걷고, 꾹 누른 채 움직이면 손가락 쪽으로 계속 걸어요. 오른쪽 아래 버튼으로 대화해요.'));
+    help.append(el('p', '', '마우스·터치: 화면을 누르면 그곳으로 걷고, 사람이나 물건을 누르면 다가가서 말을 걸어요. 꾹 누른 채 움직이면 손가락 쪽으로 계속 걸어요. 대화창·창은 아무 곳이나 누르면 넘어가거나 닫혀요.'));
+    help.append(el('p', '', '큰길 횡단보도는 보행 신호가 초록불일 때만 건널 수 있어요. 깜빡이기 시작하면 새로 건너지 않아요.'));
     c.append(help);
     const reset = el('div', 'list'); reset.append(button('row danger', '처음부터 다시 시작', () => { if (confirm('지금 기록을 지우고 새 기자로 시작할까요? 먼저 파일로 내보내 두는 것을 권해요.')) { close(); game.restart(); location.reload(); } }));
     c.append(reset);

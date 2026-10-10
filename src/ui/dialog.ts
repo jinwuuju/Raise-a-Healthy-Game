@@ -33,6 +33,14 @@ export class Dialog {
     this.close(null);
   }
 
+  /** Tap anywhere on screen: finish the line, go on, and close at the end (cancels an open choice). */
+  tapAnywhere(): void {
+    if (!this.root) return;
+    if (this.typing) { this.finishTyping(); return; }
+    if (this.index < this.lines.length - 1) { this.index++; this.render(); return; }
+    this.close(null);
+  }
+
   close(v: string | null): void {
     if (this.typing) { clearInterval(this.typing); this.typing = 0; }
     this.root?.remove(); this.root = null;
@@ -59,7 +67,6 @@ export class Dialog {
     const text = el('div', 'text'); body.append(text);
     root.append(face, body);
     const next = el('div', 'next', '▼'); root.append(next);
-    root.addEventListener('click', () => this.advance());
     document.body.append(root);
     this.root = root; this.textEl = text; this.full = line.text;
     let i = 0;
