@@ -27,17 +27,17 @@ const BRAID = ['14:hLh', '14:hhH'];
 export const HAIR: Partial<Record<string, HairArt>> = {
   comma: {
     front: T(1, ...CAP, '3:hhhhhhh 11:hhhhH', '3:Hhhh 13:hhhH', '3:HH 15:HH', '3:H 16:H'),
-    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 14:hhH', '2:Hhhhh 16:H', '2:Hhh', '4:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 14:hhH', '2:Hhhhh 16:H', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   short: {
     front: T(1, ...CAP, '3:hhhhhhhhhhhhhH', '3:Hh 8:hhhhhhhhH', '3:H 14:hhH', '3:H 16:H'),
-    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '4:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   part: {
     front: T(1, '5:hhhhhhhhh', '4:hhHLLLhhhhhh', '3:hhhHhLLhhhhhhH', '3:hhh 7:hhhhhhhhhH', '3:Hh 7:hhhhhhhhhH', '3:H 10:hhhhhH', '3:H 14:hhH', '16:H'),
-    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 11:hhhhhH', '2:hhhhhhh 14:hhH', '2:Hhhhh 16:H', '2:Hhh', '4:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 11:hhhhhH', '2:hhhhhhh 14:hhH', '2:Hhhhh 16:H', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   mash: {
@@ -47,12 +47,12 @@ export const HAIR: Partial<Record<string, HairArt>> = {
   },
   spiky: {
     front: T(-1, '6:h 9:h 12:h', '5:hh 8:hh 11:hhh', ...CAP, '3:Hhh 7:hh 10:h 12:hh 15:hH', '3:H 7:h 12:h 16:H'),
-    side: T(-1, '5:h 8:h 11:h', '4:hh 7:hh 10:hh', ...SIDE_CAP, '2:hhhhhhhh 13:h 15:hH', '2:hhhhhhh 16:H', '2:Hhhhh', '2:Hhh', '4:H'),
+    side: T(-1, '5:h 8:h 11:h', '4:hh 7:hh 10:hh', ...SIDE_CAP, '2:hhhhhhhh 13:h 15:hH', '2:hhhhhhh 16:H', '2:Hhhhh', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   curly: {
     front: T(0, '6:hhhhhhhh', '4:hhLhhhLhhhhh', '3:hLhhLhhhhLhhhH', '2:hhhLhhhhLhhhLhhH', '2:hhhhhhhhhhhhhhhH', '2:HhhLhhhhLhhhhLhH', '2:Hhh 6:hh 9:h 11:h 13:hh 15:hhH', '2:Hh 16:hH', '2:H 17:H'),
-    side: T(0, '6:hhhhh', '4:hhLhhhhhh', '3:hhLLhhLhhhh', '2:hLhhLhhhhLhhh', '1:hhLhhhLhhhhLhhH', '1:hhhhhhhhhhhhhhhH', '1:Hhhhhhhhh 13:hh 15:hhH', '1:HhhhhhhH 16:H', '1:HhhhhH', '2:HhH', '4:H'),
+    side: T(0, '6:hhhhh', '4:hhLhhhhhh', '3:hhLLhhLhhhh', '2:hLhhLhhhhLhhh', '1:hhLhhhLhhhhLhhH', '1:hhhhhhhhhhhhhhhH', '1:Hhhhhhhhh 13:hh 15:hhH', '1:HhhhhhhH 16:H', '1:HhhhhH', '2:HhH', '5:H'),
     nape: 9, sheet: 9,
   },
   messy: {
@@ -62,7 +62,7 @@ export const HAIR: Partial<Record<string, HairArt>> = {
   },
   slick: {
     front: T(1, '6:hhhhhhhh', '4:hhhLLLLhhhhh', '3:hhLLLhhhhhhhhH', '3:HhhhhhhhhhhhhH', '3:H 16:H'),
-    side: T(1, '6:hhhhhh', '4:hhhLLLLhhh', '3:hhLLLLhhhhhh', '2:hhhhhhhhhhhhH', '2:hhhhhhhhH', '2:hhhhhhh', '2:Hhhhh', '2:Hhh', '4:H'),
+    side: T(1, '6:hhhhhh', '4:hhhLLLLhhh', '3:hhLLLLhhhhhh', '2:hhhhhhhhhhhhH', '2:hhhhhhhhH', '2:hhhhhhh', '2:Hhhhh', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   buzz: {
@@ -87,22 +87,22 @@ export const HAIR: Partial<Record<string, HairArt>> = {
   },
   wave: {
     front: T(1, '6:hhhhhhhh', '4:hhLLhHhhhhhh', '3:hLLhhhHhhhhhhH', '2:hhLhhhhHhhhhhhhH', '2:hhhhhhh 11:hhhhhhH', '2:hhhhh 13:hhhhH', '2:hhhh 14:hhhH', ...rep('2:hhh 15:hhH', 3), '1:hhhH 15:Hhhh', '1:hhh 16:hhh', '2:hhh 15:hhh', '1:hhhH 15:Hhhh', '1:Hhh 16:hhH', '2:HhH 15:HhH', '3:H 16:H'),
-    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 16:H', ...rep('2:hhhhhh', 3), '1:hhhhhhh', '1:hhhhhH', '2:hhhhH', '1:hhhhhH', '2:hhhH', '2:HhH', '4:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 16:H', ...rep('2:hhhhhh', 3), '1:hhhhhhh', '1:hhhhhH', '2:hhhhH', '1:hhhhhH', '2:hhhH', '2:HhH', '5:H'),
     nape: 11, sheet: 18,
   },
   hime: {
     front: T(1, ...BANGS, ...rep('1:1 2:hhh 15:hhH 18:1', 4), '1:1 2:HHH 15:HHH 18:1', ...rep('1:11 17:12', 6), '1:22 17:22'),
-    side: T(1, ...SIDE_F, ...rep('2:hhhhhh 10:hH', 3), '2:hhhhhh 10:HH', ...rep('2:hhhhhh', 6), '2:HHHHHH'),
+    side: T(1, ...SIDE_F, ...rep('2:hhhhhhh', 4), ...rep('2:hhhhhh', 6), '2:HHHHHH'),
     nape: 11, sheet: 18,
   },
   pixie: {
     front: T(1, ...CAP, '3:hhhhhhhhhhhhhH', '3:hhhhhhh 14:hhH', '3:hhH 15:hH', '3:hH 15:Hh', '3:H 16:H'),
-    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '4:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '5:H'),
     nape: 10, sheet: 10,
   },
   ponytail: {
     front: T(1, ...CAP, '3:hhhhhhhhhhhhhH 17:12', '3:Hh 7:hhhhhhhhhH 17:12', '3:H 14:hhH 17:12', '3:h 16:h 17:12', '3:h 16:h 17:12', '17:12', '17:2'),
-    side: T(1, '6:hhhhhh', '4:hhLLLhhhhh', '3:hhLLhhhhhhhh', '1:R 2:hhLhhhhhhhhhhH', '0:12 2:hhhhhhhhhhhhhhH', '0:12 2:hhhhhhhh 13:hhhH', '0:12 2:hhhhhhh 15:hH', '0:12 2:Hhhhh', '0:12 2:Hhh', '0:12 3:H', '0:12', '0:12', '0:2'),
+    side: T(1, '6:hhhhhh', '4:hhLLLhhhhh', '3:hhLLhhhhhhhh', '1:R 2:hhLhhhhhhhhhhH', '0:12 2:hhhhhhhhhhhhhhH', '0:12 2:hhhhhhhh 13:hhhH', '0:12 2:hhhhhhh 15:hH', '0:12 2:Hhhhh', '0:12 2:Hhh', '0:12 5:H', '0:12', '0:12', '0:2'),
     tail: T(2, '9:RR', '', '', '', '', '', '', '', '8:hLhh', '8:hhhh', '8:hhhH', '8:hhhH', '9:hH', '9:HH'),
     nape: 9, sheet: 9,
   },
@@ -118,12 +118,12 @@ export const HAIR: Partial<Record<string, HairArt>> = {
   },
   bun: {
     front: T(-3, '8:hhhh', '7:hLLhhh', '7:hLhhhH', '7:RRRRRR', '6:hhhhhhhh', '4:hhLLhHhhhhhh', '3:hLLhhhHhhhhhhH', '3:hhLhhhHhhhhhhH', '3:hhhhhh 11:hhhhhH', '3:hhh 14:hhH', '3:hH 15:Hh', '3:h 16:h', '3:h 16:h', '3:H 16:H'),
-    side: T(-3, '4:hhhh', '3:hLLhhh', '3:hLhhhH', '4:RRR', ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 16:H', '2:Hhhhh', '2:Hhh', '4:H'),
+    side: T(-3, '4:hhhh', '3:hLLhhh', '3:hLhhhH', '4:RRR', ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 16:H', '2:Hhhhh', '2:Hhh', '5:H'),
     nape: 9, sheet: 9,
   },
   odango: {
     front: T(-2, '4:hhh 13:hhh', '3:hLhh 13:hLhh', '3:hhhH 13:hhhH', '4:RR 6:hhhhhhhh 14:RR', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '2:hhLhhhhhhhhhhhhH', '2:hhhhLhhhhhhhhhhH', '2:hhhhhhhhhhhhhhhH', '2:hh 16:hH', '2:hH 16:Hh', '3:H 16:H'),
-    side: T(-2, '4:hhh', '3:hLhh', '3:hhhH', '4:RR 6:hhhhhh', ...SIDE_CAP.slice(1), '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '4:H'),
+    side: T(-2, '4:hhh', '3:hLhh', '3:hhhH', '4:RR 6:hhhhhh', ...SIDE_CAP.slice(1), '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '5:H'),
     nape: 10, sheet: 10,
   },
   buds: {
@@ -133,7 +133,7 @@ export const HAIR: Partial<Record<string, HairArt>> = {
   },
   tuft: {
     front: T(0, '9:hL', '8:hhLh', '7:hhhhhh', '8:hhhh', '', '', '', '3:h 16:h', '3:H 16:H'),
-    side: T(0, '8:hL', '7:hhLh', '6:hhhhhh', '7:hhhh', '', '', '', '3:h', '4:H'),
+    side: T(0, '8:hL', '7:hhLh', '6:hhhhhh', '7:hhhh', '', '', '', '3:h', '5:H'),
     nape: 0, sheet: 0,
   },
   ears: {
@@ -165,16 +165,17 @@ const TOP: [number, number][] = [[6, 13], [5, 14], [4, 15], [4, 15], [4, 15], [4
 const CHIN: Record<string, [number, number][]> = {
   round: [[4, 15], [6, 13]], oval: [[5, 14], [7, 12]], vline: [[5, 14], [8, 11]], mochi: [[4, 15], [4, 15]],
 };
-// Profile facing right: sloped forehead, nose at r9, lip at r10, chin at r11.
-const SIDE_TOP: [number, number][] = [[6, 12], [5, 14], [4, 14], [4, 15], [4, 15], [4, 15], [4, 16]];
+// Profile facing right, as in classic dot RPGs: the face is a narrow strip whose front edge is a straight
+// vertical line at x=13 (no forehead bulge, nose or cheek sticking out); the rest of the head is hair.
+const SIDE_TOP: [number, number][] = [[7, 11], [6, 12], [5, 13], [5, 13], [5, 13], [5, 13], [5, 13]];
 const SIDE_CHIN: Record<string, [number, number][]> = {
-  round: [[4, 15], [6, 14]], oval: [[5, 15], [7, 14]], vline: [[5, 15], [8, 14]], mochi: [[4, 15], [5, 14]],
+  round: [[5, 13], [7, 12]], oval: [[6, 13], [8, 12]], vline: [[6, 13], [9, 12]], mochi: [[5, 13], [6, 12]],
 };
 /** Head skin rows r3..r11 as [from, to] columns. */
 export function headRows(shape: string, side = false, alien = false): [number, number][] {
   if (!side) return [...TOP, ...(CHIN[shape] ?? CHIN.oval!)];
-  const top = SIDE_TOP.map(([a, b], i) => [a, alien && i === 6 ? 15 : b] as [number, number]);
-  return [...top, ...(SIDE_CHIN[shape] ?? SIDE_CHIN.oval!)];
+  void alien;
+  return [...SIDE_TOP, ...(SIDE_CHIN[shape] ?? SIDE_CHIN.oval!)];
 }
 
 /** Back view: the hair mass seen from behind (mirrored), closed over the head with a tapered nape. */
@@ -277,7 +278,7 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
   const head = headRows(look.shape, side, alien);
   head.forEach(([a, b], i) => row(A(HEAD_TOP + i), a, b, 's'));
   if (!side) for (let i = 3; i <= 6; i++) set(head[i]![1], A(HEAD_TOP + i), 'S');
-  else if (!alien) { set(8, A(8), 'S'); set(8, A(9), 'S'); set(9, A(9), 'r'); }
+  else if (!alien) { set(7, A(8), 'S'); set(7, A(9), 'S'); }
   if (view !== 'back') face(set, look, A, side, head);
 
   // 6. Hair in front.
@@ -286,8 +287,8 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
     const rr = tpl.r + i;
     for (const [x, c] of cells(r)) {
       if (BEHIND[c]) continue;
-      // Keep the profile readable: no hair over the eye, nose or cheek from the eye line down.
-      if (side && !alien && ((rr >= 7 && x >= 14) || (rr >= 8 && x >= 12))) continue;
+      // Keep the profile flat-fronted: at most 1px of hair in front of the face line, none over the eye or cheek.
+      if (side && (x >= 15 || (!alien && rr >= 7 && x >= 11))) continue;
       set(x, A(rr), c);
     }
   });
@@ -295,7 +296,7 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
   // 7. Round glasses.
   if (look.glasses && view !== 'back') {
     const lens = (x0: number) => { row(A(6), x0 + 1, x0 + 2, 'o'); row(A(10), x0 + 1, x0 + 2, 'o'); for (let r = 7; r <= 9; r++) { set(x0, A(r), 'o'); set(x0 + 3, A(r), 'o'); } };
-    if (view === 'front') { lens(5); lens(11); row(A(7), 9, 10, 'o'); } else { lens(11); row(A(7), 9, 10, 'o'); }
+    if (view === 'front') { lens(5); lens(11); row(A(7), 9, 10, 'o'); } else { lens(10); row(A(7), 8, 9, 'o'); }
   }
   return g;
 }
@@ -305,7 +306,7 @@ type RowFn = (y: number, x0: number, x1: number, c: string) => void;
 
 function face(set: SetFn, look: Look, A: (r: number) => number, side: boolean, head: [number, number][]) {
   const P = (x: number, r: number, c: string) => set(x, A(r), c);
-  const eyes: [number, number, boolean][] = side ? [[12, 13, false]] : [[6, 7, true], [12, 13, false]];
+  const eyes: [number, number, boolean][] = side ? [[11, 12, false]] : [[6, 7, true], [12, 13, false]];
   for (const [a, b, left] of eyes) {
     const outer = left ? a - 1 : b + 1, beyondIn = left ? b + 1 : a - 1, inner = left ? b : a;
     let f: string = look.face;
@@ -326,8 +327,8 @@ function face(set: SetFn, look: Look, A: (r: number) => number, side: boolean, h
     P(5, 10, 'r'); P(14, 10, 'r');
     if (look.face === 'cool' || look.face === 'calm') P(10, 10, 'm'); else { P(9, 10, 'm'); P(10, 10, 'm'); }
   } else {
-    P(13, 10, 'r');
-    P(head[7]![1], 10, 'm');
+    P(11, 10, 'r');
+    void head;
   }
 }
 
