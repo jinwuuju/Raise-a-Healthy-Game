@@ -31,15 +31,16 @@ describe('reporter sprites', () => {
       expect(Math.min(...rows), hair + dir + f).toBeGreaterThanOrEqual(1);
     }
   });
-  it('is a round chibi: the head is wider than the body and over half the height', () => {
-    for (const p of presets) {
-      const g = paintGrid(defaultAppearance(p) as Look, 'down', 0);
+  it('uses 바람의나라-like proportions: head about 40% of the figure, still wider than the body', () => {
+    for (const p of presets) for (const hair of hairFor(p)) {
+      const g = paintGrid({ ...defaultAppearance(p), hair } as Look, 'down', 0);
       const width = (y: number) => g.slice(y * CW, y * CW + CW).filter(Boolean).length;
-      const rows = [...Array(CH).keys()].filter(y => width(y) > 0 && y >= OY);
-      const top = Math.min(...rows), feet = AY - 1, chin = OY + 15;
-      expect(width(OY + 10), p).toBeGreaterThan(width(OY + 18));
-      expect((chin - top + 1) / (feet - top + 1), p).toBeGreaterThan(0.55);
-      expect(feet - top + 1, p).toBeLessThanOrEqual(26);
+      const rows = [...Array(CH).keys()].filter(y => width(y) > 0 && y >= OY + 1);
+      const top = Math.min(...rows), feet = AY - 1, chin = OY + 12, ratio = (chin - top + 1) / (feet - top + 1);
+      if (p !== 'alien') { expect(ratio, p + hair).toBeGreaterThan(0.36); expect(ratio, p + hair).toBeLessThan(0.48); }
+      const body = (y: number) => g.slice(y * CW, y * CW + CW).filter(c => c && !'hHL'.includes(c)).length;
+      expect(width(OY + 8), p + hair).toBeGreaterThan(body(OY + 18));
+      expect(feet - top + 1, p + hair).toBeLessThanOrEqual(31);
     }
   });
   it('migrates old saved looks instead of rejecting them, but stays strict for new choices', () => {
