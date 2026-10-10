@@ -2,8 +2,8 @@
 
 Phaser 4 + TypeScript + HTML/CSS로 만드는 **2.5D 픽셀아트 건강기자 생활·탐험 RPG**. 기획·개발: **진우주**.
 
-> **현재는 설계 확장 v0.2 / 2026-10-10. 게임 구현 전 단계다.**
-> 이 폴더에는 상세 설계, 1~99 레벨 계획 데이터, 콘텐츠 예시, 프로젝트 디렉터리와 기본 설정이 있다. 실행 가능한 게임, 설치된 엔진, 의학 검수 완료 콘텐츠는 아직 없다.
+> **현재는 P1 현대 서울 픽셀 RPG 시험판 / 2026-10-10.**
+> 유로프라자 안 편집국에서 시작해 로비·논현로 거리·비투비씨 카페를 걸어 다니고, 조사·주문·쉬기·저장/복원이 실행된다. Q001 취재·기사·실보상·전체 아트 승인·의학 검수는 아직 없다. [거리·이동 명세](docs/production/MOVEMENT-AND-STREET.md), [생성 자산/프롬프트](docs/production/PIXEL-ASSETS.md)를 참고한다. 기존 v0.2 설계와 1~99 레벨 계획 데이터는 유지한다.
 
 ## 먼저 읽을 문서
 
@@ -25,15 +25,20 @@ Phaser 4 + TypeScript + HTML/CSS로 만드는 **2.5D 픽셀아트 건강기자 �
 16. [2.5D 아트 제작 기준](docs/design/14-2_5D-ART-PRODUCTION.md).
 17. [GitHub Pages 배포·갱신](docs/production/WEB-PUBLISHING.md).
 
+[HUD·모바일 UX 개발 원칙](docs/design/15-HUD-AND-MOBILE-UX.md)을 UI와 후속 기능에 적용한다.
+
 ## 작업을 이어갈 때
 
-[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. **다음 작업은 P0-01: 첫 루프의 종이 프로토타입 검토**다. 준비 없이 전체 월드 구현부터 시작하지 않는다.
+[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. **다음은 현재 조작감의 실제 플레이 피드백과 기반 잔여 검증**이다. 반경300m 지리 대조·내부 사진 반영·추가 상점은 후속 범위다. [내부 착수 검토](docs/production/P0-IMPLEMENTATION-ENTRY.md)와 [P1 구현 기록](docs/production/P1-FOUNDATION-REPORT.md)을 함께 읽는다. P0의 사용자 검토·의학 검수와 P2 아트 게이트는 완료로 처리하지 않았다.
 
 - 기획 수치: 초기 가설이며 플레이테스트로 조정한다.
 - 기술 사실: [공식 출처와 확인 범위](docs/references/SOURCES.md)를 참고한다.
 - 의학 내용: 기전과 퍼즐 아이디어는 검수 전 초안이다. 출처 확인과 검수 이후에만 공개 콘텐츠로 사용한다.
 - 현 단계 검사: `python3 tools/check_design.py` (문서 링크·레벨 데이터·초기 퀘스트 보상 일관성 검사).
-- `npm run dev`는 아직 제공하지 않는다. P1에서 엔진 버전을 고정하고 실행 환경을 만든다.
+- 게임 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 로컬 주소는 터미널에 표시된다.
+- 이 Mac의 기본 셸에 Node/npm이 없으면 `bash tools/npm-local.sh run dev`로 앱 번들/사용자 캐시 도구를 사용할 수 있다.
+- 검증: `npm run typecheck`, `npm test`, `npm exec playwright install chromium`, `npm run test:e2e`, `npm run build`.
+- 방향키/WASD 길게 누르기로 연속 이동, 클릭으로 경로 이동, E/표식/조사 버튼으로 조사. 문으로 걸어가면 자동 출입한다. 생성 시 외형을 고르고 왼쪽 기자 칩에서 외형을 수정한다. 월드와 HUD는 같은 외형을 표시한다. 화면 방향 버튼은 제거했다. 모바일은 화면 탭으로 이동하며 관리 기능은 메뉴 → 기록·저장에 있다. 조사·전환은 자동 저장, 이동 후 위치는 ‘현재 위치 저장’. 기록은 파일로 내보내거나 최근 정상 백업으로 복구한다. 비투비씨는 첫 커피와 물을 무료로 이용할 수 있다.
 
 ## 폴더 안내
 
@@ -44,11 +49,11 @@ Phaser 4 + TypeScript + HTML/CSS로 만드는 **2.5D 픽셀아트 건강기자 �
 | `docs/decisions/` | 결정과 변경 이유 |
 | `docs/templates/` | 단계 완료·퀘스트·검수 기록 양식 |
 | `data/balance/` | 레벨 및 초반 보상 설계의 수치 원본 |
-| `data/examples/` | 실행용이 아닌 콘텐츠 계약 예시 |
-| `data/schemas/` | 향후 JSON Schema 작성 위치 |
-| `src/` | 향후 게임 코드의 계층별 디렉터리 |
+| `data/examples/` | 미검수 콘텐츠 계약 예시 (게임 빌드 제외) |
+| `data/schemas/` | 콘텐츠 JSON Schema 후속 작성 위치 |
+| `src/` | 게임 기반 코드의 계층별 디렉터리 |
 | `public/assets/` | 제작 원본·게임 배포 자산 구분 |
-| `tests/` | 향후 단위·통합·브라우저 검증 |
+| `tests/` | 단위·통합·브라우저 검증 |
 | `tools/` | 설계 및 콘텐츠 검증 도구 |
 | `artifacts/` | 로컬 검증 결과·성능 측정 (기본 Git 제외) |
 

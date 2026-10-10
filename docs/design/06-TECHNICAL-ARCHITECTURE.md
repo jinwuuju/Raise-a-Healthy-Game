@@ -8,7 +8,7 @@ Phaser 4는 2D 월드·카메라·타일맵·캐릭터·애니메이션을 맡�
 
 [공식 템플릿 안내](https://docs.phaser.io/phaser/getting-started/project-templates)는 Vite/TypeScript 템플릿을 제공한다. 오래된 Phaser 3 예제를 그대로 복사하지 말고 설치 버전의 타입·예제로 API를 확인한다. [Vite 공식 요구사항](https://vite.dev/guide/)은 Node 20.19+ 또는 22.12+를 안내하며 템플릿에 더 높은 요구가 있을 수 있다. 본 프로젝트는 **Node 22.12 이상인 지원 LTS 중 하나**를 P1에서 선택하고 정확한 버전을 `.node-version`에 기록한다.
 
-현재 셸에서는 `node`가 PATH에서 발견되지 않았다. 이번 산출물은 게임 의존성 설치와 실행 검증을 포함하지 않는다. `package.json`은 private ESM 패키지 메타데이터와 설계 검사 명령만 제공한다. 런타임 패키지와 잠금 파일은 P1에서 실제 설치 후 생성한다. 존재하지 않는 실행 명령이나 잠금 파일을 성공한 설정처럼 만들지 않는다.
+설계 작성 당시 셸 PATH에 Node가 없었다. 2026-10-10 P1에서 앱 번들 Node 24.19.0과 npm 12.2.0으로 실제 설치했으며 exact dependencies/lockfile/dev/typecheck/build/test/test:e2e를 추가했다. [실제 구현과 검증 범위](../production/P1-FOUNDATION-REPORT.md)를 참고한다. 아래 확장 계약을 모두 구현했다고 해석하지 않는다.
 
 ## 디렉터리의 책임
 
@@ -34,7 +34,7 @@ public/assets/
   runtime/           라이선스 검토 후 압축된 배포 자산
 ```
 
-Vite의 public 자동 복사를 그대로 쓰면 raw가 배포될 수 있다. P1에서 `publicDir: 'public/assets/runtime'`로 설정하거나 raw를 `art-source/`로 옮긴다. 어느 방식이든 테스트 빌드에 원본·미검수 데이터가 없는지 검사한다. 콘텐츠 배포는 명시적 manifest allowlist를 사용한다.
+Vite의 public 자동 복사를 그대로 쓰면 raw가 배포될 수 있다. P1 실제 설정은 `publicDir: false`이며 런타임 고지를 명시적으로 import한다. 이후 자산도 명시적 import/manifest로 추가한다. 어느 방식이든 테스트 빌드에 원본·미검수 데이터가 없는지 검사한다. 콘텐츠 배포는 명시적 manifest allowlist를 사용한다.
 
 단일 저장소·단일 프론트엔드로 시작한다. 모노레포·마이크로서비스·별도 CMS 서버는 현재 규모에 불필요하다. 데이터 파일은 기관별 패키지로 나누고 필요한 자산만 지연 로딩한다.
 

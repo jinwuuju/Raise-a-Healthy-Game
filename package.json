@@ -3,14 +3,34 @@
   "version": "0.0.2",
   "private": true,
   "type": "module",
-  "description": "Design-stage scaffold for a Phaser 4 medical journalism RPG",
+  "description": "Phaser 4 medical journalism RPG — P1 foundation prototype",
   "scripts": {
     "check:design": "python3 tools/check_design.py",
     "render:levels": "python3 tools/render_levels.py",
     "build:site": "python3 tools/build_site.py",
     "check:site": "python3 tools/check_site.py",
-    "preview:site": "python3 -m http.server 4173 --directory _site"
+    "preview:site": "python3 -m http.server 4173 --directory _site",
+    "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "npm run typecheck && vite build && python3 tools/check_game_build.py",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "author": "진우주",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24.19.0 <25"
+  },
+  "packageManager": "npm@12.2.0",
+  "dependencies": {
+    "phaser": "4.2.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0",
+    "@types/node": "26.6.5",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.3"
+  }
 }

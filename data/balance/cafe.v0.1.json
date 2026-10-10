@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "balanceVersion": "cafe-0.1",
+  "status": "prototype_rules",
+  "note": "비투비씨의 게임용 가격 가설. 실제 매장 메뉴/가격이 아님. 취재 성장 보너스 없음.",
+  "items": [
+    { "id": "welcome", "title": "첫 방문 아메리카노", "price": 0, "once": true },
+    { "id": "water", "title": "물 한 잔", "price": 0, "once": false },
+    { "id": "americano", "title": "아메리카노", "price": 20, "once": false },
+    { "id": "latte", "title": "카페라테", "price": 25, "once": false },
+    { "id": "tea", "title": "따뜻한 차", "price": 15, "once": false }
+  ]
+}

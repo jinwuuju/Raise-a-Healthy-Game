@@ -20,7 +20,7 @@ def load(relative):
     return json.loads((ROOT / relative).read_text(encoding='utf-8'))
 
 for path in sorted(ROOT.rglob('*.json')):
-    if any(part in ('_site', '.git', 'node_modules') for part in path.relative_to(ROOT).parts):
+    if any(part in ('_site', '.git', 'node_modules', 'dist', 'artifacts', 'test-results', 'playwright-report') for part in path.relative_to(ROOT).parts):
         continue
     try:
         json.loads(path.read_text(encoding='utf-8'))
@@ -96,6 +96,8 @@ for spend in [250 + 600, 250 + 200 + 1500, 350 + 400 + 250, 0]:
 
 links = 0
 for path in sorted(ROOT.rglob('*.md')):
+    if any(part in ('_site', '.git', 'node_modules', 'dist', 'artifacts', 'test-results', 'playwright-report') for part in path.relative_to(ROOT).parts):
+        continue
     text = path.read_text(encoding='utf-8')
     for target in re.findall(r'\]\(([^\s)]+)\)', text):
         if re.match(r'^[a-zA-Z][a-zA-Z0-9+.-]*:', target) or target.startswith('#'):

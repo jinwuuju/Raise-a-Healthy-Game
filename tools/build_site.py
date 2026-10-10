@@ -113,7 +113,7 @@ def main():
         page=f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(title)} · Raise a Healthy Game</title><link rel="stylesheet" href="../assets/style.css"></head><body class="reader-body"><a class="skip" href="#document">본문 바로가기</a><header class="reader-top"><a href="../index.html#library">← 설계 문서 서재</a><span>RAISE A HEALTHY GAME · 진우주</span></header><article class="reader" id="document"><div class="reader-meta">설계 v0.2 · 기획 수치/콘텐츠는 검증 전 계획입니다 · <a href="{REPO}/blob/main/{path.relative_to(ROOT).as_posix()}">GitHub 원문 ↗</a></div>{markdown(text,path)}</article><div class="reader-footer">© 2026 진우주. All rights reserved. <a href="../index.html">설계실로 돌아가기 →</a></div></body></html>'''
         target=OUT/route;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(page,encoding='utf-8')
         docs.append(dict(index=index,title=title,category=category,href=route,text=text))
-    for folder in ['catalog','balance','examples']:
+    for folder in ['catalog','balance','examples','locations']:
         for path in (ROOT/'data'/folder).glob('*.json'):
             if '.archive.' in path.name:continue
             target=OUT/path.relative_to(ROOT);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(path,target)

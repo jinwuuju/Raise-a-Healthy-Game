@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "status": "observed_reference_prototype",
+  "settingYear": 2026,
+  "companyLocation": { "title": "유로프라자", "address": "서울 강남구 논현로 805", "startInside": true, "interiorStatus": "temporary_until_user_photos" },
+  "cafe": { "referenceTitle": "아토앤조이", "gameTitle": "비투비씨", "referenceAddress": "서울 강남구 도산대로25길 19", "kakaoPlaceUrl": "https://place.map.kakao.com/1724306729", "interiorStatus": "temporary" },
+  "currentNominalRadiusMetres": 200,
+  "targetRadiusMetres": 300,
+  "geometryStatus": "compressed_draft_not_surveyed",
+  "sources": [
+    "https://www.ezmedicom.com/company/intro/location",
+    "https://www.daewoongfoundation.or.kr/route",
+    "https://kko.to/ZoCbLlDRfq",
+    "https://place.map.kakao.com/287041282"
+  ],
+  "observedRoadviewDates": ["2026-06", "2026-07"],
+  "observedFeatures": ["유로프라자 석재 외벽/중앙 시계/녹색 차양/오른쪽 출입구/주차 진입로", "논현로159길의 좁은 전면 도로와 30 표기/횡단보도", "논현로 다차로/중앙 분리 볼라드/차량/가로수", "맞은편 상가/호텔 방향/주차장/보행로", "아토앤조이 위치의 밝은 석재 외벽/검은 긴 차양/통유리 전면/오른쪽 입구"],
+  "limits": ["실제 도로 폭/각도/거리의 측량이 아님", "모든 300m 건물의 개별 외관을 조사/재현하지 않음", "카페 위치 로드뷰의 현재 간판은 지도 검색명과 달라 게임에서는 사용자 지정 비투비씨로 재구성", "회사 실내 사진 미제공으로 임시 창작 배치"]
+}
