@@ -109,9 +109,9 @@ function finish(spec: RoomSpec): Room {
 }
 
 const walkerLooks: Look[] = [
-  { build: 'm', hair: 'curly', face: 'calm', shape: 'round', skin: 'tan', hairColor: 'brown', outfit: 'casual' },
-  { build: 'f', hair: 'wave', face: 'smile', shape: 'oval', skin: 'peach', hairColor: 'ink', outfit: 'coat' },
-  { build: 'f', hair: 'ponytail', face: 'bright', shape: 'round', skin: 'honey', hairColor: 'gold', outfit: 'knit' },
+  { build: 'm', hair: 'shadow', face: 'calm', shape: 'round', skin: 'tan', hairColor: 'brown', outfit: 'casual' },
+  { build: 'f', hair: 'layered', face: 'smile', shape: 'oval', skin: 'peach', hairColor: 'ink', outfit: 'coat' },
+  { build: 'f', hair: 'hush', face: 'bright', shape: 'round', skin: 'honey', hairColor: 'ash', outfit: 'knit' },
   { build: 'm', hair: 'messy', face: 'smile', shape: 'round', skin: 'deep', hairColor: 'ink', outfit: 'hoodie' },
   { build: 'f', hair: 'hime', face: 'cat', shape: 'vline', skin: 'fair', hairColor: 'ink', outfit: 'casual' },
   { build: 'm', hair: 'part', face: 'cool', shape: 'oval', skin: 'peach', hairColor: 'chestnut', outfit: 'suit' },

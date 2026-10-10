@@ -9,6 +9,8 @@ export const buildOf = (p: Preset): Build => (p === 'male' ? 'm' : p === 'female
 export const hairStyles = {
   short: '댄디 컷', comma: '쉼표 머리', part: '가르마 펌', mash: '바가지 머리', spiky: '삐죽 머리', curly: '곱슬 펌',
   messy: '부스스 머리', slick: '올백', buzz: '짧은 스포츠', wolf: '울프 컷',
+  leaf: '리프컷', shadow: '쉐도우 펌', curtain: '센터 가르마 중단발',
+  hush: '허쉬컷', jelly: '젤리 펌 보브', layered: '레이어드 장발',
   bob: '단발', long: '긴 생머리', wave: '긴 웨이브', hime: '히메컷', pixie: '숏컷', ponytail: '포니테일',
   braid: '옆 땋은 머리', twin: '양갈래', bun: '똥머리', odango: '양쪽 똥머리',
   buds: '동글 안테나', tuft: '별빛 솜털', ears: '토끼 귀', crest: '말랑 볏',
@@ -42,8 +44,8 @@ export type Look = Omit<Appearance, 'outfit'> & { outfit: OutfitId | NpcOutfit; 
 export const starterOutfits: OutfitId[] = ['reporter', 'knit', 'hoodie'];
 
 const HAIR_BY: Record<Build, HairId[]> = {
-  m: ['comma', 'short', 'part', 'mash', 'spiky', 'curly', 'messy', 'slick', 'buzz', 'wolf'],
-  f: ['bob', 'long', 'wave', 'hime', 'pixie', 'ponytail', 'braid', 'twin', 'bun', 'odango'],
+  m: ['leaf', 'shadow', 'curtain', 'comma', 'short', 'part', 'mash', 'spiky', 'curly', 'messy', 'slick', 'buzz', 'wolf'],
+  f: ['hush', 'jelly', 'layered', 'bob', 'long', 'wave', 'hime', 'pixie', 'ponytail', 'braid', 'twin', 'bun', 'odango'],
   a: ['buds', 'tuft', 'ears', 'crest'],
 };
 const FACE_BY: Record<Build, FaceId[]> = {

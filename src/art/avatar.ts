@@ -75,6 +75,37 @@ export const HAIR: Partial<Record<string, HairArt>> = {
     side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 14:hhH', '2:hhhhhh', '2:hhhhhh', '2:Hhhhh', '2:hhh', '3:HhH', '3:H 5:H'),
     nape: 11, sheet: 11,
   },
+  // Idol trend cuts (D049). Side views keep the flat face line: hair stops at the forehead in front.
+  leaf: {
+    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '2:hhLhhhhhhhhhhhhH', '2:hhhhhhhhhhhhhhhH', '2:hhhhhhh 10:hhhhhhhH', '2:hhH 15:Hhh', '2:hH 16:Hh', '3:H 16:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhhhhhhH', '2:hhhhhhh', '2:hhhhhh', '2:hhhhh', '2:Hhhh', '4:HhhH', '6:HH'),
+    nape: 11, sheet: 11,
+  },
+  shadow: {
+    front: T(0, '6:hhhhhhhh', '4:hhLhhhhLhhhh', '3:hLhhLLhhhhLhhH', '2:hhLhhhhhhLhhhhhH', '2:hhhhLhhhhhhhLhhH', '2:HhhhhhhHhhhhhhhH', '2:Hhh 6:hhH 10:hhH 14:hhhH', '2:hH 9:H 16:Hh', '2:Hh 16:hH', '3:H 16:H'),
+    side: T(0, '5:hhhhh', '3:hhLhhhhhh', '2:hLhhLLhhhhh', '1:hhLhhhhhLhhhH', '1:hhhhLhhhhhhhhH', '1:HhhhhhHhhhhhhhH', '1:Hhhhhhhh 11:hhH', '1:Hhhhhhh', '1:HhhhhH', '2:HhhH', '4:HH'),
+    nape: 9, sheet: 9,
+  },
+  curtain: {
+    front: T(1, '6:hhhhhhhh', '4:hhLLhHhhhhhh', '3:hLLhhhHhhhhhhH', '2:hhLhhhhHhhhhhhhH', '2:hhhhhhh 11:hhhhhhH', '2:hhhhh 13:hhhhH', ...rep('2:hhh 15:hhH', 4), '3:HhH 14:HhH', '4:HH 14:HH'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhH', '2:hhhhhhh', '2:hhhhhhh', '2:hhhhhhh', '2:hhhhhh', '3:hhhhH', '4:HHH'),
+    nape: 11, sheet: 12,
+  },
+  hush: {
+    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '2:hhLhhhhhhhhhhhhH', '2:hhhhhhhhhhhhhhhH', '2:hhh 6:H 9:HH 13:H 15:hhH', '2:hhh 15:hhH', '2:hhH 15:Hhh', '2:hh 16:hh', '2:hhH 15:Hhh', '1:hhH 16:Hhh', '1:H 18:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 11:h 13:hH', '2:hhhhhhh', '2:hhhhhhh', '2:hhhhhhh', '2:hhhhhh', '1:hhhhhhH', '1:HhhhH', '0:H 5:H'),
+    nape: 11, sheet: 12,
+  },
+  jelly: {
+    front: T(1, '6:hhhhhhhh', '4:hhLhhLhhhhhh', '3:hLhhLhhhLhhhhH', '2:hhLhhhLhhhhLhhhH', '2:hLhhLhhhhLhhhLhH', '2:hhLh 7:hh 10:hhH 14:hLhH', '1:hhLh 15:hLhh', '1:hLhh 15:hhLh', '0:hhLhH 15:HhLhh', '0:hLhhH 15:HhhLh', '1:HhLH 15:HLhH', '2:H 4:H 15:H 17:H'),
+    side: T(1, '6:hhhhhh', '4:hhLhhLhhh', '3:hLhhLhhhLhhh', '2:hhLhhhLhhhhLH', '1:hLhhLhhhhLhhhH', '1:hhLhhhhhh 11:hLhH', '0:hhLhhhhh', '0:hLhhLhhh', '0:hhLhhLhh', '0:hLhhhLh', '1:HhLhhH', '2:H 4:H 6:H'),
+    nape: 11, sheet: 12,
+  },
+  layered: {
+    front: T(1, '5:hhhhhhhhh', '4:hhHLLLhhhhhh', '3:hhhHhLLhhhhhhH', '2:hhhh 7:hhhhhhhhhhH', '2:hhh 7:hhhhhhhhhhH', '2:hhh 11:hhhhhhH', '2:hhh 14:hhhH', '2:hhh 15:hhH', '2:hhH 15:Hhh', '1:hhhh 15:hhhh', '1:hhH 16:Hhh', '1:hhh 16:hhh', '1:hhh 16:hhh', '1:hLh 16:hLh', '1:hhh 16:hhh', '1:hhh 16:hhh', '1:hLh 16:hLh', '1:hhh 16:hhh', '1:HhH 16:HhH', '2:H 17:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhH', '2:hhhhhhh', '2:hhhhhhh', '2:hhhhhhh', '2:hhhhhhh', '1:hhhhhhh', '1:hhhhhh', '1:hhhhhh', '1:hhLhhh', '1:hhhhhh', '1:hhhhhh', '1:hhLhhh', '1:hhhhhh', '1:HhhhH', '2:HH'),
+    nape: 11, sheet: 19,
+  },
   bob: {
     front: T(1, ...BANGS, ...rep('2:hhh 15:hhH', 3), '2:Hhhh 14:hhhH', '3:HHH 14:HHH'),
     side: T(1, ...SIDE_F, ...rep('2:hhhhhh', 3), '2:HhhhhH', '3:HHHH'),
