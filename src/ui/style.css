@@ -124,7 +124,7 @@ button { font: inherit; color: inherit; }
 .creator .title { position: absolute; top: 18px; left: 20px; right: 20px; }
 .creator .title small { display: block; color: #f6e6c4; opacity: 0.85; font-size: 12px; letter-spacing: 2px; font-weight: 700; }
 .creator .title b { display: block; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 0 rgba(0,0,0,0.35); }
-.creator .preview { width: 192px; height: 264px; image-rendering: pixelated; position: relative; z-index: 1; filter: drop-shadow(0 6px 0 rgba(40,24,10,0.18)); }
+.creator .preview { width: 160px; height: 248px; image-rendering: pixelated; position: relative; z-index: 1; filter: drop-shadow(0 6px 0 rgba(40,24,10,0.18)); }
 .creator .pedestal { position: absolute; bottom: 92px; width: 170px; height: 40px; border-radius: 50%; background: radial-gradient(ellipse at 50% 40%, #f3dcae, #b98a4c 70%); box-shadow: 0 6px 0 #8a6232; }
 .creator .rot { position: absolute; bottom: 24px; display: flex; gap: 8px; z-index: 2; }
 .creator .rot button { min-width: 48px; height: 44px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.35); background: rgba(20,16,30,0.45); color: #fff; cursor: pointer; font-weight: 800; }
@@ -152,7 +152,7 @@ button { font: inherit; color: inherit; }
   .creator { place-items: start center; }
   .creator .card { grid-template-columns: 1fr; }
   .creator .stage { min-height: 300px; }
-  .creator .preview { width: 128px; height: 176px; }
+  .creator .preview { width: 120px; height: 186px; }
   .creator .pedestal { bottom: 70px; width: 130px; height: 30px; }
   .creator form { padding: 18px 16px 20px; }
   .minimap { width: 92px; height: 92px; }

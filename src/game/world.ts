@@ -1,6 +1,6 @@
 import motion from '../../data/balance/movement.v0.2.json';
 import { buildingArt } from '../art/buildings';
-import { AX, AY, FIGURE_TOP, WALK_CYCLE, characterFrame } from '../art/character';
+import { AX, AY, FIGURE_TOP, WALK_CYCLE, characterFrame, idleFrame } from '../art/character';
 import { bakeGround } from '../art/ground';
 import { ellipse, makeCanvas, pixelText, type Sprite } from '../art/pixel';
 import { propSprite } from '../art/props';
@@ -317,7 +317,7 @@ export class World {
   private drawActor(g: CanvasRenderingContext2D, a: Actor, cx: number, cy: number, shadow = true): void {
     const x = Math.round(a.x - cx), y = Math.round(a.y - cy);
     if (shadow) ellipse(g, x, y - 1, 6, 2, 'rgba(30,22,52,0.28)');
-    const frame = a.moving ? WALK_CYCLE[Math.floor(a.walk / motion.walkFramePixels) % 4]! : 0;
+    const frame = a.moving ? WALK_CYCLE[Math.floor(a.walk / motion.walkFramePixels) % 4]! : idleFrame(this.time, (a.id.charCodeAt(0) % 7) / 7);
     g.drawImage(characterFrame(a.look, a.facing, frame), x - AX, y - AY);
   }
 

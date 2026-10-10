@@ -87,7 +87,7 @@ export function openCreator(o: Opts): void {
   const loop = (now: number) => {
     const t = (now - t0) / 1000;
     if (auto) dirIndex = Math.floor(t / 1.6) % 4;
-    const frame = WALK_CYCLE[Math.floor(t * 7) % 4]!;
+    const frame = auto ? WALK_CYCLE[Math.floor(t * 7) % 4]! : (Math.floor(t * 1.6) % 2 ? 3 : 0);
     pg.clearRect(0, 0, CW, CH);
     pg.drawImage(characterFrame(look, dirs[dirIndex]!, frame), 0, 0);
     raf = requestAnimationFrame(loop);

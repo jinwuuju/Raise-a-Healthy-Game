@@ -1,7 +1,7 @@
 import type { Look } from '../domain/appearance';
 import type { Dir } from '../world/types';
-import { AX, AY, CH, CW, paintGrid } from './avatar';
-import { makeCanvas, mirror, outline, shade } from './pixel';
+import { AX, AY, CH, CW, OY, paintGrid } from './avatar';
+import { hex, makeCanvas, mirror, mix, shade } from './pixel';
 
 /*
  * Canvas side of the reporter sprites: palette, outline, mirroring and caching.
@@ -9,6 +9,25 @@ import { makeCanvas, mirror, outline, shade } from './pixel';
  */
 export { AX, AY, CH, CW };
 export const OUTLINE = '#2b2233';
+const INK = '#22151d';
+
+/** Coloured outline: each edge pixel takes a dark version of the colour it wraps (softer than flat black). */
+function softOutline(c: HTMLCanvasElement): void {
+  const g = c.getContext('2d', { willReadFrequently: true })!;
+  const w = c.width, h = c.height, img = g.getImageData(0, 0, w, h), d = img.data;
+  const solid = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && (d[(y * w + x) * 4 + 3] ?? 0) > 96;
+  const marks: [number, string][] = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (solid(x, y)) continue;
+    const n = [[x, y + 1], [x, y - 1], [x - 1, y], [x + 1, y]].find(([a, b]) => solid(a!, b!));
+    if (!n) continue;
+    const i = (n[1]! * w + n[0]!) * 4;
+    const col = '#' + [d[i]!, d[i + 1]!, d[i + 2]!].map(v => v.toString(16).padStart(2, '0')).join('');
+    marks.push([y * w + x, mix(col, INK, 0.74)]);
+  }
+  for (const [i, col] of marks) { const [r, gg, b] = hex(col); d[i * 4] = r; d[i * 4 + 1] = gg; d[i * 4 + 2] = b; d[i * 4 + 3] = 255; }
+  g.putImageData(img, 0, 0);
+}
 
 const SKIN: Record<string, [string, string, string]> = {
   fair: ['#fff0e6', '#f3cbb6', '#f7a7a6'], peach: ['#fcdcc4', '#ebb08f', '#f39a92'], honey: ['#f2c69a', '#d69c6c', '#ea8a78'],
@@ -59,7 +78,7 @@ export function characterFrame(look: Look, dir: Dir, frame: number): HTMLCanvasE
     const code = grid[y * CW + x];
     if (code) { g.fillStyle = pal[code] ?? '#ff00ff'; g.fillRect(x, y, 1, 1); }
   }
-  outline(c, OUTLINE);
+  softOutline(c);
   cache.set(key, c);
   return c;
 }
@@ -71,13 +90,15 @@ export function portrait(look: Look): HTMLCanvasElement {
   if (hit) return hit;
   const src = characterFrame(look, 'down', 0);
   const { c, g } = makeCanvas(20, 22);
-  g.drawImage(src, 2, 1, 20, 22, 0, 0, 20, 22);
+  g.drawImage(src, 0, OY - 2, 20, 22, 0, 0, 20, 22);
   cache.set(key, c);
   return c;
 }
 
 export const WALK_CYCLE = [1, 0, 2, 0];
+/** Idle breathing: stand, then a one-pixel squash. `phase` keeps actors out of sync. */
+export const idleFrame = (time: number, phase = 0): number => (Math.floor(time * 1.6 + phase) % 2 === 0 ? 0 : 3);
 export const skinSwatch = (id: string): string => (SKIN[id] ?? SKIN.peach!)[0];
 export const hairSwatch = (id: string): string => (HAIR[id] ?? HAIR.ink!)[0];
 /** Height of the drawn figure above the feet, for labels and hit boxes. */
-export const FIGURE_TOP = AY - 2;
+export const FIGURE_TOP = AY - OY - 1;

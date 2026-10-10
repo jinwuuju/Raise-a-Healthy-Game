@@ -1,6 +1,6 @@
 # 이 프로젝트에서 작업할 때
 
-- 현재 게임은 redesign-1 + Q001 입구(D037~D044)이다. 그래픽은 src/art/에서 코드로 그리는 픽셀 아트이며 Phaser는 쓰지 않는다. 새 그래픽도 같은 16px 격자·윤곽선·정수 배율 규칙을 따른다. 인물 픽셀 배치는 src/art/avatar.ts(DOM 없음, 머리 템플릿)에서 바꾸고 문자 격자로 미리 확인한다. 이전 단계 구분: P1 기반 구현. P0 사용자/의학 검토와 P2 아트 게이트는 별도로 남아 있다. 먼저 README.md, docs/production/STATUS.md, docs/decisions/DECISIONS.md, docs/production/BACKLOG.md를 읽는다.
+- 현재 게임은 redesign-1 + Q001 입구(D037~D044)이다. 그래픽은 src/art/에서 코드로 그리는 픽셀 아트이며 Phaser는 쓰지 않는다. 새 그래픽도 같은 16px 격자·윤곽선·정수 배율 규칙을 따른다. 인물 픽셀 배치는 src/art/avatar.ts(DOM 없음, 머리 템플릿)에서 바꾸고 문자 격자로 미리 확인한다. 인물은 docs/production/CHARACTER-STYLE.md의 v3 원리(약 2등신, 큰 머리, 낮고 넓은 눈, 작은 몸)를 지킨다. 이전 단계 구분: P1 기반 구현. P0 사용자/의학 검토와 P2 아트 게이트는 별도로 남아 있다. 먼저 README.md, docs/production/STATUS.md, docs/decisions/DECISIONS.md, docs/production/BACKLOG.md를 읽는다.
 - 사용자가 지정한 단계의 범위를 우선한다. 지금 없는 게임·검수·테스트를 완료했다고 기록하지 않는다.
 - 기존 사용자 파일과 로컬 변경을 보존한다. 사용자 요청(D038)에 따라 main push가 GitHub Pages에 게임을 배포하므로, push 전에 typecheck·test·build를 통과시킨다.
 - 도메인 상태/보상은 application을 통해 갱신하고 Phaser/DOM에서 직접 변경하지 않는다.

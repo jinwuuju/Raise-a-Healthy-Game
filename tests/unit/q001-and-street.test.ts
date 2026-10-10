@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CH, CW, HAIR, cells, paintGrid } from '../../src/art/avatar';
+import { AY, CH, CW, HAIR, OY, cells, paintGrid } from '../../src/art/avatar';
 import { defaultAppearance, faceFor, hairFor, presets, shapeFor, validateAppearance, type Look } from '../../src/domain/appearance';
 import { Q1, acceptQ1, briefQ1, canEnterHeart, levelOf, observeQ1, q1Seen } from '../../src/domain/quest';
 import { newState, validateState, type GameState } from '../../src/domain/state';
@@ -10,8 +10,8 @@ import { rooms } from '../../src/world/rooms';
 
 describe('reporter sprites', () => {
   it('every hair template stays inside the 24px canvas', () => {
-    for (const [id, art] of Object.entries(HAIR)) for (const view of ['front', 'back', 'side'] as const) {
-      for (const row of art![view].rows) for (const [x] of cells(row)) expect(x, id + '/' + view).toBeGreaterThanOrEqual(0), expect(x, id + '/' + view).toBeLessThan(CW);
+    for (const [id, art] of Object.entries(HAIR)) for (const view of ['front', 'side', 'tail'] as const) {
+      for (const row of art![view]?.rows ?? []) for (const [x] of cells(row)) expect(x, id + '/' + view).toBeGreaterThanOrEqual(0), expect(x, id + '/' + view).toBeLessThan(CW);
     }
   });
   it('each preset offers its own hair, eyes and face shapes, all with art', () => {
@@ -23,18 +23,24 @@ describe('reporter sprites', () => {
       for (const hair of hairFor(p)) expect(HAIR[hair], hair).toBeDefined();
     }
   });
-  it('paints feet on the anchor row in every direction and frame', () => {
-    for (const p of presets) for (const dir of ['down', 'up', 'right'] as const) for (const f of [0, 1, 2]) {
-      const g = paintGrid(defaultAppearance(p) as Look, dir, f);
+  it('paints feet on the anchor row in every direction and frame, inside the canvas', () => {
+    for (const p of presets) for (const hair of hairFor(p)) for (const dir of ['down', 'up', 'right'] as const) for (const f of [0, 1, 2, 3]) {
+      const g = paintGrid({ ...defaultAppearance(p), hair } as Look, dir, f);
       const rows = [...Array(CH).keys()].filter(y => g.slice(y * CW, y * CW + CW).some(Boolean));
-      expect(Math.max(...rows)).toBe(36);
-      expect(Math.min(...rows)).toBeGreaterThanOrEqual(0);
+      expect(Math.max(...rows), hair + dir + f).toBe(AY - 1);
+      expect(Math.min(...rows), hair + dir + f).toBeGreaterThanOrEqual(1);
     }
   });
-  it('is slimmer than the head: torso narrower than the face', () => {
-    const g = paintGrid(defaultAppearance('female') as Look, 'down', 0);
-    const width = (y: number) => g.slice(y * CW, y * CW + CW).filter(Boolean).length;
-    expect(width(30)).toBeLessThan(width(12));
+  it('is a round chibi: the head is wider than the body and over half the height', () => {
+    for (const p of presets) {
+      const g = paintGrid(defaultAppearance(p) as Look, 'down', 0);
+      const width = (y: number) => g.slice(y * CW, y * CW + CW).filter(Boolean).length;
+      const rows = [...Array(CH).keys()].filter(y => width(y) > 0 && y >= OY);
+      const top = Math.min(...rows), feet = AY - 1, chin = OY + 15;
+      expect(width(OY + 10), p).toBeGreaterThan(width(OY + 18));
+      expect((chin - top + 1) / (feet - top + 1), p).toBeGreaterThan(0.55);
+      expect(feet - top + 1, p).toBeLessThanOrEqual(26);
+    }
   });
   it('migrates old saved looks instead of rejecting them, but stays strict for new choices', () => {
     const old = { hair: 'short', face: 'calm', skin: 'peach', hairColor: 'ink', outfit: 'reporter' };
