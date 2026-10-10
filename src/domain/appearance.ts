@@ -7,15 +7,17 @@ export type Build = 'm' | 'f' | 'a';
 export const buildOf = (p: Preset): Build => (p === 'male' ? 'm' : p === 'female' ? 'f' : 'a');
 
 export const hairStyles = {
-  short: '댄디 컷', comma: '쉼표 머리', spiky: '삐죽 머리', curly: '곱슬 펌', buzz: '짧은 스포츠', wolf: '울프 컷',
-  bob: '단발', wave: '긴 웨이브', long: '긴 생머리', ponytail: '포니테일', twin: '양갈래', bun: '똥머리',
+  short: '댄디 컷', comma: '쉼표 머리', part: '가르마 펌', mash: '바가지 머리', spiky: '삐죽 머리', curly: '곱슬 펌',
+  messy: '부스스 머리', slick: '올백', buzz: '짧은 스포츠', wolf: '울프 컷',
+  bob: '단발', long: '긴 생머리', wave: '긴 웨이브', hime: '히메컷', pixie: '숏컷', ponytail: '포니테일',
+  braid: '옆 땋은 머리', twin: '양갈래', bun: '똥머리', odango: '양쪽 똥머리',
   buds: '동글 안테나', tuft: '별빛 솜털', ears: '토끼 귀', crest: '말랑 볏',
 } as const;
 export const faceStyles = {
   smile: '반달 눈웃음', bright: '반짝 눈', calm: '차분한 눈', cool: '시크한 눈', wink: '윙크',
   doe: '초롱 눈', cat: '고양이 눈', dot: '콩알 눈', star: '별빛 눈',
 } as const;
-export const faceShapes = { oval: '갸름', round: '동글', square: '각진', vline: '브이라인', mochi: '찹쌀떡' } as const;
+export const faceShapes = { oval: '갸름', round: '동글', vline: '브이라인', mochi: '찹쌀떡' } as const;
 export const skinColors = {
   fair: '뽀얀', peach: '밝은 살구', honey: '꿀빛', tan: '구릿빛', deep: '짙은 갈색',
   mint: '민트', lilac: '라일락', sky: '하늘', pink: '딸기우유',
@@ -40,8 +42,8 @@ export type Look = Omit<Appearance, 'outfit'> & { outfit: OutfitId | NpcOutfit; 
 export const starterOutfits: OutfitId[] = ['reporter', 'knit', 'hoodie'];
 
 const HAIR_BY: Record<Build, HairId[]> = {
-  m: ['comma', 'short', 'spiky', 'curly', 'buzz', 'wolf'],
-  f: ['bob', 'long', 'wave', 'ponytail', 'twin', 'bun'],
+  m: ['comma', 'short', 'part', 'mash', 'spiky', 'curly', 'messy', 'slick', 'buzz', 'wolf'],
+  f: ['bob', 'long', 'wave', 'hime', 'pixie', 'ponytail', 'braid', 'twin', 'bun', 'odango'],
   a: ['buds', 'tuft', 'ears', 'crest'],
 };
 const FACE_BY: Record<Build, FaceId[]> = {
@@ -49,7 +51,7 @@ const FACE_BY: Record<Build, FaceId[]> = {
   f: ['doe', 'bright', 'smile', 'cat', 'wink'],
   a: ['bright', 'dot', 'star', 'smile'],
 };
-const SHAPE_BY: Record<Build, ShapeId[]> = { m: ['oval', 'round', 'square'], f: ['oval', 'round', 'vline'], a: ['mochi', 'round'] };
+const SHAPE_BY: Record<Build, ShapeId[]> = { m: ['oval', 'round', 'vline'], f: ['oval', 'round', 'vline'], a: ['mochi', 'round'] };
 const SKIN_BY: Record<Build, SkinId[]> = { m: ['fair', 'peach', 'honey', 'tan', 'deep'], f: ['fair', 'peach', 'honey', 'tan', 'deep'], a: ['mint', 'lilac', 'sky', 'pink'] };
 
 export function hairFor(preset: Preset): HairId[] { return HAIR_BY[buildOf(preset)]; }
@@ -72,7 +74,8 @@ export function validateAppearance(value: unknown, preset: Preset, migrate = fal
   const a = value as Record<string, unknown>;
   const base = defaultAppearance(preset);
   const pick = <T extends string>(v: unknown, table: Record<string, string>, allowed: readonly string[], fallback: T): T => {
-    if (migrate && (v === undefined || (typeof v === 'string' && Object.hasOwn(table, v) && !allowed.includes(v)))) return fallback;
+    // Older saves may hold removed or preset-mismatched values (e.g. the retired square face): use the default.
+    if (migrate && (typeof v !== 'string' || !allowed.includes(v))) return fallback;
     if (typeof v !== 'string' || !Object.hasOwn(table, v)) throw new Error('지원하지 않는 외형 값입니다.');
     if (!allowed.includes(v)) throw new Error('이 기자 타입에서 고를 수 없는 외형입니다.');
     return v as T;

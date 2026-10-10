@@ -36,11 +36,11 @@ describe('reporter sprites', () => {
       const g = paintGrid({ ...defaultAppearance(p), hair } as Look, 'down', 0);
       const width = (y: number) => g.slice(y * CW, y * CW + CW).filter(Boolean).length;
       const rows = [...Array(CH).keys()].filter(y => width(y) > 0 && y >= OY + 1);
-      const top = Math.min(...rows), feet = AY - 1, chin = OY + 12, ratio = (chin - top + 1) / (feet - top + 1);
-      if (p !== 'alien') { expect(ratio, p + hair).toBeGreaterThan(0.36); expect(ratio, p + hair).toBeLessThan(0.48); }
+      const top = Math.min(...rows), feet = AY - 1, chin = OY + 11, ratio = (chin - top + 1) / (feet - top + 1);
+      if (p !== 'alien') { expect(ratio, p + hair).toBeGreaterThan(0.36); expect(ratio, p + hair).toBeLessThan(0.52); }
       const body = (y: number) => g.slice(y * CW, y * CW + CW).filter(c => c && !'hHL'.includes(c)).length;
-      expect(width(OY + 8), p + hair).toBeGreaterThan(body(OY + 18));
-      expect(feet - top + 1, p + hair).toBeLessThanOrEqual(31);
+      expect(width(OY + 8), p + hair).toBeGreaterThan(body(OY + 16));
+      expect(feet - top + 1, p + hair).toBeLessThanOrEqual(28);
     }
   });
   it('migrates old saved looks instead of rejecting them, but stays strict for new choices', () => {

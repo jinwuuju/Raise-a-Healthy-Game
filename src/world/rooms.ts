@@ -112,9 +112,9 @@ const walkerLooks: Look[] = [
   { build: 'm', hair: 'curly', face: 'calm', shape: 'round', skin: 'tan', hairColor: 'brown', outfit: 'casual' },
   { build: 'f', hair: 'wave', face: 'smile', shape: 'oval', skin: 'peach', hairColor: 'ink', outfit: 'coat' },
   { build: 'f', hair: 'ponytail', face: 'bright', shape: 'round', skin: 'honey', hairColor: 'gold', outfit: 'knit' },
-  { build: 'm', hair: 'buzz', face: 'smile', shape: 'square', skin: 'deep', hairColor: 'ink', outfit: 'hoodie' },
-  { build: 'f', hair: 'bun', face: 'cat', shape: 'vline', skin: 'fair', hairColor: 'ash', outfit: 'casual' },
-  { build: 'm', hair: 'short', face: 'cool', shape: 'oval', skin: 'peach', hairColor: 'chestnut', outfit: 'suit' },
+  { build: 'm', hair: 'messy', face: 'smile', shape: 'round', skin: 'deep', hairColor: 'ink', outfit: 'hoodie' },
+  { build: 'f', hair: 'hime', face: 'cat', shape: 'vline', skin: 'fair', hairColor: 'ink', outfit: 'casual' },
+  { build: 'm', hair: 'part', face: 'cool', shape: 'oval', skin: 'peach', hairColor: 'chestnut', outfit: 'suit' },
 ];
 
 function street(): Room {
@@ -227,7 +227,7 @@ function interiorGrid(cols: number, rows: number, floor: number, door: [number, 
   return g;
 }
 
-export const editorLook: Look = { build: 'm', hair: 'short', face: 'calm', shape: 'square', skin: 'honey', hairColor: 'silver', outfit: 'suit', glasses: true };
+export const editorLook: Look = { build: 'm', hair: 'short', face: 'calm', shape: 'oval', skin: 'honey', hairColor: 'silver', outfit: 'suit', glasses: true };
 export const seniorLook: Look = { build: 'f', hair: 'ponytail', face: 'bright', shape: 'oval', skin: 'peach', hairColor: 'chestnut', outfit: 'reporter' };
 export const guardLook: Look = { build: 'm', hair: 'buzz', face: 'smile', shape: 'round', skin: 'tan', hairColor: 'ink', outfit: 'uniform' };
 export const baristaLook: Look = { build: 'f', hair: 'bob', face: 'doe', shape: 'round', skin: 'fair', hairColor: 'brown', outfit: 'apron' };

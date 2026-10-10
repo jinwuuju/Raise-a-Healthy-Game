@@ -2,13 +2,14 @@ import type { Look } from '../domain/appearance';
 import type { Dir } from '../world/types';
 
 /*
- * Reporter sprites v4 (D046): 바람의나라-style proportions with the cute v3 face.
- * About 2.4 heads: a 12px-wide head that is ~40% of the figure, an 8-row torso and 6-row legs.
- * Kept from v3: low wide eyes with one highlight, blush, no brows/nose, tinted outlines, bounce frames.
- * Canvas 20x37, feet on row 35, anchor (10, 36). Rows below are relative to the head origin
- * (hair r1, head skin r3..r12, neck r13, torso r14..r21, legs r22..r27, feet r28).
+ * Reporter sprites v5 (D047): 바람의나라-style proportions (~2.3 heads) with the cute v3 face, a little smaller.
+ * Head r1..r11 (skin r3..r11), neck r12, torso r13..r19, legs r20..r24, feet r25.
+ * Front: low wide eyes with one highlight, blush, small mouth. Side: a human profile
+ * (sloped forehead, 1px nose, lip, chin, ear) instead of a round disc. Back: hair closes
+ * with a tapered nape instead of a straight line.
+ * Canvas 20x34, feet on row 32, anchor (10, 33).
  */
-export const CW = 20, CH = 37, AX = 10, AY = 36;
+export const CW = 20, CH = 34, AX = 10, AY = 33;
 export const OY = 7;
 export type Grid = (string | null)[];
 type View = 'front' | 'back' | 'side';
@@ -21,67 +22,108 @@ const CAP = ['6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '3:hhLhhhhhhhhh
 const BANGS = ['6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '2:hhLhhhhhhhhhhhhH', '2:hhhhLhhhhhhhhhhH', '2:hhhhhhhhhhhhhhhH'];
 const SIDE_CAP = ['6:hhhhhh', '4:hhLLLhhhhh', '3:hhLLhhhhhhhh', '2:hhLhhhhhhhhhhH', '2:hhhhhhhhhhhhhhH'];
 const SIDE_F = [...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 15:hH'];
+const BRAID = ['14:hLh', '14:hhH'];
 
 export const HAIR: Partial<Record<string, HairArt>> = {
   comma: {
     front: T(1, ...CAP, '3:hhhhhhh 11:hhhhH', '3:Hhhh 13:hhhH', '3:HH 15:HH', '3:H 16:H'),
-    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 14:hhH', '2:Hhhhhh 16:H', '2:Hhhh', '3:Hh', '3:H'),
-    nape: 10, sheet: 10,
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 14:hhH', '2:Hhhhh 16:H', '2:Hhh', '4:H'),
+    nape: 9, sheet: 9,
   },
   short: {
     front: T(1, ...CAP, '3:hhhhhhhhhhhhhH', '3:Hh 8:hhhhhhhhH', '3:H 14:hhH', '3:H 16:H'),
-    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 15:hH', '2:Hhhhhh', '2:Hhhh', '3:Hh', '3:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '4:H'),
+    nape: 9, sheet: 9,
+  },
+  part: {
+    front: T(1, '5:hhhhhhhhh', '4:hhHLLLhhhhhh', '3:hhhHhLLhhhhhhH', '3:hhh 7:hhhhhhhhhH', '3:Hh 7:hhhhhhhhhH', '3:H 10:hhhhhH', '3:H 14:hhH', '16:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 11:hhhhhH', '2:hhhhhhh 14:hhH', '2:Hhhhh 16:H', '2:Hhh', '4:H'),
+    nape: 9, sheet: 9,
+  },
+  mash: {
+    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '3:hhLhhhhhhhhhhH', '3:hhhhhhhhhhhhhH', '3:hhhhhhhhhhhhhH', '3:hh 15:hH', '3:hh 15:hH', '3:HH 15:HH'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhhhhhhhhH', '2:hhhhhh', '2:hhhhh', '2:HHHH'),
     nape: 10, sheet: 10,
   },
   spiky: {
     front: T(-1, '6:h 9:h 12:h', '5:hh 8:hh 11:hhh', ...CAP, '3:Hhh 7:hh 10:h 12:hh 15:hH', '3:H 7:h 12:h 16:H'),
-    side: T(-1, '5:h 8:h 11:h', '4:hh 7:hh 10:hh', ...SIDE_CAP, '2:hhhhhhhh 13:h 15:hH', '2:hhhhhhh 16:H', '2:Hhhhhh', '2:Hhhh', '3:HH'),
-    nape: 10, sheet: 10,
+    side: T(-1, '5:h 8:h 11:h', '4:hh 7:hh 10:hh', ...SIDE_CAP, '2:hhhhhhhh 13:h 15:hH', '2:hhhhhhh 16:H', '2:Hhhhh', '2:Hhh', '4:H'),
+    nape: 9, sheet: 9,
   },
   curly: {
     front: T(0, '6:hhhhhhhh', '4:hhLhhhLhhhhh', '3:hLhhLhhhhLhhhH', '2:hhhLhhhhLhhhLhhH', '2:hhhhhhhhhhhhhhhH', '2:HhhLhhhhLhhhhLhH', '2:Hhh 6:hh 9:h 11:h 13:hh 15:hhH', '2:Hh 16:hH', '2:H 17:H'),
-    side: T(0, '6:hhhhh', '4:hhLhhhhhh', '3:hhLLhhLhhhh', '2:hLhhLhhhhLhhh', '1:hhLhhhLhhhhLhhH', '1:hhhhhhhhhhhhhhhH', '1:Hhhhhhhhh 13:hh 15:hhH', '1:HhhhhhhhH 16:H', '1:HhhhhhH', '2:HhhH', '3:HH'),
-    nape: 10, sheet: 10,
+    side: T(0, '6:hhhhh', '4:hhLhhhhhh', '3:hhLLhhLhhhh', '2:hLhhLhhhhLhhh', '1:hhLhhhLhhhhLhhH', '1:hhhhhhhhhhhhhhhH', '1:Hhhhhhhhh 13:hh 15:hhH', '1:HhhhhhhH 16:H', '1:HhhhhH', '2:HhH', '4:H'),
+    nape: 9, sheet: 9,
+  },
+  messy: {
+    front: T(0, '6:h 9:hh 13:h', '5:hhhhhhhhhh', '3:hhhLLhhhhhhhh', '2:hhLLhhhhhhhhhhhH', '2:hhhhhhhhhhhhhhhH', '2:Hh 5:hhh 9:hh 12:hhh 16:hH', '2:H 6:h 10:h 13:h 17:H', '2:H 17:H'),
+    side: T(0, '5:h 8:hh 12:h', '5:hhhhhhh', ...SIDE_CAP.slice(1), '2:hhhhhhhh 12:hh 15:hH', '1:Hhhhhhhh 16:H', '2:hHhh', '2:H 4:H'),
+    nape: 9, sheet: 9,
+  },
+  slick: {
+    front: T(1, '6:hhhhhhhh', '4:hhhLLLLhhhhh', '3:hhLLLhhhhhhhhH', '3:HhhhhhhhhhhhhH', '3:H 16:H'),
+    side: T(1, '6:hhhhhh', '4:hhhLLLLhhh', '3:hhLLLLhhhhhh', '2:hhhhhhhhhhhhH', '2:hhhhhhhhH', '2:hhhhhhh', '2:Hhhhh', '2:Hhh', '4:H'),
+    nape: 9, sheet: 9,
   },
   buzz: {
     front: T(2, '5:hhhhhhhhhh', '4:hLhhhhhhhhhH', '4:hhhhhhhhhhhH', '4:H 15:H'),
-    side: T(2, '5:hhhhhhh', '4:hLLhhhhhhh', '4:hhhhhhhhhhhH', '4:hhhhhhh 13:hhH', '4:Hhhhh', '4:Hhh', '4:H'),
-    nape: 9, sheet: 9,
+    side: T(2, '5:hhhhhhh', '4:hLLhhhhhhh', '4:hhhhhhhhhhhH', '4:hhhhhhh 13:hhH', '4:Hhhh', '4:Hh'),
+    nape: 8, sheet: 8,
   },
   wolf: {
-    front: T(1, ...CAP, '3:hhhhhhh 11:hhhhH', '3:Hhh 13:hhhH', ...rep('3:Hh 15:hH', 4), '3:H 16:H', '', '5:1 14:1', '5:2 14:2'),
-    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 14:hhH', '2:hhhhhh', '2:hhhhhh', '2:hhhhhh', '2:Hhhh', '2:hhh', '3:HhH', '3:H 5:H'),
-    nape: 12, sheet: 12,
+    front: T(1, ...CAP, '3:hhhhhhh 11:hhhhH', '3:Hhh 13:hhhH', ...rep('3:Hh 15:hH', 3), '3:H 16:H', '5:1 14:1', '5:2 14:2'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 14:hhH', '2:hhhhhh', '2:hhhhhh', '2:Hhhhh', '2:hhh', '3:HhH', '3:H 5:H'),
+    nape: 11, sheet: 11,
   },
   bob: {
-    front: T(1, ...BANGS, ...rep('2:hhh 15:hhH', 4), '2:Hhhh 14:hhhH', '3:HHH 14:HHH'),
-    side: T(1, ...SIDE_F, ...rep('2:hhhhhh', 4), '2:HhhhhH', '3:HHHH'),
-    nape: 12, sheet: 12,
+    front: T(1, ...BANGS, ...rep('2:hhh 15:hhH', 3), '2:Hhhh 14:hhhH', '3:HHH 14:HHH'),
+    side: T(1, ...SIDE_F, ...rep('2:hhhhhh', 3), '2:HhhhhH', '3:HHHH'),
+    nape: 11, sheet: 11,
   },
   long: {
-    front: T(1, ...BANGS, '2:hhh 15:hhH', '2:hLh 15:hhH', ...rep('2:hhh 15:hhH', 12), '2:hLh 15:hhH', '2:HHH 15:HHH'),
-    side: T(1, ...SIDE_F, ...rep('2:hhhhhh', 14), '2:HHHHHH'),
-    nape: 12, sheet: 22,
+    front: T(1, ...BANGS, '2:hhh 15:hhH', '2:hLh 15:hhH', ...rep('2:hhh 15:hhH', 9), '2:hLh 15:hhH', '2:HHH 15:HHH'),
+    side: T(1, ...SIDE_F, ...rep('2:hhhhhh', 11), '2:HHHHHH'),
+    nape: 11, sheet: 19,
   },
   wave: {
-    front: T(1, '6:hhhhhhhh', '4:hhLLhHhhhhhh', '3:hLLhhhHhhhhhhH', '2:hhLhhhhHhhhhhhhH', '2:hhhhhhh 11:hhhhhhH', '2:hhhhh 13:hhhhH', '2:hhhh 14:hhhH', ...rep('2:hhh 15:hhH', 4), '1:hhhH 15:Hhhh', '1:hhh 16:hhh', '2:hhh 15:hhh', '1:hhhH 15:Hhhh', '1:Hhh 16:hhH', '2:HhH 15:HhH', '3:H 16:H'),
-    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 16:H', ...rep('2:hhhhhh', 4), '1:hhhhhhh', '1:hhhhhH', '2:hhhhH', '1:hhhhhH', '2:hhhH', '2:HhH', '3:H'),
-    nape: 12, sheet: 19,
+    front: T(1, '6:hhhhhhhh', '4:hhLLhHhhhhhh', '3:hLLhhhHhhhhhhH', '2:hhLhhhhHhhhhhhhH', '2:hhhhhhh 11:hhhhhhH', '2:hhhhh 13:hhhhH', '2:hhhh 14:hhhH', ...rep('2:hhh 15:hhH', 3), '1:hhhH 15:Hhhh', '1:hhh 16:hhh', '2:hhh 15:hhh', '1:hhhH 15:Hhhh', '1:Hhh 16:hhH', '2:HhH 15:HhH', '3:H 16:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 16:H', ...rep('2:hhhhhh', 3), '1:hhhhhhh', '1:hhhhhH', '2:hhhhH', '1:hhhhhH', '2:hhhH', '2:HhH', '4:H'),
+    nape: 11, sheet: 18,
+  },
+  hime: {
+    front: T(1, ...BANGS, ...rep('1:1 2:hhh 15:hhH 18:1', 4), '1:1 2:HHH 15:HHH 18:1', ...rep('1:11 17:12', 6), '1:22 17:22'),
+    side: T(1, ...SIDE_F, ...rep('2:hhhhhh 10:hH', 3), '2:hhhhhh 10:HH', ...rep('2:hhhhhh', 6), '2:HHHHHH'),
+    nape: 11, sheet: 18,
+  },
+  pixie: {
+    front: T(1, ...CAP, '3:hhhhhhhhhhhhhH', '3:hhhhhhh 14:hhH', '3:hhH 15:hH', '3:hH 15:Hh', '3:H 16:H'),
+    side: T(1, ...SIDE_CAP, '2:hhhhhhhh 12:hhhhH', '2:hhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '4:H'),
+    nape: 10, sheet: 10,
   },
   ponytail: {
     front: T(1, ...CAP, '3:hhhhhhhhhhhhhH 17:12', '3:Hh 7:hhhhhhhhhH 17:12', '3:H 14:hhH 17:12', '3:h 16:h 17:12', '3:h 16:h 17:12', '17:12', '17:2'),
-    side: T(1, '6:hhhhhh', '4:hhLLLhhhhh', '3:hhLLhhhhhhhh', '1:R 2:hhLhhhhhhhhhhH', '0:12 2:hhhhhhhhhhhhhhH', '0:12 2:hhhhhhhh 13:hhhH', '0:12 2:hhhhhhh 15:hH', '0:12 2:Hhhhhh', '0:12 2:Hhhh', '0:12 3:HH', '0:12', '0:12', '0:2'),
-    tail: T(2, '9:RR', '', '', '', '', '', '', '', '8:hLhh', '8:hhhh', '8:hhhH', '8:hhhH', '8:hhhH', '9:hH', '9:HH'),
-    nape: 10, sheet: 10,
+    side: T(1, '6:hhhhhh', '4:hhLLLhhhhh', '3:hhLLhhhhhhhh', '1:R 2:hhLhhhhhhhhhhH', '0:12 2:hhhhhhhhhhhhhhH', '0:12 2:hhhhhhhh 13:hhhH', '0:12 2:hhhhhhh 15:hH', '0:12 2:Hhhhh', '0:12 2:Hhh', '0:12 3:H', '0:12', '0:12', '0:2'),
+    tail: T(2, '9:RR', '', '', '', '', '', '', '', '8:hLhh', '8:hhhh', '8:hhhH', '8:hhhH', '9:hH', '9:HH'),
+    nape: 9, sheet: 9,
+  },
+  braid: {
+    front: T(1, '6:hhhhhhhh', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '2:hhLhhhhhhhhhhhhH', '2:hhhhhhhhhhhhhhhH', '2:hhhhhhh 14:hhhH', '2:hh 15:hhH', '3:H 15:hhH', '15:hhH', '15:hhh', '14:hhhH', '14:RRR', ...BRAID, ...BRAID, '14:hLh', '15:H'),
+    side: T(1, ...SIDE_F, ...rep('2:hhhhhh', 4), '3:hhhh', '4:RR', '4:hLh', '4:hhH', '4:hLh', '4:hhH', '5:H'),
+    nape: 11, sheet: 11,
   },
   twin: {
     front: T(1, ...BANGS, '2:hh 16:hh', '0:Rhh 17:hhR', '0:hhh 17:hhh', '0:hLhh 16:hhLh', '0:hhhh 16:hhhh', '0:hhhH 16:Hhhh', '1:hhH 16:Hhh', '1:hH 17:Hh', '1:H 18:H'),
     side: T(1, ...SIDE_F, '2:hhhhhR', '1:hhhh', '1:hLhh', '1:hhhh', '1:hhhH', '1:hhH', '2:hH', '2:H'),
-    nape: 12, sheet: 12,
+    nape: 11, sheet: 11,
   },
   bun: {
     front: T(-3, '8:hhhh', '7:hLLhhh', '7:hLhhhH', '7:RRRRRR', '6:hhhhhhhh', '4:hhLLhHhhhhhh', '3:hLLhhhHhhhhhhH', '3:hhLhhhHhhhhhhH', '3:hhhhhh 11:hhhhhH', '3:hhh 14:hhH', '3:hH 15:Hh', '3:h 16:h', '3:h 16:h', '3:H 16:H'),
-    side: T(-3, '4:hhhh', '3:hLLhhh', '3:hLhhhH', '4:RRR', ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 16:H', '2:Hhhhhh', '2:Hhhh', '3:HH'),
+    side: T(-3, '4:hhhh', '3:hLLhhh', '3:hLhhhH', '4:RRR', ...SIDE_CAP, '2:hhhhhhhh 13:hhhH', '2:hhhhhhh 16:H', '2:Hhhhh', '2:Hhh', '4:H'),
+    nape: 9, sheet: 9,
+  },
+  odango: {
+    front: T(-2, '4:hhh 13:hhh', '3:hLhh 13:hLhh', '3:hhhH 13:hhhH', '4:RR 6:hhhhhhhh 14:RR', '4:hhLLhhhhhhhh', '3:hLLhhhhhhhhhhH', '2:hhLhhhhhhhhhhhhH', '2:hhhhLhhhhhhhhhhH', '2:hhhhhhhhhhhhhhhH', '2:hh 16:hH', '2:hH 16:Hh', '3:H 16:H'),
+    side: T(-2, '4:hhh', '3:hLhh', '3:hhhH', '4:RR 6:hhhhhh', ...SIDE_CAP.slice(1), '2:hhhhhhhh 12:hhhhH', '2:hhhhhhh 15:hH', '2:Hhhhh', '2:Hhh', '4:H'),
     nape: 10, sheet: 10,
   },
   buds: {
@@ -91,7 +133,7 @@ export const HAIR: Partial<Record<string, HairArt>> = {
   },
   tuft: {
     front: T(0, '9:hL', '8:hhLh', '7:hhhhhh', '8:hhhh', '', '', '', '3:h 16:h', '3:H 16:H'),
-    side: T(0, '8:hL', '7:hhLh', '6:hhhhhh', '7:hhhh', '', '', '', '3:h', '3:H'),
+    side: T(0, '8:hL', '7:hhLh', '6:hhhhhh', '7:hhhh', '', '', '', '3:h', '4:H'),
     nape: 0, sheet: 0,
   },
   ears: {
@@ -118,31 +160,48 @@ export function cells(row: string): [number, string][] {
 }
 
 const BEHIND: Record<string, string> = { '1': 'h', '2': 'H', '3': 'L' };
-const TOP: [number, number][] = [[6, 13], [5, 14], [4, 15], [4, 15], [4, 15], [4, 15], [4, 15], [4, 15]];
-const CHIN: Record<string, [number, number][]> = {
-  round: [[4, 15], [6, 13]],
-  oval: [[5, 14], [7, 12]],
-  vline: [[5, 14], [8, 11]],
-  square: [[4, 15], [5, 14]],
-  mochi: [[4, 15], [4, 15]],
-};
 const HEAD_TOP = 3;
-/** Head skin rows r3..r12 as [from, to] columns. */
-export function headRows(shape: string): [number, number][] { return [...TOP, ...(CHIN[shape] ?? CHIN.oval!)]; }
+const TOP: [number, number][] = [[6, 13], [5, 14], [4, 15], [4, 15], [4, 15], [4, 15], [4, 15]];
+const CHIN: Record<string, [number, number][]> = {
+  round: [[4, 15], [6, 13]], oval: [[5, 14], [7, 12]], vline: [[5, 14], [8, 11]], mochi: [[4, 15], [4, 15]],
+};
+// Profile facing right: sloped forehead, nose at r9, lip at r10, chin at r11.
+const SIDE_TOP: [number, number][] = [[6, 12], [5, 14], [4, 14], [4, 15], [4, 15], [4, 15], [4, 16]];
+const SIDE_CHIN: Record<string, [number, number][]> = {
+  round: [[4, 15], [6, 14]], oval: [[5, 15], [7, 14]], vline: [[5, 15], [8, 14]], mochi: [[4, 15], [5, 14]],
+};
+/** Head skin rows r3..r11 as [from, to] columns. */
+export function headRows(shape: string, side = false, alien = false): [number, number][] {
+  if (!side) return [...TOP, ...(CHIN[shape] ?? CHIN.oval!)];
+  const top = SIDE_TOP.map(([a, b], i) => [a, alien && i === 6 ? 15 : b] as [number, number]);
+  return [...top, ...(SIDE_CHIN[shape] ?? SIDE_CHIN.oval!)];
+}
 
-/** Back view: the front hair mass, closed over the head down to the nape (and over the back for long hair). */
+/** Back view: the hair mass seen from behind (mirrored), closed over the head with a tapered nape. */
 function backOf(art: HairArt): Map<number, Map<number, string>> {
   const m = new Map<number, Map<number, string>>();
   const put = (r: number, x: number, c: string) => { if (!m.has(r)) m.set(r, new Map()); m.get(r)!.set(x, c); };
-  art.front.rows.forEach((row, i) => { for (const [x, c] of cells(row)) put(art.front.r + i, x, BEHIND[c] ?? c); });
+  art.front.rows.forEach((row, i) => {
+    for (const [x, c] of cells(row)) { if (BEHIND[c] && art.tail) continue; const k = BEHIND[c] ?? c; put(art.front.r + i, 19 - x, k === 'L' ? 'h' : k); }
+  });
   const head = headRows('oval');
-  for (let r = HEAD_TOP; r <= art.nape && r <= 12; r++) { const [a, b] = head[r - HEAD_TOP]!; for (let x = a; x <= b; x++) if (!m.get(r)?.has(x)) put(r, x, 'h'); }
+  for (let r = HEAD_TOP; r <= art.nape && r <= 11; r++) { const [a, b] = head[r - HEAD_TOP]!; for (let x = a; x <= b; x++) if (!m.get(r)?.has(x)) put(r, x, 'h'); }
+  const last = Math.max(art.sheet, art.nape);
   for (const [r, row] of m) {
     const xs = [...row.keys()]; if (!xs.length) continue;
     const lo = Math.min(...xs), hi = Math.max(...xs);
     if (r <= art.sheet) for (let x = lo; x <= hi; x++) if (!row.has(x)) row.set(x, 'h');
-    for (const [x, c] of row) if (c === 'h' && (x === hi || r === Math.max(art.sheet, art.nape))) row.set(x, 'H');
+    if (row.get(hi) === 'h') row.set(hi, 'H');
+    if (r >= art.nape - 3 && r <= last) for (const x of [lo + 3, 9, hi - 3]) if (row.get(x) === 'h' && (x + r) % 2 === 0) row.set(x, 'H');
+    if (r === last) { row.delete(lo); row.delete(hi); for (let x = lo + 1; x < hi; x++) if (row.has(x)) row.set(x, x === lo + 1 || x === hi - 1 || x % 3 === 0 ? 'H' : 'h'); }
   }
+  if (art.sheet <= art.nape && art.nape > 0) {
+    // Short hair: rounded nape that points down into the neck instead of a flat edge.
+    for (let x = 7; x <= 12; x++) put(last + 1, x, x === 7 || x === 12 ? 'H' : 'h');
+    put(last + 2, 9, 'H'); put(last + 2, 10, 'H');
+  }
+  // Crown highlight on the upper left, like the front view.
+  for (const [r, x] of [[2, 5], [2, 6], [3, 4], [3, 5], [4, 4]] as [number, number][]) if (m.get(r)?.get(x) === 'h') m.get(r)!.set(x, 'L');
   if (art.tail) art.tail.rows.forEach((row, i) => { for (const [x, c] of cells(row)) put(art.tail!.r + i, x, c); });
   return m;
 }
@@ -152,10 +211,10 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
   const set = (x: number, y: number, c: string) => { if (x >= 0 && y >= 0 && x < CW && y < CH) g[y * CW + x] = c; };
   const row = (y: number, x0: number, x1: number, c: string) => { for (let x = x0; x <= x1; x++) set(x, y, c); };
   const view: View = dir === 'down' ? 'front' : dir === 'up' ? 'back' : 'side';
-  const side = view === 'side';
+  const side = view === 'side', alien = look.build === 'a';
   // frame: 0 stand, 1/2 steps (stretch up), 3 idle squash.
   const u = frame === 1 || frame === 2 ? -1 : frame === 3 ? 1 : 0;
-  const O = OY + u, A = (r: number) => O + r;
+  const A = (r: number) => OY + u + r;
   const skirt = look.build === 'f' && look.outfit === 'knit';
   const art = HAIR[look.hair];
   const tpl = art ? (view === 'front' ? art.front : view === 'side' ? art.side : null) : null;
@@ -163,8 +222,8 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
   // 1. Hair behind the body.
   if (tpl) tpl.rows.forEach((r, i) => { for (const [x, c] of cells(r)) if (BEHIND[c]) set(x, A(tpl.r + i), BEHIND[c]!); });
 
-  // 2. Legs and feet (feet fixed on row 35; legs stretch or squash with the body).
-  const legTop = A(22), feet = OY + 28;
+  // 2. Legs and feet (feet fixed; legs stretch or squash with the body).
+  const legTop = A(20), feet = OY + 25;
   const legC = skirt ? 's' : 'p', legS = skirt ? 'S' : 'P';
   if (!side) {
     for (const [leg, x0] of [[0, 6], [1, 11]] as const) {
@@ -185,49 +244,58 @@ export function paintGrid(look: Look, dir: Dir, frame: number): Grid {
     else leg(true, legC, 'b', 0);
   }
 
-  // 3. Torso.
+  // 3. Torso (7 rows).
   if (!side) {
-    row(A(14), 7, 12, 'j');
-    for (let r = 15; r <= 20; r++) { row(A(r), 6, 13, 'j'); set(13, A(r), 'J'); }
-    row(A(21), 6, 13, 'J');
+    row(A(13), 7, 12, 'j');
+    for (let r = 14; r <= 18; r++) { row(A(r), 6, 13, 'j'); set(13, A(r), 'J'); }
+    row(A(19), 6, 13, 'J');
   } else {
-    row(A(14), 8, 11, 'j');
-    for (let r = 15; r <= 20; r++) { row(A(r), 7, 12, 'j'); set(12, A(r), 'J'); }
-    row(A(21), 7, 12, 'J');
+    row(A(13), 8, 11, 'j');
+    for (let r = 14; r <= 18; r++) { row(A(r), 7, 12, 'j'); set(12, A(r), 'J'); }
+    row(A(19), 7, 12, 'J');
   }
   if (skirt) {
-    if (!side) { row(A(21), 6, 13, 'p'); row(A(22), 5, 14, 'p'); row(A(23), 5, 14, 'P'); set(8, A(22), 'P'); set(11, A(22), 'P'); }
-    else { row(A(21), 7, 12, 'p'); row(A(22), 6, 13, 'p'); row(A(23), 6, 13, 'P'); }
+    if (!side) { row(A(19), 6, 13, 'p'); row(A(20), 5, 14, 'p'); row(A(21), 5, 14, 'P'); set(8, A(20), 'P'); set(11, A(20), 'P'); }
+    else { row(A(19), 7, 12, 'p'); row(A(20), 6, 13, 'p'); row(A(21), 6, 13, 'P'); }
   }
   outfit(set, row, look.outfit, view, A);
 
   // 4. Arms.
   if (!side) {
     const sw = frame === 1 ? 1 : frame === 2 ? -1 : 0;
-    const arm = (x: number, o: number, c: string) => { for (let r = 15; r <= 19 + o; r++) set(x, A(r), c); set(x, A(20 + o), 's'); };
+    const arm = (x: number, o: number, c: string) => { for (let r = 14; r <= 17 + o; r++) set(x, A(r), c); set(x, A(18 + o), 's'); };
     arm(5, view === 'front' ? sw : -sw, 'k');
     arm(14, view === 'front' ? -sw : sw, 'J');
   } else {
-    const pts: [number, number][] = frame === 1 ? [[9, 15], [9, 16], [8, 17], [8, 18], [7, 19]] : frame === 2 ? [[9, 15], [10, 16], [10, 17], [11, 18], [11, 19]] : [[9, 15], [9, 16], [9, 17], [9, 18], [9, 19]];
+    const pts: [number, number][] = frame === 1 ? [[9, 14], [9, 15], [8, 16], [7, 17]] : frame === 2 ? [[9, 14], [10, 15], [10, 16], [11, 17]] : [[9, 14], [9, 15], [9, 16], [9, 17]];
     for (const [x, r] of pts) { set(x, A(r), 'k'); set(x + 1, A(r), 'j'); }
     const [hx, hr] = pts[pts.length - 1]!; set(hx, A(hr + 1), 's'); set(hx + 1, A(hr + 1), 's');
   }
 
   // 5. Neck and head.
-  set(9, A(13), 'S'); set(10, A(13), 'S');
-  const head = headRows(look.shape);
+  set(side ? 8 : 9, A(12), 'S'); set(side ? 9 : 10, A(12), 'S');
+  const head = headRows(look.shape, side, alien);
   head.forEach(([a, b], i) => row(A(HEAD_TOP + i), a, b, 's'));
-  if (!side) for (let i = 3; i <= 7; i++) set(head[i]![1], A(HEAD_TOP + i), 'S');
+  if (!side) for (let i = 3; i <= 6; i++) set(head[i]![1], A(HEAD_TOP + i), 'S');
+  else if (!alien) { set(8, A(8), 'S'); set(8, A(9), 'S'); set(9, A(9), 'r'); }
   if (view !== 'back') face(set, look, A, side, head);
 
   // 6. Hair in front.
   if (view === 'back' && art) { for (const [r, m] of backOf(art)) for (const [x, c] of m) set(x, A(r), c); }
-  else if (tpl) tpl.rows.forEach((r, i) => { for (const [x, c] of cells(r)) if (!BEHIND[c]) set(x, A(tpl.r + i), c); });
+  else if (tpl) tpl.rows.forEach((r, i) => {
+    const rr = tpl.r + i;
+    for (const [x, c] of cells(r)) {
+      if (BEHIND[c]) continue;
+      // Keep the profile readable: no hair over the eye, nose or cheek from the eye line down.
+      if (side && !alien && ((rr >= 7 && x >= 14) || (rr >= 8 && x >= 12))) continue;
+      set(x, A(rr), c);
+    }
+  });
 
   // 7. Round glasses.
   if (look.glasses && view !== 'back') {
     const lens = (x0: number) => { row(A(6), x0 + 1, x0 + 2, 'o'); row(A(10), x0 + 1, x0 + 2, 'o'); for (let r = 7; r <= 9; r++) { set(x0, A(r), 'o'); set(x0 + 3, A(r), 'o'); } };
-    if (view === 'front') { lens(5); lens(11); row(A(7), 9, 10, 'o'); } else { lens(11); row(A(7), 8, 10, 'o'); }
+    if (view === 'front') { lens(5); lens(11); row(A(7), 9, 10, 'o'); } else { lens(11); row(A(7), 9, 10, 'o'); }
   }
   return g;
 }
@@ -243,7 +311,7 @@ function face(set: SetFn, look: Look, A: (r: number) => number, side: boolean, h
     let f: string = look.face;
     if (f === 'wink') f = !left && !side ? 'closed' : 'bright';
     switch (f) {
-      case 'smile': case 'closed': P(a, 8, 'e'); P(b, 8, 'e'); P(outer, 9, 'e'); P(beyondIn, 9, 'e'); break;
+      case 'smile': case 'closed': P(a, 8, 'e'); P(b, 8, 'e'); P(outer, 9, 'e'); if (!side) P(beyondIn, 9, 'e'); break;
       case 'doe': P(a, 7, 'e'); P(b, 7, 'e'); P(a, 8, 'E'); P(b, 8, 'e'); P(a, 9, 'i'); P(b, 9, 'E'); P(outer, 7, 'o'); P(outer, 6, 'o'); break;
       case 'cat': P(a, 7, 'e'); P(b, 7, 'e'); P(outer, 6, 'o'); P(a, 8, 'E'); P(b, 8, 'e'); P(inner, 9, 'i'); break;
       case 'calm': P(outer, 8, 'o'); P(a, 8, 'o'); P(b, 8, 'o'); P(a, 9, 'e'); P(b, 9, 'i'); break;
@@ -256,10 +324,10 @@ function face(set: SetFn, look: Look, A: (r: number) => number, side: boolean, h
   }
   if (!side) {
     P(5, 10, 'r'); P(14, 10, 'r');
-    if (look.face === 'cool' || look.face === 'calm') P(10, 11, 'm'); else { P(9, 11, 'm'); P(10, 11, 'm'); }
+    if (look.face === 'cool' || look.face === 'calm') P(10, 10, 'm'); else { P(9, 10, 'm'); P(10, 10, 'm'); }
   } else {
-    P(14, 10, 'r');
-    P(Math.min(15, head[8]![1] - 1), 11, 'm');
+    P(13, 10, 'r');
+    P(head[7]![1], 10, 'm');
   }
 }
 
@@ -267,33 +335,33 @@ function outfit(set: SetFn, row: RowFn, o: string, view: View, A: (r: number) =>
   const s = (x: number, r: number, c: string) => set(x, A(r), c);
   if (view === 'front') {
     switch (o) {
-      case 'reporter': s(9, 14, 'w'); s(10, 14, 'w'); s(9, 15, 'w'); s(10, 15, 'w'); s(9, 16, 'w'); s(10, 16, 'W'); s(8, 14, 'k'); s(11, 14, 'k'); s(7, 16, 'w'); s(7, 17, 'g'); break;
-      case 'suit': s(9, 14, 'w'); s(10, 14, 'w'); s(8, 14, 'k'); s(11, 14, 'k'); for (let r = 15; r <= 19; r++) { s(9, r, 'g'); s(10, r, 'g'); } break;
-      case 'knit': row(A(14), 7, 12, 'k'); row(A(16), 6, 12, 'k'); break;
-      case 'hoodie': row(A(14), 7, 12, 'J'); s(8, 15, 'g'); s(11, 15, 'g'); row(A(17), 7, 12, 'J'); break;
-      case 'coat': s(9, 14, 'w'); s(10, 14, 'w'); s(8, 14, 'k'); s(11, 14, 'k'); s(8, 15, 'k'); s(11, 15, 'k'); row(A(17), 6, 13, 'J'); s(9, 17, 'g'); s(10, 17, 'g'); row(A(22), 6, 13, 'j'); row(A(23), 6, 13, 'J'); break;
-      case 'apron': s(7, 14, 'g'); s(12, 14, 'g'); for (let r = 16; r <= 21; r++) row(A(r), 7, 12, 'g'); s(9, 14, 'w'); s(10, 14, 'w'); break;
-      case 'uniform': s(9, 14, 'w'); s(10, 14, 'w'); s(9, 15, 'g'); s(10, 15, 'g'); s(9, 16, 'g'); s(12, 15, 'k'); break;
-      default: row(A(14), 8, 11, 'k');
+      case 'reporter': for (let r = 13; r <= 16; r++) { s(9, r, 'w'); s(10, r, 'w'); } s(10, 16, 'W'); s(8, 13, 'k'); s(11, 13, 'k'); s(8, 14, 'k'); s(11, 14, 'k'); s(7, 15, 'g'); s(7, 16, 'w'); s(7, 17, 'W'); break;
+      case 'suit': s(9, 13, 'w'); s(10, 13, 'w'); s(8, 13, 'k'); s(11, 13, 'k'); for (let r = 14; r <= 17; r++) { s(9, r, 'g'); s(10, r, 'g'); } break;
+      case 'knit': row(A(13), 7, 12, 'k'); row(A(16), 6, 12, 'k'); break;
+      case 'hoodie': row(A(13), 7, 12, 'J'); s(8, 14, 'g'); s(8, 15, 'g'); s(11, 14, 'g'); s(11, 15, 'g'); row(A(17), 7, 12, 'J'); break;
+      case 'coat': s(9, 13, 'w'); s(10, 13, 'w'); s(9, 14, 'w'); s(10, 14, 'w'); for (let r = 13; r <= 15; r++) { s(8, r, 'k'); s(11, r, 'k'); } row(A(17), 6, 13, 'J'); s(9, 17, 'g'); s(10, 17, 'g'); row(A(20), 6, 13, 'j'); row(A(21), 6, 13, 'J'); break;
+      case 'apron': s(7, 13, 'g'); s(12, 13, 'g'); s(9, 13, 'w'); s(10, 13, 'w'); for (let r = 15; r <= 19; r++) row(A(r), 7, 12, 'g'); break;
+      case 'uniform': s(9, 13, 'w'); s(10, 13, 'w'); for (let r = 14; r <= 16; r++) { s(9, r, 'g'); s(10, r, 'g'); } s(12, 15, 'k'); s(7, 16, 'J'); s(12, 16, 'J'); break;
+      default: row(A(13), 8, 11, 'k');
     }
   } else if (view === 'back') {
     switch (o) {
-      case 'hoodie': row(A(14), 7, 12, 'k'); row(A(15), 7, 12, 'k'); row(A(16), 8, 11, 'J'); break;
-      case 'coat': row(A(17), 6, 13, 'J'); row(A(22), 6, 13, 'j'); row(A(23), 6, 13, 'J'); break;
+      case 'hoodie': row(A(13), 7, 12, 'k'); row(A(14), 7, 12, 'k'); row(A(15), 8, 11, 'J'); break;
+      case 'coat': row(A(17), 6, 13, 'J'); row(A(20), 6, 13, 'j'); row(A(21), 6, 13, 'J'); break;
       case 'apron': s(9, 17, 'g'); s(10, 17, 'g'); s(8, 16, 'g'); s(11, 16, 'g'); break;
-      case 'reporter': case 'suit': s(9, 17, 'J'); s(9, 18, 'J'); break;
+      case 'reporter': case 'suit': for (let r = 17; r <= 19; r++) s(9, r, 'J'); break;
       default: break;
     }
   } else {
     switch (o) {
-      case 'reporter': s(12, 14, 'w'); s(12, 15, 'w'); s(12, 16, 'w'); s(11, 14, 'k'); break;
-      case 'suit': s(12, 14, 'w'); s(12, 15, 'g'); s(12, 16, 'g'); s(11, 14, 'k'); break;
-      case 'knit': row(A(14), 8, 11, 'k'); row(A(16), 7, 12, 'k'); break;
-      case 'hoodie': s(7, 14, 'J'); s(7, 15, 'J'); s(8, 14, 'J'); s(12, 15, 'g'); break;
-      case 'coat': s(12, 14, 'k'); s(12, 15, 'k'); row(A(17), 7, 12, 'J'); row(A(22), 7, 12, 'j'); row(A(23), 7, 12, 'J'); break;
-      case 'apron': for (let r = 16; r <= 21; r++) { s(11, r, 'g'); s(12, r, 'g'); } break;
-      case 'uniform': s(12, 14, 'g'); s(12, 15, 'g'); s(11, 15, 'k'); break;
-      default: s(11, 14, 'k'); s(12, 14, 'k');
+      case 'reporter': for (let r = 13; r <= 16; r++) s(12, r, 'w'); s(11, 13, 'k'); break;
+      case 'suit': s(12, 13, 'w'); for (let r = 14; r <= 16; r++) s(12, r, 'g'); s(11, 13, 'k'); break;
+      case 'knit': row(A(13), 8, 11, 'k'); row(A(16), 7, 12, 'k'); break;
+      case 'hoodie': s(7, 13, 'J'); s(7, 14, 'J'); s(8, 13, 'J'); s(12, 14, 'g'); break;
+      case 'coat': for (let r = 13; r <= 15; r++) s(12, r, 'k'); row(A(17), 7, 12, 'J'); row(A(20), 7, 12, 'j'); row(A(21), 7, 12, 'J'); break;
+      case 'apron': for (let r = 15; r <= 19; r++) { s(11, r, 'g'); s(12, r, 'g'); } break;
+      case 'uniform': for (let r = 13; r <= 15; r++) s(12, r, 'g'); s(11, 15, 'k'); break;
+      default: s(11, 13, 'k'); s(12, 13, 'k');
     }
   }
 }
