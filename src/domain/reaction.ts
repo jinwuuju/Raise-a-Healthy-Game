@@ -1,0 +1,38 @@
+import { publishArticle } from './article';
+import { bandFor, reactionBalance as b, reactionText as text, type Reaction } from './reaction-state';
+import type { GameState } from './state';
+
+type Random = () => number;
+export function randomReactionValue(): number {
+  return typeof globalThis.crypto?.getRandomValues === 'function' ? crypto.getRandomValues(new Uint32Array(1))[0]! / 4294967296 : Math.random();
+}
+function appendReaction(before: GameState, next: GameState, first: boolean, random: Random, now: string): GameState {
+  if (!Number.isFinite(Date.parse(now))) throw new Error('발행 시각이 잘못되었습니다.');
+  const sample = () => { const n = random(); if (!Number.isFinite(n) || n < 0 || n >= 1) throw new Error('반응을 만들지 못했어요.'); return n; };
+  const pick = (n: number) => Math.floor(sample() * n);
+  const score = b.scoreMin + pick(b.scoreMax - b.scoreMin + 1), band = bandFor(score);
+  const windfall = sample() < b.windfallChance, range = windfall ? b.windfallGold : b.normalGold;
+  const bonusGold = range.min + pick(range.max - range.min + 1);
+  if (!Number.isSafeInteger(next.gold + bonusGold) || !Number.isSafeInteger(before.reactions.count + 1)) throw new Error('보상 합계가 저장 가능한 범위를 넘었어요.');
+  const profiles = text.profiles.map(p => p.id), quotes = band.quotes.map((_, i) => i);
+  const voices = Array.from({ length: 3 }, () => ({ profile: profiles.splice(pick(profiles.length), 1)[0]!, quote: quotes.splice(pick(quotes.length), 1)[0]! }));
+  const result: Reaction = { version: 1, round: before.reactions.count + 1, kind: first ? 'first' : 'reprint', at: now, score, windfall, bonusGold,
+    baseGold: next.gold - before.gold, xp: next.totalXp - before.totalXp, xpBefore: before.totalXp, xpAfter: next.totalXp,
+    goldBefore: before.gold, goldAfter: next.gold + bonusGold, scene: text.scenes[pick(text.scenes.length)]!, headline: pick(band.headlines.length), voices };
+  return { ...next, gold: result.goldAfter, reactions: { count: result.round, seen: before.reactions.seen, results: [...before.reactions.results, result].slice(-b.historyLimit) } };
+}
+/** A first publication keeps the canonical XP/base reward and adds a saved reader reaction. */
+export function publishWithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
+  const next = publishArticle(s, now); return next === s ? s : appendReaction(s, next, true, random, now);
+}
+/** Explicit new editions can earn more gold, while stale double clicks and history reads cannot. */
+export function reprintArticle(s: GameState, expectedCount: number, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
+  if (expectedCount !== s.reactions.count) return s;
+  if (s.at.room !== 'newsroom') throw new Error('다시 발행은 편집국에서 할 수 있어요.');
+  if (!s.article.publishedAt || !s.ledger.includes('quest.Q001.first')) throw new Error('첫 기사 발행을 먼저 마쳐 주세요.');
+  return appendReaction(s, s, false, random, now);
+}
+export function seeReaction(s: GameState, round: number): GameState {
+  if (!Number.isSafeInteger(round) || round < 1 || round > s.reactions.count) throw new Error('확인할 수 없는 반응이에요.');
+  return round <= s.reactions.seen ? s : { ...s, reactions: { ...s.reactions, seen: round } };
+}

@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "scoreMin": 30,
+  "scoreMax": 100,
+  "normalGold": {
+    "min": 20,
+    "max": 160
+  },
+  "windfallGold": {
+    "min": 200,
+    "max": 600
+  },
+  "windfallChance": 0.06,
+  "historyLimit": 20,
+  "animationMs": 3200,
+  "xpBonus": 0,
+  "repeatBaseGold": 0,
+  "note": "D066 사용자 지정: 반응은 게임용 무작위, 기존 XP/기본 최초 보상 유지. 새 발행 회차마다 추가 골드. 결과 다시 보기에는 지급 없음. P4 20% 품질 보너스와 별개."
+}

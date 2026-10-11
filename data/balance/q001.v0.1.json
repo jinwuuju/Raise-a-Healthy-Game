@@ -2,7 +2,16 @@
   "id": "Q001",
   "totalXp": 100,
   "totalGold": 100,
-  "observation": { "key": "quest.Q001.observe", "xp": 20, "gold": 0 },
-  "publication": { "key": "quest.Q001.first", "xp": 80, "gold": 100 },
-  "note": "early-quests.v0.1.json의 Q001 총 보상을 관찰과 첫 기사 발행으로 나눈 실행 원본. 추가 탐험 기록은 보상 없음."
+  "observation": {
+    "key": "quest.Q001.observe",
+    "xp": 20,
+    "gold": 0
+  },
+  "publication": {
+    "key": "quest.Q001.first",
+    "xp": 80,
+    "gold": 100
+  },
+  "note": "Q001 보장 기본 보상: 관찰 20XP/0G + 최초 발행 80XP/100G. D066의 추가 골드는 별도 반응 원본을 따르며 재발행에도 지급한다. 추가 구조 기록은 XP/골드 조건이 아니다.",
+  "reactionBalanceRef": "article-reactions.v0.1.json"
 }

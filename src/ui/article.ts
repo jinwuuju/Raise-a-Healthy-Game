@@ -54,6 +54,13 @@ export function openArticle(game: Game, onPublished: () => void): void {
       editing.replaceChildren(el('h3', '', '첫 기사를 발행했어요'), el('p', '', '관찰 20XP + 기사 80XP · 총 100XP / 100G'),
         el('p', 'article-reply', articleText.readerReply), el('p', 'muted', '언제든 취재 수첩에서 다시 읽을 수 있어요.'));
       footer.replaceChildren(button('secondary', '월드로 돌아가기', close)); status.textContent = '게임 속 신문에 실렸어요.';
+      if (game.state.at.room === 'newsroom') {
+        const expectedCount = game.state.reactions.count;
+        footer.append(button('primary', '다시 발행 · 새 독자 반응', () => {
+          try { if (game.reprintArticle(expectedCount)) onPublished(); }
+          catch (e) { status.textContent = e instanceof Error ? e.message : '다시 발행하지 못했어요.'; }
+        }));
+      }
       renderPreview();
     };
     if (game.state.article.publishedAt) { showPublished(); return; }
@@ -73,7 +80,7 @@ export function openArticle(game: Game, onPublished: () => void): void {
     });
     const publish = button('primary', '게임 속 신문에 발행', () => {
       try {
-        if (game.publishArticle()) onPublished();
+        if (game.publishArticle()) { onPublished(); return; }
         showPublished(); footer.querySelector('button')?.focus({ preventScroll: true });
       } catch (e) { status.textContent = e instanceof Error ? e.message : '발행하지 못했어요.'; }
     });

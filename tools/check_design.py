@@ -56,6 +56,10 @@ q001 = load('data/balance/q001.v0.1.json')
 require(q001['observation']['xp'] + q001['publication']['xp'] == q001['totalXp'] == quests[0]['xp'], 'Q001 runtime XP split mismatch')
 require(q001['observation']['gold'] + q001['publication']['gold'] == q001['totalGold'] == quests[0]['gold'], 'Q001 runtime gold split mismatch')
 require(q001['publication']['key'] == quests[0]['completionKey'] and q001['observation']['key'] != q001['publication']['key'], 'Q001 runtime completion key mismatch')
+reaction = load('data/balance/article-reactions.v0.1.json')
+require(reaction['xpBonus'] == 0 and reaction['repeatBaseGold'] == 0, 'Reader reactions must not inflate XP or base publication rewards')
+require(0 <= reaction['scoreMin'] <= reaction['scoreMax'] <= 100 and 0 <= reaction['windfallChance'] <= 1, 'Reader reaction ranges invalid')
+require(early['additionalGoldPolicy']['guaranteedTotalsExcludeReactionGold'] and early['additionalGoldPolicy']['repeatReactionGold'], 'Reaction gold must be separate from guaranteed income and repeatable')
 
 def level_at(xp):
     return max(row['level'] for row in rows if row['cumulativeXp'] <= xp)

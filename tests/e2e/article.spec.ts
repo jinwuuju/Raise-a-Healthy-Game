@@ -25,6 +25,12 @@ async function fill(page: Page) {
   await article.getByLabel('2 · 돌아오는 피의 근거').selectOption('heart-in');
   await article.getByLabel('3 · 폐로 향하는 피의 근거').selectOption('heart-out');
 }
+async function finishResult(page: Page, read = false) {
+  const result = page.getByRole('dialog', { name: '발행 결과 · 독자 반응' }); await expect(result).toBeVisible();
+  const skip = result.getByRole('button', { name: '결과 바로 보기' }); if (await skip.count()) await skip.click();
+  await expect(result.locator('.reader-voice')).toHaveCount(3);
+  await result.getByRole('button', { name: read ? '기사 다시 읽기' : '월드로 돌아가기' }).click();
+}
 
 test('legacy save → draft → feedback → reload → publish → reread without repeated rewards; keyboard focus and world input stay contained', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
@@ -56,8 +62,9 @@ test('legacy save → draft → feedback → reload → publish → reread witho
   await expect(article.getByRole('button', { name: '게임 속 신문에 발행' })).toBeFocused();
   await page.keyboard.press('Tab'); await expect(article.getByRole('button', { name: '닫기' })).toBeFocused();
   await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Enter');
+  await finishResult(page, true);
   await expect(article).toContainText('하윤 독자:');
-  const first = await saved(page); expect([first.totalXp, first.gold]).toEqual([100, 100]);
+  const first = await saved(page); expect([first.totalXp, first.gold]).toEqual([100, 100 + first.reactions.results[0].bonusGold]);
   await page.reload();
   await page.getByRole('button', { name: '취재 수첩' }).click();
   await page.getByRole('button', { name: '첫 기사와 독자 답장 읽기' }).click();
@@ -90,9 +97,8 @@ for (const [width, height] of [[390, 844], [844, 390]] as const) {
     await article.locator('.content').evaluate(c => { c.scrollTop = 0; });
     await page.screenshot({ path: `artifacts/q001-article/${width}x${height}-draft.png`, animations: 'disabled' });
     await article.getByRole('button', { name: '게임 속 신문에 발행' }).tap();
-    await expect(article).toContainText('하윤 독자:');
-    expect([(await saved(page)).totalXp, (await saved(page)).gold]).toEqual([100, 100]);
-    await article.getByRole('button', { name: '월드로 돌아가기' }).tap();
+    await finishResult(page);
+    const s = await saved(page); expect([s.totalXp, s.gold]).toEqual([100, 100 + s.reactions.results[0].bonusGold]);
     await expect(article).toHaveCount(0); expect(errors).toEqual([]); await page.close();
   });
 }
@@ -119,5 +125,6 @@ test('200% text supports editing, reading sources and publishing without horizon
   await page.screenshot({ path: 'artifacts/q001-article/1280x900-text200.png', animations: 'disabled' });
   await article.getByRole('button', { name: '편집장에게 초안 보여주기' }).click();
   await article.getByRole('button', { name: '게임 속 신문에 발행' }).click();
+  await finishResult(page, true);
   await expect(article).toContainText('하윤 독자:');
 });

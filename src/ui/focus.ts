@@ -1,7 +1,7 @@
 /** Keep keyboard navigation inside the active modal, including before choices appear. */
 export function trapTab(root: HTMLElement, e: KeyboardEvent, owned: HTMLElement[] = []): void {
   if (e.key !== 'Tab') return;
-  const controls = [...root.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]'), ...owned]
+  const controls = [...root.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]'), ...owned]
     .filter(x => x.getClientRects().length > 0 && !x.matches(':disabled'));
   const first = controls[0], last = controls[controls.length - 1];
   if (!first || !last) { e.preventDefault(); root.focus({ preventScroll: true }); }

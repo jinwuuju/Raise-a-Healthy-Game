@@ -105,12 +105,13 @@ describe('first article and reward', () => {
     const mem = new Memory(); mem.setItem('medical-quest.v4.current', JSON.stringify(checkArticle(draft())));
     const game = new Game(new SaveStore(mem)); mem.failWrite = true;
     expect(game.publishArticle()).toBe(true); expect(game.lastError).toBeTruthy(); expect(game.needsSave).toBe(true);
+    const bonus = game.state.reactions.results[0]!.bonusGold;
     const saved = JSON.parse(mem.getItem('medical-quest.v4.current')!);
     expect([saved.article.publishedAt, saved.gold, saved.totalXp]).toEqual([null, 0, 20]);
-    expect(game.publishArticle()).toBe(false); expect(game.state.gold).toBe(100);
+    expect(game.publishArticle()).toBe(false); expect(game.state.gold).toBe(100 + bonus);
     mem.failWrite = false; expect(game.persist()).toBe(true);
     const reloaded = new Game(new SaveStore(mem)); expect(reloaded.publishArticle()).toBe(false);
-    expect([reloaded.state.gold, reloaded.state.totalXp]).toEqual([100, 100]);
+    expect([reloaded.state.gold, reloaded.state.totalXp]).toEqual([100 + bonus, 100]);
     expect(reloaded.state.ledger.filter(k => k === 'quest.Q001.first')).toHaveLength(1);
   });
 });

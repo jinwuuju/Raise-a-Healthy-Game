@@ -152,5 +152,11 @@
     "reputation": 12,
     "targetMinutes": 115,
     "balanceAfterPurchases": 1420
+  },
+  "additionalGoldPolicy": {
+    "source": "article-reactions.v0.1.json",
+    "repeatReactionGold": true,
+    "guaranteedTotalsExcludeReactionGold": true,
+    "xpChanged": false
   }
 }

@@ -1,0 +1,41 @@
+import balance from '../../data/balance/article-reactions.v0.1.json';
+import content from '../../data/content/article-reactions.v0.1.json';
+
+export const reactionBalance = balance;
+export const reactionText = content;
+export type Reaction = {
+  version: 1; round: number; kind: 'first' | 'reprint'; at: string;
+  score: number; windfall: boolean; bonusGold: number; baseGold: number; xp: number;
+  xpBefore: number; xpAfter: number; goldBefore: number; goldAfter: number;
+  scene: string; headline: number; voices: { profile: string; quote: number }[];
+};
+export type Reactions = { count: number; seen: number; results: Reaction[] };
+export const emptyReactions = (): Reactions => ({ count: 0, seen: 0, results: [] });
+const int = (v: unknown): v is number => typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
+export const bandFor = (score: number) => [...content.bands].reverse().find(b => score >= b.min)!;
+export const latestReaction = (s: { reactions: Reactions }): Reaction | null => s.reactions.results.at(-1) ?? null;
+
+/** Versioned, bounded publication receipts; earlier schema-4 saves have no reactions. */
+export function validateReactions(value: unknown): Reactions {
+  if (value === undefined) return emptyReactions();
+  const fail = (): never => { throw new Error('독자 반응 기록이 잘못되었습니다.'); };
+  if (!value || typeof value !== 'object') return fail();
+  const v = value as Reactions;
+  if (!int(v.count) || !int(v.seen) || v.seen > v.count || !Array.isArray(v.results) || v.results.length !== Math.min(v.count, balance.historyLimit)) return fail();
+  const results: Reaction[] = [];
+  for (const [i, r] of v.results.entries()) {
+    if (!r || r.version !== 1 || r.round !== v.count - v.results.length + i + 1 || !['first', 'reprint'].includes(r.kind) ||
+        typeof r.at !== 'string' || !Number.isFinite(Date.parse(r.at)) || !int(r.score) || r.score < balance.scoreMin || r.score > balance.scoreMax ||
+        typeof r.windfall !== 'boolean' || ![r.bonusGold, r.baseGold, r.xp, r.xpBefore, r.xpAfter, r.goldBefore, r.goldAfter].every(int)) return fail();
+    const range = r.windfall ? balance.windfallGold : balance.normalGold, band = bandFor(r.score);
+    if (r.bonusGold < range.min || r.bonusGold > range.max || r.xp !== (r.kind === 'first' ? 80 : 0) || r.baseGold !== (r.kind === 'first' ? 100 : 0) ||
+        (r.kind === 'first' && r.round !== 1) || r.xpAfter !== r.xpBefore + r.xp || r.goldAfter !== r.goldBefore + r.baseGold + r.bonusGold ||
+        !content.scenes.includes(r.scene) || !int(r.headline) || r.headline >= band.headlines.length || !Array.isArray(r.voices) || r.voices.length !== 3) return fail();
+    for (const voice of r.voices) if (!voice || !content.profiles.some(p => p.id === voice.profile) || !int(voice.quote) || voice.quote >= band.quotes.length) return fail();
+    if (new Set(r.voices.map(v => v.profile)).size !== 3 || new Set(r.voices.map(v => v.quote)).size !== 3) return fail();
+    results.push({ version: 1, round: r.round, kind: r.kind, at: r.at, score: r.score, windfall: r.windfall, bonusGold: r.bonusGold, baseGold: r.baseGold,
+      xp: r.xp, xpBefore: r.xpBefore, xpAfter: r.xpAfter, goldBefore: r.goldBefore, goldAfter: r.goldAfter,
+      scene: r.scene, headline: r.headline, voices: r.voices.map(v => ({ profile: v.profile, quote: v.quote })) });
+  }
+  return { count: v.count, seen: v.seen, results };
+}

@@ -1,11 +1,11 @@
 import './ui/style.css';
 import motion from '../data/balance/movement.v0.2.json';
 import { Game } from './application/game';
-import { heartText, inspectLabels, lookText, objective, q1Text, talk, type Line } from './application/story';
-import { discovered, discoveries, discoveryIds, roomProgress } from './domain/heart';
+import { heartText, lookText, objective, q1Text, talk, type Line } from './application/story';
+import { discovered, discoveries, discoveryIds } from './domain/heart';
 import { outfits, presetNames, type Look } from './domain/appearance';
 import { cafeMenu, canOrder } from './domain/cafe';
-import { Q1, Q1_OBSERVATIONS, Q1_ROOM, canEnterHeart, levelOf, obsKey, q1CanOffer, q1Seen } from './domain/quest';
+import { Q1, Q1_OBSERVATIONS, Q1_ROOM, canEnterHeart, levelOf, obsKey, q1CanOffer } from './domain/quest';
 import { timeModes, type TimeMode } from './domain/state';
 import { SaveStore } from './infrastructure/save';
 import { World } from './game/world';
@@ -17,8 +17,10 @@ import { Joystick } from './ui/joystick';
 import { ConfirmControl } from './ui/confirm';
 import { openAtlas } from './ui/atlas';
 import { openArticle } from './ui/article';
+import { openReaction } from './ui/reaction';
+import { openNotebook as showNotebook } from './ui/notebook';
+import { latestReaction } from './domain/reaction-state';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
-import { heartRoute } from './world/heart-rooms';
 import { rooms, type Target } from './world/rooms';
 import { isHeartRoom, type Dir, type Point, type RoomId } from './world/types';
 
@@ -262,6 +264,8 @@ function startWorld() {
   hud.showBanner(rooms[s.at.room].title);
   canvas.focus({ preventScroll: true });
   if (game.lastError) hud.toast(game.lastError, true);
+  const pending = latestReaction(game.state);
+  if (pending && pending.round > game.state.reactions.seen) openReaction(game, pending, { readArticle: showArticle, exportSave }, true);
 }
 
 /** walk: ordinary doors · scope-in/out: the Bodyscope · flow: following the blood between heart rooms. */
@@ -374,7 +378,7 @@ async function cafeOrder() {
 
 // ---------- Sheets ----------
 function showArticle() {
-  openArticle(game, () => hud.toast(game.lastError ? '기사는 발행했지만 저장하지 못했어요. 기록을 파일로 내보내 주세요.' : '첫 기사 발행! +80XP · +100G · Lv.2', !!game.lastError));
+  openArticle(game, () => { const result = latestReaction(game.state); if (result) openReaction(game, result, { readArticle: showArticle, exportSave }); });
 }
 function saveFeedback(c: HTMLElement): () => void {
   const message = el('p', 'save-message'); message.setAttribute('role', 'status'); c.append(message);
@@ -384,39 +388,7 @@ function saveFeedback(c: HTMLElement): () => void {
 function openNotebook() {
   if (busy() || !world) return;
   pauseInput();
-  const s = game.state;
-  openSheet('취재 수첩', (c, close) => {
-    const goal = el('div'); goal.append(el('h3', '', '지금 할 일'), el('p', '', objective(s, world!.roomId))); c.append(goal);
-    const notes = el('div'); notes.append(el('h3', '', '관찰 기록'));
-    const ids = s.inspected.filter(id => inspectLabels[id]);
-    if (ids.length) { const ul = el('ul', 'notes'); for (const id of ids) ul.append(el('li', '', inspectLabels[id]!)); notes.append(ul); }
-    else notes.append(el('p', 'muted', '아직 기록이 없어요. 반짝이는 표식이나 사람에게 다가가 살펴보세요.'));
-    c.append(notes);
-    if (s.flags.includes(Q1.accepted)) {
-      const q = el('div'); q.append(el('h3', '', '첫 취재 · ' + q1Text.title));
-      q.append(el('p', '', q1Text.offer[1]!.text));
-      const seen = q1Seen(s);
-      const ul = el('ul', 'notes');
-      for (const id of Q1_OBSERVATIONS) ul.append(el('li', seen.includes(id) ? '' : 'muted', seen.includes(id) ? q1Text.observations[id].note : '아직 관찰하지 않음'));
-      q.append(ul, el('p', 'muted', q1Text.disclaimer));
-      if (s.flags.includes(Q1.briefed)) q.append(button('row', s.article.publishedAt ? '첫 기사와 독자 답장 읽기' : '첫 기사 쓰기 · 초안 이어서', () => { close(); pauseInput(); showArticle(); }));
-      c.append(q);
-    }
-    if (s.flags.includes(Q1.entered)) {
-      const h = el('div'); h.append(el('h3', '', '심장 탐험 기록 ' + discovered(s).length + '/' + discoveryIds.length));
-      const found = discovered(s);
-      for (const room of heartRoute) {
-        const pr = roomProgress(s, room);
-        const ul = el('ul', 'notes');
-        for (const id of discoveryIds.filter(i => discoveries[i]!.room === room)) ul.append(el('li', found.includes(id) ? '' : 'muted', found.includes(id) ? discoveries[id]!.name : '??? (아직 찾지 못함)'));
-        h.append(el('p', '', rooms[room].title + ' · ' + pr.found + '/' + pr.total), ul);
-      }
-      h.append(el('p', 'muted', heartText.disclaimer));
-      c.append(h);
-    }
-    const life = el('div'); life.append(el('h3', '', '생활'), el('p', '', '비투비씨 주문 ' + s.cafe.orderCount + '회 · 첫 방문 커피 ' + (s.cafe.welcomeUsed ? '받음' : '아직'))); c.append(life);
-    c.append(el('p', 'muted', '관찰을 마치고 편집장에게 보고하면 첫 기사 쓰기가 열려요. 의학 도감과 다음 취재 의뢰는 준비 중이에요.'));
-  });
+  showNotebook(game, world.roomId, { article: showArticle, reaction: r => openReaction(game, r, { readArticle: showArticle, exportSave }, true), map: openMap });
 }
 
 function openReporter() {

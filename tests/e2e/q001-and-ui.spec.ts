@@ -87,9 +87,12 @@ test('Q001 inside the heart: commission → Bodyscope → right atrium → wait 
   await article.getByLabel('3 · 폐로 향하는 피의 근거').selectOption('heart-out');
   await article.getByRole('button', { name: '편집장에게 초안 보여주기' }).click();
   await article.getByRole('button', { name: '게임 속 신문에 발행' }).click();
-  await expect(article).toContainText('하윤 독자:');
-  expect([(await saved(page)).totalXp, (await saved(page)).gold]).toEqual([100, 100]);
-  await article.getByRole('button', { name: '월드로 돌아가기' }).click();
+  const result = page.getByRole('dialog', { name: '발행 결과 · 독자 반응' }); await expect(result).toBeVisible();
+  await result.getByRole('button', { name: '결과 바로 보기' }).click();
+  await expect(result.locator('.reader-voice')).toHaveCount(3);
+  const published = await saved(page);
+  expect([published.totalXp, published.gold]).toEqual([100, 100 + published.reactions.results[0].bonusGold]);
+  await result.getByRole('button', { name: '월드로 돌아가기' }).click();
   await expect(page.locator('.chip .rank')).toContainText('Lv.2');
   expect(errors).toEqual([]);
 });
@@ -132,7 +135,7 @@ test('red pedestrian light holds the reporter at the curb, green lets them cross
   await expect.poll(() => page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.world!.player.x), { timeout: 6000 }).toBeGreaterThan(480);
 });
 
-test('no corner action button; windows close by tapping anywhere', async ({ browser }) => {
+test('no PC-style corner action button; the notebook stays open while reading and closes explicitly', async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true });
   await page.goto('/');
   await page.getByRole('button', { name: '첫 출근하기' }).click();
@@ -140,6 +143,8 @@ test('no corner action button; windows close by tapping anywhere', async ({ brow
   await page.getByRole('button', { name: '취재 수첩' }).click();
   await expect(page.getByRole('dialog', { name: '취재 수첩' })).toBeVisible();
   await page.getByRole('dialog', { name: '취재 수첩' }).locator('h3').first().click();
+  await expect(page.getByRole('dialog', { name: '취재 수첩' })).toBeVisible();
+  await page.getByRole('dialog', { name: '취재 수첩' }).getByRole('button', { name: '닫기' }).click();
   await expect(page.getByRole('dialog', { name: '취재 수첩' })).toHaveCount(0);
   await page.close();
 });
