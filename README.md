@@ -4,9 +4,9 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 > **지금 바로 플레이:** https://jinwuuju.github.io/Raise-a-Healthy-Game/ (설계실: [/design/](https://jinwuuju.github.io/Raise-a-Healthy-Game/design/))
 >
-> **현재 배포: redesign-1 + 심장 속 탐사 + 첫 기사·독자 반응 + 분류한 수첩 / 2026-10-11.** 바디스코프로 심장 내부를 걸어 다니고 관찰 2개를 얻어 첫 기사를 쓴다. 발행하면 별도 결과창에서 독자 반응·응원금·성장을 보며, XP는 총 100XP/Lv.2, 골드는 기본 100G + 추가 응원금이다. 재발행은 새 반응/응원금만 준다. 수첩은 할 일·취재·기사·인체·생활을 탭과 토글로 읽는다. 그래픽은 코드로 그리는 픽셀 아트다. 배포 현황은 [현재 상태](docs/production/STATUS.md)에 구분한다. 의학 검수·아트 승인·실사용자 재미 평가는 별도다. [심장 탐사](docs/production/HEART-INTERIOR.md) · [독자 반응](docs/production/ARTICLE-REACTIONS.md) · [수첩](docs/production/NOTEBOOK-STRUCTURE.md).
+> **현재 배포: redesign-1 + 심장 속 탐사 + 진입 연출 + Q001~Q003 기사·독자 반응 / 2026-10-12.** 전신에서 심장을 확대해 박동을 보고 우심방으로 들어간다. 첫 기사, 네 방의 주소, 정상 판막과 협착·역류 비교 취재를 거쳐 세 번째 팩트체크 기사까지 이어진다. 기본 XP 합계 450XP/Lv.4, 골드는 최초 보상과 발행별 추가 응원금이다. 수첩은 할 일·취재·기사·인체·생활로 분류한다. 의학 본문은 검수 전 모형이며 의학·아트·실사용자 평가는 별도다. [현재 상태](docs/production/STATUS.md) · [Q003 구현·검증](docs/production/Q003-VALVE-REPORT.md).
 
-**미배포 로컬 추가(D072~D073):** 전신→심장 확대·박동→우심방의 약 4.2초 진입 연출, Q002 네 방 취재→도해 기사→Lv.3. [범위·검증](docs/production/ORGAN-ENTRY-AND-Q002.md). 공개 배포본과 구분한다.
+**추가 배포(D072~D074):** 약 4.2초 심장 진입 연출과 Q002 네 방 취재, Q003 판막질환 비교·6단계 취재·팩트체크 기사. [진입/Q002 기록](docs/production/ORGAN-ENTRY-AND-Q002.md) · [판막 취재 기록](docs/production/Q003-VALVE-REPORT.md).
 
 ## 조작
 
@@ -42,7 +42,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 ## 작업을 이어갈 때
 
-[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 로컬 구현은 **Q003 판막 취재 + 판막질환 비교 레이어**다. 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
+[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 로컬 구현은 **Q004 두 순환 취재 + 관련 질환 동반 범위 검토**다. 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
 
 - 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 이 Mac의 셸에 Node가 없으면 `bash tools/npm-local.sh run dev`.
 - 검증: `npm run typecheck`, `npm test`, `npm run test:e2e`, `npm run build`. 최신 실행 결과는 [현재 상태](docs/production/STATUS.md)와 [첫 기사 기록](docs/production/Q001-ARTICLE.md)에 남긴다. [기존 오류 점검](docs/production/CODE-AUDIT-2026-10-11.md) · [뒷모습·모바일 생성 화면](docs/production/MOBILE-CREATOR-AND-REAR-WALK.md).
