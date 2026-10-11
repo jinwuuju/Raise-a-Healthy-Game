@@ -1,5 +1,6 @@
 import { defaultAppearance, validateAppearance, type Appearance, type Preset } from '../domain/appearance';
 import { orderDrink } from '../domain/cafe';
+import { discover } from '../domain/heart';
 import { Q1, acceptQ1, briefQ1, canEnterHeart, observeQ1 } from '../domain/quest';
 import { newState, validateState, type GameState, type TimeMode } from '../domain/state';
 import type { SaveStore } from '../infrastructure/save';
@@ -92,13 +93,13 @@ export class Game {
 
   acceptQuest(): void { this.commit(acceptQ1(this.state)); }
 
-  /** Moves into the Bodyscope heart model (safe entry point is saved). */
+  /** Moves into the Bodyscope heart through the superior vena cava (safe entry point is saved). */
   enterHeart(): void {
     const why = canEnterHeart(this.state);
     if (why) throw new Error(why);
     const sp = rooms.heart.spawn;
     const s = this.state.flags.includes(Q1.entered) ? this.state : { ...this.state, flags: [...this.state.flags, Q1.entered] };
-    this.commit({ ...s, at: { room: 'heart', x: sp.x, y: sp.y, facing: 'up' } });
+    this.commit({ ...s, at: { room: 'heart', x: sp.x, y: sp.y, facing: rooms.heart.spawnFacing } });
   }
 
   /** Records an observation; returns whether it was new and whether it completed the checkpoint. */
@@ -110,6 +111,14 @@ export class Game {
   }
 
   brief(): void { this.commit(briefQ1(this.state)); }
+
+  /** Records a heart structure in the exploration record; returns true the first time. No XP or gold. */
+  discover(id: string): boolean {
+    const before = this.state, next = discover(before, id);
+    if (next === before) { this.persist(); return false; }
+    this.commit(next);
+    return true;
+  }
 
   rest(): void { this.commit({ ...this.state, cafe: { ...this.state.cafe, restedAt: new Date().toISOString() } }); }
 

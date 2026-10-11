@@ -23,15 +23,15 @@ test('standing in front of the Bodyscope opens entry without clicking, and cance
   await scopeState(page, true);
   await page.keyboard.down('w'); await expect.poll(async () => (await position(page)).y).toBeLessThan(142); await page.keyboard.up('w');
   await expect(page.locator('.dialog')).toBeVisible();
-  await expect(page.getByRole('button', { name: /심장 모형으로 들어가기/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /심장 속으로 들어가기/ })).toBeVisible();
   await page.keyboard.press('Escape');
   await page.waitForTimeout(500);
   await expect(page.locator('.dialog')).toHaveCount(0);
   await page.keyboard.down('s'); await expect.poll(async () => (await position(page)).y).toBeGreaterThan(168); await page.keyboard.up('s');
   await page.keyboard.down('w'); await expect.poll(async () => (await position(page)).y).toBeLessThan(142); await page.keyboard.up('w');
   await expect(page.locator('.dialog')).toBeVisible();
-  await expect(page.getByRole('button', { name: /심장 모형으로 들어가기/ })).toBeVisible();
-  await page.getByRole('button', { name: /심장 모형으로 들어가기/ }).click();
+  await expect(page.getByRole('button', { name: /심장 속으로 들어가기/ })).toBeVisible();
+  await page.getByRole('button', { name: /심장 속으로 들어가기/ }).click();
   await expect.poll(() => page.evaluate(() => (window as unknown as { __mq: { world: { roomId: string } } }).__mq.world.roomId)).toBe('heart');
 });
 

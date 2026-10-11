@@ -100,39 +100,43 @@ describe('reporter sprites', () => {
 
 describe('Q001 entry', () => {
   const ready = (): GameState => ({ ...newState(), started: true, flags: ['met-editor', 'reported-back'], cafe: { ...newState().cafe, welcomeUsed: true } });
-  const inHeart = (s: GameState): GameState => ({ ...s, at: { room: 'heart', x: 224, y: 258, facing: 'up' } });
+  const inRoom = (s: GameState, room: 'heart' | 'rv'): GameState => ({ ...s, at: { room, x: rooms[room].spawn.x, y: rooms[room].spawn.y, facing: 'down' } });
   it('needs the editor commission before the Bodyscope runs', () => {
     expect(canEnterHeart(ready())).not.toBeNull();
     expect(() => acceptQ1(newState())).toThrow();
     expect(canEnterHeart(acceptQ1(ready()))).toBeNull();
   });
-  it('pays the observation checkpoint once, only after both doors', () => {
-    let s = inHeart(acceptQ1(ready()));
-    s = observeQ1(s, 'heart-out');
+  it('pays the observation checkpoint once, only after both doors, each in its own chamber', () => {
+    let s = inRoom(acceptQ1(ready()), 'heart');
+    expect(() => observeQ1(s, 'heart-out')).toThrow();
+    s = observeQ1(s, 'heart-in');
     expect([s.totalXp, s.flags.includes(Q1.observed)]).toEqual([0, false]);
-    s = observeQ1(observeQ1(s, 'heart-out'), 'heart-in');
+    s = inRoom(s, 'rv');
+    expect(() => observeQ1(s, 'heart-in')).toThrow();
+    s = observeQ1(observeQ1(s, 'heart-out'), 'heart-out');
     expect([s.totalXp, s.flags.includes(Q1.observed), q1Seen(s).length]).toEqual([20, true, 2]);
-    const again = observeQ1(observeQ1(s, 'heart-in'), 'heart-out');
-    expect(again.totalXp).toBe(20);
+    expect(observeQ1(s, 'heart-out').totalXp).toBe(20);
     expect(briefQ1(s).flags).toContain(Q1.briefed);
   });
-  it('rejects observations outside the model or before acceptance', () => {
-    expect(() => observeQ1(inHeart(ready()), 'heart-out')).toThrow();
-    expect(() => observeQ1(acceptQ1(ready()), 'heart-out')).toThrow();
-    expect(() => observeQ1(inHeart(acceptQ1(ready())), 'shelf')).toThrow();
+  it('rejects observations outside the heart or before acceptance', () => {
+    expect(() => observeQ1(inRoom(ready(), 'heart'), 'heart-in')).toThrow();
+    expect(() => observeQ1(acceptQ1(ready()), 'heart-in')).toThrow();
+    expect(() => observeQ1(inRoom(acceptQ1(ready()), 'heart'), 'shelf')).toThrow();
   });
-  it('saves and reloads inside the heart model', () => {
-    const s = inHeart(acceptQ1(ready()));
-    expect(validateState(JSON.parse(JSON.stringify(s))).at.room).toBe('heart');
+  it('saves and reloads inside the heart; a position from the old heart model moves to the safe entry', () => {
+    const s = inRoom(acceptQ1(ready()), 'rv');
+    expect(validateState(JSON.parse(JSON.stringify(s))).at.room).toBe('rv');
+    const old = validateState({ ...s, at: { room: 'heart', x: 30, y: 400, facing: 'up' } });
+    expect(old.at).toEqual({ room: 'heart', x: rooms.heart.spawn.x, y: rooms.heart.spawn.y, facing: rooms.heart.spawnFacing });
+    expect(() => validateState({ ...s, at: { room: 'street', x: 400, y: 100, facing: 'up' } })).toThrow();
   });
-  it('the observation points are reachable over the bridge', () => {
-    const h = rooms.heart;
-    for (const id of ['heart-out', 'heart-in', 'guide']) {
-      const t = h.targets.find(q => q.id === id)!;
-      expect(findPath('heart', h.spawn, { x: t.x, y: t.y }).length, id).toBeGreaterThan(0);
+  it('the two doors are reachable on foot from where the reporter arrives', () => {
+    for (const [room, id] of [['heart', 'heart-in'], ['rv', 'heart-out'], ['heart', 'guide']] as const) {
+      const r = rooms[room], t = r.targets.find(q => q.id === id)!;
+      expect(findPath(room, r.spawn, { x: t.x, y: t.y }).length, id).toBeGreaterThan(0);
     }
-    expect(canStand('heart', { x: 224, y: 232 })).toBe(true);
-    expect(canStand('heart', { x: 120, y: 232 })).toBe(false);
+    expect(canStand('heart', rooms.heart.spawn)).toBe(true);
+    expect(canStand('heart', { x: 138, y: 300 })).toBe(false);
   });
   it('level 2 starts at 100 XP', () => {
     expect(levelOf(20)).toEqual({ level: 1, into: 20, need: 100 });

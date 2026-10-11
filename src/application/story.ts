@@ -1,11 +1,14 @@
+import heart from '../../data/content/heart-interior.v0.1.json';
 import q1 from '../../data/content/q001-entry.v0.1.json';
+import { discovered, discoveryIds } from '../domain/heart';
 import { Q1, q1CanOffer, q1Seen } from '../domain/quest';
 import type { GameState } from '../domain/state';
-import type { RoomId } from '../world/types';
+import { isHeartRoom, type RoomId } from '../world/types';
 
 export type Line = { who: string; text: string; npc: string | null };
 export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' };
 export const q1Text = q1;
+export const heartText = heart;
 
 export function objective(s: GameState, room: RoomId): string {
   const has = (f: string) => s.flags.includes(f);
@@ -18,13 +21,23 @@ export function objective(s: GameState, room: RoomId): string {
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
+  const record = '탐험 기록 ' + discovered(s).length + '/' + discoveryIds.length;
   if (!has(Q1.observed)) {
-    if (room === 'heart') return '심장 모형 관찰하기 (' + q1Seen(s).length + '/2) · 표식이 나가는 곳과 들어오는 곳';
-    return room === 'newsroom' ? '바디스코프 앞에 서서 심장 모형으로 들어가기' : '편집국의 바디스코프로 가기';
+    if (isHeartRoom(room)) {
+      const seen = q1Seen(s), n = seen.length;
+      if (!seen.includes('heart-in')) {
+        if (room === 'heart') return '돌아오는 문 찾기 (' + n + '/2) · 온몸을 돈 피가 우심방으로 들어오는 큰 정맥 입구';
+        return '우심방의 ‘돌아오는 문’도 봐야 해요 (' + n + '/2) · 피를 따라 한 바퀴 돌거나 귀환 후 다시 들어오기';
+      }
+      if (room === 'heart') return '내보내는 문 찾기 (1/2) · 삼첨판이 열릴 때 아래 우심실로 내려가기';
+      if (room === 'rv') return '내보내는 문 찾기 (1/2) · 우심실 위쪽 출구, 폐동맥판 관찰하기';
+      return '내보내는 문은 우심실의 폐동맥판이에요 (1/2) · 귀환 후 다시 들어오면 우심방부터 시작해요';
+    }
+    return room === 'newsroom' ? '바디스코프 앞에 서서 심장 속으로 들어가기' : '편집국의 바디스코프로 가기';
   }
-  if (room === 'heart') return '귀환 장치를 눌러 편집국으로 돌아가기';
+  if (isHeartRoom(room)) return '관찰 완료! 귀환 장치로 돌아가거나 피를 따라 계속 탐험하기 · ' + record;
   if (!has(Q1.briefed)) return room === 'newsroom' ? '편집장에게 관찰 결과 알리기' : '편집국으로 돌아가 편집장에게 알리기';
-  return '다음 업데이트: 끊긴 배달 길 잇기와 첫 기사 · 그동안 자유롭게 둘러보기';
+  return '바디스코프로 심장 속을 자유롭게 탐험하기 · ' + record + ' · 기사 작성은 다음 업데이트';
 }
 
 const say = (who: string, npc: string | null, ...texts: string[]): Line[] => texts.map(text => ({ who, text, npc }));
@@ -54,7 +67,7 @@ export function talk(id: string, s: GameState): Talk {
       return { flag: null, lines: say('바리스타', 'barista', s.cafe.welcomeUsed ? '또 오셨네요! 무엇으로 드릴까요?' : '비투비씨에 오신 걸 환영해요. 첫 방문이시면 아메리카노 한 잔은 무료예요.') };
     case 'guide': {
       const seen = q1Seen(s).length;
-      const lines = seen === 0 ? q1.guideFirst : seen === 1 ? [q1.guideOne] : [q1.guideBoth];
+      const lines = seen === 0 || !s.flags.includes(Q1.accepted) ? heart.guide : seen === 1 ? [q1.guideOne] : [q1.guideBoth];
       return { flag: null, lines: say('안내 로봇 바디', null, ...lines) };
     }
     default:

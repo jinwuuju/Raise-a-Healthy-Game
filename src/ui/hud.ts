@@ -1,7 +1,8 @@
 import { portrait } from '../art/character';
 import { levelOf } from '../domain/quest';
 import type { GameState } from '../domain/state';
-import type { RoomId } from '../world/types';
+import { REAL_CYCLE, SLOW, beat, ecg, openness, phaseAt } from '../domain/cardiac';
+import { isHeartRoom, type RoomId } from '../world/types';
 import { ICONS, button, el } from './dom';
 
 export type HudActions = { onChip: () => void; onNote: () => void; onMenu: () => void; onMap: () => void };
@@ -21,6 +22,13 @@ export class Hud {
   private toastEl = el('div', 'toast glass');
   private saveError = el('div', 'save-error glass hidden');
   private lastSaveError: string | null | undefined;
+  private cycle = el('section', 'cycle glass hidden');
+  private cycleCanvas = el('canvas');
+  private cyclePhase = el('b');
+  private avPill = el('span', 'pill', '방실판');
+  private slPill = el('span', 'pill', '반달판');
+  private cycleNote = el('p');
+  private lastPhase = '';
   private hintEl = el('div', 'hint glass', '화면을 누르면 걸어가요 · 사람이나 물건을 누르면 다가가서 말을 걸어요');
   private lookKey = '';
   private toastTimer = 0;
@@ -47,7 +55,13 @@ export class Hud {
     this.mini.setAttribute('role', 'button'); this.mini.setAttribute('aria-label', '동네 지도 크게 보기'); this.mini.tabIndex = 0;
     this.mini.addEventListener('click', e => { e.stopPropagation(); a.onMap(); });
     this.mini.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); a.onMap(); } });
-    tr.append(row, this.mini);
+    const ch = el('div', 'cycle-head'); ch.append(this.cyclePhase, el('small', '', '×' + SLOW + ' 느리게'));
+    const pills = el('div', 'pills'); pills.append(this.avPill, this.slPill);
+    this.cycle.append(ch, this.cycleCanvas, pills, this.cycleNote);
+    this.cycle.setAttribute('role', 'button'); this.cycle.setAttribute('aria-label', '심장 주기 · 눌러서 심장 길 안내 열기'); this.cycle.tabIndex = 0;
+    this.cycle.addEventListener('click', e => { e.stopPropagation(); a.onMap(); });
+    this.cycle.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); a.onMap(); } });
+    tr.append(row, this.mini, this.cycle);
 
     this.saveError.setAttribute('role', 'status');
     this.root.append(this.chip, this.quest, tr, this.banner, this.toastEl, this.hintEl, this.saveError);
@@ -90,8 +104,12 @@ export class Hud {
   }
 
   setRoom(room: RoomId, minimapBase: () => HTMLCanvasElement): void {
-    const street = room === 'street';
+    const street = room === 'street', heart = isHeartRoom(room);
     this.mini.classList.toggle('hidden', !street);
+    this.cycle.classList.toggle('hidden', !heart);
+    this.root.classList.toggle('in-heart', heart);
+    this.cycle.classList.toggle('lung', room === 'lung');
+    this.lastPhase = '';
     if (street && !this.miniBase) { this.miniBase = minimapBase(); this.miniCanvas.width = this.miniBase.width; this.miniCanvas.height = this.miniBase.height; }
   }
 
@@ -103,6 +121,34 @@ export class Hud {
     const x = Math.round(px / 8), y = Math.round(py / 8);
     g.fillStyle = 'rgba(255,255,255,' + (0.35 + 0.25 * Math.sin(t * 6)) + ')'; g.fillRect(x - 3, y - 3, 7, 7);
     g.fillStyle = '#ff5a6e'; g.fillRect(x - 2, y - 2, 5, 5); g.fillStyle = '#ffffff'; g.fillRect(x - 1, y - 1, 3, 3);
+  }
+
+  /** Cardiac cycle panel: lead-II–like trace over one beat, a cursor, the phase and which valves are open. */
+  drawCycle(real: number, dpr: number): void {
+    if (this.cycle.classList.contains('hidden')) return;
+    const cv = this.cycleCanvas, w = Math.round(cv.clientWidth * dpr) || 1, h = Math.round(cv.clientHeight * dpr) || 1;
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    const g = cv.getContext('2d')!;
+    g.clearRect(0, 0, w, h);
+    const X = (c: number) => (c / REAL_CYCLE) * w, Y = (v: number) => h * 0.72 - v * h * 0.6;
+    const ph = phaseAt(real);
+    g.fillStyle = 'rgba(255,120,140,0.10)';
+    g.fillRect(X(ph.from), 0, X(ph.to) - X(ph.from), h);
+    g.strokeStyle = 'rgba(127,220,202,0.25)'; g.lineWidth = 1 * dpr; g.beginPath(); g.moveTo(0, Y(0)); g.lineTo(w, Y(0)); g.stroke();
+    const c = beat(real);
+    g.lineWidth = 1.6 * dpr; g.lineJoin = 'round';
+    g.strokeStyle = '#7fdcca'; g.beginPath();
+    for (let x = 0; x <= w; x += Math.max(1, dpr)) { const v = ecg((x / w) * REAL_CYCLE); if (x === 0) g.moveTo(x, Y(v)); else g.lineTo(x, Y(v)); }
+    g.stroke();
+    g.fillStyle = '#ffffff'; g.fillRect(X(c) - dpr, 0, 2 * dpr, h);
+    g.beginPath(); g.arc(X(c), Y(ecg(c)), 2.6 * dpr, 0, Math.PI * 2); g.fill();
+    if (ph.id + ph.from !== this.lastPhase) {
+      this.lastPhase = ph.id + ph.from;
+      this.cyclePhase.textContent = ph.name;
+      this.cycleNote.textContent = ph.note;
+    }
+    this.avPill.classList.toggle('on', openness('av', real) > 0.5);
+    this.slPill.classList.toggle('on', openness('sl', real) > 0.5);
   }
 
   showBanner(text: string): void {

@@ -6,10 +6,13 @@ import { ellipse, makeCanvas, pixelText, type Sprite } from '../art/pixel';
 import { propSprite } from '../art/props';
 import type { Look } from '../domain/appearance';
 import type { TimeMode } from '../domain/state';
-import { canStand, crossingAt, doorAt, moveWithCollision, nearestTarget } from '../world/collision';
+import { passable, realTime, secondsUntilOpen, soundBetween } from '../domain/cardiac';
+import { canStand, crossingAt, doorAt, footRect, moveWithCollision, nearestTarget } from '../world/collision';
+import type { Valve } from '../world/organ-types';
 import { findPath } from '../world/path';
 import { T, rooms, tileAt, type Building, type Crossing, type Door, type Room, type Target } from '../world/rooms';
-import { TILE, type Dir, type Point, type RoomId } from '../world/types';
+import { TILE, overlap, type Dir, type Point, type RoomId } from '../world/types';
+import { HeartView, valveSet } from './heart-view';
 import { Traffic } from './traffic';
 
 export type Actor = { id: string; name: string; look: Look; x: number; y: number; facing: Dir; homeFacing: Dir; walk: number; moving: boolean; route: Point[] | null; leg: number; step: number; speed: number; wait: number };
@@ -34,6 +37,15 @@ export class World {
   questTargets: string[] = [];
   /** Waiting at a red pedestrian light: crossing being waited for. */
   waitingAt: Crossing | null = null;
+  /** Bodyscope heart: live layer of the current organ room, the beat clock (game seconds) and a valve being waited at. */
+  heart: HeartView | null = null;
+  heartClock = 0;
+  heldAt: Valve | null = null;
+  /** Undiscovered structures that sparkle faintly (heart rooms). */
+  sparkTargets: string[] = [];
+  onValveWait: (v: Valve, seconds: number) => void = () => {};
+  onBeat: (sound: 'S1' | 'S2') => void = () => {};
+  private beatWord: { text: string; t: number } | null = null;
   onSignalWait: (c: Crossing, seconds: number) => void = () => {};
   onDoor: (d: Door) => void = () => {};
   onNear: (t: Target | null) => void = () => {};
@@ -55,16 +67,24 @@ export class World {
     this.roomId = roomId; this.room = rooms[roomId];
     this.player = { id: 'player', name, look, x, y, facing, homeFacing: facing, walk: 0, moving: false, route: null, leg: 0, step: 1, speed: 0, wait: 0 };
     this.loadNpcs();
+    this.heart = this.room.organ ? new HeartView(this.room) : null;
     const d = doorAt(roomId, { x, y }); this.doorLatch = d ? d.id : null;
   }
+
+  /** Beat time in real (unslowed) seconds. */
+  get real(): number { return realTime(this.heartClock); }
+
+  /** Shows the heart-sound word above the reporter. */
+  showBeat(text: string): void { this.beatWord = { text, t: 0 }; }
 
   setRoom(roomId: RoomId, x: number, y: number, facing: Dir): void {
     this.roomId = roomId; this.room = rooms[roomId];
     this.player.x = x; this.player.y = y; this.player.facing = facing; this.player.moving = false;
     this.vel = { x: 0, y: 0 }; this.path = []; this.pendingTarget = null; this.marker = null; this.cam.ready = false; this.leaves = [];
-    this.stuck = 0; this.waitingAt = null;
+    this.stuck = 0; this.waitingAt = null; this.heldAt = null; this.beatWord = null;
     const d = doorAt(roomId, { x, y }); this.doorLatch = d ? d.id : null;
     this.loadNpcs();
+    this.heart = this.room.organ ? new HeartView(this.room) : null;
     this.near = null; this.onNear(null);
   }
 
@@ -122,6 +142,14 @@ export class World {
   update(dt: number, input: Input, inputEnabled = true): void {
     dt = Math.min(dt, motion.maxFrameMilliseconds / 1000);
     this.time += dt;
+    if (this.heart) {
+      const before = this.real;
+      this.heartClock += dt;
+      this.heart.update(dt, this.real);
+      const snd = soundBetween(before, this.real);
+      if (snd) this.onBeat(snd);
+      if (this.beatWord) { this.beatWord.t += dt; if (this.beatWord.t > 1.1) this.beatWord = null; }
+    }
     const p = this.player;
     const locked = this.locked || !inputEnabled;
     if (locked) this.stop();
@@ -148,20 +176,25 @@ export class World {
       const wp = this.path[0]!, rem = Math.hypot(wp.x - p.x, wp.y - p.y), st = Math.hypot(mx, my);
       if (st > rem && st > 0) { mx *= rem / st; my *= rem / st; }
     }
-    let waiting: Crossing | null = null;
+    let waiting: Crossing | null = null, held: { valve: Valve; backward: boolean } | null = null;
     if (mx || my) {
       const r = moveWithCollision(this.roomId, p, mx, my);
       waiting = this.lightBlocks(p, r);
-      if (waiting) { r.x = p.x; r.y = p.y; this.vel = { x: 0, y: 0 }; }
+      held = waiting ? null : this.valveBlocks(p, r);
+      if (waiting || held) { r.x = p.x; r.y = p.y; this.vel = { x: 0, y: 0 }; }
       const moved = Math.hypot(r.x - p.x, r.y - p.y);
       p.x = r.x; p.y = r.y; p.walk += moved; p.moving = moved > 0.02;
       if (r.blockedX) this.vel.x = 0;
       if (r.blockedY) this.vel.y = 0;
       const fx = dx || this.vel.x, fy = dy || this.vel.y;
       if (Math.abs(fx) > 0.05 || Math.abs(fy) > 0.05) p.facing = Math.abs(fx) > Math.abs(fy) * 1.08 ? (fx > 0 ? 'right' : 'left') : (fy > 0 ? 'down' : 'up');
-      this.stuck = moved < 0.05 && this.path.length && !waiting ? this.stuck + dt : 0;
+      this.stuck = moved < 0.05 && this.path.length && !waiting && !held ? this.stuck + dt : 0;
       if (this.stuck > 0.5) { this.path = []; this.pendingTarget = null; this.stuck = 0; }
+      if (held?.backward) { this.path = []; this.pendingTarget = null; this.marker = null; }
     } else p.moving = false;
+    if (held && held.valve.id !== this.heldAt?.id) this.onValveWait(held.valve, held.backward ? -1 : secondsUntilOpen(valveSet(held.valve), this.real));
+    this.heldAt = held && !held.backward ? held.valve : this.heldAt && (input.vx || input.vy || input.steer || this.path.length) ? this.heldAt : null;
+    if (this.heldAt && passable(valveSet(this.heldAt), this.real)) this.heldAt = null;
     if (waiting && waiting.id !== this.waitingAt?.id) this.onSignalWait(waiting, this.traffic.waitFor(waiting.road));
     this.waitingAt = waiting ?? (this.waitingAt && (input.vx || input.vy || input.steer || this.path.length) ? this.waitingAt : null);
     if (this.waitingAt && this.traffic.walk(this.waitingAt.road) === 'walk') this.waitingAt = null;
@@ -183,6 +216,25 @@ export class World {
     const c = crossingAt(this.roomId, to);
     if (!c || crossingAt(this.roomId, from)?.id === c.id) return null;
     return this.traffic.walk(c.road) === 'walk' ? null : c;
+  }
+
+  /**
+   * Heart valves: the reporter may step into an open valve in the direction of blood flow only.
+   * Approaching from the downstream side is always refused (valves stop backflow).
+   */
+  private valveBlocks(from: Point, to: Point): { valve: Valve; backward: boolean } | null {
+    const o = this.room.organ;
+    if (!o) return null;
+    const fa = footRect(from), fb = footRect(to);
+    for (const v of o.valves) {
+      if (!v.pass) continue;
+      const gate = { x: v.x, y: v.y - 5, w: v.w, h: 10 };
+      if (!overlap(fb, gate) || overlap(fa, gate)) continue;
+      const backward = v.toward === 1 ? from.y > v.y : from.y < v.y;
+      if (backward) return { valve: v, backward: true };
+      if (!passable(valveSet(v), this.real)) return { valve: v, backward: false };
+    }
+    return null;
   }
 
   private arrive(): void {
@@ -262,8 +314,9 @@ export class World {
     this.view = { x: cx, y: cy, w: vw, h: vh, zoom };
     const g = buf.g;
     g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
-    g.fillStyle = room.interior ? '#17141f' : '#2a2e3a'; g.fillRect(0, 0, vw, vh);
-    g.drawImage(this.ground(this.roomId), -cx, -cy);
+    g.fillStyle = room.organ ? '#170a12' : room.interior ? '#17141f' : '#2a2e3a'; g.fillRect(0, 0, vw, vh);
+    if (this.heart) this.heart.drawFloor(g, cx, cy, vw, vh, this.real);
+    else g.drawImage(this.ground(this.roomId), -cx, -cy);
     const tod = room.interior ? 'day' : this.resolvedTime();
 
     if (this.marker) {
@@ -271,18 +324,18 @@ export class World {
       ellipse(g, this.marker.x - cx, this.marker.y - cy, r + 1, Math.max(1, Math.round((r + 1) / 2)), 'rgba(255,240,190,0.55)');
     }
 
-    if (room.flow) this.drawFlow(g, cx, cy);
+    if (this.heart) ellipse(g, Math.round(p.x - cx), Math.round(p.y - cy), 8, 3, `rgba(127,240,242,${(0.25 + 0.15 * Math.sin(this.time * 3)).toFixed(3)})`);
     const items: Drawable[] = [];
     const inView = (x: number, y: number, w: number, h: number) => x + w > cx - 8 && x < cx + vw + 8 && y + h > cy - 8 && y < cy + vh + 8;
     for (const b of room.buildings) {
       if (!inView(b.x, b.y - b.h, b.w, b.d + b.h)) continue;
       items.push({ y: b.y + b.d, x: b.x, occluder: { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, draw: () => this.drawBuilding(g, b, cx, cy, tod === 'night') });
     }
-    const frame4 = Math.floor(this.time * 6) % 4, beat4 = Math.floor(this.time * 4.4) % 4;
+    const frame4 = Math.floor(this.time * 6) % 4;
     for (const pr of room.props) {
-      const s = propSprite(pr.kind, pr.v, pr.kind === 'heartcore' ? beat4 : pr.kind === 'fountain' || pr.kind === 'bodyscope' || pr.kind === 'robot' || pr.kind === 'pad' ? frame4 : 0);
+      const s = propSprite(pr.kind, pr.v, pr.kind === 'fountain' || pr.kind === 'bodyscope' || pr.kind === 'robot' || pr.kind === 'pad' ? frame4 : 0);
       if (!inView(pr.x - s.ax, pr.y - s.ay, s.c.width, s.c.height)) continue;
-      const tall = pr.kind === 'ginkgo' || pr.kind === 'parktree' || pr.kind === 'bookshelf' || pr.kind === 'lamp' || pr.kind === 'heartcore';
+      const tall = pr.kind === 'ginkgo' || pr.kind === 'parktree' || pr.kind === 'bookshelf' || pr.kind === 'lamp' || pr.kind === 'papillary';
       items.push({ y: pr.y, x: pr.x, occluder: tall ? { x: pr.x - s.ax + 3, y: pr.y - s.ay, w: s.c.width - 6, h: s.c.height - 10 } : null, draw: () => {
         this.blit(g, s, pr.x, pr.y, cx, cy);
         if (pr.kind === 'signal') this.drawSignal(g, pr.x, pr.y, pr.v === 1 ? 'EW' : 'NS', cx, cy);
@@ -290,6 +343,11 @@ export class World {
       } });
     }
     for (const n of this.npcs) items.push({ y: n.y, x: n.x, occluder: null, draw: () => this.drawActor(g, n, cx, cy) });
+    const hv = this.heart;
+    if (hv) for (const b of hv.organ.bands) {
+      const x0 = Math.min(b.x1, b.x2), y0 = Math.min(b.y1, b.y2) - b.lift - b.thick;
+      items.push({ y: hv.bandY(b, p.x), x: x0, occluder: { x: x0, y: y0, w: Math.abs(b.x2 - b.x1), h: b.thick + 2 }, draw: () => hv.drawBand(g, b, cx, cy, this.real) });
+    }
     if (this.roomId === 'street') for (const car of this.traffic.cars) {
       const a = this.traffic.anchor(car);
       if (!inView(a.x - car.sprite.ax, a.y - car.sprite.ay, car.sprite.c.width, car.sprite.c.height)) continue;
@@ -306,10 +364,11 @@ export class World {
     for (const l of this.leaves) { g.fillStyle = l.c; g.fillRect(Math.round(l.x - cx), Math.round(l.y - cy), 2, 1); }
     if (room.interior) for (const pd of room.interior.pendants) this.drawPendant(g, pd.x - cx, pd.y - cy);
     if (!room.interior && tod !== 'day') this.applyLight(g, vw, vh, cx, cy, tod);
-    if (this.roomId === 'heart') { const pulse = Math.max(0, Math.sin(this.time * Math.PI * 2 * 1.1)) ** 3; g.fillStyle = `rgba(220,40,80,${(0.03 + pulse * 0.07).toFixed(3)})`; g.fillRect(0, 0, vw, vh); }
+    if (this.heart) this.heart.drawOverlay(g, cx, cy, vw, vh, this.real);
 
     out.imageSmoothingEnabled = false;
-    out.drawImage(buf.c, 0, 0, vw * zoom, vh * zoom);
+    const shake = this.beatWord && this.beatWord.t < 0.12 ? (this.beatWord.text === '쿵' ? zoom : -zoom) : 0;
+    out.drawImage(buf.c, 0, shake, vw * zoom, vh * zoom);
     this.drawLabels(out, cx, cy, zoom, dpr);
   }
 
@@ -365,28 +424,6 @@ export class World {
     };
     if (ph === 'stop') fig(['..##..', '.####.', '..##..', '.#..#.'], 2, '#ff4a3a');
     else if (ph === 'walk' || Math.floor(this.time * 4) % 2 === 0) fig(['...##.', '..###.', '.#.#..', '#...#.'], 9, '#3ae07a');
-  }
-
-  /** Moving blood markers along the model loop; every other one carries a white delivery slip. */
-  private drawFlow(g: CanvasRenderingContext2D, cx: number, cy: number): void {
-    const pts = this.room.flow!;
-    const seg: number[] = [];
-    let total = 0;
-    for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i]!.x - pts[i - 1]!.x, pts[i]!.y - pts[i - 1]!.y); seg.push(d); total += d; }
-    const offset = this.time * 30 + 3 * Math.sin(this.time * Math.PI * 2 * 1.1);
-    const n = 18;
-    for (let k = 0; k < n; k++) {
-      let d = (offset + (k * total) / n) % total;
-      let i = 0;
-      while (i < seg.length - 1 && d > seg[i]!) { d -= seg[i]!; i++; }
-      const a = pts[i]!, b = pts[i + 1]!, t = seg[i] ? d / seg[i]! : 0;
-      const x = a.x + (b.x - a.x) * t, y = a.y + (b.y - a.y) * t;
-      if (this.room.flowHidden.some(h => x >= h.x && x < h.x + h.w && y >= h.y && y < h.y + h.h)) continue;
-      const sx = Math.round(x - cx), sy = Math.round(y - cy);
-      ellipse(g, sx, sy, 3, 2, '#7a1428'); ellipse(g, sx, sy - 1, 3, 2, '#ee3b55');
-      g.fillStyle = '#ff9aaa'; g.fillRect(sx - 2, sy - 2, 2, 1);
-      if (k % 2 === 0) { g.fillStyle = '#ffffff'; g.fillRect(sx, sy - 2, 2, 2); }
-    }
   }
 
   private drawPendant(g: CanvasRenderingContext2D, x: number, y: number): void {
@@ -455,6 +492,22 @@ export class World {
     for (const id of this.questTargets) {
       const t = this.room.targets.find(q => q.id === id);
       if (t && this.near?.id !== id) mark(t.x, t.y - 34);
+    }
+    for (const id of this.sparkTargets) {
+      const t = this.room.targets.find(q => q.id === id);
+      if (!t || this.near?.id === id || this.questTargets.includes(id)) continue;
+      const tw = 0.5 + 0.5 * Math.sin(this.time * 2.6 + t.x * 0.05);
+      const sx = (t.x - cx) * zoom, sy = (t.y - 10 - cy) * zoom, r = (2 + tw * 2.5) * dpr;
+      out.fillStyle = `rgba(255,246,214,${(0.35 + tw * 0.5).toFixed(3)})`;
+      out.beginPath(); out.moveTo(sx, sy - r * 2); out.lineTo(sx + r * 0.5, sy - r * 0.5); out.lineTo(sx + r * 2, sy); out.lineTo(sx + r * 0.5, sy + r * 0.5);
+      out.lineTo(sx, sy + r * 2); out.lineTo(sx - r * 0.5, sy + r * 0.5); out.lineTo(sx - r * 2, sy); out.lineTo(sx - r * 0.5, sy - r * 0.5); out.closePath(); out.fill();
+    }
+    if (this.beatWord) {
+      const w = this.beatWord, a = Math.max(0, 1 - w.t / 1.1), rise = w.t * 14;
+      const sx = (this.player.x + 16 - cx) * zoom, sy = (this.player.y - top - 6 - cy) * zoom - rise * dpr;
+      out.save(); out.globalAlpha = a; out.font = LABEL_FONT(Math.round(20 * dpr)); out.lineWidth = 5 * dpr; out.strokeStyle = 'rgba(40,6,16,0.9)';
+      out.strokeText(w.text, sx, sy); out.fillStyle = w.text === '쿵' ? '#ffd1d6' : '#fff2c4'; out.fillText(w.text, sx, sy); out.restore();
+      out.font = LABEL_FONT(fs);
     }
     const nearNpc = this.near?.npc ? this.npcs.find(a => a.id === this.near!.npc) : null;
     if (nearNpc && nearNpc.id !== this.questNpc && !this.locked) {

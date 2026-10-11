@@ -1,6 +1,7 @@
 """Verify the runtime bundle keeps the content boundary.
 
-D041: the Q001 entry (offer -> Bodyscope -> heart model -> two observations) ships as a labelled draft.
+D041/D056: the Q001 entry and the Bodyscope heart interior (data/content/heart-interior.v0.1.json)
+ship as labelled drafts.
 Draft quest text may appear only together with the in-game disclaimer, never as reviewed content, and
 design catalogs, examples and raw/source files must stay out of the bundle.
 """
@@ -20,4 +21,8 @@ for path in dist.rglob('*'):
             if '사라진 혈액 배달표' in text or 'heart-out' in text:
                 assert DISCLAIMER in text, 'Draft Q001 content must carry the in-game disclaimer'
                 assert 'draft_unreviewed' in text, 'Q001 content must keep its draft status in the bundle'
-print('Game build boundary passed: Q001 entry is labelled as an unreviewed model; no catalogs, examples or raw/source files')
+            if 'content.heart.interior' in text or 'hx-moderator' in text:
+                assert DISCLAIMER in text, 'Draft heart interior content must carry the in-game disclaimer'
+                assert 'draft_unreviewed' in text, 'Heart interior content must keep its draft status in the bundle'
+                assert 'medical_reviewed' not in text, 'Heart interior content must not claim review'
+print('Game build boundary passed: Q001 and the heart interior are labelled as unreviewed drafts; no catalogs, examples or raw/source files')

@@ -1,7 +1,7 @@
 import { defaultAppearance, outfits, presets, starterOutfits, validateAppearance, type Appearance, type OutfitId, type Preset } from './appearance';
 import { canStand } from '../world/collision';
 import { rooms } from '../world/rooms';
-import { roomIds, type Dir, type RoomId } from '../world/types';
+import { isHeartRoom, roomIds, type Dir, type RoomId } from '../world/types';
 
 export type TimeMode = 'day' | 'dusk' | 'night' | 'auto';
 export const timeModes: Record<TimeMode, string> = { day: '낮', dusk: '노을', night: '밤', auto: '실제 시간' };
@@ -54,7 +54,14 @@ export function validateState(value: unknown): GameState {
   const preset = a.preset as Preset;
   const look = validateAppearance(a.look, preset, true);
   if (!strings(s.owned) || !s.owned.every(id => Object.hasOwn(outfits, id)) || !s.owned.includes(look.outfit)) throw new Error('옷장 기록이 잘못되었습니다.');
-  if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir) || !canStand(at.room as RoomId, { x: at.x, y: at.y })) throw new Error('저장된 위치가 올바르지 않습니다.');
+  if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir)) throw new Error('저장된 위치가 올바르지 않습니다.');
+  let place = { room: at.room as RoomId, x: at.x, y: at.y, facing: at.facing as Dir };
+  if (!canStand(place.room, place)) {
+    // The heart was rebuilt (D056): a position saved in the old heart model moves to that room's safe entry point.
+    if (!isHeartRoom(place.room)) throw new Error('저장된 위치가 올바르지 않습니다.');
+    const r = rooms[place.room];
+    place = { room: place.room, x: r.spawn.x, y: r.spawn.y, facing: r.spawnFacing };
+  }
   if (!integer(s.totalXp) || !integer(s.gold) || !strings(s.ledger, Infinity) || !strings(s.inspected) || !strings(s.flags)) throw new Error('진행 기록이 잘못되었습니다.');
   if (!cafe || typeof cafe.welcomeUsed !== 'boolean' || !integer(cafe.orderCount) || (cafe.restedAt !== null && !date(cafe.restedAt))) throw new Error('카페 기록이 잘못되었습니다.');
   const lo = cafe.lastOrder as Record<string, unknown> | null;
@@ -64,7 +71,7 @@ export function validateState(value: unknown): GameState {
     schemaVersion: 4, contentVersion: 'redesign-1', balanceVersion: 'cafe-0.1', saveId: s.saveId, revision: s.revision,
     createdAt: s.createdAt, updatedAt: s.updatedAt, started: s.started,
     avatar: { preset, name: a.name.trim(), look }, owned: [...s.owned] as OutfitId[],
-    at: { room: at.room as RoomId, x: at.x, y: at.y, facing: at.facing as Dir },
+    at: place,
     totalXp: s.totalXp, gold: s.gold, ledger: [...s.ledger], inspected: [...s.inspected], flags: [...s.flags],
     cafe: { welcomeUsed: cafe.welcomeUsed, orderCount: cafe.orderCount, restedAt: (cafe.restedAt as string | null), lastOrder: lo ? { itemId: lo.itemId as string, price: lo.price as number, orderedAt: lo.orderedAt as string } : null },
     settings: { time },

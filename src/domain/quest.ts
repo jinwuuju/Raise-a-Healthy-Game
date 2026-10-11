@@ -1,13 +1,16 @@
+import { isHeartRoom, type RoomId } from '../world/types';
 import { grantOnce, type GameState } from './state';
 
 /*
- * Q001 entry rules (P2-01 scope): accept -> enter the heart model -> two observations -> return.
+ * Q001 entry rules (P2-01 scope): accept -> enter the heart -> two observations -> return.
+ * ‘Returning door’ = inferior vena cava opening in the right atrium; ‘sending door’ = pulmonary valve in the right ventricle.
  * Flags and inspected keys live in the existing schema-4 save, so no migration is needed.
  * The observation checkpoint pays 20 XP once (part of Q001's 100 XP total, see data/examples/quest.example.json).
  */
 export const Q1 = { accepted: 'q001-accepted', entered: 'q001-entered', observed: 'q001-observed', briefed: 'q001-briefed' } as const;
 export const Q1_OBSERVATIONS = ['heart-out', 'heart-in'] as const;
 export type Q1Observation = (typeof Q1_OBSERVATIONS)[number];
+export const Q1_ROOM: Record<Q1Observation, RoomId> = { 'heart-in': 'heart', 'heart-out': 'rv' };
 export const Q1_OBSERVE_REWARD = { key: 'quest.Q001.observe', xp: 20, gold: 0 } as const;
 
 const has = (s: GameState, f: string) => s.flags.includes(f);
@@ -31,8 +34,9 @@ export function canEnterHeart(s: GameState): string | null {
 
 export function observeQ1(s: GameState, id: string): GameState {
   if (!has(s, Q1.accepted)) throw new Error('먼저 편집장에게 취재를 받아야 해요.');
-  if (s.at.room !== 'heart') throw new Error('심장 모형 안에서 관찰할 수 있어요.');
   if (!(Q1_OBSERVATIONS as readonly string[]).includes(id)) throw new Error('관찰할 수 없는 대상이에요.');
+  if (!isHeartRoom(s.at.room)) throw new Error('심장 속에서 관찰할 수 있어요.');
+  if (s.at.room !== Q1_ROOM[id as Q1Observation]) throw new Error('그 구조는 지금 있는 곳에 없어요.');
   let next = s.inspected.includes(obsKey(id)) ? s : { ...s, inspected: [...s.inspected, obsKey(id)] };
   if (q1Seen(next).length === Q1_OBSERVATIONS.length && !has(next, Q1.observed)) {
     next = addFlag(grantOnce(next, Q1_OBSERVE_REWARD.key, Q1_OBSERVE_REWARD), Q1.observed);

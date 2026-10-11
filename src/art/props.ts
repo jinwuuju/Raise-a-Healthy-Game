@@ -74,28 +74,25 @@ function bodyscope(frame: number): Sprite {
   });
 }
 
-/** Stylised model heart (not anatomical): two lobes, an exit gate on the right and an entry gate on the left. */
-function heartcore(frame: number): Sprite {
-  const beat = [0, 1, 2, 1][frame % 4]!;
-  return sprite(72, 66, 36, 62, g => {
-    ellipse(g, 36, 56, 30, 6, '#a52a42');
-    const r = 15 + beat, cy = 26 - beat;
-    const inside = (x: number, y: number) => {
-      const l = (x - 24) ** 2 + (y - cy) ** 2 <= r * r, rr = (x - 48) ** 2 + (y - cy) ** 2 <= r * r;
-      const tri = y >= cy && y <= 58 - beat && Math.abs(x - 36) <= (58 - beat - y) * 1.15;
-      return l || rr || tri;
-    };
-    for (let y = 0; y < 66; y++) for (let x = 0; x < 72; x++) {
-      if (!inside(x, y)) continue;
-      const lit = -((x - 26) * 0.6 + (y - cy + 6) * 0.9) / 30;
-      px(g, x, y, lit > 0.45 ? '#ff9aa8' : lit > 0.05 ? '#f0596e' : lit > -0.45 ? '#d43c55' : '#a8293f');
+/** Papillary muscle: a conical muscle column rising from the ventricle wall; chordae attach at its pale tip. v: 0 large, 1 medium, 2 small. */
+function papillary(v: number): Sprite {
+  const [w, h, tipY] = v === 0 ? [24, 40, 4] : v === 1 ? [20, 36, 4] : [16, 26, 4];
+  const ay = h - 2, mid = w / 2;
+  return sprite(w, h, Math.floor(mid), ay, g => {
+    ellipse(g, mid, ay - 1, mid - 2, 3, '#5a1424');
+    for (let y = tipY; y <= ay; y++) {
+      const t = (y - tipY) / (ay - tipY), half = 2 + (mid - 4) * Math.pow(t, 0.8);
+      for (let x = Math.round(mid - half); x <= Math.round(mid + half); x++) {
+        const u = (x - mid) / half;
+        const fib = Math.sin(x * 1.7 + y * 0.25) > 0.6;
+        const c = u < -0.45 ? '#cf6676' : u < 0.1 ? (fib ? '#b44a5b' : '#a8404f') : u < 0.6 ? '#8c3242' : '#6c2333';
+        px(g, x, y, c);
+      }
     }
-    for (const [x0, y0] of [[22, 18], [26, 15], [31, 14]] as [number, number][]) px(g, x0, y0 - beat, '#ffd6dc');
-    for (let i = 0; i < 9; i++) { px(g, 30 + i, 38 + Math.round(Math.sin(i * 0.9) * 2), '#b22d47'); }
-    // Gates: entry (left, blue arrow in) and exit (right, red arrow out).
-    rect(g, 2, 44, 12, 14, '#5c2134'); rect(g, 3, 45, 10, 12, '#f2dbe0'); rect(g, 4, 50, 6, 2, '#4a7fd0'); px(g, 10, 49, '#4a7fd0'); px(g, 10, 52, '#4a7fd0'); px(g, 11, 50, '#4a7fd0'); px(g, 11, 51, '#4a7fd0');
-    rect(g, 58, 44, 12, 14, '#5c2134'); rect(g, 59, 45, 10, 12, '#f2dbe0'); rect(g, 61, 50, 6, 2, '#e04a5e'); px(g, 67, 49, '#e04a5e'); px(g, 67, 52, '#e04a5e'); px(g, 68, 50, '#e04a5e'); px(g, 68, 51, '#e04a5e');
-  }, '#4a1424');
+    for (let k = -2; k <= 2; k++) px(g, mid + k, tipY, '#efd4cc');
+    for (let k = -1; k <= 1; k++) px(g, mid + k, tipY + 1, '#e2b9b3');
+    px(g, mid - 1, tipY + 3, '#f2a5ad'); px(g, mid - 2, tipY + 6, '#e88e98');
+  }, '#46101e');
 }
 
 function robot(frame: number): Sprite {
@@ -303,11 +300,11 @@ export function propSprite(kind: PropKind, v: number, frame = 0): Sprite {
     if (!s) { s = carSprite(['sedan', 'suv', 'sedan', 'taxi', 'sedan'][v % 5] as 'sedan', CAR_COLORS[v % CAR_COLORS.length]!, 'up'); cache.set(key, s); }
     return s;
   }
-  const animated = kind === 'fountain' || kind === 'bodyscope' || kind === 'heartcore' || kind === 'robot' || kind === 'pad';
+  const animated = kind === 'fountain' || kind === 'bodyscope' || kind === 'robot' || kind === 'pad';
   const key = kind + ':' + v + ':' + (animated ? frame : 0);
   let s = cache.get(key);
   if (!s) {
-    s = kind === 'fountain' ? fountain(frame) : kind === 'bodyscope' ? bodyscope(frame) : kind === 'heartcore' ? heartcore(frame) : kind === 'robot' ? robot(frame) : kind === 'pad' ? pad(frame) : (builders[kind] ?? builders.bench!)(v, frame);
+    s = kind === 'fountain' ? fountain(frame) : kind === 'bodyscope' ? bodyscope(frame) : kind === 'papillary' ? papillary(v) : kind === 'robot' ? robot(frame) : kind === 'pad' ? pad(frame) : (builders[kind] ?? builders.bench!)(v, frame);
     cache.set(key, s);
   }
   return s;

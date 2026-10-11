@@ -187,16 +187,15 @@ function interior(g: Ctx, room: Room) {
     rect(g, r.x, r.y + r.h, r.w, 1, 'rgba(0,0,0,0.18)');
   }
   // Back wall face (3 tiles tall) with cap.
-  const face = it.wall === 'office' ? '#efe6d2' : it.wall === 'lobby' ? '#dfe3e8' : it.wall === 'heart' ? '#8a2b43' : '#c4785a';
+  const face = it.wall === 'office' ? '#efe6d2' : it.wall === 'lobby' ? '#dfe3e8' : '#c4785a';
   rect(g, 0, 0, W, 48, face);
   if (it.wall === 'office') for (let x = 0; x < W; x += 6) rect(g, x, 4, 1, 30, '#e6dcc6');
   if (it.wall === 'lobby') { for (let x = 0; x < W; x += 32) rect(g, x, 4, 1, 32, '#c9ced6'); rect(g, 0, 20, W, 1, '#c9ced6'); }
-  if (it.wall === 'heart') for (let i = 0; i < 18; i++) { const vx = Math.floor(hash2(i, 1, 12) * W), vy = 6 + Math.floor(hash2(i, 2, 12) * 22); for (let k = 0; k < 14; k++) px(g, vx + k, vy + Math.round(Math.sin((k + i) * 0.7) * 2), '#a8405a'); }
   if (it.wall === 'cafe') for (let y = 4; y < 34; y += 4) for (let x = ((y / 4) % 2) * 4; x < W; x += 8) { rect(g, x, y + 3, 8, 1, '#a75f45'); px(g, x, y, '#a75f45'); }
-  const wain = it.wall === 'office' ? ['#a87a4f', '#c0915f'] : it.wall === 'lobby' ? ['#8c919b', '#a8adb6'] : it.wall === 'heart' ? ['#5e1a2e', '#7a2a40'] : ['#6e4630', '#8a5a3c'];
+  const wain = it.wall === 'office' ? ['#a87a4f', '#c0915f'] : it.wall === 'lobby' ? ['#8c919b', '#a8adb6'] : ['#6e4630', '#8a5a3c'];
   rect(g, 0, 34, W, 12, wain[0]!); rect(g, 0, 34, W, 1, wain[1]!); for (let x = 8; x < W; x += 16) rect(g, x, 36, 1, 9, shade(wain[0]!, -0.15));
   rect(g, 0, 46, W, 2, '#4e3a2c'); rect(g, 0, 48, W, 2, 'rgba(0,0,0,0.16)');
-  const edge = it.wall === 'heart' ? '#4a1a2c' : '#3d3550', edgeHi = it.wall === 'heart' ? '#6e2a42' : '#5a4f6e';
+  const edge = '#3d3550', edgeHi = '#5a4f6e';
   rect(g, 0, 0, W, 4, edge); rect(g, 0, 4, W, 1, edgeHi);
   for (const dcr of it.decor) decor(g, dcr, it.wall);
   // Side walls and front wall seen from above.

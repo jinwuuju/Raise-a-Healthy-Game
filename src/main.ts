@@ -1,10 +1,11 @@
 import './ui/style.css';
 import motion from '../data/balance/movement.v0.2.json';
 import { Game } from './application/game';
-import { inspectLabels, lookText, objective, q1Text, talk, type Line } from './application/story';
+import { heartText, inspectLabels, lookText, objective, q1Text, talk, type Line } from './application/story';
+import { discovered, discoveries, discoveryIds, roomProgress } from './domain/heart';
 import { outfits, presetNames, type Look } from './domain/appearance';
 import { cafeMenu, canOrder } from './domain/cafe';
-import { Q1, Q1_OBSERVATIONS, canEnterHeart, levelOf, obsKey, q1CanOffer, q1Seen } from './domain/quest';
+import { Q1, Q1_OBSERVATIONS, Q1_ROOM, canEnterHeart, levelOf, obsKey, q1CanOffer, q1Seen } from './domain/quest';
 import { timeModes, type TimeMode } from './domain/state';
 import { SaveStore } from './infrastructure/save';
 import { World } from './game/world';
@@ -13,7 +14,9 @@ import { button, el } from './ui/dom';
 import { Hud } from './ui/hud';
 import { openCreator } from './ui/creator';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
-import { rooms, type Door, type Target } from './world/rooms';
+import { heartRoute } from './world/heart-rooms';
+import { rooms, type Target } from './world/rooms';
+import { isHeartRoom, type Dir, type Point, type RoomId } from './world/types';
 
 class MemoryStorage implements Storage {
   private m = new Map<string, string>();
@@ -43,7 +46,7 @@ const game = new Game(await storage());
 const canvas = el('canvas'); canvas.id = 'view'; canvas.tabIndex = 0; canvas.setAttribute('aria-label', '게임 화면');
 document.querySelector('#app')!.append(canvas);
 const ctx = canvas.getContext('2d', { alpha: false })!;
-const fade = el('div', 'fade'); document.body.append(fade);
+const fade = el('div', 'fade'); const fadeCard = el('div', 'card'); fade.append(fadeCard); document.body.append(fade);
 
 let world: World | null = null;
 const npcLooks: Record<string, Look> = {};
@@ -78,7 +81,7 @@ window.addEventListener('keydown', e => {
   else if ((k === 'e' || k === ' ' || k === 'enter') && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); if (world?.near && !busy()) interact(world.near); }
   else if (k === 'escape') { e.preventDefault(); openMenu(); }
   else if (k === 'j' || k === 'n') openNotebook();
-  else if (k === 'm' && world?.roomId === 'street') openMap();
+  else if (k === 'm' && world && (world.roomId === 'street' || isHeartRoom(world.roomId))) openMap();
 });
 window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
 window.addEventListener('blur', pauseInput);
@@ -158,6 +161,7 @@ function frame(now: number) {
     saveClock += dt; miniClock += dt;
     if (saveClock > 8) { saveClock = 0; if (game.needsSave) game.persist(); }
     if (miniClock > 0.12) { miniClock = 0; hud.drawMinimap(p.x, p.y, now / 1000); }
+    if (world.heart) hud.drawCycle(world.real, dpr());
   } else { ctx.fillStyle = '#15111f'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
   requestAnimationFrame(frame);
 }
@@ -177,14 +181,22 @@ function refresh() {
   world.questNpc = world.roomId === 'newsroom' && needEditor ? 'editor' : null;
   world.questTargets = [];
   if (world.roomId === 'newsroom' && has(Q1.accepted) && !has(Q1.observed)) world.questTargets = ['device'];
-  if (world.roomId === 'heart') world.questTargets = has(Q1.observed) ? ['return-pad'] : Q1_OBSERVATIONS.filter(id => !s.inspected.includes(obsKey(id)));
+  world.sparkTargets = [];
+  if (isHeartRoom(world.roomId)) {
+    const here = world.roomId;
+    world.questTargets = has(Q1.accepted) && !has(Q1.observed) ? Q1_OBSERVATIONS.filter(id => Q1_ROOM[id] === here && !s.inspected.includes(obsKey(id))) : has(Q1.observed) && !has(Q1.briefed) ? ['return-pad'] : [];
+    const found = discovered(s);
+    world.sparkTargets = world.room.targets.filter(t => t.id.startsWith('hx-') && !found.includes(t.id)).map(t => t.id);
+  }
 }
 game.subscribe(refresh);
 
 function startWorld() {
   const s = game.state;
   world = new World(s.at.room, s.at.x, s.at.y, s.at.facing, s.avatar.look, s.avatar.name);
-  world.onDoor = d => travel(d);
+  world.onDoor = d => travel({ to: d.to, arrive: d.arrive, facing: d.facing, mode: isHeartRoom(d.to) || isHeartRoom(world!.roomId) ? 'flow' : 'walk', card: d.card ?? null });
+  world.onValveWait = (v, sec) => hud.toast(sec < 0 ? '판막은 거꾸로 열리지 않아요. 피는 한 방향으로만 흘러요.' : (heartText.valves as Record<string, { wait: string }>)[v.kind]!.wait + ' · 약 ' + Math.max(1, Math.ceil(sec)) + '초');
+  world.onBeat = snd => { if (world && world.roomId !== 'lung') world.showBeat(heartText.sounds[snd]); };
   world.onSignalWait = (_c, sec) => hud.toast(sec > 0 ? '빨간불이에요. 초록불이 켜지면 건너요 · 약 ' + Math.ceil(sec) + '초' : '보행 신호가 곧 바뀌어요. 다음 초록불을 기다려요.');
   world.onTarget = t => interact(t);
   hud.setVisible(true);
@@ -195,7 +207,8 @@ function startWorld() {
   if (game.lastError) hud.toast(game.lastError, true);
 }
 
-type Trip = Pick<Door, 'to' | 'arrive' | 'facing'> & { from?: string };
+/** walk: ordinary doors · scope-in/out: the Bodyscope · flow: following the blood between heart rooms. */
+type Trip = { to: RoomId; arrive: Point; facing: Dir; mode: 'walk' | 'scope-in' | 'scope-out' | 'flow'; card?: string | null };
 let traveling = false;
 function travel(d: Trip) {
   if (!world) return;
@@ -203,19 +216,30 @@ function travel(d: Trip) {
   traveling = true;
   w.locked = true; keys.clear(); pointer.id = -1;
   fade.classList.add('on');
-  if (d.to === 'heart' || d.from === 'heart') fade.classList.add('scope');
+  if (d.mode === 'flow') fade.classList.add('flow'); else if (d.mode !== 'walk') fade.classList.add('scope');
+  fadeCard.textContent = d.card ?? '';
+  fadeCard.classList.toggle('show', !!d.card);
+  const wait = d.mode === 'walk' ? 210 : d.card ? 1700 : d.mode === 'flow' ? 600 : 560;
   window.setTimeout(() => {
-    try { if (d.to === 'heart') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
+    try { if (d.mode === 'scope-in') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
     catch (e) { hud.toast(e instanceof Error ? e.message : '이동하지 못했어요.', true); }
     w.setRoom(game.state.at.room, game.state.at.x, game.state.at.y, game.state.at.facing);
     hud.setRoom(w.roomId, () => w.minimapBase());
     refresh();
-    fade.classList.remove('on', 'scope');
+    fade.classList.remove('on', 'scope', 'flow'); fadeCard.classList.remove('show');
     hud.showBanner(rooms[w.roomId].title);
-    if (w.roomId === 'heart') hud.toast(q1Text.disclaimer);
+    if (d.mode === 'scope-in') hud.toast(heartText.disclaimer);
     if (!game.persist()) hud.toast('저장하지 못했어요: ' + game.lastError, true);
-    window.setTimeout(() => { w.locked = false; traveling = false; }, 120);
-  }, d.to === 'heart' || d.from === 'heart' ? 520 : 210);
+    window.setTimeout(() => {
+      w.locked = false; traveling = false;
+      // First time inside the heart: the guide robot explains valves and the cycle panel once.
+      if (d.mode === 'scope-in' && !game.has('heart-guided')) {
+        const guide = w.room.targets.find(t => t.id === 'guide');
+        game.flag('heart-guided');
+        if (guide) window.setTimeout(() => { if (!busy()) void interact(guide); }, 500);
+      }
+    }, 120);
+  }, wait);
 }
 
 async function say(lines: Line[]) { if (lines.length) await dialog.show(lines); }
@@ -238,19 +262,23 @@ async function interact(t: Target) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
         [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
       game.inspect(t.id);
-      if (go === 'enter') travel({ to: 'heart', arrive: rooms.heart.spawn, facing: 'up' });
+      if (go === 'enter') travel({ to: 'heart', arrive: rooms.heart.spawn, facing: rooms.heart.spawnFacing, mode: 'scope-in', card: heartText.entryCard });
     } else if (t.id === 'heart-out' || t.id === 'heart-in') {
       const obs = q1Text.observations[t.id];
       await say([{ who: t.label, text: obs.text, npc: null }]);
       const r = game.observe(t.id);
       if (r.first) hud.toast('수첩에 적음 · ' + obs.note);
-      if (r.done) window.setTimeout(() => hud.toast('관찰 2개 완료! +20XP · 귀환 장치로 돌아가요'), 1600);
+      if (r.done) window.setTimeout(() => hud.toast('관찰 2개 완료! +20XP · 귀환 장치로 돌아가거나 계속 탐험해요'), 1600);
+    } else if (t.id.startsWith('hx-') && discoveries[t.id]) {
+      const d = discoveries[t.id]!;
+      await say([{ who: d.name, text: d.text, npc: null }]);
+      if (game.discover(t.id)) hud.toast('탐험 기록 · ' + d.name + ' (' + discovered(game.state).length + '/' + discoveryIds.length + ')');
     } else if (t.id === 'guide') {
       await say(talk('guide', game.state).lines);
     } else if (t.id === 'return-pad') {
       const go = await dialog.show([{ who: '귀환 장치', text: q1Text.returnPad, npc: null }],
-        [{ id: 'go', label: q1Text.returnChoices.go, sub: q1Text.returnChoices.goSub, disabled: false }]);
-      if (go === 'go') travel({ to: 'newsroom', arrive: { x: 308, y: 152 }, facing: 'down', from: 'heart' });
+        [{ id: 'go', label: q1Text.returnChoices.go, sub: q1Text.returnChoices.goSub, disabled: false }, { id: 'stay', label: q1Text.returnChoices.stay, sub: q1Text.returnChoices.staySub, disabled: false }]);
+      if (go === 'go') travel({ to: 'newsroom', arrive: { x: 308, y: 152 }, facing: 'down', mode: 'scope-out' });
     } else {
       const text = lookText[t.id] ?? '';
       await say([{ who: t.label, text, npc: null }]);
@@ -311,6 +339,18 @@ function openNotebook() {
       q.append(ul, el('p', 'muted', q1Text.disclaimer + '. 기사 쓰기는 다음 업데이트에서 열려요.'));
       c.append(q);
     }
+    if (s.flags.includes(Q1.entered)) {
+      const h = el('div'); h.append(el('h3', '', '심장 탐험 기록 ' + discovered(s).length + '/' + discoveryIds.length));
+      const found = discovered(s);
+      for (const room of heartRoute) {
+        const pr = roomProgress(s, room);
+        const ul = el('ul', 'notes');
+        for (const id of discoveryIds.filter(i => discoveries[i]!.room === room)) ul.append(el('li', found.includes(id) ? '' : 'muted', found.includes(id) ? discoveries[id]!.name : '??? (아직 찾지 못함)'));
+        h.append(el('p', '', rooms[room].title + ' · ' + pr.found + '/' + pr.total), ul);
+      }
+      h.append(el('p', 'muted', heartText.disclaimer));
+      c.append(h);
+    }
     const life = el('div'); life.append(el('h3', '', '생활'), el('p', '', '비투비씨 주문 ' + s.cafe.orderCount + '회 · 첫 방문 커피 ' + (s.cafe.welcomeUsed ? '받음' : '아직'))); c.append(life);
     c.append(el('p', 'muted', '기사 작성·의학 도감은 첫 기사를 쓴 뒤 이 수첩에서 이어집니다.'));
   });
@@ -343,7 +383,9 @@ function editLook() {
 }
 
 function openMap() {
-  if (busy() || !world || world.roomId !== 'street') return;
+  if (busy() || !world) return;
+  if (isHeartRoom(world.roomId)) { openHeartMap(); return; }
+  if (world.roomId !== 'street') return;
   pauseInput();
   openSheet('동네 지도 · 논현로 일대', c => {
     const cv = el('canvas'); const base = world!.minimapBase();
@@ -354,6 +396,41 @@ function openMap() {
     lab('유로프라자', 256 * S, 200 * S); lab('비투비씨', 88 * S, 372 * S); lab('쉼터', 224 * S, 336 * S); lab('을지병원 사거리', 432 * S, 520 * S); lab('압구정역 ↑', 400 * S, 40 * S); lab('호텔', 592 * S, 96 * S); lab('병원', 584 * S, 360 * S);
     const p = world!.player; g.fillStyle = '#ff5a6e'; g.beginPath(); g.arc(p.x * S, p.y * S, 9, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
     c.append(cv, el('p', 'muted', '게임 지도는 실제 거리를 줄이고 단순화했어요. 큰길은 횡단보도로만 건널 수 있어요.'));
+  });
+}
+
+/** Route guide inside the heart: the order blood takes, where the reporter is, and how much has been found. */
+function openHeartMap() {
+  pauseInput();
+  const s = game.state, here = world!.roomId;
+  openSheet('심장 길 안내 · 피가 지나는 순서', c => {
+    const cv = el('canvas'); cv.className = 'heartmap'; cv.width = 960; cv.height = 600;
+    const g = cv.getContext('2d')!;
+    const node: Record<string, [number, number, string]> = {
+      heart: [170, 420, '우심방'], rv: [170, 200, '우심실'], lung: [480, 80, '폐'], la: [790, 200, '좌심방'], lv: [790, 420, '좌심실'], aorta: [600, 540, '대동맥'], body: [360, 540, '온몸'],
+    };
+    const order = ['heart', 'rv', 'lung', 'la', 'lv', 'aorta', 'body', 'heart'];
+    g.lineWidth = 6; g.lineCap = 'round';
+    for (let i = 1; i < order.length; i++) {
+      const [x1, y1] = node[order[i - 1]!]!, [x2, y2] = node[order[i]!]!;
+      const venous = ['heart', 'rv', 'body'].includes(order[i - 1]!);
+      g.strokeStyle = venous ? '#8e2c44' : '#e2445c';
+      g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, ang = Math.atan2(y2 - y1, x2 - x1);
+      g.fillStyle = g.strokeStyle; g.beginPath(); g.moveTo(mx + Math.cos(ang) * 16, my + Math.sin(ang) * 16); g.lineTo(mx + Math.cos(ang + 2.5) * 16, my + Math.sin(ang + 2.5) * 16); g.lineTo(mx + Math.cos(ang - 2.5) * 16, my + Math.sin(ang - 2.5) * 16); g.fill();
+    }
+    for (const [id, [x, y, label]] of Object.entries(node)) {
+      const cur = id === here, room = id as RoomId;
+      g.fillStyle = cur ? '#f1cf8b' : id === 'body' ? '#2b2236' : '#3a1e2e'; g.strokeStyle = cur ? '#ffffff' : '#f1cf8b88'; g.lineWidth = 3;
+      g.beginPath(); g.roundRect(x - 92, y - 44, 184, 88, 18); g.fill(); g.stroke();
+      g.fillStyle = cur ? '#2a1d08' : '#fff4ea'; g.font = '800 30px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText(label, x, y - (id === 'body' ? 0 : 12));
+      if (id !== 'body') { const pr = roomProgress(s, room); g.font = '700 22px system-ui, sans-serif'; g.fillStyle = cur ? '#4a3510' : '#d8c4b8'; g.fillText((cur ? '지금 여기 · ' : '') + '기록 ' + pr.found + '/' + pr.total, x, y + 22); }
+    }
+    g.fillStyle = '#b8afc6'; g.font = '600 20px system-ui, sans-serif'; g.fillText('밝은 빨강: 산소가 많은 피 · 어두운 빨강: 산소가 적은 피', 480, 300);
+    c.append(cv);
+    c.append(el('p', '', '판막은 피가 흐르는 방향으로만 열려요. 지나온 판막으로는 되돌아갈 수 없으니, 피를 따라 한 바퀴 돌거나 각 방의 귀환 장치를 쓰세요.'));
+    c.append(el('p', 'muted', '이 그림은 피가 지나는 순서를 보여 주는 길 안내예요. 실제 심장 속 방들의 위치·크기는 다릅니다(예: 우심실이 가장 앞쪽에 있어요). ' + heartText.disclaimer));
   });
 }
 
@@ -381,6 +458,7 @@ function openMenu() {
     help.append(el('p', '', 'PC: 방향키/WASD 이동 · E/Space 대화·살펴보기 · J 수첩 · M 지도 · Esc 메뉴'));
     help.append(el('p', '', '마우스·터치: 화면을 누르면 그곳으로 걷고, 사람이나 물건을 누르면 다가가서 말을 걸어요. 꾹 누른 채 움직이면 손가락 쪽으로 계속 걸어요. 대화창·창은 아무 곳이나 누르면 넘어가거나 닫혀요.'));
     help.append(el('p', '', '큰길 횡단보도는 보행 신호가 초록불일 때만 건널 수 있어요. 깜빡이기 시작하면 새로 건너지 않아요.'));
+    help.append(el('p', '', '심장 속: 판막은 열려 있을 때, 피가 흐르는 방향으로만 지나갈 수 있어요. 오른쪽 위 심장 주기 창을 누르면 길 안내가 열려요.'));
     c.append(help);
     const reset = el('div', 'list'); reset.append(button('row danger', '처음부터 다시 시작', () => { if (confirm('지금 기록을 백업하고 새 기자로 시작할까요? 파일로 내보내 두는 것도 권해요.')) { try { game.restart(); close(); location.reload(); } catch (e) { hud.toast('새로 시작하지 못했어요: ' + (e instanceof Error ? e.message : '저장 오류'), true); } } }));
     c.append(reset);

@@ -23,53 +23,85 @@ async function start(page: Page, patch: Record<string, unknown>) {
   await page.waitForTimeout(300);
 }
 
-test('Q001 entry: commission → Bodyscope → heart model → two observations → back to the newsroom', async ({ page }) => {
+test('Q001 inside the heart: commission → Bodyscope → right atrium → wait for the tricuspid → right ventricle → back to the newsroom', async ({ page }) => {
+  test.setTimeout(90000);
   const errors: string[] = [];
   page.on('pageerror', e => errors.push(e.message));
   await start(page, { flags: ['met-editor', 'reported-back'] });
   await expect(page.locator('.quest p')).toContainText('첫 취재');
-
   await tap(page, 88, 80);
   await expect(page.locator('.dialog')).toBeVisible({ timeout: 8000 });
   await untilChoices(page);
   await page.locator('.choice', { hasText: '취재 맡기' }).click();
   await finishDialog(page);
   await expect(page.locator('.quest p')).toContainText('바디스코프');
-
   await tap(page, 308, 118);
   await expect(page.locator('.dialog')).toBeVisible({ timeout: 10000 });
   await untilChoices(page);
-  await page.locator('.choice', { hasText: '심장 모형으로 들어가기' }).click();
+  await page.locator('.choice', { hasText: '심장 속으로 들어가기' }).click();
   await expect.poll(() => room(page), { timeout: 8000 }).toBe('heart');
-  await expect(page.locator('.quest p')).toContainText('0/2');
-
-  await page.waitForTimeout(700);
-  await tap(page, 272, 110);
+  await expect(page.locator('.cycle')).toBeVisible();
+  await expect(page.locator('.cycle b')).not.toHaveText('');
+  await expect(page.locator('.quest p')).toContainText('돌아오는 문');
+  // First visit: the guide robot explains valves and the cycle panel once.
+  await expect(page.locator('.dialog')).toBeVisible({ timeout: 6000 });
+  await expect(page.locator('.dialog')).toContainText('바디');
+  await finishDialog(page);
+  await page.waitForTimeout(300);
+  // The returning door: the inferior vena cava opening across the atrium.
+  await tap(page, 150, 256);
   await expect(page.locator('.dialog')).toBeVisible({ timeout: 12000 });
-  // Tap anywhere on the screen (not the dialog) to finish and close it.
-  for (let i = 0; i < 6 && await page.locator('.dialog').count(); i++) { await page.mouse.click(640, 120); await page.waitForTimeout(150); }
+  for (let i = 0; i < 8 && await page.locator('.dialog').count(); i++) { await page.mouse.click(640, 120); await page.waitForTimeout(150); }
   await expect(page.locator('.dialog')).toHaveCount(0);
   await expect(page.locator('.quest p')).toContainText('1/2');
-
-  await tap(page, 176, 110);
-  await expect(page.locator('.dialog')).toBeVisible({ timeout: 12000 });
+  // Walk down through the tricuspid valve: the reporter waits while it is shut and goes through when it opens.
+  await tap(page, 300, 412);
+  await expect.poll(() => room(page), { timeout: 20000 }).toBe('rv');
+  await expect(page.locator('.quest p')).toContainText('폐동맥판');
+  await page.waitForTimeout(500);
+  await tap(page, 388, 94);
+  await expect(page.locator('.dialog')).toBeVisible({ timeout: 20000 });
   await finishDialog(page);
-  await expect(page.locator('.quest p')).toContainText('귀환');
   const s = await saved(page);
   expect([s.totalXp, s.flags.includes('q001-observed')]).toEqual([20, true]);
   await expect(page.locator('.chip .rank')).toContainText('20/100XP');
-
-  await tap(page, 120, 252);
-  await expect(page.locator('.dialog')).toBeVisible({ timeout: 12000 });
+  await expect(page.locator('.quest p')).toContainText('탐험 기록');
+  await tap(page, 250, 430);
+  await expect(page.locator('.dialog')).toBeVisible({ timeout: 15000 });
   await untilChoices(page);
   await page.locator('.choice', { hasText: '돌아가기' }).click();
   await expect.poll(() => room(page), { timeout: 8000 }).toBe('newsroom');
-
+  await expect(page.locator('.cycle')).toBeHidden();
   await page.waitForTimeout(400);
   await tap(page, 88, 80);
   await expect(page.locator('.dialog')).toBeVisible({ timeout: 10000 });
   await finishDialog(page);
   expect((await saved(page)).flags).toContain('q001-briefed');
+  expect(errors).toEqual([]);
+});
+
+test('valves: a closed valve holds the reporter, it never opens backwards, and blood leads from the right ventricle to the lungs', async ({ page }) => {
+  test.setTimeout(60000);
+  const errors: string[] = [];
+  page.on('pageerror', e => errors.push(e.message));
+  await start(page, { flags: ['met-editor', 'reported-back', 'q001-accepted', 'q001-entered'], at: { room: 'rv', x: 380, y: 130, facing: 'up' } });
+  expect(await room(page)).toBe('rv');
+  // Freeze the beat in diastole: the pulmonary valve is shut, so the reporter stops below it.
+  await page.evaluate(() => { const w = (window as unknown as { __mq: { world: { heartClock: number } } }).__mq.world; w.heartClock = 0.65 * 7; });
+  await tap(page, 388, 12);
+  await expect(page.locator('.toast')).toContainText('폐동맥판이 닫혀', { timeout: 4000 });
+  const y = await page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.world!.player.y);
+  expect(y).toBeGreaterThan(64);
+  await expect.poll(() => room(page), { timeout: 15000 }).toBe('lung');
+  // Cannot go back up through the tricuspid from the right ventricle side: it is solid there.
+  await Promise.all([page.waitForEvent('load'), page.evaluate(() => { const mq = (window as unknown as { __mq: Hook }).__mq; const s = mq.game.state; mq.game.importState({ ...s, at: { room: 'heart', x: 300, y: 392, facing: 'up' } }); location.reload(); })]);
+  await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world);
+  await page.waitForTimeout(300);
+  expect(await room(page)).toBe('heart');
+  await page.keyboard.down('ArrowUp'); await page.waitForTimeout(600); await page.keyboard.up('ArrowUp');
+  await expect(page.locator('.toast')).toContainText('거꾸로');
+  const after = await page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.world!.player.y);
+  expect(after).toBeGreaterThan(372);
   expect(errors).toEqual([]);
 });
 

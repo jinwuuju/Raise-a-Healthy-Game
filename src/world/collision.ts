@@ -29,7 +29,9 @@ export function canStand(roomId: RoomId, p: Point): boolean {
   const f = footRect(p);
   if (f.x < 0 || f.y < 0 || f.x + f.w > room.cols * TILE || f.y + f.h > room.rows * TILE) return false;
   const xs = [f.x, f.x + f.w - 0.01], ys = [f.y, f.y + f.h - 0.01];
-  for (const x of xs) for (const y of ys) if (!walkableTile(tileAt(room, Math.floor(x / TILE), Math.floor(y / TILE)))) return false;
+  const organ = room.organ;
+  if (organ) { for (const x of xs) for (const y of ys) if (!organ.walk(x, y)) return false; }
+  else for (const x of xs) for (const y of ys) if (!walkableTile(tileAt(room, Math.floor(x / TILE), Math.floor(y / TILE)))) return false;
   const index = solidsByTile(room);
   for (const x of xs) for (const y of ys) {
     const solids = index.get(Math.floor(y / TILE) * room.cols + Math.floor(x / TILE));
