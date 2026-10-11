@@ -4,7 +4,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 > **지금 바로 플레이:** https://jinwuuju.github.io/Raise-a-Healthy-Game/ (설계실: [/design/](https://jinwuuju.github.io/Raise-a-Healthy-Game/design/))
 >
-> **최신 소스: redesign-1 + 심장 속 탐사 + 첫 기사·독자 반응 + 분류한 수첩 / 2026-10-11.** 바디스코프로 심장 내부를 걸어 다니고 관찰 2개를 얻어 첫 기사를 쓴다. 발행하면 별도 결과창에서 독자 반응·응원금·성장을 보며, XP는 총 100XP/Lv.2, 골드는 기본 100G + 추가 응원금이다. 재발행은 새 반응/응원금만 준다. 수첩은 할 일·취재·기사·인체·생활을 탭과 토글로 읽는다. 그래픽은 코드로 그리는 픽셀 아트다. 배포 현황은 [현재 상태](docs/production/STATUS.md)에 구분한다. 의학 검수·아트 승인·실사용자 재미 평가는 별도다. [심장 탐사](docs/production/HEART-INTERIOR.md) · [독자 반응](docs/production/ARTICLE-REACTIONS.md) · [수첩](docs/production/NOTEBOOK-STRUCTURE.md).
+> **현재 배포: redesign-1 + 심장 속 탐사 + 첫 기사·독자 반응 + 분류한 수첩 / 2026-10-11.** 바디스코프로 심장 내부를 걸어 다니고 관찰 2개를 얻어 첫 기사를 쓴다. 발행하면 별도 결과창에서 독자 반응·응원금·성장을 보며, XP는 총 100XP/Lv.2, 골드는 기본 100G + 추가 응원금이다. 재발행은 새 반응/응원금만 준다. 수첩은 할 일·취재·기사·인체·생활을 탭과 토글로 읽는다. 그래픽은 코드로 그리는 픽셀 아트다. 배포 현황은 [현재 상태](docs/production/STATUS.md)에 구분한다. 의학 검수·아트 승인·실사용자 재미 평가는 별도다. [심장 탐사](docs/production/HEART-INTERIOR.md) · [독자 반응](docs/production/ARTICLE-REACTIONS.md) · [수첩](docs/production/NOTEBOOK-STRUCTURE.md).
 
 ## 조작
 
