@@ -55,6 +55,9 @@ require(len({q['completionKey'] for q in quests}) == 10, 'Duplicate quest comple
 q001 = load('data/balance/q001.v0.1.json')
 q002 = load('data/balance/q002.v0.1.json')
 q003 = load('data/balance/q003.v0.1.json')
+q004 = load('data/balance/q004.v0.1.json')
+require(q004['publication']['xp'] == quests[3]['xp'] and q004['publication']['gold'] == quests[3]['gold'] and q004['publication']['key'] == quests[3]['completionKey'], 'Q004 runtime reward mismatch')
+require(q004['repeatXp'] == 0 and q004['repeatBaseGold'] == 0, 'Q004 repeat policy mismatch')
 require(q003['publication']['xp'] == quests[2]['xp'] and q003['publication']['gold'] == quests[2]['gold'] and q003['publication']['key'] == quests[2]['completionKey'], 'Q003 runtime reward mismatch')
 require(q003['repeatXp'] == 0 and q003['repeatBaseGold'] == 0, 'Q003 repeat policy mismatch')
 require(q002['publication']['xp'] == quests[1]['xp'] and q002['publication']['gold'] == quests[1]['gold'], 'Q002 runtime reward mismatch')
@@ -113,9 +116,17 @@ for disease in diseases['entries']:
     if disease['contentRef']:
         draft = load(disease['contentRef'])
         require(draft['id'] == disease['id'] and draft['status'] == 'draft_unreviewed' and draft['review'] is None and not draft['publicAtlas'], 'Disease draft must not masquerade as approved/public content')
-        require(len(draft['reportingSteps']) == 6 and draft['layerPlan']['implemented'] and draft['runtimeQuest'] == 'Q003', 'Valve module implementation boundary mismatch')
+        require(len(draft['reportingSteps']) == 6, 'Disease reporting plan needs six stages')
+        if draft['id'] == 'disease.valve':
+            require(draft['layerPlan']['implemented'] and draft['runtimeQuest'] == 'Q003', 'Valve module implementation boundary mismatch')
+        else:
+            require(not draft['layerPlan']['implemented'] and draft['deferral'], 'Planned disease needs explicit deferral without implementation claim')
         require(all(s['url'].startswith('https://') and s['section'] and s['checked'] for s in draft['sources']), 'Missing disease source evidence')
 q3 = load('data/content/q003.v0.1.json')
+q4 = load('data/content/q004.v0.1.json')
+require(q4['status'] == 'draft_unreviewed' and q4['review'] is None and len(q4['notes']) == 6, 'Q004 content boundary or evidence mismatch')
+require(all(id in {s['id'] for s in q4['sources']} for n in q4['notes'] for id in n['src']), 'Q004 missing source reference')
+require(set(q4['routes']['pulmonary']['noteIds'] + q4['routes']['systemic']['noteIds']) == {n['id'] for n in q4['notes']}, 'Q004 route/evidence mismatch')
 require(q3['status'] == 'draft_unreviewed' and q3['review'] is None, 'Q003 must remain unreviewed')
 require(len(q3['normal']) == 2 and len(q3['materials']) == 3 and len(q3['comparison']) == 3, 'Q003 six-stage content is incomplete')
 require(all(id in {s['id'] for s in q3['sources']} for row in q3['normal'] + q3['materials'] for id in row['src']), 'Q003 missing source references')

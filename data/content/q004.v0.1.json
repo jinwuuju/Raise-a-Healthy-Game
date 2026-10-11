@@ -1,0 +1,32 @@
+{
+  "id":"content.Q004","status":"draft_unreviewed","review":null,"updatedAt":"2026-10-12",
+  "title":"두 갈래 배송 노선",
+  "question":"폐로 가는 피와 온몸으로 가는 피는 서로 다른 여행인가요?",
+  "offer":["이번에는 두 순환 노선의 연결을 취재해 주세요.","우심실 출구부터 폐·좌심방·좌심실·대동맥을 따라가요. 대동맥 위쪽 온몸 출구를 통과한 뒤 우심방의 대정맥 입구를 보면 한 바퀴가 이어집니다."],
+  "disclaimer":"검수 전 모형 · 의학 전문가 검수 전 순환 취재 연습입니다. 온몸 구간은 아직 맵이 없어 이동을 축약했어요.",
+  "bodyTransit":"온몸 혈관·조직 구간은 준비 중이라 이동을 축약해요. 온몸을 거쳐 정맥으로 돌아오는 길을 우심방 입구로 연결합니다.",
+  "sources":[
+    {"id":"nhlbi-flow","title":"NHLBI · How Blood Flows through the Heart","url":"https://www.nhlbi.nih.gov/health/heart/blood-flow","updated":"2025-06-25","checked":"2026-10-12","section":"Adding oxygen to blood / arteries and veins"},
+    {"id":"nhlbi-gas","title":"NHLBI · The Respiratory System","url":"https://www.nhlbi.nih.gov/health/lungs/respiratory-system","updated":"2022-03-24","checked":"2026-10-12","section":"Blood low in oxygen flows through the lungs / Oxygen flows into your blood"}
+  ],
+  "notes":[
+    {"id":"pulmonary-out","room":"rv","target":"heart-out","name":"폐로 향하는 출발점","text":"우심실에서 나온 피가 폐동맥을 통해 폐로 향해요. 이 폐동맥에는 산소가 적은 피가 흐릅니다.","src":["nhlbi-flow"]},
+    {"id":"gas","room":"lung","target":"hx-exchange","name":"폐 모세혈관의 교환","text":"폐포 쪽 산소가 피로, 피의 이산화탄소가 폐포 쪽으로 이동해요. 피와 공기가 같은 통로로 섞이는 것은 아니에요.","src":["nhlbi-gas"]},
+    {"id":"pulmonary-return","room":"la","target":"hx-pv","name":"폐에서 돌아오는 길","text":"폐에서 산소를 받은 피는 폐정맥으로 좌심방에 돌아와요. 정맥이라는 이름과 산소량은 같은 구분이 아니에요.","src":["nhlbi-flow"]},
+    {"id":"systemic-out","room":"lv","target":"hx-av-below","name":"온몸으로 향하는 출발점","text":"좌심방에서 좌심실로 온 피는 대동맥판을 지나 대동맥으로 나가요.","src":["nhlbi-flow"]},
+    {"id":"body-route","room":"aorta","target":"hx-ascending","name":"온몸으로 이어지는 출구","text":"대동맥은 온몸으로 향하는 길이에요. 위쪽 출구로 가면 온몸 구간을 축약해 우심방으로 연결합니다. 귀환 장치는 편집국으로 가는 별도 길이에요.","src":["nhlbi-flow"]},
+    {"id":"systemic-return","room":"heart","target":"hx-svc","name":"온몸에서 돌아오는 길","text":"온몸을 거친 피는 대정맥 등으로 우심방에 돌아와요. 우심방에서 우심실로 이어지며 두 순환이 연결됩니다.","src":["nhlbi-flow"]}
+  ],
+  "routes":{
+    "pulmonary":{"label":"폐순환","noteIds":["pulmonary-out","gas","pulmonary-return"],"stops":["우심실","폐동맥","폐 모세혈관","폐정맥","좌심방"]},
+    "systemic":{"label":"온몸순환","noteIds":["systemic-out","body-route","systemic-return"],"stops":["좌심실","대동맥","온몸 (이동 축약)","대정맥","우심방"]}
+  },
+  "bridges":["좌심방 → 승모판 → 좌심실","우심방 → 삼첨판 → 우심실"],
+  "article":{
+    "leads":[{"id":"pulmonary","label":"폐로 향하는 길부터 설명","title":"두 순환, 이어지는 하나의 피의 여행","text":"폐순환과 온몸순환을 이어 보며 피가 돌아오는 길을 취재했어요."},{"id":"systemic","label":"온몸으로 향하는 길부터 설명","title":"온몸에서 돌아와 다시 폐로","text":"출발점을 바꾸어 읽어도 두 순환의 연결은 같아요."}],
+    "limitations":[{"id":"model","label":"이동 축약을 밝히기","text":"온몸 혈관·조직 구간은 준비 중이라 이동을 축약한 교육용 모형입니다."},{"id":"scope","label":"모형의 범위를 밝히기","text":"기관의 크기·배치·속도는 탐험용 근사이며 실제 환자의 상태나 검사값이 아닙니다."}],
+    "factcheck":"동맥·정맥은 심장을 기준으로 나가는 길과 돌아오는 길을 구분하는 이름이에요. 폐동맥과 폐정맥의 산소량을 함께 보면 이름을 산소량과 같은 구분으로 볼 수 없어요.",
+    "reply":"폐와 온몸으로 향하는 두 길이 심장의 방을 통해 이어진다는 걸 이해했어요!"
+  },
+  "simplification":["정상 성인의 순환 기본 경로이며 태아 순환이나 개인별 변이는 다루지 않습니다.","온몸 구간은 별도 맵이 아닌 축약 전환입니다. 실제 혈관·조직을 걸어서 탐사한 기록으로 주장하지 않습니다.","혈구 수·색·속도는 정성적 표시이며 측정값이 아닙니다.","동맥경화 비교 레이어는 통로 조건을 다루는 Q007에 이어질 설계 초안입니다."]
+}

@@ -24,6 +24,9 @@ import { canOfferQ3, q3NormalDone, q3CompareDone } from './domain/q003';
 import { q3Text } from './domain/q003-state';
 import { openQ3 } from './ui/q003';
 import { openValveComparison } from './ui/valve-comparison';
+import { canOfferQ4,q4Ready } from './domain/q004';
+import { q4Text,type Q4Evidence } from './domain/q004-state';
+import { openQ4 } from './ui/q004';
 import { openReaction } from './ui/reaction';
 import { showOrganEntry } from './ui/organ-entry';
 import { openNotebook as showNotebook } from './ui/notebook';
@@ -241,19 +244,21 @@ function refresh() {
   hud.setObjective((world.roomId === 'heart' && s.q003.mode !== 'normal' ? '검수 전 모형 · ' + q3Text.comparison[s.q003.mode].label + ' 비교 · ' : '') + objective(s, world.roomId));
   if (world.heart) world.heart.comparison = world.roomId === 'heart' ? s.q003.mode : 'normal';
   const has = (f: string) => s.flags.includes(f);
-  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed)) || canOfferQ2(s) || canOfferQ3(s) || (s.q002.accepted && !s.q002.reported && q2Seen(s).length === 4);
+  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed)) || canOfferQ2(s) || canOfferQ3(s) || canOfferQ4(s) || (s.q002.accepted && !s.q002.reported && q2Seen(s).length === 4);
   world.questNpc = world.roomId === 'newsroom' && needEditor ? 'editor' : null;
   world.questTargets = [];
   if (world.roomId === 'newsroom' && has(Q1.accepted) && !has(Q1.observed)) world.questTargets = ['device'];
   if (world.roomId === 'newsroom' && has(Q1.briefed) && !s.article.publishedAt) world.questTargets = ['my-desk'];
   if (world.roomId === 'newsroom' && s.q002.reported && !s.q002.publishedAt) world.questTargets = ['my-desk'];
   if (world.roomId === 'newsroom' && s.q003.accepted && !s.q003.publishedAt) world.questTargets = q3CompareDone(s) ? ['my-desk'] : ['device'];
+  if (world.roomId === 'newsroom' && s.q004.accepted && !s.q004.publishedAt) world.questTargets = q4Ready(s) ? ['my-desk'] : ['device'];
   world.sparkTargets = [];
   if (isHeartRoom(world.roomId)) {
     const here = world.roomId;
     world.questTargets = has(Q1.accepted) && !has(Q1.observed) ? Q1_OBSERVATIONS.filter(id => Q1_ROOM[id] === here && !s.inspected.includes(obsKey(id))) : has(Q1.observed) && !has(Q1.briefed) ? ['return-pad'] : [];
     if (s.q002.accepted && !s.q002.reported) world.questTargets = q2Seen(s).length === 4 ? ['return-pad'] : q2Text.notes.filter(n => n.room === here && !s.inspected.includes(q2Key(n.id))).map(n => n.target);
     if (s.q003.accepted && !s.q003.publishedAt) world.questTargets = !q3NormalDone(s) ? q3Text.normal.filter(n => n.room === here && !s.q003.notes.includes(n.id as 'tricuspid' | 'pulmonary')).map(n => n.target) : !q3CompareDone(s) && here === 'heart' ? ['hx-tricuspid'] : ['return-pad'];
+    if(s.q004.accepted&&!s.q004.publishedAt)world.questTargets=q4Ready(s)?['return-pad']:q4Text.notes.filter(n=>n.room===here&&!s.q004.notes.includes(n.id as Q4Evidence)&&(n.id!=='systemic-return'||s.q004.crossedBody)).map(n=>n.target);
     const found = discovered(s);
     world.sparkTargets = world.room.targets.filter(t => t.id.startsWith('hx-') && !found.includes(t.id)).map(t => t.id);
   }
@@ -296,7 +301,7 @@ async function travel(d: Trip) {
   }
   fade.classList.add('on');
   if (d.mode === 'flow') fade.classList.add('flow'); else if (d.mode !== 'walk') fade.classList.add('scope');
-  const card = d.mode === 'scope-in' ? null : d.card;
+  const card = d.mode === 'scope-in' ? null : d.mode === 'flow' && w.roomId === 'aorta' && d.to === 'heart' && game.state.q004.accepted ? q4Text.bodyTransit : d.card;
   fadeCard.textContent = card ?? '';
   fadeCard.classList.toggle('show', !!card);
   const wait = d.mode === 'walk' ? 210 : d.mode === 'scope-in' ? 80 : card ? 1700 : d.mode === 'flow' ? 600 : 560;
@@ -331,7 +336,12 @@ async function interact(t: Target) {
   w.stop(); w.locked = true; keys.clear(); pointer.id = -1;
   w.faceToward(t);
   try {
-    if (t.id === 'hx-tricuspid' && game.state.q003.accepted && q3NormalDone(game.state)) {
+    const routeNote=q4Text.notes.find(n=>n.target===t.id&&n.room===w.roomId);
+    if(game.state.q004.accepted&&routeNote){
+      await say([{who:routeNote.name,text:routeNote.text+'\n'+q4Text.disclaimer,npc:null}]);
+      if(game.recordQ4(routeNote.id as Q4Evidence))hud.toast('순환 취재 기록 · '+routeNote.name+' ('+game.state.q004.notes.length+'/6)');
+      if(t.id.startsWith('hx-'))game.discover(t.id);
+    } else if (t.id === 'hx-tricuspid' && game.state.q003.accepted && q3NormalDone(game.state)) {
       pauseInput(); openValveComparison(game);
     } else if (t.npc) {
       const script = talk(t.npc, game.state);
@@ -348,9 +358,13 @@ async function interact(t: Target) {
         const choice = await dialog.show([{ who: '편집장', text: q3Text.question, npc: 'editor' }], [{ id: 'accept', label: '판막 취재 맡기', sub: '정상 기준부터 질환 비교와 자료 취재로', disabled: false }]);
         if (choice === 'accept') { game.acceptQ3(); hud.toast('Q003 · 판막 취재를 맡았어요'); }
       }
+      if(script.action==='offer-q4'){
+        const choice=await dialog.show([{who:'편집장',text:q4Text.question,npc:'editor'}],[{id:'accept',label:'두 순환 취재 맡기',sub:'폐와 온몸 노선을 직접 따라가요',disabled:false}]);
+        if(choice==='accept'){game.acceptQ4();hud.toast('Q004 · 두 순환 취재를 맡았어요');}
+      }
       if (t.npc === 'barista') await cafeOrder();
     } else if (t.id === 'my-desk' && game.has(Q1.briefed)) {
-      pauseInput(); if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
+      pauseInput(); if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
         [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
@@ -422,7 +436,8 @@ function showArticle() {
 }
 function showQ2Article() { openQ2Article(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
 function showQ3() { openQ3(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
-function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
+function showQ4() {openQ4(game,()=>{const result=latestReaction(game.state);if(result)showReaction(result);});}
+function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q004' ? showQ4 : result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
 function saveFeedback(c: HTMLElement): () => void {
   const message = el('p', 'save-message'); message.setAttribute('role', 'status'); c.append(message);
   const update = () => { message.textContent = game.lastError ?? ''; message.classList.toggle('hidden', !game.lastError); };
@@ -431,7 +446,7 @@ function saveFeedback(c: HTMLElement): () => void {
 function openNotebook() {
   if (busy() || !world) return;
   pauseInput();
-  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, reaction: r => showReaction(r, true), map: openMap });
+  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, reaction: r => showReaction(r, true), map: openMap });
 }
 
 function openReporter() {

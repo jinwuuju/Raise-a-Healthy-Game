@@ -61,6 +61,36 @@
       "review": null,
       "contentRef": null,
       "questSlot": "Q008"
+    },
+    {
+      "id": "disease.atherosclerosis",
+      "name": "죽상동맥경화 기초",
+      "english": "Atherosclerosis",
+      "tags": [
+        "퇴행",
+        "대사"
+      ],
+      "primaryHubId": "circulation",
+      "anatomyIds": [
+        "anatomy.circulation.08",
+        "anatomy.circulation.11"
+      ],
+      "relatedSystemIds": [
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "Q004.normal-circulation",
+        "Q006.coronary-supply"
+      ],
+      "depth": "intro",
+      "levelRange": [
+        6,
+        8
+      ],
+      "status": "planned",
+      "review": null,
+      "contentRef": "data/content/diseases/atherosclerosis.v0.1.json",
+      "questSlot": "Q007"
     }
   ]
 }

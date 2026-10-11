@@ -1,0 +1,5 @@
+{
+  "id":"Q004","publication":{"key":"quest.Q004.first","xp":250,"gold":170},
+  "repeatXp":0,"repeatBaseGold":0,"reactionBalanceRef":"article-reactions.v0.1.json",
+  "note":"early-quests.v0.1.json의 기존 Q004 기본 보상. 관찰·연결에는 별도 보상을 추가하지 않는다. 명시적 재발행의 추가 골드만 D066 적용."
+}

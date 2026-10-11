@@ -7,11 +7,13 @@ import { canOfferQ2, q2Seen } from '../domain/q002';
 import { q2Text } from '../domain/q002-state';
 import { canOfferQ3, q3NormalDone, q3CompareDone, q3Ready } from '../domain/q003';
 import { q3Text } from '../domain/q003-state';
+import { canOfferQ4,q4Ready } from '../domain/q004';
+import { q4Text } from '../domain/q004-state';
 import type { GameState } from '../domain/state';
 import { isHeartRoom, type RoomId } from '../world/types';
 
 export type Line = { who: string; text: string; npc: string | null };
-export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' };
+export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' };
 export const q1Text = q1;
 export const heartText = heart;
 
@@ -26,6 +28,16 @@ export function objective(s: GameState, room: RoomId): string {
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
+  if (canOfferQ4(s)) return '편집장에게 두 순환 취재 ‘두 갈래 배송 노선’ 받기';
+  if (s.q004.accepted) {
+    if(s.q004.publishedAt)return '두 순환 기사 발행 완료! 수첩에서 노선과 독자 반응 읽기 · 다음 박동 신호 취재는 준비 중';
+    if(q4Ready(s))return '편집국 내 자리에서 두 순환 카드를 연결해 노선 기사 쓰기';
+    const note=q4Text.notes.find(n=>!s.q004.notes.includes(n.id as typeof s.q004.notes[number]))!;
+    const count=s.q004.notes.length+'/6';
+    if(note.id==='systemic-return'&&!s.q004.crossedBody)return '대동맥 위쪽 온몸 출구로 · 온몸 구간을 축약해 우심방으로 ('+count+')';
+    if(!isHeartRoom(room))return '바디스코프로 두 순환의 취재 지점 찾아가기 ('+count+')';
+    return (room===note.room?note.name+' 살펴보기':'피를 따라 '+roomsForQ4[note.room]+'으로 · '+note.name)+' ('+count+')';
+  }
   if (canOfferQ3(s)) return '편집장에게 판막 취재 ‘거꾸로 열리는 문’ 받기';
   if (s.q003.accepted) {
     if (s.q003.publishedAt) return '판막 팩트체크 발행 완료! 수첩에서 기사·반응 읽기 · 다음 순환 취재는 준비 중';
@@ -70,12 +82,15 @@ export function objective(s: GameState, room: RoomId): string {
 }
 
 const say = (who: string, npc: string | null, ...texts: string[]): Line[] => texts.map(text => ({ who, text, npc }));
+const roomsForQ4:Record<string,string>={rv:'우심실',lung:'폐 모세혈관',la:'좌심방',lv:'좌심실',aorta:'대동맥',heart:'우심방'};
 
 export function talk(id: string, s: GameState): Talk {
   const name = s.avatar.name;
   const has = (f: string) => s.flags.includes(f);
   switch (id) {
     case 'editor':
+      if(canOfferQ4(s))return {flag:null,action:'offer-q4',lines:say('편집장','editor',...q4Text.offer)};
+      if(s.q004.accepted)return {flag:null,lines:say('편집장','editor',objective(s,s.at.room))};
       if (canOfferQ3(s)) return { flag: null, action: 'offer-q3', lines: say('편집장', 'editor', ...q3Text.offer) };
       if (s.q003.accepted) return { flag: null, lines: say('편집장', 'editor', objective(s, s.at.room)) };
       if (canOfferQ2(s)) return { flag: null, action: 'offer-q2', lines: say('편집장', 'editor', ...q2Text.offer) };

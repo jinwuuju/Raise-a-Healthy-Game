@@ -14,6 +14,7 @@ export function validateQ3(value: unknown): Q3State {
       !(q.lead === null || content.article.leads.some(l => l.id === q.lead)) || !(q.limit === null || content.article.limitations.some(l => l.id === q.limit)) ||
       !(q.publishedAt === null || (typeof q.publishedAt === 'string' && Number.isFinite(Date.parse(q.publishedAt))))) return fail();
   const has = (id: Q3Evidence) => q.notes.includes(id), normal = has('tricuspid') && has('pulmonary'), compare = has('stenosis') && has('regurgitation');
+  for (let i = 0; i < q.notes.length; i++) if (!Object.hasOwn(q.notes, i) || !q3Evidence.includes(q.notes[i]!)) return fail();
   if ((!q.accepted && (q.mode !== 'normal' || q.notes.length || q.lead || q.limit || q.checked || q.publishedAt)) ||
       ((q.mode !== 'normal' || has('stenosis') || has('regurgitation')) && !normal) ||
       ((has('causes') || has('tests') || has('care')) && !compare) || (has('tests') && !has('causes')) || (has('care') && !has('tests')) ||

@@ -1,7 +1,9 @@
 import { defaultAppearance, validateAppearance, type Appearance, type Preset } from '../domain/appearance';
 import { orderDrink } from '../domain/cafe';
 import { checkArticle, selectArticle } from '../domain/article';
-import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
+import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, publishQ4WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
+import { acceptQ4, crossQ4Body, recordQ4, placeQ4Route, joinQ4, selectQ4, checkQ4 } from '../domain/q004';
+import type { Q4Evidence, RouteId } from '../domain/q004-state';
 import { acceptQ3, setQ3Mode, recordQ3, selectQ3, checkQ3 } from '../domain/q003';
 import type { Q3Evidence } from '../domain/q003-state';
 import type { ValveMode } from '../domain/valve-model';
@@ -80,7 +82,8 @@ export class Game {
 
   enter(room: RoomId, x: number, y: number, facing: Dir): void {
     if (!rooms[room] || !canStand(room, { x, y })) throw new Error('이동할 수 없는 위치예요.');
-    this.commit({ ...this.state, at: { room, x, y, facing }, q003: { ...this.state.q003, mode: 'normal' } });
+    const next = crossQ4Body(this.state, room);
+    this.commit({ ...next, at: { room, x, y, facing }, q003: { ...next.q003, mode: 'normal' } });
   }
 
   inspect(id: string): void {
@@ -102,6 +105,13 @@ export class Game {
   acceptQuest(): void { this.commit(acceptQ1(this.state)); }
   acceptQ2(): void { const next = acceptQ2(this.state); if (next !== this.state) this.commit(next); }
   acceptQ3(): void { const next = acceptQ3(this.state); if (next !== this.state) this.commit(next); }
+  acceptQ4(): void { const next = acceptQ4(this.state); if (next !== this.state) this.commit(next); }
+  recordQ4(id: Q4Evidence): boolean { const next = recordQ4(this.state, id); if (next === this.state) return false; this.commit(next); return true; }
+  placeQ4Route(id: RouteId): void { const next = placeQ4Route(this.state, id); if (next !== this.state) this.commit(next); }
+  joinQ4(): void { const next = joinQ4(this.state); if (next !== this.state) this.commit(next); }
+  selectQ4(slot: 'lead' | 'limit', id: string | null): void { const next = selectQ4(this.state, slot, id); if (next !== this.state) this.commit(next); }
+  checkQ4(): void { const next = checkQ4(this.state); if (next !== this.state) this.commit(next); }
+  publishQ4(): boolean { const next = publishQ4WithReaction(this.state); if (next === this.state) { this.persist(); return false; } this.commit(next); return true; }
   setQ3Mode(mode: ValveMode): void { const next = setQ3Mode(this.state, mode); if (next !== this.state) this.commit(next); }
   recordQ3(id: Q3Evidence): boolean { const next = recordQ3(this.state, id); if (next === this.state) return false; this.commit(next); return true; }
   selectQ3(slot: 'lead' | 'limit', id: string | null): void { const next = selectQ3(this.state, slot, id); if (next !== this.state) this.commit(next); }
@@ -142,7 +152,7 @@ export class Game {
     const next = publishWithReaction(this.state); if (next === this.state) { this.persist(); return false; }
     this.commit(next); return true;
   }
-  reprintArticle(expectedCount: number, questId: 'Q001' | 'Q002' | 'Q003' = 'Q001'): boolean {
+  reprintArticle(expectedCount: number, questId: 'Q001' | 'Q002' | 'Q003' | 'Q004' = 'Q001'): boolean {
     const next = reprintArticle(this.state, expectedCount, randomReactionValue, new Date().toISOString(), questId); if (next === this.state) return false;
     this.commit(next); return true;
   }

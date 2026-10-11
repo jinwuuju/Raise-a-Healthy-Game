@@ -462,3 +462,19 @@ a.row { color: var(--text); text-decoration: none; }
   .valve-paired { gap: 8px; }
   .valve-notes { grid-column: 1 / -1; }
 }
+
+/* D075: readable routes, keyboard/touch card placement and explicit heart bridges. */
+.q4-body { display: grid; gap: 16px; min-width: 0; }
+.route-board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: #181326; }
+.route-card { padding: 12px; border: 1px dashed var(--line-strong); border-radius: 12px; min-width: 0; }
+.route-card.attached { border-style: solid; background: rgba(127,220,202,.06); }
+.route-card h3 { font-size: 1rem; margin: 0 0 8px; color: var(--mint); }
+.route-card.systemic h3 { color: var(--gold); }
+.route-stops { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 4px; text-align: center; }
+.route-stops li { display: grid; gap: 4px; font-size: .875rem; overflow-wrap: anywhere; }
+.route-stops b { display: block; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.025); }
+.route-arrow { color: var(--mint); }.route-card.systemic .route-arrow { color: var(--gold); }
+.route-bridge { grid-column: 1 / -1; margin: 0; padding: 10px; border-left: 2px dashed var(--line-strong); font-size: .875rem; overflow-wrap: anywhere; }
+.route-bridge.joined { border-left-style: solid; color: var(--mint); }
+.route-card button, .q4-body button { min-height: 48px; white-space: normal; }
+.route-card button { width: 100%; }

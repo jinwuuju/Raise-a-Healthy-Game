@@ -33,6 +33,9 @@ for path in dist.rglob('*'):
             if 'content.Q003' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Q003 must remain a labelled draft inside the quest'
                 assert '가상 검사자료' in text, 'Q003 diagnostic materials must be labelled fictional'
+            if 'content.Q004' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text and '온몸 구간은 아직 맵이 없어' in text, 'Q004 must label draft and abstracted body transit'
+            assert 'disease.atherosclerosis' not in text, 'Planned atherosclerosis draft must not ship in runtime/public atlas'
             assert 'disease.valve' not in text, 'Standalone unreviewed disease atlas draft must stay outside the runtime; Q003 is the labelled quest exception'
             if 'content.lunch.menus' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Lunch menus (D068) must carry the unreviewed disclaimer'
