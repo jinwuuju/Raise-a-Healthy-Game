@@ -1,0 +1,46 @@
+.life-sheet { width: min(850px, calc(100vw - 24px)); max-height: calc(100dvh - 24px - var(--safe-t) - var(--safe-b)); }
+.life-sheet .content { touch-action: pan-y; }
+.life-body { display: grid; gap: 16px; min-width: 0; }
+.life-notice:empty { display: none; }
+.life-notice { padding: 10px 12px; border-left: 3px solid var(--mint); background: #ffffff08; }
+.life-notice.error { color: var(--danger); border-color: var(--danger); }
+.life-summary { color: var(--gold) !important; font-weight: 800; }
+.life-button { min-height: 48px; border-radius: 10px; border: 1px solid var(--line); background: #ffffff08; padding: 10px 12px; cursor: pointer; text-align: left; overflow-wrap: anywhere; }
+.life-button:hover:not(:disabled), .life-button:focus-visible { border-color: var(--gold); outline: 2px solid var(--gold); outline-offset: 2px; }
+.life-button[aria-pressed='true'] { border-color: var(--gold); background: #f1cf8b24; color: var(--gold); }
+.life-button:disabled { opacity: .58; cursor: default; }
+.life-tabs, .life-actions, .life-coordinate-fields { display: flex; flex-wrap: wrap; gap: 8px; }
+.life-tabs > button { flex: 1; text-align: center; }
+.life-shop-layout { display: grid; grid-template-columns: minmax(160px, .9fr) minmax(220px, 1.2fr); gap: 16px; align-items: start; }
+.life-catalog, .life-outfits { display: grid; gap: 8px; }
+.life-catalog { max-height: 340px; overflow-y: auto; touch-action: pan-y; padding: 3px; }
+.life-catalog .life-button { display: grid; gap: 4px; }
+.life-catalog small { color: var(--muted); font-size: .8125rem; }
+.life-product { display: grid; gap: 14px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #ffffff05; min-width: 0; }
+.life-avatar-preview { display: flex; justify-content: center; flex-wrap: wrap; align-items: end; gap: 8px; min-height: 132px; padding: 14px 4px; border-bottom: 2px solid var(--gold-deep); background: radial-gradient(ellipse at bottom, #f1cf8b17, transparent 70%); }
+.life-avatar-preview canvas { width: 60px; height: 120px; image-rendering: pixelated; object-fit: contain; }
+.life-product-dimensions { padding: 22px 12px; text-align: center; border: 1px dashed var(--gold-deep); color: var(--gold); font-size: 1.5rem; font-weight: 800; }
+.life-outfits { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.life-arrange-controls { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(140px, 1fr) auto; align-items: end; gap: 8px; }
+.life-field { display: grid; gap: 8px; font-size: .875rem; color: var(--muted); }
+.life-field input, .life-field select, .life-field textarea { width: 100%; min-width: 0; min-height: 48px; font: inherit; font-size: 1rem; color: var(--text); background: #171323; border: 1px solid var(--line); border-radius: 8px; padding: 10px; touch-action: auto; -webkit-user-select: text; user-select: text; }
+.life-field input:focus, .life-field select:focus, .life-field textarea:focus { outline: 2px solid var(--gold); outline-offset: 2px; }
+.life-coordinate-fields > label { flex: 1; width: 64px; }
+.life-floor-scroll { overflow: auto; max-width: 100%; touch-action: pan-x pan-y; padding: 4px; border: 1px solid var(--line); border-radius: 10px; }
+.life-floor { display: grid; grid-template-columns: repeat(var(--columns), 48px); width: max-content; gap: 2px; padding: 4px; background: #ad784224; }
+.life-cell { min-width: 48px; min-height: 48px; height: 48px; border-radius: 2px; padding: 2px; text-align: center; background: #b8844d30; color: var(--muted); font-size: .75rem; }
+.life-cell.occupied { background: #7fdcca29; color: var(--mint); }
+.life-cell.proposed { border: 2px solid var(--gold); box-shadow: inset 0 0 0 2px #f1cf8b44; }
+.life-cell.exit { background: repeating-linear-gradient(45deg, #ff8f8420, #ff8f8420 5px, transparent 5px, transparent 10px); opacity: 1; }
+.life-evidence, .life-edition { display: grid; gap: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.life-edition { border: 2px solid var(--gold-deep); background: #f1cf8b0a; }
+@media (max-width: 600px) {
+  .life-shop-layout { grid-template-columns: 1fr; }
+  .life-catalog { max-height: 190px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .life-arrange-controls { grid-template-columns: 1fr; }
+  .life-actions > button { flex: 1; }
+  .life-sheet .content { padding: 12px; }
+}
+@media (max-height: 480px) { .life-sheet { max-height: calc(100dvh - 12px); } .life-avatar-preview { min-height: 90px; padding: 6px; } .life-avatar-preview canvas { width: 40px; height: 80px; } }
+
+.life-furniture-preview{image-rendering:pixelated;display:block;margin:12px auto;transform:none;zoom:2;max-width:none}

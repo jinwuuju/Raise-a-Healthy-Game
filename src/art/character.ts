@@ -50,6 +50,9 @@ const OUTFIT: Record<string, OP> = {
   uniform: { j: '#30466f', J: '#223255', k: '#e7c45d', w: '#eff1f5', W: '#c9cdd6', p: '#2b3b5f', P: '#1f2b47', b: '#201d21', B: '#121014', g: '#1b2238' },
   casual: { j: '#8fb6d9', J: '#6990b6', k: '#b5d1ea', w: '#ffffff', W: '#d8dde4', p: '#c9b48f', P: '#a8936f', b: '#ebe6dc', B: '#b6afa2', g: '#6990b6' },
 };
+const wardrobePalette:Record<string,string>={pressvest:'reporter',denim:'casual',cardigan:'knit',overalls:'uniform',raincoat:'knit',turtleneck:'suit',blouse:'apron',striped:'casual',fieldjacket:'reporter',peacoat:'uniform',aproncoat:'apron',sports:'hoodie',summer:'casual',formal:'suit'};
+for(const [id,base] of Object.entries(wardrobePalette)) OUTFIT[id]={...OUTFIT[base]!};
+OUTFIT.pressvest!.j='#548797';OUTFIT.pressvest!.J='#365a71';OUTFIT.raincoat!.j='#e8bc4c';OUTFIT.raincoat!.J='#a8872e';OUTFIT.blouse!.g='#b04d71';
 
 function palette(look: Look): Record<string, string> {
   const sk = SKIN[look.skin] ?? SKIN.peach!, hr = HAIR[look.hairColor] ?? HAIR.ink!, o = OUTFIT[look.outfit] ?? OUTFIT.reporter!;

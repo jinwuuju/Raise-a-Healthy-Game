@@ -2,6 +2,7 @@ import q1 from '../../data/content/q001-entry.v0.1.json';
 import { Q1, q1CanOffer, q1Seen } from '../domain/quest';
 import type { GameState } from '../domain/state';
 import type { RoomId } from '../world/types';
+import { campaignObjective, progressOf } from '../domain/campaign';
 
 export type Line = { who: string; text: string; npc: string | null };
 export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' };
@@ -17,6 +18,8 @@ export function objective(s: GameState, room: RoomId): string {
     return '바리스타에게 첫 방문 커피 받기';
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
+  const campaign = campaignObjective(s);
+  if (campaign) return campaign;
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
   if (!has(Q1.observed)) {
     if (room === 'heart') return '심장 모형 관찰하기 (' + q1Seen(s).length + '/2) · 표식이 나가는 곳과 들어오는 곳';
@@ -34,6 +37,8 @@ export function talk(id: string, s: GameState): Talk {
   const has = (f: string) => s.flags.includes(f);
   switch (id) {
     case 'editor':
+      if (s.campaign.active) return { flag: null, lines: say('편집장', 'editor', '관찰한 표식과 모형 조작 결과를 수첩에 남겨요. 근거가 모이면 내 책상에서 기사로 엮을 수 있어요.') };
+      if (progressOf(s, 'Q001').published) return { flag: null, lines: [] };
       if (!has('met-editor')) return { flag: 'met-editor', lines: say('편집장', 'editor',
         `어서 와요, ${name} 기자. 메디컬 데스크에 온 걸 환영해요.`,
         '여기는 논현로 유로프라자 3층 편집국이에요. 우리는 몸에 관한 궁금증을 직접 취재해서 쉽게 전하는 곳이죠.',

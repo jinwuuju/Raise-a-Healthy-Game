@@ -1,0 +1,478 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "heart-anatomy-0.1",
+  "status": "draft_unreviewed",
+  "review": null,
+  "disclaimer": "검수 전 모형",
+  "view": "정면에서 바라본 심장 절개 개념도. 화면 왼쪽은 사람의 오른쪽, 화면 오른쪽은 사람의 왼쪽이다.",
+  "limitations": "입체 구조를 펼친 개념도이며 실제 절개면·축척·혈관의 앞뒤 중첩·개인별 변이를 재현하지 않는다. 폐정맥은 쌍을 묶어 표시하고 관상동맥은 분지의 개념만 표시한다. 픽셀 탐험길은 혈관이나 혈액 흐름이 아니다.",
+  "sources": [
+    {
+      "id": "nhlbi-anatomy",
+      "url": "https://www.nhlbi.nih.gov/health/heart/anatomy",
+      "title": "NHLBI: What the Heart Looks Like",
+      "checkedAt": "2026-10-11"
+    },
+    {
+      "id": "nhlbi-flow",
+      "url": "https://www.nhlbi.nih.gov/health/heart/blood-flow",
+      "title": "NHLBI: How Blood Flows through the Heart",
+      "checkedAt": "2026-10-11"
+    },
+    {
+      "id": "nhlbi-beats",
+      "url": "https://www.nhlbi.nih.gov/health/heart/heart-beats",
+      "title": "NHLBI: How the Heart Beats",
+      "checkedAt": "2026-10-11"
+    },
+    {
+      "id": "medlineplus-conduction",
+      "url": "https://medlineplus.gov/ency/anatomyvideos/000021.htm",
+      "title": "MedlinePlus: Cardiac conduction system",
+      "checkedAt": "2026-10-11"
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "ra",
+      "title": "우심방",
+      "kind": "chamber",
+      "x": 72,
+      "y": 90,
+      "text": "몸에서 돌아온 혈액이 대정맥을 통해 들어오는 방.",
+      "sources": [
+        "nhlbi-anatomy"
+      ]
+    },
+    {
+      "id": "rv",
+      "title": "우심실",
+      "kind": "chamber",
+      "x": 94,
+      "y": 152,
+      "text": "우심방에서 받은 혈액을 폐동맥으로 내보내는 방.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "la",
+      "title": "좌심방",
+      "kind": "chamber",
+      "x": 192,
+      "y": 90,
+      "text": "폐정맥으로 돌아온 혈액을 받는 방.",
+      "sources": [
+        "nhlbi-anatomy"
+      ]
+    },
+    {
+      "id": "lv",
+      "title": "좌심실",
+      "kind": "chamber",
+      "x": 192,
+      "y": 164,
+      "text": "좌심방에서 받은 혈액을 대동맥으로 내보내는 방.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "septum",
+      "title": "심장 중격",
+      "kind": "tissue",
+      "x": 143,
+      "y": 132,
+      "text": "심장의 오른쪽과 왼쪽을 나누는 조직벽. 정상 심장의 두 쪽을 직접 잇는 혈액 통로가 아니다.",
+      "sources": [
+        "nhlbi-anatomy"
+      ]
+    },
+    {
+      "id": "svc",
+      "title": "상대정맥",
+      "kind": "vessel",
+      "x": 48,
+      "y": 36,
+      "text": "몸의 위쪽에서 우심방으로 혈액이 돌아온다.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "ivc",
+      "title": "하대정맥",
+      "kind": "vessel",
+      "x": 48,
+      "y": 186,
+      "text": "몸의 아래쪽에서 우심방으로 혈액이 돌아온다.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "tricuspid",
+      "title": "삼첨판",
+      "kind": "valve",
+      "x": 82,
+      "y": 122,
+      "text": "우심방과 우심실 사이의 판막.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "pulmonary-valve",
+      "title": "폐동맥판",
+      "kind": "valve",
+      "x": 120,
+      "y": 92,
+      "text": "우심실에서 폐동맥으로 나가는 경계의 판막.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "pulmonary-artery",
+      "title": "폐동맥",
+      "kind": "vessel",
+      "x": 122,
+      "y": 34,
+      "text": "우심실에서 폐로 향한다. 동맥은 심장에서 나가는 방향으로 구분한다.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "pulmonary-veins",
+      "title": "폐정맥",
+      "kind": "vessel",
+      "x": 236,
+      "y": 72,
+      "text": "폐에서 좌심방으로 향한다. 정맥은 심장으로 돌아오는 방향으로 구분한다.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "mitral",
+      "title": "승모판",
+      "kind": "valve",
+      "x": 184,
+      "y": 120,
+      "text": "좌심방과 좌심실 사이의 판막.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "aortic-valve",
+      "title": "대동맥판",
+      "kind": "valve",
+      "x": 164,
+      "y": 98,
+      "text": "좌심실에서 대동맥으로 나가는 경계의 판막.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "aorta",
+      "title": "대동맥",
+      "kind": "vessel",
+      "x": 174,
+      "y": 32,
+      "text": "좌심실에서 나온 혈액을 몸으로 보낸다.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "coronary",
+      "title": "관상동맥",
+      "kind": "vessel",
+      "x": 226,
+      "y": 154,
+      "text": "대동맥에서 갈라져 심장근육에 혈액을 공급한다. 심장 방 안의 혈액과 공급 경로를 구분한다.",
+      "sources": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "sa",
+      "title": "동방결절",
+      "kind": "conduction",
+      "x": 62,
+      "y": 68,
+      "text": "우심방에 있는 정상 박동 신호의 시작 지점.",
+      "sources": [
+        "nhlbi-beats"
+      ]
+    },
+    {
+      "id": "av",
+      "title": "방실결절",
+      "kind": "conduction",
+      "x": 128,
+      "y": 113,
+      "text": "심방에서 온 신호가 잠시 느려져 심실이 채워질 시간을 준다.",
+      "sources": [
+        "nhlbi-beats"
+      ]
+    },
+    {
+      "id": "his",
+      "title": "히스속",
+      "kind": "conduction",
+      "x": 144,
+      "y": 135,
+      "text": "방실결절 뒤 신호를 심실 쪽으로 전하는 전도계.",
+      "sources": [
+        "medlineplus-conduction"
+      ]
+    },
+    {
+      "id": "bundle-branches",
+      "title": "좌·우 각",
+      "kind": "conduction",
+      "x": 145,
+      "y": 158,
+      "text": "히스속 이후 좌·우 심실 방향으로 나뉘는 전도계.",
+      "sources": [
+        "medlineplus-conduction"
+      ]
+    },
+    {
+      "id": "purkinje",
+      "title": "푸르키네 섬유",
+      "kind": "conduction",
+      "x": 174,
+      "y": 193,
+      "text": "심실로 신호를 퍼뜨리는 전도계 말단 망. 혈관이나 혈액이 아니다.",
+      "sources": [
+        "medlineplus-conduction"
+      ]
+    }
+  ],
+  "bloodFlow": [
+    "svc",
+    "ra",
+    "tricuspid",
+    "rv",
+    "pulmonary-valve",
+    "pulmonary-artery",
+    "lung",
+    "pulmonary-veins",
+    "la",
+    "mitral",
+    "lv",
+    "aortic-valve",
+    "aorta",
+    "body",
+    "ivc",
+    "ra"
+  ],
+  "signalFlow": [
+    "sa",
+    "atria",
+    "av",
+    "his",
+    "bundle-branches",
+    "purkinje",
+    "ventricles"
+  ],
+  "bloodEdges": [
+    [
+      "svc",
+      "ra"
+    ],
+    [
+      "ivc",
+      "ra"
+    ],
+    [
+      "ra",
+      "tricuspid"
+    ],
+    [
+      "tricuspid",
+      "rv"
+    ],
+    [
+      "rv",
+      "pulmonary-valve"
+    ],
+    [
+      "pulmonary-valve",
+      "pulmonary-artery"
+    ],
+    [
+      "pulmonary-artery",
+      "lung"
+    ],
+    [
+      "lung",
+      "pulmonary-veins"
+    ],
+    [
+      "pulmonary-veins",
+      "la"
+    ],
+    [
+      "la",
+      "mitral"
+    ],
+    [
+      "mitral",
+      "lv"
+    ],
+    [
+      "lv",
+      "aortic-valve"
+    ],
+    [
+      "aortic-valve",
+      "aorta"
+    ],
+    [
+      "aorta",
+      "body"
+    ],
+    [
+      "body",
+      "svc"
+    ],
+    [
+      "body",
+      "ivc"
+    ],
+    [
+      "aorta",
+      "coronary"
+    ],
+    [
+      "coronary",
+      "myocardium"
+    ],
+    [
+      "myocardium",
+      "coronary-veins"
+    ],
+    [
+      "coronary-veins",
+      "ra"
+    ]
+  ],
+  "signalEdges": [
+    [
+      "sa",
+      "atria"
+    ],
+    [
+      "atria",
+      "av"
+    ],
+    [
+      "av",
+      "his"
+    ],
+    [
+      "his",
+      "bundle-branches"
+    ],
+    [
+      "bundle-branches",
+      "purkinje"
+    ],
+    [
+      "purkinje",
+      "ventricles"
+    ]
+  ],
+  "externalNodes": [
+    {
+      "id": "lung",
+      "title": "폐"
+    },
+    {
+      "id": "body",
+      "title": "몸 조직"
+    },
+    {
+      "id": "myocardium",
+      "title": "심장근육"
+    },
+    {
+      "id": "coronary-veins",
+      "title": "심장정맥"
+    },
+    {
+      "id": "atria",
+      "title": "심방 근육"
+    },
+    {
+      "id": "ventricles",
+      "title": "심실 근육"
+    }
+  ],
+  "districts": [
+    {
+      "room": "heart",
+      "title": "심장 입구·전체 흐름",
+      "neighbors": [
+        "heart-chambers"
+      ]
+    },
+    {
+      "room": "heart-chambers",
+      "title": "네 방·중격",
+      "neighbors": [
+        "heart",
+        "heart-valves"
+      ]
+    },
+    {
+      "room": "heart-valves",
+      "title": "판막",
+      "neighbors": [
+        "heart-chambers",
+        "heart-circulation"
+      ]
+    },
+    {
+      "room": "heart-circulation",
+      "title": "폐·몸 연결",
+      "neighbors": [
+        "heart-valves",
+        "heart-signal"
+      ]
+    },
+    {
+      "room": "heart-signal",
+      "title": "전도계",
+      "neighbors": [
+        "heart-circulation",
+        "heart-supply"
+      ]
+    },
+    {
+      "room": "heart-supply",
+      "title": "심장근육·관상혈관",
+      "neighbors": [
+        "heart-signal",
+        "heart-conditions"
+      ]
+    },
+    {
+      "room": "heart-conditions",
+      "title": "조건 비교 취재실",
+      "neighbors": [
+        "heart-supply"
+      ]
+    }
+  ],
+  "legend": {
+    "blood": "파랑: 산소가 상대적으로 적은 혈액 · 빨강: 산소가 풍부한 혈액. 폐동맥은 파랑, 폐정맥은 빨강이다. 색은 구분용이며 실제 혈액이 파란색이라는 뜻이 아니다.",
+    "signal": "노란 선과 빛은 전기 신호이다. 혈관이나 혈액이 아니며 재생 시간은 실제 전도 시간이 아니다."
+  }
+}

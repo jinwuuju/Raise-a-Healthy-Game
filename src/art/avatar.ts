@@ -415,6 +415,44 @@ function face(set: SetFn, look: Look, A: (r: number) => number, side: boolean, h
 
 function outfit(set: SetFn, row: RowFn, o: string, view: View, A: (r: number) => number) {
   const s = (x: number, r: number, c: string) => set(x, A(r), c);
+  const fresh=['pressvest','denim','cardigan','overalls','raincoat','turtleneck','blouse','striped','fieldjacket','peacoat','aproncoat','sports','summer','formal'].includes(o);
+  if(fresh) {
+    const lo=view==='side'?7:6,hi=view==='side'?12:13;
+    if(o==='raincoat'||o==='peacoat'){row(A(20),lo,hi,'j');row(A(21),lo,hi,'J');}
+    if(view==='back') {
+      if(o==='pressvest'){row(A(15),7,12,'w');row(A(16),8,11,'g');}
+      if(o==='denim'){row(A(14),lo,hi,'k');row(A(18),lo,hi,'k');s(9,16,'J');}
+      if(o==='overalls'){for(let r=13;r<=17;r++){s(8,r,'p');s(11,r,'p');}row(A(18),lo,hi,'P');}
+      if(o==='cardigan'){for(let r=14;r<=18;r++)s(9,r,'J');row(A(18),lo,hi,'k');}
+      if(o==='raincoat'){row(A(13),7,12,'k');row(A(14),8,11,'k');row(A(15),8,11,'J');}
+      if(o==='turtleneck')row(A(13),7,12,'J');
+      if(o==='blouse'){s(9,16,'g');s(10,16,'g');row(A(19),lo,hi,'w');}
+      if(o==='striped')for(const r of [14,16,18])row(A(r),lo,hi,'w');
+      if(o==='fieldjacket'){row(A(15),lo,hi,'k');s(9,16,'J');s(9,17,'J');}
+      if(o==='peacoat'){s(9,17,'B');s(10,17,'B');row(A(18),lo,hi,'J');}
+      if(o==='aproncoat'){s(8,13,'g');s(11,13,'g');s(8,17,'g');s(11,17,'g');row(A(18),8,11,'g');}
+      if(o==='sports'){for(let r=14;r<=18;r++){s(7,r,'w');s(12,r,'w');}}
+      if(o==='summer'){row(A(13),7,12,'w');row(A(18),lo,hi,'k');}
+      if(o==='formal'){for(let r=16;r<=19;r++)s(9,r,'J');row(A(13),7,12,'k');}
+    } else {
+      const center=view==='side'?11:9;
+      if(o==='pressvest'){for(let r=13;r<=17;r++){s(view==='side'?7:6,r,'w');s(center,r,'W');}s(center+1,15,'g');}
+      if(o==='denim'){for(let r=13;r<=18;r++)s(center,r,'k');s(lo+1,15,'W');s(hi-1,15,'W');row(A(18),lo,hi,'J');}
+      if(o==='cardigan'){for(let r=13;r<=18;r++)s(center,r,'w');s(lo+1,17,'J');s(hi-1,17,'J');}
+      if(o==='overalls'){for(let r=13;r<=18;r++){s(lo+2,r,'p');s(hi-2,r,'p');}row(A(16),lo+2,hi-2,'p');s(lo+2,15,'g');s(hi-2,15,'g');}
+      if(o==='raincoat'){for(let r=14;r<=20;r++)s(center,r,'B');row(A(13),lo+1,hi-1,'k');s(hi-1,17,'k');}
+      if(o==='turtleneck'){row(A(13),lo+1,hi-1,'J');row(A(14),lo+2,hi-2,'J');}
+      if(o==='blouse'){row(A(13),lo+1,hi-1,'w');s(center-1,14,'g');s(center+1,14,'g');s(center,15,'g');}
+      if(o==='striped')for(const r of [14,16,18])row(A(r),lo,hi,'w');
+      if(o==='fieldjacket'){for(let r=13;r<=18;r++)s(center,r,'J');for(const x of [lo+1,hi-1]){s(x,15,'k');s(x,16,'J');s(x,18,'k');}}
+      if(o==='peacoat'){s(center-1,14,'k');s(center+1,14,'k');for(const r of [16,18]){s(center-1,r,'g');s(center+1,r,'g');}}
+      if(o==='aproncoat'){for(let r=14;r<=20;r++)row(A(r),lo+1,hi-1,'g');s(center,18,'w');s(center+1,18,'w');}
+      if(o==='sports'){for(let r=14;r<=18;r++)s(center,r,'w');s(center-1,13,'J');s(center+1,13,'J');row(A(18),lo,hi,'J');}
+      if(o==='summer'){row(A(13),lo+1,hi-1,'w');s(center+1,16,'g');row(A(19),lo,hi,'k');}
+      if(o==='formal'){for(let r=13;r<=16;r++)s(center,r,'w');for(let r=14;r<=17;r++)s(center+1,r,'g');s(center-1,13,'k');s(center+2,13,'k');}
+    }
+    return;
+  }
   if (view === 'front') {
     switch (o) {
       case 'reporter': for (let r = 13; r <= 16; r++) { s(9, r, 'w'); s(10, r, 'w'); } s(10, 16, 'W'); s(8, 13, 'k'); s(11, 13, 'k'); s(8, 14, 'k'); s(11, 14, 'k'); s(7, 15, 'g'); s(7, 16, 'w'); s(7, 17, 'W'); break;

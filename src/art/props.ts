@@ -1,6 +1,7 @@
 import type { PropKind } from '../world/rooms';
 import { carSprite } from './vehicles';
-import { ellipse, hash2, makeCanvas, outline, px, rect, rng, shade, sprite, type Ctx, type Sprite } from './pixel';
+import { modelProp } from './campaign';
+import { ellipse, hash2, makeCanvas, outline, pixelText, px, rect, rng, shade, sprite, type Ctx, type Sprite } from './pixel';
 
 const INK = '#2d2734';
 const GINKGO = [['#fff3a6', '#f4d75c', '#dbb036', '#a9822b'], ['#e7ee90', '#c1d55c', '#94af40', '#6a8631'], ['#fde68c', '#ebc44c', '#cb972f', '#95692a']];
@@ -295,6 +296,13 @@ function canopyShrub(g: Ctx, cx: number, cy: number, v: number) {
   if (v % 2) for (const [x, y] of blobs.slice(1)) px(g, x + 1, y, '#f4a0b8');
 }
 
+function lifeProp(kind: PropKind, v: number): Sprite | null {
+  if (kind === 'homeentry') return sprite(26, 38, 13, 36, g => { rect(g, 2, 10, 22, 26, '#524b62'); rect(g, 4, 12, 18, 23, '#8db1bd'); rect(g, 5, 13, 2, 18, '#c5dfdf'); rect(g, 14, 20, 1, 5, '#f4dfb4'); rect(g, 1, 1, 24, 8, '#476676'); pixelText(g, 'HOME', 5, 3, '#e6f1e7'); }, '#3d374f');
+  if (kind === 'clothesrack') return sprite(54, 46, 27, 44, g => { rect(g, 3, 5, 2, 37, '#78818e'); rect(g, 49, 5, 2, 37, '#78818e'); rect(g, 3, 5, 48, 2, '#b8bfca'); for (let i = 0; i < 4; i++) { const x = 8 + i * 10, c = (v ? ['#e9cf9c', '#8eb8a1', '#d59aa8', '#879cc2'] : ['#d5e4e2', '#ba8d73', '#7197aa', '#7f798f'])[i]!; rect(g, x + 3, 8, 1, 3, '#c7c8cc'); rect(g, x, 12, 8, 18, c); rect(g, x - 2, 13, 2, 7, c); rect(g, x + 8, 13, 2, 7, c); rect(g, x + 2, 12, 4, 2, shade(c, -.3)); rect(g, x + 1, 15, 1, 11, shade(c, .3)); if (i % 2 === 0) rect(g, x + 4, 15, 1, 13, shade(c, -.25)); } rect(g, 1, 41, 7, 2, '#5b596e'); rect(g, 46, 41, 7, 2, '#5b596e'); }, '#454052');
+  if (kind === 'mirror') return sprite(24, 50, 12, 48, g => { rect(g, 3, 1, 18, 40, '#a38a77'); rect(g, 5, 3, 14, 35, '#a7cbd4'); rect(g, 6, 4, 2, 28, '#dfefeb'); for (let k = 0; k < 14; k++) px(g, 9 + k % 8, 10 + k, '#d4e8e8'); rect(g, 5, 41, 2, 6, '#7c6354'); rect(g, 17, 41, 2, 6, '#7c6354'); rect(g, 2, 47, 20, 1, '#7c6354'); }, '#514052');
+  return null;
+}
+
 const cache = new Map<string, Sprite>();
 export function propSprite(kind: PropKind, v: number, frame = 0): Sprite {
   if (kind === 'parkedcar') {
@@ -303,6 +311,10 @@ export function propSprite(kind: PropKind, v: number, frame = 0): Sprite {
     if (!s) { s = carSprite(['sedan', 'suv', 'sedan', 'taxi', 'sedan'][v % 5] as 'sedan', CAR_COLORS[v % CAR_COLORS.length]!, 'up'); cache.set(key, s); }
     return s;
   }
+  const customKey = kind + ':custom:' + v + ':' + frame;
+  const saved = cache.get(customKey); if (saved) return saved;
+  const custom = modelProp(kind, v, frame) ?? lifeProp(kind, v);
+  if (custom) { cache.set(customKey, custom); return custom; }
   const animated = kind === 'fountain' || kind === 'bodyscope' || kind === 'heartcore' || kind === 'robot' || kind === 'pad';
   const key = kind + ':' + v + ':' + (animated ? frame : 0);
   let s = cache.get(key);

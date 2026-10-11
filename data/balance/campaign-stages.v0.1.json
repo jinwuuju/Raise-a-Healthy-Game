@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "balanceVersion": "cardio-0.1",
+  "stages": {
+    "Q001": {
+      "observe": 20,
+      "apply": 30,
+      "publish": 50
+    },
+    "Q002": {
+      "observe": 30,
+      "apply": 45,
+      "publish": 75
+    },
+    "Q003": {
+      "observe": 40,
+      "apply": 60,
+      "publish": 100
+    },
+    "Q004": {
+      "observe": 50,
+      "apply": 75,
+      "publish": 125
+    },
+    "Q005": {
+      "observe": 60,
+      "apply": 90,
+      "publish": 150
+    },
+    "Q006": {
+      "observe": 70,
+      "apply": 105,
+      "publish": 175
+    },
+    "Q007": {
+      "observe": 80,
+      "apply": 120,
+      "publish": 200
+    },
+    "Q008": {
+      "observe": 90,
+      "apply": 135,
+      "publish": 225
+    },
+    "Q009": {
+      "observe": 100,
+      "apply": 150,
+      "publish": 250
+    },
+    "Q010": {
+      "observe": 0,
+      "apply": 0,
+      "publish": 0
+    }
+  }
+}

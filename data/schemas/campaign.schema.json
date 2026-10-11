@@ -1,0 +1,594 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://medical-quest.local/schemas/campaign",
+  "title": "검수 전 초반 캠페인 계약",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "contentVersion": {
+      "const": "cardio-0.1"
+    },
+    "status": {
+      "const": "draft_unreviewed"
+    },
+    "disclaimer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "review": {
+      "type": "null"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "publisher": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "checkedAt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "updatedAt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "section": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "claims": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "publisher",
+          "url",
+          "checkedAt",
+          "updatedAt",
+          "section",
+          "claims"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "concepts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "uniqueItems": true
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "minItems": 1
+          },
+          "limitations": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "text",
+          "prerequisites",
+          "sources",
+          "limitations"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "quests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "enum": [
+              "Q001",
+              "Q002",
+              "Q003",
+              "Q004",
+              "Q005",
+              "Q006",
+              "Q007",
+              "Q008",
+              "Q009",
+              "Q010"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "offer": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "region": {
+            "enum": [
+              "heart",
+              "heart-chambers",
+              "heart-valves",
+              "heart-circulation",
+              "heart-signal",
+              "heart-supply",
+              "heart-conditions"
+            ]
+          },
+          "conceptIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "minItems": 1
+          },
+          "observations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "conceptId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "sources": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "text",
+                "conceptId",
+                "sources"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 2
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "kind": {
+                  "enum": [
+                    "flow",
+                    "match",
+                    "valves",
+                    "routes",
+                    "sequence",
+                    "supply",
+                    "compare",
+                    "records",
+                    "synthesis",
+                    "planning"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "instruction": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "choices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "explanation": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label",
+                      "explanation"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 2
+                },
+                "slots": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "answer": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "minItems": 1
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label",
+                      "answer"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
+                },
+                "hints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "minItems": 2
+                },
+                "feedback": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "scene": {
+                  "type": "object",
+                  "properties": {
+                    "nodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "label": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "x": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 1000
+                          },
+                          "y": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 1000
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "label",
+                          "x",
+                          "y"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "minItems": 2
+                    },
+                    "links": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "minItems": 2,
+                        "maxItems": 2
+                      },
+                      "minItems": 0
+                    }
+                  },
+                  "required": [
+                    "nodes",
+                    "links"
+                  ],
+                  "additionalProperties": false
+                },
+                "demonstration": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "baseline": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "minItems": 1
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "title",
+                "instruction",
+                "choices",
+                "slots",
+                "hints",
+                "feedback",
+                "evidenceId",
+                "scene",
+                "demonstration",
+                "baseline"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 3
+          },
+          "cards": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "slot": {
+                  "enum": [
+                    "observation",
+                    "mechanism",
+                    "conclusion"
+                  ]
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "evidenceIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "uniqueItems": true
+                },
+                "valid": {
+                  "type": "boolean"
+                },
+                "feedback": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              },
+              "required": [
+                "id",
+                "slot",
+                "text",
+                "evidenceIds",
+                "valid",
+                "feedback"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 6
+          },
+          "acceptedLinks": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "minItems": 3
+            },
+            "minItems": 2
+          },
+          "headline": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "alternateHeadline": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "limitations": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "minItems": 1
+          },
+          "debrief": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "unlockText": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "question",
+          "offer",
+          "region",
+          "conceptIds",
+          "observations",
+          "tasks",
+          "cards",
+          "acceptedLinks",
+          "headline",
+          "alternateHeadline",
+          "limitations",
+          "sources",
+          "debrief",
+          "unlockText"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 10
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "contentVersion",
+    "status",
+    "disclaimer",
+    "review",
+    "sources",
+    "concepts",
+    "quests"
+  ],
+  "additionalProperties": false
+}

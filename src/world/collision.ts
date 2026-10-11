@@ -24,7 +24,11 @@ function solidsByTile(room: Room): Map<number, Rect[]> {
 }
 
 export function canStand(roomId: RoomId, p: Point): boolean {
-  const room = rooms[roomId];
+  return canStandInRoom(rooms[roomId], p);
+}
+
+/** Validate an incoming home save against its own geometry, not a previous world's projection. */
+export function canStandInRoom(room: Room, p: Point): boolean {
   if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return false;
   const f = footRect(p);
   if (f.x < 0 || f.y < 0 || f.x + f.w > room.cols * TILE || f.y + f.h > room.rows * TILE) return false;

@@ -1,0 +1,586 @@
+{
+  "schemaVersion": 1,
+  "balanceVersion": "life-0.1",
+  "items": [
+    {
+      "id": "outfit.reporter",
+      "title": "취재 재킷",
+      "kind": "outfit",
+      "price": 0,
+      "unlock": "Q001",
+      "outfitId": "reporter",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.knit",
+      "title": "캐주얼 니트",
+      "kind": "outfit",
+      "price": 0,
+      "unlock": "Q001",
+      "outfitId": "knit",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.hoodie",
+      "title": "포근한 후드",
+      "kind": "outfit",
+      "price": 0,
+      "unlock": "Q001",
+      "outfitId": "hoodie",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.pressvest",
+      "title": "첫 기사 조끼",
+      "kind": "outfit",
+      "price": 0,
+      "unlock": "Q001",
+      "outfitId": "pressvest",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.coat",
+      "title": "도시 코트",
+      "kind": "outfit",
+      "price": 200,
+      "unlock": "Q002",
+      "outfitId": "coat",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.denim",
+      "title": "데님 재킷",
+      "kind": "outfit",
+      "price": 250,
+      "unlock": "Q003",
+      "outfitId": "denim",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.cardigan",
+      "title": "포켓 카디건",
+      "kind": "outfit",
+      "price": 220,
+      "unlock": "Q003",
+      "outfitId": "cardigan",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.overalls",
+      "title": "탐험 멜빵",
+      "kind": "outfit",
+      "price": 300,
+      "unlock": "Q004",
+      "outfitId": "overalls",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.raincoat",
+      "title": "방수 취재 우비",
+      "kind": "outfit",
+      "price": 280,
+      "unlock": "Q004",
+      "outfitId": "raincoat",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.turtleneck",
+      "title": "목폴라 셔츠",
+      "kind": "outfit",
+      "price": 200,
+      "unlock": "Q003",
+      "outfitId": "turtleneck",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.blouse",
+      "title": "리본 블라우스",
+      "kind": "outfit",
+      "price": 250,
+      "unlock": "Q003",
+      "outfitId": "blouse",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.striped",
+      "title": "줄무늬 티셔츠",
+      "kind": "outfit",
+      "price": 200,
+      "unlock": "Q002",
+      "outfitId": "striped",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.fieldjacket",
+      "title": "현장 포켓 재킷",
+      "kind": "outfit",
+      "price": 350,
+      "unlock": "Q005",
+      "outfitId": "fieldjacket",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.peacoat",
+      "title": "더블 코트",
+      "kind": "outfit",
+      "price": 400,
+      "unlock": "Q006",
+      "outfitId": "peacoat",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.aproncoat",
+      "title": "작업 앞치마",
+      "kind": "outfit",
+      "price": 220,
+      "unlock": "Q004",
+      "outfitId": "aproncoat",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.sports",
+      "title": "지퍼 트레이닝",
+      "kind": "outfit",
+      "price": 240,
+      "unlock": "Q003",
+      "outfitId": "sports",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.summer",
+      "title": "여름 반팔",
+      "kind": "outfit",
+      "price": 200,
+      "unlock": "Q002",
+      "outfitId": "summer",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "outfit.formal",
+      "title": "첫 기획 정장",
+      "kind": "outfit",
+      "price": 0,
+      "unlock": "Q010",
+      "outfitId": "formal",
+      "effect": "외형만 바뀌며 경험치·정확도·취재 허가에 영향 없음"
+    },
+    {
+      "id": "equipment.notebook",
+      "title": "취재 노트",
+      "kind": "equipment",
+      "price": 250,
+      "unlock": "Q003",
+      "effect": "수첩의 근거 핀 3→5. 기본 목록은 계속 무료"
+    },
+    {
+      "id": "equipment.desk",
+      "title": "편집용 책상",
+      "kind": "equipment",
+      "price": 600,
+      "unlock": "Q006",
+      "effect": "기사 초안 보관 1→2. 발행/수락에 필수 아님"
+    },
+    {
+      "id": "equipment.bookcase",
+      "title": "자료 책장",
+      "kind": "equipment",
+      "price": 1200,
+      "unlock": "Q010",
+      "effect": "도감 즐겨찾기와 특집호 전시"
+    },
+    {
+      "id": "furniture.bed",
+      "title": "기본 침대",
+      "kind": "furniture",
+      "price": 0,
+      "unlock": "Q001",
+      "furnitureId": "bed",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.wardrobe",
+      "title": "기본 옷장",
+      "kind": "furniture",
+      "price": 0,
+      "unlock": "Q001",
+      "furnitureId": "wardrobe",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.desk",
+      "title": "기본 책상",
+      "kind": "furniture",
+      "price": 0,
+      "unlock": "Q001",
+      "furnitureId": "desk",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.chair",
+      "title": "나무 의자",
+      "kind": "furniture",
+      "price": 50,
+      "unlock": "Q001",
+      "furnitureId": "chair",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.nightstand",
+      "title": "협탁",
+      "kind": "furniture",
+      "price": 70,
+      "unlock": "Q001",
+      "furnitureId": "nightstand",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.dresser",
+      "title": "서랍장",
+      "kind": "furniture",
+      "price": 110,
+      "unlock": "Q001",
+      "furnitureId": "dresser",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.bookcase",
+      "title": "낮은 책장",
+      "kind": "furniture",
+      "price": 120,
+      "unlock": "Q001",
+      "furnitureId": "bookcase",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.plant",
+      "title": "잎사귀 화분",
+      "kind": "furniture",
+      "price": 80,
+      "unlock": "Q001",
+      "furnitureId": "plant",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.lamp",
+      "title": "스탠드 조명",
+      "kind": "furniture",
+      "price": 100,
+      "unlock": "Q001",
+      "furnitureId": "lamp",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.rug",
+      "title": "작은 러그",
+      "kind": "furniture",
+      "price": 100,
+      "unlock": "Q001",
+      "furnitureId": "rug",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.sofa",
+      "title": "쿠션 소파",
+      "kind": "furniture",
+      "price": 180,
+      "unlock": "Q001",
+      "furnitureId": "sofa",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.lowtable",
+      "title": "낮은 탁자",
+      "kind": "furniture",
+      "price": 100,
+      "unlock": "Q001",
+      "furnitureId": "lowtable",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.poster",
+      "title": "별 지도 포스터",
+      "kind": "furniture",
+      "price": 50,
+      "unlock": "Q001",
+      "furnitureId": "poster",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.frame",
+      "title": "신문 액자",
+      "kind": "furniture",
+      "price": 70,
+      "unlock": "Q001",
+      "furnitureId": "frame",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.clock",
+      "title": "벽시계",
+      "kind": "furniture",
+      "price": 60,
+      "unlock": "Q001",
+      "furnitureId": "clock",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.trophy",
+      "title": "기자 트로피",
+      "kind": "furniture",
+      "price": 120,
+      "unlock": "Q001",
+      "furnitureId": "trophy",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.bin",
+      "title": "분리수거함",
+      "kind": "furniture",
+      "price": 50,
+      "unlock": "Q001",
+      "furnitureId": "bin",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.screen",
+      "title": "접이식 가림막",
+      "kind": "furniture",
+      "price": 130,
+      "unlock": "Q001",
+      "furnitureId": "screen",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.mirror",
+      "title": "전신 거울",
+      "kind": "furniture",
+      "price": 100,
+      "unlock": "Q001",
+      "furnitureId": "mirror",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.shoerack",
+      "title": "신발장",
+      "kind": "furniture",
+      "price": 80,
+      "unlock": "Q001",
+      "furnitureId": "shoerack",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.coatrack",
+      "title": "옷걸이",
+      "kind": "furniture",
+      "price": 70,
+      "unlock": "Q001",
+      "furnitureId": "coatrack",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.noticeboard",
+      "title": "메모 보드",
+      "kind": "furniture",
+      "price": 90,
+      "unlock": "Q001",
+      "furnitureId": "noticeboard",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.diningtable",
+      "title": "둥근 식탁",
+      "kind": "furniture",
+      "price": 150,
+      "unlock": "Q001",
+      "furnitureId": "diningtable",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "furniture.stool",
+      "title": "낮은 스툴",
+      "kind": "furniture",
+      "price": 50,
+      "unlock": "Q001",
+      "furnitureId": "stool",
+      "effect": "공간 꾸미기. 경험치와 취재 허가에 영향 없음"
+    },
+    {
+      "id": "home.house",
+      "title": "작은 내 집",
+      "kind": "home",
+      "price": 1500,
+      "unlock": "Q010",
+      "effect": "12×10 배치 공간. 기존 가구는 보관함으로 이동; 무료 숙소 유지"
+    }
+  ],
+  "furniture": [
+    {
+      "id": "bed",
+      "title": "기본 침대",
+      "w": 2,
+      "h": 3,
+      "price": 0
+    },
+    {
+      "id": "wardrobe",
+      "title": "기본 옷장",
+      "w": 2,
+      "h": 1,
+      "price": 0
+    },
+    {
+      "id": "desk",
+      "title": "기본 책상",
+      "w": 2,
+      "h": 1,
+      "price": 0
+    },
+    {
+      "id": "chair",
+      "title": "나무 의자",
+      "w": 1,
+      "h": 1,
+      "price": 50
+    },
+    {
+      "id": "nightstand",
+      "title": "협탁",
+      "w": 1,
+      "h": 1,
+      "price": 70
+    },
+    {
+      "id": "dresser",
+      "title": "서랍장",
+      "w": 2,
+      "h": 1,
+      "price": 110
+    },
+    {
+      "id": "bookcase",
+      "title": "낮은 책장",
+      "w": 2,
+      "h": 1,
+      "price": 120
+    },
+    {
+      "id": "plant",
+      "title": "잎사귀 화분",
+      "w": 1,
+      "h": 1,
+      "price": 80
+    },
+    {
+      "id": "lamp",
+      "title": "스탠드 조명",
+      "w": 1,
+      "h": 1,
+      "price": 100
+    },
+    {
+      "id": "rug",
+      "title": "작은 러그",
+      "w": 2,
+      "h": 2,
+      "price": 100
+    },
+    {
+      "id": "sofa",
+      "title": "쿠션 소파",
+      "w": 2,
+      "h": 1,
+      "price": 180
+    },
+    {
+      "id": "lowtable",
+      "title": "낮은 탁자",
+      "w": 2,
+      "h": 1,
+      "price": 100
+    },
+    {
+      "id": "poster",
+      "title": "별 지도 포스터",
+      "w": 1,
+      "h": 1,
+      "price": 50
+    },
+    {
+      "id": "frame",
+      "title": "신문 액자",
+      "w": 1,
+      "h": 1,
+      "price": 70
+    },
+    {
+      "id": "clock",
+      "title": "벽시계",
+      "w": 1,
+      "h": 1,
+      "price": 60
+    },
+    {
+      "id": "trophy",
+      "title": "기자 트로피",
+      "w": 1,
+      "h": 1,
+      "price": 120
+    },
+    {
+      "id": "bin",
+      "title": "분리수거함",
+      "w": 1,
+      "h": 1,
+      "price": 50
+    },
+    {
+      "id": "screen",
+      "title": "접이식 가림막",
+      "w": 2,
+      "h": 1,
+      "price": 130
+    },
+    {
+      "id": "mirror",
+      "title": "전신 거울",
+      "w": 1,
+      "h": 1,
+      "price": 100
+    },
+    {
+      "id": "shoerack",
+      "title": "신발장",
+      "w": 2,
+      "h": 1,
+      "price": 80
+    },
+    {
+      "id": "coatrack",
+      "title": "옷걸이",
+      "w": 1,
+      "h": 1,
+      "price": 70
+    },
+    {
+      "id": "noticeboard",
+      "title": "메모 보드",
+      "w": 2,
+      "h": 1,
+      "price": 90
+    },
+    {
+      "id": "diningtable",
+      "title": "둥근 식탁",
+      "w": 2,
+      "h": 2,
+      "price": 150
+    },
+    {
+      "id": "stool",
+      "title": "낮은 스툴",
+      "w": 1,
+      "h": 1,
+      "price": 50
+    }
+  ]
+}

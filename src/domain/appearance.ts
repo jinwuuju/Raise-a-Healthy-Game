@@ -28,7 +28,7 @@ export const hairColors = {
   ink: '검정', brown: '갈색', ash: '애쉬 브라운', chestnut: '적갈색', gold: '금빛', silver: '은빛',
   pink: '벚꽃 핑크', lavender: '라벤더', teal: '청록',
 } as const;
-export const outfits = { reporter: '취재 재킷', knit: '캐주얼 니트', hoodie: '포근한 후드', coat: '도시 코트' } as const;
+export const outfits = { reporter: '취재 재킷', knit: '캐주얼 니트', hoodie: '포근한 후드', coat: '도시 코트', pressvest:'첫 기사 조끼',denim:'데님 재킷',cardigan:'포켓 카디건',overalls:'탐험 멜빵',raincoat:'방수 취재 우비',turtleneck:'목폴라 셔츠',blouse:'리본 블라우스',striped:'줄무늬 티셔츠',fieldjacket:'현장 포켓 재킷',peacoat:'더블 코트',aproncoat:'작업 앞치마',sports:'지퍼 트레이닝',summer:'여름 반팔',formal:'첫 기획 정장' } as const;
 
 export type HairId = keyof typeof hairStyles;
 export type FaceId = keyof typeof faceStyles;

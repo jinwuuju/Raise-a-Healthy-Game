@@ -1,0 +1,5292 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "cardio-0.1",
+  "status": "draft_unreviewed",
+  "disclaimer": "검수 전 모형 · 출처 본문 확인, 전문 의료 검수 전. 실제 진단·치료에 사용하지 마세요.",
+  "review": null,
+  "sources": [
+    {
+      "id": "nhlbi-anatomy",
+      "title": "What the Heart Looks Like",
+      "publisher": "NHLBI / NIH",
+      "url": "https://www.nhlbi.nih.gov/health/heart/anatomy",
+      "updatedAt": "2022-03-24",
+      "section": "Heart chambers; Heart tissue",
+      "claims": [
+        "네 방의 심방/심실 구분",
+        "몸/폐에서 심방으로, 심방에서 심실로",
+        "심장근육의 수축"
+      ],
+      "checkedAt": "2026-10-11"
+    },
+    {
+      "id": "nhlbi-flow",
+      "title": "How Blood Flows through the Heart",
+      "publisher": "NHLBI / NIH",
+      "url": "https://www.nhlbi.nih.gov/health/heart/blood-flow",
+      "updatedAt": "2025-06-25",
+      "section": "Heart valves; Adding oxygen to blood; Supplying oxygen to the heart’s muscle",
+      "claims": [
+        "판막과 역류 방지",
+        "폐/몸으로 이어지는 순환",
+        "대동맥에서 갈라지는 관상동맥의 심근 공급"
+      ],
+      "checkedAt": "2026-10-11"
+    },
+    {
+      "id": "nhlbi-beats",
+      "title": "How the Heart Beats",
+      "publisher": "NHLBI / NIH",
+      "url": "https://www.nhlbi.nih.gov/health/heart/heart-beats",
+      "updatedAt": "2025-06-25",
+      "section": "Electrical activity",
+      "claims": [
+        "동방결절→심방→방실결절 지연→심실로의 전도",
+        "전기 신호와 혈액 이동은 다른 현상"
+      ],
+      "checkedAt": "2026-10-11"
+    },
+    {
+      "id": "nhlbi-arteries",
+      "title": "What Is Atherosclerosis?",
+      "publisher": "NHLBI / NIH",
+      "url": "https://www.nhlbi.nih.gov/health/atherosclerosis",
+      "updatedAt": "2024-10-28",
+      "section": "Plaque builds up; arteries narrow",
+      "claims": [
+        "좁아진 동맥에서 조직 공급이 줄 수 있음",
+        "게임 통로 수치는 실제 혈류 계산이 아님"
+      ],
+      "checkedAt": "2026-10-11"
+    },
+    {
+      "id": "nhlbi-measure",
+      "title": "High Blood Pressure Diagnosis",
+      "publisher": "NHLBI / NIH",
+      "url": "https://www.nhlbi.nih.gov/health/high-blood-pressure/diagnosis",
+      "updatedAt": "2025-06-26",
+      "section": "Getting ready for a blood pressure measurement; Confirming high blood pressure",
+      "claims": [
+        "측정 준비/긴장/도구가 기록에 영향을 줄 수 있음",
+        "임상 진단은 한 번의 가상 수치로 정하지 않음"
+      ],
+      "checkedAt": "2026-10-11"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "circulation",
+      "title": "이어지는 순환",
+      "text": "혈액은 몸과 폐를 거쳐 심장으로 돌아오는 경로를 이룬다.",
+      "prerequisites": [],
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다."
+    },
+    {
+      "id": "chambers",
+      "title": "심방과 심실",
+      "text": "심방은 들어오는 혈액을 받고 심실은 밖으로 내보낸다. 오른쪽/왼쪽은 몸 주인의 기준이다.",
+      "prerequisites": [
+        "circulation"
+      ],
+      "sources": [
+        "nhlbi-anatomy"
+      ],
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다."
+    },
+    {
+      "id": "valves",
+      "title": "방향을 지키는 판막",
+      "text": "판막은 혈액이 거꾸로 흐르는 것을 막는 데 관여한다. 모형 문을 고치는 행동은 실제 치료가 아니다.",
+      "prerequisites": [
+        "chambers"
+      ],
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다."
+    },
+    {
+      "id": "two-circuits",
+      "title": "폐와 몸의 연결",
+      "text": "몸→우심방→우심실→폐→좌심방→좌심실→몸으로 경로가 이어진다.",
+      "prerequisites": [
+        "chambers",
+        "valves"
+      ],
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다."
+    },
+    {
+      "id": "signal",
+      "title": "박동과 전기 신호",
+      "text": "동방결절에서 시작한 신호가 심방과 방실결절을 거쳐 심실의 수축으로 이어진다.",
+      "prerequisites": [
+        "chambers"
+      ],
+      "sources": [
+        "nhlbi-beats"
+      ],
+      "limitations": "전도계의 세부 다발·분지와 실제 시간 간격은 생략한다. 신호 표식은 혈액 자체가 아니다."
+    },
+    {
+      "id": "coronary",
+      "title": "펌프의 공급",
+      "text": "심장근육도 산소와 영양 공급이 필요하며 관상동맥은 대동맥에서 갈라져 심장에 혈액을 공급한다.",
+      "prerequisites": [
+        "two-circuits"
+      ],
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다."
+    },
+    {
+      "id": "comparison",
+      "title": "한 조건씩 비교",
+      "text": "좁아진 동맥은 공급을 줄일 수 있다. 모형의 두 조건은 다른 변수를 같게 두고 비교한다.",
+      "prerequisites": [
+        "coronary"
+      ],
+      "sources": [
+        "nhlbi-arteries"
+      ],
+      "limitations": "표식 개수는 게임 수치다. 실제 혈류에는 압력차·점도·탄성·조절 등도 관여하며 게임 결과로 질환이나 개인 상태를 계산하지 않는다."
+    },
+    {
+      "id": "records",
+      "title": "기록의 조건",
+      "text": "기록의 시간·준비·도구 등을 확인해야 한다. 가상 기록 하나로 사람의 질환을 단정하지 않는다.",
+      "prerequisites": [
+        "comparison"
+      ],
+      "sources": [
+        "nhlbi-measure"
+      ],
+      "limitations": "환자 기록이나 혈압 기준을 사용하지 않는다. 가상의 게임 표식 수만 비교하며 진단·치료 권고를 제공하지 않는다."
+    },
+    {
+      "id": "reporting",
+      "title": "관찰과 설명의 연결",
+      "text": "모형 관찰을 기전 설명과 연결하고 실제 인체에 적용할 때의 한계와 출처를 함께 밝힌다.",
+      "prerequisites": [
+        "two-circuits",
+        "records"
+      ],
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다."
+    },
+    {
+      "id": "synthesis",
+      "title": "첫 기획의 근거",
+      "text": "구조·흐름·신호·공급을 구분해 독자 질문에 맞는 근거와 한계를 고른다.",
+      "prerequisites": [
+        "reporting",
+        "signal",
+        "coronary"
+      ],
+      "sources": [
+        "nhlbi-anatomy",
+        "nhlbi-flow",
+        "nhlbi-beats"
+      ],
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다."
+    }
+  ],
+  "quests": [
+    {
+      "id": "Q001",
+      "title": "사라진 혈액 배달표",
+      "question": "심장은 피를 보내기만 하나요?",
+      "offer": "고리의 배달 길이 끊겼어요. 표식이 나갔다 돌아오도록 길 세 곳을 이어 주세요.",
+      "region": "heart",
+      "conceptIds": [
+        "circulation"
+      ],
+      "observations": [
+        {
+          "id": "heart-out",
+          "title": "나가는 표식",
+          "text": "심장에서 나가는 표식이 모형 고리로 들어갔다.",
+          "conceptId": "circulation",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        },
+        {
+          "id": "heart-in",
+          "title": "돌아오는 표식",
+          "text": "고리를 지난 표식이 돌아오는 입구에 도착했다.",
+          "conceptId": "circulation",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "flow",
+          "title": "배달 모형 복구",
+          "instruction": "고리의 배달 길이 끊겼어요. 표식이 나갔다 돌아오도록 길 세 곳을 이어 주세요.",
+          "choices": [
+            {
+              "id": "es",
+              "label": "┌ 아래·오른쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "sw",
+              "label": "┐ 아래·왼쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "wn",
+              "label": "┘ 위·왼쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "ne",
+              "label": "└ 위·오른쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "ew",
+              "label": "─ 좌우",
+              "explanation": "곧은 길"
+            },
+            {
+              "id": "ns",
+              "label": "│ 위아래",
+              "explanation": "곧은 길"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "첫 꺾임",
+              "answer": [
+                "ne"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "가운데 길",
+              "answer": [
+                "ew"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "마지막 꺾임",
+              "answer": [
+                "wn"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 끊기지 않은 연결이 출발과 귀환을 이어 줬다."
+          ],
+          "feedback": "끊기지 않은 연결이 출발과 귀환을 이어 줬다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 56
+              },
+              {
+                "id": "slot-0",
+                "label": "첫 꺾임",
+                "x": 32,
+                "y": 140
+              },
+              {
+                "id": "slot-1",
+                "label": "가운데 길",
+                "x": 160,
+                "y": 140
+              },
+              {
+                "id": "slot-2",
+                "label": "마지막 꺾임",
+                "x": 288,
+                "y": 140
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 288,
+                "y": 56
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer",
+          "kind": "flow",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "es",
+              "label": "┌ 아래·오른쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "sw",
+              "label": "┐ 아래·왼쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "wn",
+              "label": "┘ 위·왼쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "ne",
+              "label": "└ 위·오른쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "ew",
+              "label": "─ 좌우",
+              "explanation": "곧은 길"
+            },
+            {
+              "id": "ns",
+              "label": "│ 위아래",
+              "explanation": "곧은 길"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "첫 꺾임",
+              "answer": [
+                "sw"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "가운데 길",
+              "answer": [
+                "ns"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "마지막 꺾임",
+              "answer": [
+                "ne"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 끊기지 않은 연결이 출발과 귀환을 이어 줬다."
+          ],
+          "feedback": "끊기지 않은 연결이 출발과 귀환을 이어 줬다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 40,
+                "y": 24
+              },
+              {
+                "id": "slot-0",
+                "label": "새 출발의 꺾임",
+                "x": 184,
+                "y": 24
+              },
+              {
+                "id": "slot-1",
+                "label": "세로 우회",
+                "x": 184,
+                "y": 100
+              },
+              {
+                "id": "slot-2",
+                "label": "돌아오는 꺾임",
+                "x": 184,
+                "y": 180
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 320,
+                "y": 180
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "flow",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "es",
+              "label": "┌ 아래·오른쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "sw",
+              "label": "┐ 아래·왼쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "wn",
+              "label": "┘ 위·왼쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "ne",
+              "label": "└ 위·오른쪽",
+              "explanation": "꺾인 길"
+            },
+            {
+              "id": "ew",
+              "label": "─ 좌우",
+              "explanation": "곧은 길"
+            },
+            {
+              "id": "ns",
+              "label": "│ 위아래",
+              "explanation": "곧은 길"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "첫 꺾임",
+              "answer": [
+                "es"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "가운데 길",
+              "answer": [
+                "ns"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "마지막 꺾임",
+              "answer": [
+                "wn"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 끊기지 않은 연결이 출발과 귀환을 이어 줬다."
+          ],
+          "feedback": "끊기지 않은 연결이 출발과 귀환을 이어 줬다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 320,
+                "y": 32
+              },
+              {
+                "id": "slot-0",
+                "label": "돌아오는 꺾임",
+                "x": 80,
+                "y": 32
+              },
+              {
+                "id": "slot-1",
+                "label": "세로 우회",
+                "x": 80,
+                "y": 100
+              },
+              {
+                "id": "slot-2",
+                "label": "새 출발의 꺾임",
+                "x": 80,
+                "y": 180
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 32,
+                "y": 180
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 심장에서 나가는 표식이 모형 고리로 들어갔다. 고리를 지난 표식이 돌아오는 입구에 도착했다.",
+          "evidenceIds": [
+            "heart-out",
+            "heart-in"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "heart-out",
+            "heart-in",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "혈액은 몸과 폐를 거쳐 심장으로 돌아오는 경로를 이룬다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "끊기지 않은 연결이 출발과 귀환을 이어 줬다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "심장은 피를 보내기만 하나요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "사라진 혈액 배달표 — 모형에서 확인한 연결",
+      "alternateHeadline": "심장은 피를 보내기만 하나요? 모형 관찰로 살펴보다",
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다.",
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "debrief": "편집장: 끊기지 않은 연결이 출발과 귀환을 이어 줬다.",
+      "unlockText": "새 취재 의뢰가 독자 보드에 도착했어요."
+    },
+    {
+      "id": "Q002",
+      "title": "네 방의 주소",
+      "question": "혈액이 도착하는 방과 떠나는 방은 같나요?",
+      "offer": "배송 주소가 섞였어요. 방의 이름보다 들어오는 곳과 나가는 곳을 먼저 확인해요.",
+      "region": "heart-chambers",
+      "conceptIds": [
+        "chambers"
+      ],
+      "observations": [
+        {
+          "id": "receiving",
+          "title": "받는 방",
+          "text": "심방에서 들어오는 표식을 받는 관계를 관찰했다.",
+          "conceptId": "chambers",
+          "sources": [
+            "nhlbi-anatomy"
+          ]
+        },
+        {
+          "id": "sending",
+          "title": "보내는 방",
+          "text": "심실에서 바깥 노선으로 표식이 나가는 관계를 관찰했다.",
+          "conceptId": "chambers",
+          "sources": [
+            "nhlbi-anatomy"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "match",
+          "title": "배달 모형 복구",
+          "instruction": "배송 주소가 섞였어요. 방의 이름보다 들어오는 곳과 나가는 곳을 먼저 확인해요.",
+          "choices": [
+            {
+              "id": "ra",
+              "label": "우심방",
+              "explanation": "몸에서 돌아오는 혈액을 받는 방"
+            },
+            {
+              "id": "rv",
+              "label": "우심실",
+              "explanation": "폐 쪽으로 보내는 방"
+            },
+            {
+              "id": "la",
+              "label": "좌심방",
+              "explanation": "폐에서 돌아오는 혈액을 받는 방"
+            },
+            {
+              "id": "lv",
+              "label": "좌심실",
+              "explanation": "몸 쪽으로 보내는 방"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "몸에서 돌아오는 곳",
+              "answer": [
+                "ra"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "폐로 내보내는 곳",
+              "answer": [
+                "rv"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "폐에서 돌아오는 곳",
+              "answer": [
+                "la"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "몸으로 내보내는 곳",
+              "answer": [
+                "lv"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 화면 위치가 바뀌어도 방의 입출구 관계는 유지된다."
+          ],
+          "feedback": "화면 위치가 바뀌어도 방의 입출구 관계는 유지된다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "몸에서 돌아오는 곳",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "폐로 내보내는 곳",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "폐에서 돌아오는 곳",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "몸으로 내보내는 곳",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer",
+          "kind": "match",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "ra",
+              "label": "우심방",
+              "explanation": "몸에서 돌아오는 혈액을 받는 방"
+            },
+            {
+              "id": "rv",
+              "label": "우심실",
+              "explanation": "폐 쪽으로 보내는 방"
+            },
+            {
+              "id": "la",
+              "label": "좌심방",
+              "explanation": "폐에서 돌아오는 혈액을 받는 방"
+            },
+            {
+              "id": "lv",
+              "label": "좌심실",
+              "explanation": "몸 쪽으로 보내는 방"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "회전한 지도: 폐에서 돌아옴",
+              "answer": [
+                "la"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "회전한 지도: 몸으로 나감",
+              "answer": [
+                "lv"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "회전한 지도: 몸에서 돌아옴",
+              "answer": [
+                "ra"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "회전한 지도: 폐로 나감",
+              "answer": [
+                "rv"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 화면 위치가 바뀌어도 방의 입출구 관계는 유지된다."
+          ],
+          "feedback": "화면 위치가 바뀌어도 방의 입출구 관계는 유지된다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "회전한 지도: 폐에서 돌아옴",
+                "x": 286,
+                "y": 150
+              },
+              {
+                "id": "slot-1",
+                "label": "회전한 지도: 몸으로 나감",
+                "x": 214,
+                "y": 150
+              },
+              {
+                "id": "slot-2",
+                "label": "회전한 지도: 몸에서 돌아옴",
+                "x": 142,
+                "y": 150
+              },
+              {
+                "id": "slot-3",
+                "label": "회전한 지도: 폐로 나감",
+                "x": 70,
+                "y": 150
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "match",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "ra",
+              "label": "우심방",
+              "explanation": "몸에서 돌아오는 혈액을 받는 방"
+            },
+            {
+              "id": "rv",
+              "label": "우심실",
+              "explanation": "폐 쪽으로 보내는 방"
+            },
+            {
+              "id": "la",
+              "label": "좌심방",
+              "explanation": "폐에서 돌아오는 혈액을 받는 방"
+            },
+            {
+              "id": "lv",
+              "label": "좌심실",
+              "explanation": "몸 쪽으로 보내는 방"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "회전한 지도: 폐로 나감",
+              "answer": [
+                "rv"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "회전한 지도: 몸에서 돌아옴",
+              "answer": [
+                "ra"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "회전한 지도: 몸으로 나감",
+              "answer": [
+                "lv"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "회전한 지도: 폐에서 돌아옴",
+              "answer": [
+                "la"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 화면 위치가 바뀌어도 방의 입출구 관계는 유지된다."
+          ],
+          "feedback": "화면 위치가 바뀌어도 방의 입출구 관계는 유지된다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "회전한 지도: 폐로 나감",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "회전한 지도: 몸에서 돌아옴",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "회전한 지도: 몸으로 나감",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "회전한 지도: 폐에서 돌아옴",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 심방에서 들어오는 표식을 받는 관계를 관찰했다. 심실에서 바깥 노선으로 표식이 나가는 관계를 관찰했다.",
+          "evidenceIds": [
+            "receiving",
+            "sending"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "receiving",
+            "sending",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "심방은 들어오는 혈액을 받고 심실은 밖으로 내보낸다. 오른쪽/왼쪽은 몸 주인의 기준이다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "화면 위치가 바뀌어도 방의 입출구 관계는 유지된다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "혈액이 도착하는 방과 떠나는 방은 같나요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "네 방의 주소 — 모형에서 확인한 연결",
+      "alternateHeadline": "혈액이 도착하는 방과 떠나는 방은 같나요? 모형 관찰로 살펴보다",
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다.",
+      "sources": [
+        "nhlbi-anatomy"
+      ],
+      "debrief": "편집장: 화면 위치가 바뀌어도 방의 입출구 관계는 유지된다.",
+      "unlockText": "새 취재 의뢰가 독자 보드에 도착했어요."
+    },
+    {
+      "id": "Q003",
+      "title": "거꾸로 열리는 문",
+      "question": "모형 문이 양쪽으로 열리면 어떤 일이 생길까요?",
+      "offer": "배달표가 거꾸로 돌아왔어요. 문을 시험해 정상 방향과 역방향 결과를 비교해요.",
+      "region": "heart-valves",
+      "conceptIds": [
+        "valves"
+      ],
+      "observations": [
+        {
+          "id": "forward-test",
+          "title": "정방향 시험",
+          "text": "앞으로 가는 표식이 문을 통과하는 것을 관찰했다.",
+          "conceptId": "valves",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        },
+        {
+          "id": "reverse-test",
+          "title": "역방향 시험",
+          "text": "방향성 문이 반대쪽 표식을 막는 것을 관찰했다.",
+          "conceptId": "valves",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "valves",
+          "title": "배달 모형 복구",
+          "instruction": "배달표가 거꾸로 돌아왔어요. 문을 시험해 정상 방향과 역방향 결과를 비교해요.",
+          "choices": [
+            {
+              "id": "forward",
+              "label": "→ 앞으로 통과 / 역방향 막기",
+              "explanation": "방향을 지키는 모형 문"
+            },
+            {
+              "id": "both",
+              "label": "↔ 양방향 통과",
+              "explanation": "반대 방향도 열려 있다"
+            },
+            {
+              "id": "reverse",
+              "label": "← 반대 방향만 통과",
+              "explanation": "주어진 화살표와 반대다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "심방 → 심실 문",
+              "answer": [
+                "forward"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "심실 → 동맥 문",
+              "answer": [
+                "forward"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 정방향을 허용하고 역방향을 막는 관계가 중요하다."
+          ],
+          "feedback": "정방향을 허용하고 역방향을 막는 관계가 중요하다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "심방 → 심실 문",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "심실 → 동맥 문",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer",
+          "kind": "valves",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "forward",
+              "label": "→ 앞으로 통과 / 역방향 막기",
+              "explanation": "방향을 지키는 모형 문"
+            },
+            {
+              "id": "both",
+              "label": "↔ 양방향 통과",
+              "explanation": "반대 방향도 열려 있다"
+            },
+            {
+              "id": "reverse",
+              "label": "← 반대 방향만 통과",
+              "explanation": "주어진 화살표와 반대다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "자리를 바꾼 입구 문",
+              "answer": [
+                "forward"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "자리를 바꾼 출구 문",
+              "answer": [
+                "forward"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 정방향을 허용하고 역방향을 막는 관계가 중요하다."
+          ],
+          "feedback": "정방향을 허용하고 역방향을 막는 관계가 중요하다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "자리를 바꾼 입구 문",
+                "x": 286,
+                "y": 150
+              },
+              {
+                "id": "slot-1",
+                "label": "자리를 바꾼 출구 문",
+                "x": 214,
+                "y": 150
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "valves",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "forward",
+              "label": "→ 앞으로 통과 / 역방향 막기",
+              "explanation": "방향을 지키는 모형 문"
+            },
+            {
+              "id": "both",
+              "label": "↔ 양방향 통과",
+              "explanation": "반대 방향도 열려 있다"
+            },
+            {
+              "id": "reverse",
+              "label": "← 반대 방향만 통과",
+              "explanation": "주어진 화살표와 반대다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "자리를 바꾼 출구 문",
+              "answer": [
+                "forward"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "자리를 바꾼 입구 문",
+              "answer": [
+                "forward"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 정방향을 허용하고 역방향을 막는 관계가 중요하다."
+          ],
+          "feedback": "정방향을 허용하고 역방향을 막는 관계가 중요하다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "자리를 바꾼 출구 문",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "자리를 바꾼 입구 문",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 앞으로 가는 표식이 문을 통과하는 것을 관찰했다. 방향성 문이 반대쪽 표식을 막는 것을 관찰했다.",
+          "evidenceIds": [
+            "forward-test",
+            "reverse-test"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "forward-test",
+            "reverse-test",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "판막은 혈액이 거꾸로 흐르는 것을 막는 데 관여한다. 모형 문을 고치는 행동은 실제 치료가 아니다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "정방향을 허용하고 역방향을 막는 관계가 중요하다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "모형 문이 양쪽으로 열리면 어떤 일이 생길까요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "거꾸로 열리는 문 — 모형에서 확인한 연결",
+      "alternateHeadline": "모형 문이 양쪽으로 열리면 어떤 일이 생길까요? 모형 관찰로 살펴보다",
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다.",
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "debrief": "편집장: 정방향을 허용하고 역방향을 막는 관계가 중요하다.",
+      "unlockText": "새 취재 의뢰가 독자 보드에 도착했어요."
+    },
+    {
+      "id": "Q004",
+      "title": "두 갈래 배송 노선",
+      "question": "폐로 가는 길과 몸으로 가는 길은 어떻게 이어질까요?",
+      "offer": "폐 배송과 몸 배송이 따로 끝나 버렸어요. 돌아오는 노선까지 연결해 한 순환으로 만들어요.",
+      "region": "heart-circulation",
+      "conceptIds": [
+        "two-circuits"
+      ],
+      "observations": [
+        {
+          "id": "lung-leg",
+          "title": "폐 경로",
+          "text": "우심실 쪽에서 폐로, 폐에서 좌심방 쪽으로 이어졌다.",
+          "conceptId": "two-circuits",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        },
+        {
+          "id": "body-leg",
+          "title": "몸 경로",
+          "text": "좌심실 쪽에서 몸으로, 몸에서 우심방 쪽으로 이어졌다.",
+          "conceptId": "two-circuits",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "routes",
+          "title": "배달 모형 복구",
+          "instruction": "폐 배송과 몸 배송이 따로 끝나 버렸어요. 돌아오는 노선까지 연결해 한 순환으로 만들어요.",
+          "choices": [
+            {
+              "id": "lung",
+              "label": "폐",
+              "explanation": "폐 쪽 경로"
+            },
+            {
+              "id": "body",
+              "label": "몸",
+              "explanation": "몸 쪽 경로"
+            },
+            {
+              "id": "ra",
+              "label": "우심방",
+              "explanation": "돌아오는 경로"
+            },
+            {
+              "id": "la",
+              "label": "좌심방",
+              "explanation": "돌아오는 경로"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "우심실의 목적지",
+              "answer": [
+                "lung"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "폐에서 돌아오는 곳",
+              "answer": [
+                "la"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "좌심실의 목적지",
+              "answer": [
+                "body"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "몸에서 돌아오는 곳",
+              "answer": [
+                "ra"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 폐와 몸의 두 경로는 서로 이어지며 파란색은 실제 혈액 색이 아닌 노선 표시다."
+          ],
+          "feedback": "폐와 몸의 두 경로는 서로 이어지며 파란색은 실제 혈액 색이 아닌 노선 표시다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "우심실의 목적지",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "폐에서 돌아오는 곳",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "좌심실의 목적지",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "몸에서 돌아오는 곳",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer",
+          "kind": "routes",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "lung",
+              "label": "폐",
+              "explanation": "폐 쪽 경로"
+            },
+            {
+              "id": "body",
+              "label": "몸",
+              "explanation": "몸 쪽 경로"
+            },
+            {
+              "id": "ra",
+              "label": "우심방",
+              "explanation": "돌아오는 경로"
+            },
+            {
+              "id": "la",
+              "label": "좌심방",
+              "explanation": "돌아오는 경로"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "몸 표식의 다음 곳",
+              "answer": [
+                "ra"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "좌심실에서 출발한 다음 곳",
+              "answer": [
+                "body"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "폐 표식의 다음 곳",
+              "answer": [
+                "la"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "우심실에서 출발한 다음 곳",
+              "answer": [
+                "lung"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 폐와 몸의 두 경로는 서로 이어지며 파란색은 실제 혈액 색이 아닌 노선 표시다."
+          ],
+          "feedback": "폐와 몸의 두 경로는 서로 이어지며 파란색은 실제 혈액 색이 아닌 노선 표시다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "몸 표식의 다음 곳",
+                "x": 286,
+                "y": 150
+              },
+              {
+                "id": "slot-1",
+                "label": "좌심실에서 출발한 다음 곳",
+                "x": 214,
+                "y": 150
+              },
+              {
+                "id": "slot-2",
+                "label": "폐 표식의 다음 곳",
+                "x": 142,
+                "y": 150
+              },
+              {
+                "id": "slot-3",
+                "label": "우심실에서 출발한 다음 곳",
+                "x": 70,
+                "y": 150
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "routes",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "lung",
+              "label": "폐",
+              "explanation": "폐 쪽 경로"
+            },
+            {
+              "id": "body",
+              "label": "몸",
+              "explanation": "몸 쪽 경로"
+            },
+            {
+              "id": "ra",
+              "label": "우심방",
+              "explanation": "돌아오는 경로"
+            },
+            {
+              "id": "la",
+              "label": "좌심방",
+              "explanation": "돌아오는 경로"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "우심실에서 출발한 다음 곳",
+              "answer": [
+                "lung"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "폐 표식의 다음 곳",
+              "answer": [
+                "la"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "좌심실에서 출발한 다음 곳",
+              "answer": [
+                "body"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "몸 표식의 다음 곳",
+              "answer": [
+                "ra"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 폐와 몸의 두 경로는 서로 이어지며 파란색은 실제 혈액 색이 아닌 노선 표시다."
+          ],
+          "feedback": "폐와 몸의 두 경로는 서로 이어지며 파란색은 실제 혈액 색이 아닌 노선 표시다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "우심실에서 출발한 다음 곳",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "폐 표식의 다음 곳",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "좌심실에서 출발한 다음 곳",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "몸 표식의 다음 곳",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 우심실 쪽에서 폐로, 폐에서 좌심방 쪽으로 이어졌다. 좌심실 쪽에서 몸으로, 몸에서 우심방 쪽으로 이어졌다.",
+          "evidenceIds": [
+            "lung-leg",
+            "body-leg"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "lung-leg",
+            "body-leg",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "몸→우심방→우심실→폐→좌심방→좌심실→몸으로 경로가 이어진다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "폐와 몸의 두 경로는 서로 이어지며 파란색은 실제 혈액 색이 아닌 노선 표시다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "폐로 가는 길과 몸으로 가는 길은 어떻게 이어질까요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "두 갈래 배송 노선 — 모형에서 확인한 연결",
+      "alternateHeadline": "폐로 가는 길과 몸으로 가는 길은 어떻게 이어질까요? 모형 관찰로 살펴보다",
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다.",
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "debrief": "편집장: 폐와 몸의 두 경로는 서로 이어지며 파란색은 실제 혈액 색이 아닌 노선 표시다.",
+      "unlockText": "새 취재 의뢰가 독자 보드에 도착했어요."
+    },
+    {
+      "id": "Q005",
+      "title": "박자를 전하는 길",
+      "question": "번쩍이는 신호와 움직이는 혈액은 같은 것인가요?",
+      "offer": "리듬 게임은 아니에요. 천천히 재생하며 신호가 가는 순서와 수축을 구분해요.",
+      "region": "heart-signal",
+      "conceptIds": [
+        "signal"
+      ],
+      "observations": [
+        {
+          "id": "electrical",
+          "title": "빛의 신호",
+          "text": "전기 신호 표식이 방 사이를 이동하는 순서를 보았다.",
+          "conceptId": "signal",
+          "sources": [
+            "nhlbi-beats"
+          ]
+        },
+        {
+          "id": "movement",
+          "title": "수축과 배달",
+          "text": "신호와 혈액 표식의 이동은 서로 다른 표시였다.",
+          "conceptId": "signal",
+          "sources": [
+            "nhlbi-beats"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "sequence",
+          "title": "배달 모형 복구",
+          "instruction": "리듬 게임은 아니에요. 천천히 재생하며 신호가 가는 순서와 수축을 구분해요.",
+          "choices": [
+            {
+              "id": "sa",
+              "label": "동방결절에서 시작",
+              "explanation": "시작 신호"
+            },
+            {
+              "id": "atria",
+              "label": "심방으로 전달",
+              "explanation": "심방 동작"
+            },
+            {
+              "id": "av",
+              "label": "방실결절에서 잠시 지연",
+              "explanation": "채울 시간을 준다"
+            },
+            {
+              "id": "ventricles",
+              "label": "심실로 전달·수축",
+              "explanation": "심실 동작"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "첫 신호",
+              "answer": [
+                "sa"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "다음 전달",
+              "answer": [
+                "atria"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "채울 시간을 주는 곳",
+              "answer": [
+                "av"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "다음 동작",
+              "answer": [
+                "ventricles"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 신호가 먼저 전달되고 수축으로 이어진다. 모형의 박자 길이는 실제 시간이 아니다."
+          ],
+          "feedback": "신호가 먼저 전달되고 수축으로 이어진다. 모형의 박자 길이는 실제 시간이 아니다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "첫 신호",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "다음 전달",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "채울 시간을 주는 곳",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "다음 동작",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer",
+          "kind": "sequence",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "sa",
+              "label": "동방결절에서 시작",
+              "explanation": "시작 신호"
+            },
+            {
+              "id": "atria",
+              "label": "심방으로 전달",
+              "explanation": "심방 동작"
+            },
+            {
+              "id": "av",
+              "label": "방실결절에서 잠시 지연",
+              "explanation": "채울 시간을 준다"
+            },
+            {
+              "id": "ventricles",
+              "label": "심실로 전달·수축",
+              "explanation": "심실 동작"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "느린 재생의 시작",
+              "answer": [
+                "sa"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "느린 재생의 심방",
+              "answer": [
+                "atria"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "느린 재생의 지연",
+              "answer": [
+                "av"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "느린 재생의 심실",
+              "answer": [
+                "ventricles"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 신호가 먼저 전달되고 수축으로 이어진다. 모형의 박자 길이는 실제 시간이 아니다."
+          ],
+          "feedback": "신호가 먼저 전달되고 수축으로 이어진다. 모형의 박자 길이는 실제 시간이 아니다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "느린 재생의 시작",
+                "x": 286,
+                "y": 150
+              },
+              {
+                "id": "slot-1",
+                "label": "느린 재생의 심방",
+                "x": 214,
+                "y": 150
+              },
+              {
+                "id": "slot-2",
+                "label": "느린 재생의 지연",
+                "x": 142,
+                "y": 150
+              },
+              {
+                "id": "slot-3",
+                "label": "느린 재생의 심실",
+                "x": 70,
+                "y": 150
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "sequence",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "sa",
+              "label": "동방결절에서 시작",
+              "explanation": "시작 신호"
+            },
+            {
+              "id": "atria",
+              "label": "심방으로 전달",
+              "explanation": "심방 동작"
+            },
+            {
+              "id": "av",
+              "label": "방실결절에서 잠시 지연",
+              "explanation": "채울 시간을 준다"
+            },
+            {
+              "id": "ventricles",
+              "label": "심실로 전달·수축",
+              "explanation": "심실 동작"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "느린 재생의 심실",
+              "answer": [
+                "ventricles"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "느린 재생의 지연",
+              "answer": [
+                "av"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "느린 재생의 심방",
+              "answer": [
+                "atria"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "느린 재생의 시작",
+              "answer": [
+                "sa"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 신호가 먼저 전달되고 수축으로 이어진다. 모형의 박자 길이는 실제 시간이 아니다."
+          ],
+          "feedback": "신호가 먼저 전달되고 수축으로 이어진다. 모형의 박자 길이는 실제 시간이 아니다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "느린 재생의 심실",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "느린 재생의 지연",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "느린 재생의 심방",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "느린 재생의 시작",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 전기 신호 표식이 방 사이를 이동하는 순서를 보았다. 신호와 혈액 표식의 이동은 서로 다른 표시였다.",
+          "evidenceIds": [
+            "electrical",
+            "movement"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "electrical",
+            "movement",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "동방결절에서 시작한 신호가 심방과 방실결절을 거쳐 심실의 수축으로 이어진다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "신호가 먼저 전달되고 수축으로 이어진다. 모형의 박자 길이는 실제 시간이 아니다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "번쩍이는 신호와 움직이는 혈액은 같은 것인가요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "박자를 전하는 길 — 모형에서 확인한 연결",
+      "alternateHeadline": "번쩍이는 신호와 움직이는 혈액은 같은 것인가요? 모형 관찰로 살펴보다",
+      "limitations": "전도계의 세부 다발·분지와 실제 시간 간격은 생략한다. 신호 표식은 혈액 자체가 아니다.",
+      "sources": [
+        "nhlbi-beats"
+      ],
+      "debrief": "편집장: 신호가 먼저 전달되고 수축으로 이어진다. 모형의 박자 길이는 실제 시간이 아니다.",
+      "unlockText": "새 취재 의뢰가 독자 보드에 도착했어요."
+    },
+    {
+      "id": "Q006",
+      "title": "펌프도 배달이 필요해",
+      "question": "피를 내보내는 심장근육도 배달을 받아야 하나요?",
+      "offer": "몸 배송은 끝났는데 펌프 팀의 배달표가 비었어요. 심장근육에 닿는 공급 가지를 찾아요.",
+      "region": "heart-supply",
+      "conceptIds": [
+        "coronary"
+      ],
+      "observations": [
+        {
+          "id": "pump-needs",
+          "title": "심장근육",
+          "text": "펌프 역할을 하는 근육도 공급 대상이었다.",
+          "conceptId": "coronary",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        },
+        {
+          "id": "branch",
+          "title": "별도의 가지",
+          "text": "대동맥 쪽에서 심장근육으로 갈라지는 공급 관계를 관찰했다.",
+          "conceptId": "coronary",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "supply",
+          "title": "배달 모형 복구",
+          "instruction": "몸 배송은 끝났는데 펌프 팀의 배달표가 비었어요. 심장근육에 닿는 공급 가지를 찾아요.",
+          "choices": [
+            {
+              "id": "coronary",
+              "label": "대동맥 → 관상동맥 → 심장근육",
+              "explanation": "별도의 공급 가지"
+            },
+            {
+              "id": "inside",
+              "label": "심장 안에 담긴 혈액만 표시",
+              "explanation": "심근 공급 경로가 표시되지 않는다"
+            },
+            {
+              "id": "body-only",
+              "label": "몸 배송 노선만 표시",
+              "explanation": "심장근육 배송이 빠져 있다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "심장근육의 배달 경로",
+              "answer": [
+                "coronary"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 심장 안에 혈액이 있다고 심장근육의 공급 경로를 생략할 수는 없다."
+          ],
+          "feedback": "심장 안에 혈액이 있다고 심장근육의 공급 경로를 생략할 수는 없다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "심장근육의 배달 경로",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer",
+          "kind": "supply",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "coronary",
+              "label": "대동맥 → 관상동맥 → 심장근육",
+              "explanation": "별도의 공급 가지"
+            },
+            {
+              "id": "inside",
+              "label": "심장 안에 담긴 혈액만 표시",
+              "explanation": "심근 공급 경로가 표시되지 않는다"
+            },
+            {
+              "id": "body-only",
+              "label": "몸 배송 노선만 표시",
+              "explanation": "심장근육 배송이 빠져 있다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "목적지가 옮겨진 심장근육",
+              "answer": [
+                "coronary"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 심장 안에 혈액이 있다고 심장근육의 공급 경로를 생략할 수는 없다."
+          ],
+          "feedback": "심장 안에 혈액이 있다고 심장근육의 공급 경로를 생략할 수는 없다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "목적지가 옮겨진 심장근육",
+                "x": 286,
+                "y": 150
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "supply",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "coronary",
+              "label": "대동맥 → 관상동맥 → 심장근육",
+              "explanation": "별도의 공급 가지"
+            },
+            {
+              "id": "inside",
+              "label": "심장 안에 담긴 혈액만 표시",
+              "explanation": "심근 공급 경로가 표시되지 않는다"
+            },
+            {
+              "id": "body-only",
+              "label": "몸 배송 노선만 표시",
+              "explanation": "심장근육 배송이 빠져 있다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "목적지가 옮겨진 심장근육",
+              "answer": [
+                "coronary"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 심장 안에 혈액이 있다고 심장근육의 공급 경로를 생략할 수는 없다."
+          ],
+          "feedback": "심장 안에 혈액이 있다고 심장근육의 공급 경로를 생략할 수는 없다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "목적지가 옮겨진 심장근육",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 펌프 역할을 하는 근육도 공급 대상이었다. 대동맥 쪽에서 심장근육으로 갈라지는 공급 관계를 관찰했다.",
+          "evidenceIds": [
+            "pump-needs",
+            "branch"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "pump-needs",
+            "branch",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "심장근육도 산소와 영양 공급이 필요하며 관상동맥은 대동맥에서 갈라져 심장에 혈액을 공급한다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "심장 안에 혈액이 있다고 심장근육의 공급 경로를 생략할 수는 없다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "피를 내보내는 심장근육도 배달을 받아야 하나요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "펌프도 배달이 필요해 — 모형에서 확인한 연결",
+      "alternateHeadline": "피를 내보내는 심장근육도 배달을 받아야 하나요? 모형 관찰로 살펴보다",
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다.",
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "debrief": "편집장: 심장 안에 혈액이 있다고 심장근육의 공급 경로를 생략할 수는 없다.",
+      "unlockText": "새 취재 의뢰가 독자 보드에 도착했어요."
+    },
+    {
+      "id": "Q007",
+      "title": "좁아진 모형 통로",
+      "question": "한 조건을 바꾸면 모형의 표식 결과가 달라질까요?",
+      "offer": "폭과 길이를 한꺼번에 바꾸면 원인을 알기 어려워요. 기준 조건을 재생한 뒤 폭만 바꿔 비교해요.",
+      "region": "heart-conditions",
+      "conceptIds": [
+        "comparison"
+      ],
+      "observations": [
+        {
+          "id": "baseline-view",
+          "title": "기준 모형",
+          "text": "게임 통로의 기준 폭과 길이를 기록했다.",
+          "conceptId": "comparison",
+          "sources": [
+            "nhlbi-arteries"
+          ]
+        },
+        {
+          "id": "changed-view",
+          "title": "변경 모형",
+          "text": "폭을 바꾸었을 때 표식 표시가 달라지는 것을 보았다.",
+          "conceptId": "comparison",
+          "sources": [
+            "nhlbi-arteries"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "compare",
+          "title": "배달 모형 복구",
+          "instruction": "폭과 길이를 한꺼번에 바꾸면 원인을 알기 어려워요. 기준 조건을 재생한 뒤 폭만 바꿔 비교해요.",
+          "choices": [
+            {
+              "id": "wide",
+              "label": "넓은 폭",
+              "explanation": "모형 폭"
+            },
+            {
+              "id": "narrow",
+              "label": "좁은 폭",
+              "explanation": "모형 폭"
+            },
+            {
+              "id": "short",
+              "label": "같은 짧은 길이",
+              "explanation": "모형 길이"
+            },
+            {
+              "id": "long",
+              "label": "긴 길이",
+              "explanation": "폭 외 조건도 바뀐다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "통로 폭",
+              "answer": [
+                "narrow"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "통로 길이",
+              "answer": [
+                "short"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 폭 외 조건을 그대로 둔 비교다. 표식 개수는 게임 수치이며 실제 혈류량이 아니다."
+          ],
+          "feedback": "폭 외 조건을 그대로 둔 비교다. 표식 개수는 게임 수치이며 실제 혈류량이 아니다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "통로 폭",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "통로 길이",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": [
+            "wide",
+            "short"
+          ]
+        },
+        {
+          "id": "transfer",
+          "kind": "compare",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "wide",
+              "label": "넓은 폭",
+              "explanation": "모형 폭"
+            },
+            {
+              "id": "narrow",
+              "label": "좁은 폭",
+              "explanation": "모형 폭"
+            },
+            {
+              "id": "short",
+              "label": "같은 짧은 길이",
+              "explanation": "모형 길이"
+            },
+            {
+              "id": "long",
+              "label": "긴 길이",
+              "explanation": "폭 외 조건도 바뀐다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "다른 위치의 통로 폭",
+              "answer": [
+                "narrow"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "다른 위치의 통로 길이",
+              "answer": [
+                "short"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 폭 외 조건을 그대로 둔 비교다. 표식 개수는 게임 수치이며 실제 혈류량이 아니다."
+          ],
+          "feedback": "폭 외 조건을 그대로 둔 비교다. 표식 개수는 게임 수치이며 실제 혈류량이 아니다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "다른 위치의 통로 폭",
+                "x": 286,
+                "y": 150
+              },
+              {
+                "id": "slot-1",
+                "label": "다른 위치의 통로 길이",
+                "x": 214,
+                "y": 150
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": [
+            "wide",
+            "short"
+          ]
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "compare",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "wide",
+              "label": "넓은 폭",
+              "explanation": "모형 폭"
+            },
+            {
+              "id": "narrow",
+              "label": "좁은 폭",
+              "explanation": "모형 폭"
+            },
+            {
+              "id": "short",
+              "label": "같은 짧은 길이",
+              "explanation": "모형 길이"
+            },
+            {
+              "id": "long",
+              "label": "긴 길이",
+              "explanation": "폭 외 조건도 바뀐다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "다른 위치의 통로 길이",
+              "answer": [
+                "short"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "다른 위치의 통로 폭",
+              "answer": [
+                "narrow"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 폭 외 조건을 그대로 둔 비교다. 표식 개수는 게임 수치이며 실제 혈류량이 아니다."
+          ],
+          "feedback": "폭 외 조건을 그대로 둔 비교다. 표식 개수는 게임 수치이며 실제 혈류량이 아니다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "다른 위치의 통로 길이",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "다른 위치의 통로 폭",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": [
+            "short",
+            "wide"
+          ]
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 게임 통로의 기준 폭과 길이를 기록했다. 폭을 바꾸었을 때 표식 표시가 달라지는 것을 보았다.",
+          "evidenceIds": [
+            "baseline-view",
+            "changed-view"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "baseline-view",
+            "changed-view",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "좁아진 동맥은 공급을 줄일 수 있다. 모형의 두 조건은 다른 변수를 같게 두고 비교한다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "폭 외 조건을 그대로 둔 비교다. 표식 개수는 게임 수치이며 실제 혈류량이 아니다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "한 조건을 바꾸면 모형의 표식 결과가 달라질까요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "좁아진 모형 통로 — 모형에서 확인한 연결",
+      "alternateHeadline": "한 조건을 바꾸면 모형의 표식 결과가 달라질까요? 모형 관찰로 살펴보다",
+      "limitations": "표식 개수는 게임 수치다. 실제 혈류에는 압력차·점도·탄성·조절 등도 관여하며 게임 결과로 질환이나 개인 상태를 계산하지 않는다.",
+      "sources": [
+        "nhlbi-arteries"
+      ],
+      "debrief": "편집장: 폭 외 조건을 그대로 둔 비교다. 표식 개수는 게임 수치이며 실제 혈류량이 아니다.",
+      "unlockText": "새 취재 의뢰가 독자 보드에 도착했어요."
+    },
+    {
+      "id": "Q008",
+      "title": "하나의 숫자로 충분할까",
+      "question": "가상 기록의 값이 크면 바로 결론을 낼 수 있나요?",
+      "offer": "기록 A와 B에는 표식 37개와 51개가 적혀 있어요. 하나는 이동 직후, 하나는 쉬고 난 뒤예요. 실제 혈압이나 환자 기록이 아니에요.",
+      "region": "heart-conditions",
+      "conceptIds": [
+        "records"
+      ],
+      "observations": [
+        {
+          "id": "record-context",
+          "title": "기록의 조건",
+          "text": "가상 기록마다 준비·시간·상황 정보가 붙어 있었다.",
+          "conceptId": "records",
+          "sources": [
+            "nhlbi-measure"
+          ]
+        },
+        {
+          "id": "record-repeat",
+          "title": "비교의 조건",
+          "text": "다른 조건의 기록 하나를 질환 판정으로 바꿀 수 없었다.",
+          "conceptId": "records",
+          "sources": [
+            "nhlbi-measure"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "records",
+          "title": "배달 모형 복구",
+          "instruction": "기록 A와 B에는 표식 37개와 51개가 적혀 있어요. 하나는 이동 직후, 하나는 쉬고 난 뒤예요. 실제 혈압이나 환자 기록이 아니에요.",
+          "choices": [
+            {
+              "id": "conditions",
+              "label": "시간·준비·도구 확인",
+              "explanation": "비교 조건을 확인한다"
+            },
+            {
+              "id": "repeat",
+              "label": "같은 조건의 여러 기록 확인",
+              "explanation": "한 번의 값만으로 단정하지 않는다"
+            },
+            {
+              "id": "diagnose",
+              "label": "수치 하나로 질환 확정",
+              "explanation": "이 게임에서 할 수 없는 판단이다"
+            },
+            {
+              "id": "ignore",
+              "label": "조건을 보지 않고 큰 값만 고름",
+              "explanation": "비교 기준이 빠져 있다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "먼저 확인할 정보",
+              "answer": [
+                "conditions"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "한 번의 기록 뒤 할 확인",
+              "answer": [
+                "repeat"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 조건을 확인하고 관찰 범위 안에서 설명한다. 이 모형에서 진단하지 않는다."
+          ],
+          "feedback": "조건을 확인하고 관찰 범위 안에서 설명한다. 이 모형에서 진단하지 않는다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "먼저 확인할 정보",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "한 번의 기록 뒤 할 확인",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer",
+          "kind": "records",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "conditions",
+              "label": "시간·준비·도구 확인",
+              "explanation": "비교 조건을 확인한다"
+            },
+            {
+              "id": "repeat",
+              "label": "같은 조건의 여러 기록 확인",
+              "explanation": "한 번의 값만으로 단정하지 않는다"
+            },
+            {
+              "id": "diagnose",
+              "label": "수치 하나로 질환 확정",
+              "explanation": "이 게임에서 할 수 없는 판단이다"
+            },
+            {
+              "id": "ignore",
+              "label": "조건을 보지 않고 큰 값만 고름",
+              "explanation": "비교 기준이 빠져 있다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "새 기록 C의 확인",
+              "answer": [
+                "conditions"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "새 기록 D와의 비교",
+              "answer": [
+                "repeat"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 조건을 확인하고 관찰 범위 안에서 설명한다. 이 모형에서 진단하지 않는다."
+          ],
+          "feedback": "조건을 확인하고 관찰 범위 안에서 설명한다. 이 모형에서 진단하지 않는다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "새 기록 C의 확인",
+                "x": 286,
+                "y": 150
+              },
+              {
+                "id": "slot-1",
+                "label": "새 기록 D와의 비교",
+                "x": 214,
+                "y": 150
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "records",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "conditions",
+              "label": "시간·준비·도구 확인",
+              "explanation": "비교 조건을 확인한다"
+            },
+            {
+              "id": "repeat",
+              "label": "같은 조건의 여러 기록 확인",
+              "explanation": "한 번의 값만으로 단정하지 않는다"
+            },
+            {
+              "id": "diagnose",
+              "label": "수치 하나로 질환 확정",
+              "explanation": "이 게임에서 할 수 없는 판단이다"
+            },
+            {
+              "id": "ignore",
+              "label": "조건을 보지 않고 큰 값만 고름",
+              "explanation": "비교 기준이 빠져 있다"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "새 기록 D와의 비교",
+              "answer": [
+                "repeat"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "새 기록 C의 확인",
+              "answer": [
+                "conditions"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 조건을 확인하고 관찰 범위 안에서 설명한다. 이 모형에서 진단하지 않는다."
+          ],
+          "feedback": "조건을 확인하고 관찰 범위 안에서 설명한다. 이 모형에서 진단하지 않는다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "새 기록 D와의 비교",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "새 기록 C의 확인",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 가상 기록마다 준비·시간·상황 정보가 붙어 있었다. 다른 조건의 기록 하나를 질환 판정으로 바꿀 수 없었다.",
+          "evidenceIds": [
+            "record-context",
+            "record-repeat"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "record-context",
+            "record-repeat",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "기록의 시간·준비·도구 등을 확인해야 한다. 가상 기록 하나로 사람의 질환을 단정하지 않는다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "조건을 확인하고 관찰 범위 안에서 설명한다. 이 모형에서 진단하지 않는다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "가상 기록의 값이 크면 바로 결론을 낼 수 있나요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "하나의 숫자로 충분할까 — 모형에서 확인한 연결",
+      "alternateHeadline": "가상 기록의 값이 크면 바로 결론을 낼 수 있나요? 모형 관찰로 살펴보다",
+      "limitations": "환자 기록이나 혈압 기준을 사용하지 않는다. 가상의 게임 표식 수만 비교하며 진단·치료 권고를 제공하지 않는다.",
+      "sources": [
+        "nhlbi-measure"
+      ],
+      "debrief": "편집장: 조건을 확인하고 관찰 범위 안에서 설명한다. 이 모형에서 진단하지 않는다.",
+      "unlockText": "새 취재 의뢰가 독자 보드에 도착했어요."
+    },
+    {
+      "id": "Q009",
+      "title": "독자에게 설명하는 순환",
+      "question": "새 배치에서도 근거로 순환을 설명할 수 있나요?",
+      "offer": "독자가 폐 표식부터 설명해 달라고 했어요. 늘 심장 입구부터 외운 순서 대신 연결 관계로 찾아요.",
+      "region": "heart-circulation",
+      "conceptIds": [
+        "reporting"
+      ],
+      "observations": [
+        {
+          "id": "reordered",
+          "title": "새 출발점",
+          "text": "폐 표식에서 시작해도 몸으로 나갔다 돌아오는 연결이 있었다.",
+          "conceptId": "reporting",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        },
+        {
+          "id": "connection",
+          "title": "설명의 근거",
+          "text": "다른 배치에서도 방·폐·몸의 관계를 연결할 수 있었다.",
+          "conceptId": "reporting",
+          "sources": [
+            "nhlbi-flow"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "synthesis",
+          "title": "배달 모형 복구",
+          "instruction": "독자가 폐 표식부터 설명해 달라고 했어요. 늘 심장 입구부터 외운 순서 대신 연결 관계로 찾아요.",
+          "choices": [
+            {
+              "id": "ra",
+              "label": "우심방",
+              "explanation": "몸에서 받음"
+            },
+            {
+              "id": "rv",
+              "label": "우심실",
+              "explanation": "폐로 보냄"
+            },
+            {
+              "id": "lung",
+              "label": "폐",
+              "explanation": "산소 공급이 이루어지는 경로"
+            },
+            {
+              "id": "la",
+              "label": "좌심방",
+              "explanation": "폐에서 받음"
+            },
+            {
+              "id": "lv",
+              "label": "좌심실",
+              "explanation": "몸으로 보냄"
+            },
+            {
+              "id": "body",
+              "label": "몸",
+              "explanation": "다시 돌아옴"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "폐 다음",
+              "answer": [
+                "la"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "좌심방 다음",
+              "answer": [
+                "lv"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "좌심실 다음",
+              "answer": [
+                "body"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "몸 다음",
+              "answer": [
+                "ra"
+              ]
+            },
+            {
+              "id": "slot-4",
+              "label": "우심방 다음",
+              "answer": [
+                "rv"
+              ]
+            },
+            {
+              "id": "slot-5",
+              "label": "우심실 다음",
+              "answer": [
+                "lung"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 출발점을 바꾸어도 한 고리를 따라가며 빠진 인과 연결을 확인한다."
+          ],
+          "feedback": "출발점을 바꾸어도 한 고리를 따라가며 빠진 인과 연결을 확인한다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "폐 다음",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "좌심방 다음",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "좌심실 다음",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "몸 다음",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "slot-4",
+                "label": "우심방 다음",
+                "x": 70,
+                "y": 128
+              },
+              {
+                "id": "slot-5",
+                "label": "우심실 다음",
+                "x": 142,
+                "y": 128
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "slot-4"
+              ],
+              [
+                "slot-4",
+                "slot-5"
+              ],
+              [
+                "slot-5",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer",
+          "kind": "synthesis",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "ra",
+              "label": "우심방",
+              "explanation": "몸에서 받음"
+            },
+            {
+              "id": "rv",
+              "label": "우심실",
+              "explanation": "폐로 보냄"
+            },
+            {
+              "id": "lung",
+              "label": "폐",
+              "explanation": "산소 공급이 이루어지는 경로"
+            },
+            {
+              "id": "la",
+              "label": "좌심방",
+              "explanation": "폐에서 받음"
+            },
+            {
+              "id": "lv",
+              "label": "좌심실",
+              "explanation": "몸으로 보냄"
+            },
+            {
+              "id": "body",
+              "label": "몸",
+              "explanation": "다시 돌아옴"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "몸 다음",
+              "answer": [
+                "ra"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "우심방 다음",
+              "answer": [
+                "rv"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "우심실 다음",
+              "answer": [
+                "lung"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "폐 다음",
+              "answer": [
+                "la"
+              ]
+            },
+            {
+              "id": "slot-4",
+              "label": "좌심방 다음",
+              "answer": [
+                "lv"
+              ]
+            },
+            {
+              "id": "slot-5",
+              "label": "좌심실 다음",
+              "answer": [
+                "body"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 출발점을 바꾸어도 한 고리를 따라가며 빠진 인과 연결을 확인한다."
+          ],
+          "feedback": "출발점을 바꾸어도 한 고리를 따라가며 빠진 인과 연결을 확인한다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "몸 다음",
+                "x": 286,
+                "y": 150
+              },
+              {
+                "id": "slot-1",
+                "label": "우심방 다음",
+                "x": 214,
+                "y": 150
+              },
+              {
+                "id": "slot-2",
+                "label": "우심실 다음",
+                "x": 142,
+                "y": 150
+              },
+              {
+                "id": "slot-3",
+                "label": "폐 다음",
+                "x": 70,
+                "y": 150
+              },
+              {
+                "id": "slot-4",
+                "label": "좌심방 다음",
+                "x": 286,
+                "y": 82
+              },
+              {
+                "id": "slot-5",
+                "label": "좌심실 다음",
+                "x": 214,
+                "y": 82
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "slot-4"
+              ],
+              [
+                "slot-4",
+                "slot-5"
+              ],
+              [
+                "slot-5",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "synthesis",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "ra",
+              "label": "우심방",
+              "explanation": "몸에서 받음"
+            },
+            {
+              "id": "rv",
+              "label": "우심실",
+              "explanation": "폐로 보냄"
+            },
+            {
+              "id": "lung",
+              "label": "폐",
+              "explanation": "산소 공급이 이루어지는 경로"
+            },
+            {
+              "id": "la",
+              "label": "좌심방",
+              "explanation": "폐에서 받음"
+            },
+            {
+              "id": "lv",
+              "label": "좌심실",
+              "explanation": "몸으로 보냄"
+            },
+            {
+              "id": "body",
+              "label": "몸",
+              "explanation": "다시 돌아옴"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "좌심실 다음",
+              "answer": [
+                "body"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "좌심방 다음",
+              "answer": [
+                "lv"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "폐 다음",
+              "answer": [
+                "la"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "우심실 다음",
+              "answer": [
+                "lung"
+              ]
+            },
+            {
+              "id": "slot-4",
+              "label": "우심방 다음",
+              "answer": [
+                "rv"
+              ]
+            },
+            {
+              "id": "slot-5",
+              "label": "몸 다음",
+              "answer": [
+                "ra"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 출발점을 바꾸어도 한 고리를 따라가며 빠진 인과 연결을 확인한다."
+          ],
+          "feedback": "출발점을 바꾸어도 한 고리를 따라가며 빠진 인과 연결을 확인한다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "좌심실 다음",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "좌심방 다음",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "폐 다음",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "우심실 다음",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "slot-4",
+                "label": "우심방 다음",
+                "x": 70,
+                "y": 128
+              },
+              {
+                "id": "slot-5",
+                "label": "몸 다음",
+                "x": 142,
+                "y": 128
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "slot-4"
+              ],
+              [
+                "slot-4",
+                "slot-5"
+              ],
+              [
+                "slot-5",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 폐 표식에서 시작해도 몸으로 나갔다 돌아오는 연결이 있었다. 다른 배치에서도 방·폐·몸의 관계를 연결할 수 있었다.",
+          "evidenceIds": [
+            "reordered",
+            "connection"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "reordered",
+            "connection",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "모형 관찰을 기전 설명과 연결하고 실제 인체에 적용할 때의 한계와 출처를 함께 밝힌다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "출발점을 바꾸어도 한 고리를 따라가며 빠진 인과 연결을 확인한다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "새 배치에서도 근거로 순환을 설명할 수 있나요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "독자에게 설명하는 순환 — 모형에서 확인한 연결",
+      "alternateHeadline": "새 배치에서도 근거로 순환을 설명할 수 있나요? 모형 관찰로 살펴보다",
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다.",
+      "sources": [
+        "nhlbi-flow"
+      ],
+      "debrief": "편집장: 출발점을 바꾸어도 한 고리를 따라가며 빠진 인과 연결을 확인한다.",
+      "unlockText": "새 취재 의뢰가 독자 보드에 도착했어요."
+    },
+    {
+      "id": "Q010",
+      "title": "첫 기획: 심장이 일하는 방식",
+      "question": "구조·박동·공급을 하나의 설명으로 엮을 수 있나요?",
+      "offer": "첫 특집호를 준비해요. 독자의 질문에 필요한 근거를 묶고 모형의 한계를 함께 밝혀요.",
+      "region": "heart-supply",
+      "conceptIds": [
+        "synthesis"
+      ],
+      "observations": [
+        {
+          "id": "archive-structure",
+          "title": "구조·흐름 기록",
+          "text": "앞 취재에서 확인한 방과 경로의 근거를 다시 펼쳤다.",
+          "conceptId": "synthesis",
+          "sources": [
+            "nhlbi-anatomy",
+            "nhlbi-flow",
+            "nhlbi-beats"
+          ]
+        },
+        {
+          "id": "archive-function",
+          "title": "신호·공급 기록",
+          "text": "신호와 근육 공급을 같은 현상으로 섞지 않고 구분했다.",
+          "conceptId": "synthesis",
+          "sources": [
+            "nhlbi-anatomy",
+            "nhlbi-flow",
+            "nhlbi-beats"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "apply",
+          "kind": "planning",
+          "title": "배달 모형 복구",
+          "instruction": "첫 특집호를 준비해요. 독자의 질문에 필요한 근거를 묶고 모형의 한계를 함께 밝혀요.",
+          "choices": [
+            {
+              "id": "structure",
+              "label": "방과 문 근거",
+              "explanation": "구조"
+            },
+            {
+              "id": "flow",
+              "label": "두 순환 경로 근거",
+              "explanation": "흐름"
+            },
+            {
+              "id": "signal",
+              "label": "전기 신호 근거",
+              "explanation": "박동"
+            },
+            {
+              "id": "supply",
+              "label": "심장근육 공급 근거",
+              "explanation": "공급"
+            },
+            {
+              "id": "limit",
+              "label": "모형 한계와 출처",
+              "explanation": "한계"
+            },
+            {
+              "id": "claim-all",
+              "label": "모든 사람의 상태를 안다고 주장",
+              "explanation": "근거를 넘어선 단정"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "구조 질문의 근거",
+              "answer": [
+                "structure"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "혈액 이동의 근거",
+              "answer": [
+                "flow"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "박동 질문의 근거",
+              "answer": [
+                "signal"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "공급 질문의 근거",
+              "answer": [
+                "supply"
+              ]
+            },
+            {
+              "id": "slot-4",
+              "label": "기사 끝에 붙일 것",
+              "answer": [
+                "limit"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 구조·흐름·신호·공급을 구분하고 출처와 한계를 밝힌다."
+          ],
+          "feedback": "구조·흐름·신호·공급을 구분하고 출처와 한계를 밝힌다.",
+          "evidenceId": "applied",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "구조 질문의 근거",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "혈액 이동의 근거",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "박동 질문의 근거",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "공급 질문의 근거",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "slot-4",
+                "label": "기사 끝에 붙일 것",
+                "x": 70,
+                "y": 128
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "slot-4"
+              ],
+              [
+                "slot-4",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer",
+          "kind": "planning",
+          "title": "새 배치 취재",
+          "instruction": "배치와 출발 위치가 바뀌었어요. 같은 원리가 이어지는지 직접 시험해요.",
+          "choices": [
+            {
+              "id": "structure",
+              "label": "방과 문 근거",
+              "explanation": "구조"
+            },
+            {
+              "id": "flow",
+              "label": "두 순환 경로 근거",
+              "explanation": "흐름"
+            },
+            {
+              "id": "signal",
+              "label": "전기 신호 근거",
+              "explanation": "박동"
+            },
+            {
+              "id": "supply",
+              "label": "심장근육 공급 근거",
+              "explanation": "공급"
+            },
+            {
+              "id": "limit",
+              "label": "모형 한계와 출처",
+              "explanation": "한계"
+            },
+            {
+              "id": "claim-all",
+              "label": "모든 사람의 상태를 안다고 주장",
+              "explanation": "근거를 넘어선 단정"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "새 독자의 방 질문",
+              "answer": [
+                "structure"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "새 독자의 경로 질문",
+              "answer": [
+                "flow"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "새 독자의 박동 질문",
+              "answer": [
+                "signal"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "새 독자의 심근 질문",
+              "answer": [
+                "supply"
+              ]
+            },
+            {
+              "id": "slot-4",
+              "label": "독자가 알 한계",
+              "answer": [
+                "limit"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 구조·흐름·신호·공급을 구분하고 출처와 한계를 밝힌다."
+          ],
+          "feedback": "구조·흐름·신호·공급을 구분하고 출처와 한계를 밝힌다.",
+          "evidenceId": "transferred",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "새 독자의 방 질문",
+                "x": 286,
+                "y": 150
+              },
+              {
+                "id": "slot-1",
+                "label": "새 독자의 경로 질문",
+                "x": 214,
+                "y": 150
+              },
+              {
+                "id": "slot-2",
+                "label": "새 독자의 박동 질문",
+                "x": 142,
+                "y": 150
+              },
+              {
+                "id": "slot-3",
+                "label": "새 독자의 심근 질문",
+                "x": 70,
+                "y": 150
+              },
+              {
+                "id": "slot-4",
+                "label": "독자가 알 한계",
+                "x": 286,
+                "y": 82
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "slot-4"
+              ],
+              [
+                "slot-4",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        },
+        {
+          "id": "transfer-fresh",
+          "kind": "planning",
+          "title": "시연 뒤 새 배치",
+          "instruction": "시연에서 본 답을 그대로 쓰지 않고 새 배치에 연결해요.",
+          "choices": [
+            {
+              "id": "structure",
+              "label": "방과 문 근거",
+              "explanation": "구조"
+            },
+            {
+              "id": "flow",
+              "label": "두 순환 경로 근거",
+              "explanation": "흐름"
+            },
+            {
+              "id": "signal",
+              "label": "전기 신호 근거",
+              "explanation": "박동"
+            },
+            {
+              "id": "supply",
+              "label": "심장근육 공급 근거",
+              "explanation": "공급"
+            },
+            {
+              "id": "limit",
+              "label": "모형 한계와 출처",
+              "explanation": "한계"
+            },
+            {
+              "id": "claim-all",
+              "label": "모든 사람의 상태를 안다고 주장",
+              "explanation": "근거를 넘어선 단정"
+            }
+          ],
+          "slots": [
+            {
+              "id": "slot-0",
+              "label": "독자가 알 한계",
+              "answer": [
+                "limit"
+              ]
+            },
+            {
+              "id": "slot-1",
+              "label": "새 독자의 심근 질문",
+              "answer": [
+                "supply"
+              ]
+            },
+            {
+              "id": "slot-2",
+              "label": "새 독자의 박동 질문",
+              "answer": [
+                "signal"
+              ]
+            },
+            {
+              "id": "slot-3",
+              "label": "새 독자의 경로 질문",
+              "answer": [
+                "flow"
+              ]
+            },
+            {
+              "id": "slot-4",
+              "label": "새 독자의 방 질문",
+              "answer": [
+                "structure"
+              ]
+            }
+          ],
+          "hints": [
+            "표식이 어디서 와서 어디로 가는지 먼저 보세요. 색만 보지 말고 이름과 화살표를 확인해요.",
+            "관찰 카드와 모형 안내를 다시 보세요. 구조·흐름·신호·공급을 구분하고 출처와 한계를 밝힌다."
+          ],
+          "feedback": "구조·흐름·신호·공급을 구분하고 출처와 한계를 밝힌다.",
+          "evidenceId": "fresh-transfer",
+          "scene": {
+            "nodes": [
+              {
+                "id": "start",
+                "label": "시작 표식",
+                "x": 32,
+                "y": 90
+              },
+              {
+                "id": "slot-0",
+                "label": "독자가 알 한계",
+                "x": 70,
+                "y": 60
+              },
+              {
+                "id": "slot-1",
+                "label": "새 독자의 심근 질문",
+                "x": 142,
+                "y": 60
+              },
+              {
+                "id": "slot-2",
+                "label": "새 독자의 박동 질문",
+                "x": 214,
+                "y": 60
+              },
+              {
+                "id": "slot-3",
+                "label": "새 독자의 경로 질문",
+                "x": 286,
+                "y": 60
+              },
+              {
+                "id": "slot-4",
+                "label": "새 독자의 방 질문",
+                "x": 70,
+                "y": 128
+              },
+              {
+                "id": "end",
+                "label": "도착 표식",
+                "x": 318,
+                "y": 190
+              }
+            ],
+            "links": [
+              [
+                "start",
+                "slot-0"
+              ],
+              [
+                "slot-0",
+                "slot-1"
+              ],
+              [
+                "slot-1",
+                "slot-2"
+              ],
+              [
+                "slot-2",
+                "slot-3"
+              ],
+              [
+                "slot-3",
+                "slot-4"
+              ],
+              [
+                "slot-4",
+                "end"
+              ]
+            ]
+          },
+          "demonstration": "시연을 보면 첫 배치는 연결되지만, 새 배치 두 곳은 직접 적용해야 기사를 쓸 수 있어요.",
+          "baseline": null
+        }
+      ],
+      "cards": [
+        {
+          "id": "observed",
+          "slot": "observation",
+          "text": "모형에서 앞 취재에서 확인한 방과 경로의 근거를 다시 펼쳤다. 신호와 근육 공급을 같은 현상으로 섞지 않고 구분했다.",
+          "evidenceIds": [
+            "archive-structure",
+            "archive-function"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "observed-alt",
+          "slot": "observation",
+          "text": "새 배치와 처음 배치의 표식 결과를 비교해 관찰했다.",
+          "evidenceIds": [
+            "archive-structure",
+            "archive-function",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism",
+          "slot": "mechanism",
+          "text": "구조·흐름·신호·공급을 구분해 독자 질문에 맞는 근거와 한계를 고른다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "mechanism-alt",
+          "slot": "mechanism",
+          "text": "구조·흐름·신호·공급을 구분하고 출처와 한계를 밝힌다.",
+          "evidenceIds": [
+            "applied",
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion",
+          "slot": "conclusion",
+          "text": "구조·박동·공급을 하나의 설명으로 엮을 수 있나요? 관찰과 연결 관계로 설명하되 모형의 한계를 밝힌다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "conclusion-alt",
+          "slot": "conclusion",
+          "text": "이 취재는 모형의 관계를 확인한 기록이다. 실제 사람의 상태를 판단한 결과가 아니다.",
+          "evidenceIds": [
+            "transferred"
+          ],
+          "valid": true,
+          "feedback": ""
+        },
+        {
+          "id": "guess",
+          "slot": "observation",
+          "text": "보지 않은 부분도 전부 확인했다고 쓴다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "실제로 얻은 관찰 카드와 연결해 주세요."
+        },
+        {
+          "id": "mix",
+          "slot": "mechanism",
+          "text": "표식의 색과 움직임만으로 모든 기전을 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "색은 모형 표시입니다. 연결 관계와 이번 취재 개념을 근거로 써 주세요."
+        },
+        {
+          "id": "overclaim",
+          "slot": "conclusion",
+          "text": "이 모형만 보고 모든 사람의 건강 상태를 확정한다.",
+          "evidenceIds": [],
+          "valid": false,
+          "feedback": "모형 취재는 진단이 아닙니다. 관찰 범위와 한계를 밝혀 주세요."
+        }
+      ],
+      "acceptedLinks": [
+        [
+          "observed",
+          "mechanism",
+          "conclusion"
+        ],
+        [
+          "observed-alt",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed",
+          "mechanism-alt",
+          "conclusion-alt"
+        ],
+        [
+          "observed-alt",
+          "mechanism",
+          "conclusion"
+        ]
+      ],
+      "headline": "첫 기획: 심장이 일하는 방식 — 모형에서 확인한 연결",
+      "alternateHeadline": "구조·박동·공급을 하나의 설명으로 엮을 수 있나요? 모형 관찰로 살펴보다",
+      "limitations": "공간·크기·시간을 줄인 교육용 모형이며 실제 해부 도해나 개인의 상태를 대신하지 않는다.",
+      "sources": [
+        "nhlbi-anatomy",
+        "nhlbi-flow",
+        "nhlbi-beats"
+      ],
+      "debrief": "편집장: 구조·흐름·신호·공급을 구분하고 출처와 한계를 밝힌다.",
+      "unlockText": "첫 기획 완료 · 신입 승진 · 호흡계 취재 초대"
+    }
+  ]
+}

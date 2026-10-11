@@ -1,5 +1,6 @@
 import { TILE, type Dir, type Point, type Rect, type RoomId } from './types';
 import type { Look } from '../domain/appearance';
+import { footprint, homeSize, newHome, placementRect, type HomeState } from '../domain/life';
 
 /*
  * Map geometry only (no rendering). Distances are game pixels, 1 tile = 16px.
@@ -24,7 +25,7 @@ export type PropKind =
   | 'scooter' | 'bikes' | 'vending' | 'bin' | 'flowerbed' | 'fountain' | 'parkedcar' | 'booth'
   | 'desk' | 'editordesk' | 'chair' | 'bookshelf' | 'bodyscope' | 'sofa' | 'lowtable' | 'printer' | 'water' | 'plant'
   | 'reception' | 'counter' | 'roundtable' | 'cafechair' | 'bar' | 'stool' | 'loungechair'
-  | 'pedsignal' | 'heartcore' | 'robot' | 'pad';
+  | 'pedsignal' | 'heartcore' | 'robot' | 'pad' | 'terminal' | 'observation' | 'heartanatomy' | 'valve' | 'lungs' | 'muscle' | 'signalnode' | 'recordboard' | 'homeentry' | 'clothesrack' | 'mirror';
 export type Prop = { kind: PropKind; x: number; y: number; v: number; solid: Rect | null };
 
 export type NpcSpec = { id: string; name: string; x: number; y: number; facing: Dir; look: Look; route: Point[] | null; speed: number };
@@ -36,6 +37,9 @@ export type Interior = { wall: 'office' | 'lobby' | 'cafe' | 'heart'; decor: Wal
 
 /** Road part of a crosswalk. People may enter it only while the pedestrian light for `road` is green. */
 export type Crossing = { id: string; rect: Rect; road: 'NS' | 'EW' };
+export type ModelStream = { path: Point[]; tone: 'delivery' | 'return' | 'signal'; speed: number };
+export type WorldLabel = { text: string; x: number; y: number; tone?: 'warm' | 'cool' | 'neutral' };
+export type Furnishing = { id: string; x: number; y: number; w: number; h: number; rotated: boolean };
 
 export type Room = {
   id: RoomId; title: string; cols: number; rows: number; tiles: Uint8Array;
@@ -44,6 +48,8 @@ export type Room = {
   crossings: Crossing[];
   /** Closed loop followed by the moving flow markers in model rooms, and spots where they pass under a bridge. */
   flow: Point[] | null; flowHidden: Rect[];
+  streams: ModelStream[]; labels: WorldLabel[]; modelIndex: number | null;
+  furnishings: Furnishing[]; homeArea: Rect | null;
 };
 
 function grid(cols: number, rows: number, base: number) {
@@ -87,6 +93,15 @@ function solidFor(kind: PropKind, x: number, y: number): Rect | null {
     case 'pedsignal': return r(3, 3);
     case 'heartcore': return r(56, 20);
     case 'robot': return r(12, 5);
+    case 'terminal': return r(20, 9);
+    case 'heartanatomy': return r(104, 36);
+    case 'valve': return r(42, 12);
+    case 'lungs': return r(48, 14);
+    case 'muscle': return r(48, 14);
+    case 'signalnode': return r(12, 5);
+    case 'recordboard': return r(40, 8);
+    case 'clothesrack': return r(48, 9);
+    case 'mirror': return r(16, 6);
     default: return null;
   }
 }
@@ -98,13 +113,15 @@ const npc = (id: string, name: string, x: number, y: number, facing: Dir, look: 
 const target = (id: string, label: string, verb: string, x: number, y: number, r = 20, npcId: string | null = null): Target =>
   ({ id, label, verb, x, y, r, npc: npcId });
 
-type RoomSpec = Omit<Room, 'solids' | 'crossings' | 'flow' | 'flowHidden'> & Partial<Pick<Room, 'crossings' | 'flow' | 'flowHidden'>>;
+type RoomDefaults = 'crossings' | 'flow' | 'flowHidden' | 'streams' | 'labels' | 'modelIndex' | 'furnishings' | 'homeArea';
+type RoomSpec = Omit<Room, 'solids' | RoomDefaults> & Partial<Pick<Room, RoomDefaults>>;
 function finish(spec: RoomSpec): Room {
-  const room = { crossings: [], flow: null, flowHidden: [], ...spec };
+  const room = { crossings: [], flow: null, flowHidden: [], streams: [], labels: [], modelIndex: null, furnishings: [], homeArea: null, ...spec };
   const solids: Rect[] = [];
   for (const b of room.buildings) if (b.y + b.d <= room.rows * TILE) solids.push({ x: b.x, y: b.y, w: b.w, h: b.d });
   for (const p of room.props) if (p.solid) solids.push(p.solid);
   for (const n of room.npcs) if (!n.route) solids.push({ x: n.x - 5, y: n.y - 4, w: 10, h: 5 });
+  for (const f of room.furnishings) if (f.id !== 'rug') solids.push({ x: f.x, y: f.y, w: f.w, h: f.h });
   return { ...room, solids };
 }
 
@@ -143,6 +160,7 @@ function street(): Room {
     B('tower', 'office', 16, 2, 5, 6, 92),
     B('bakery', 'shop', 1, 3, 5, 5, 52, 1),
     B('flower', 'shop', 6, 3, 4, 5, 70, 2),
+    B('orbit', 'shop', 8, 10, 3, 5, 54, 6),
     B('books', 'shop', 0, 22, 3, 3, 44, 4),
     B('hotel', 'hotel', 34, 3, 6, 6, 110),
     B('hospital', 'hospital', 33, 21, 7, 4, 96),
@@ -170,6 +188,7 @@ function street(): Room {
   props.push(P('kiosk', 344, 236), P('signpost', 376, 28), P('hydrant', 344, 300), P('scooter', 240, 152), P('bikes', 330, 300));
   props.push(P('vending', 528, 156), P('bin', 40, 250), P('bin', 528, 412), P('booth', 624, 176));
   props.push(P('parkedcar', 552, 234, 1), P('parkedcar', 584, 234, 4), P('parkedcar', 616, 234, 2));
+  props.push(P('homeentry', 292, 132));
   for (let y = 8; y < 400; y += 24) props.push(P('bollard', 432, y));
   for (let y = 600; y < 640; y += 24) props.push(P('bollard', 432, y));
 
@@ -213,6 +232,8 @@ function street(): Room {
     doors: [
       { id: 'euro-door', zone: { x: 284, y: 240, w: 17, h: 7 }, to: 'lobby', arrive: { x: 160, y: 168 }, facing: 'up', label: '유로프라자 로비' },
       { id: 'cafe-door', zone: { x: 108, y: 400, w: 17, h: 7 }, to: 'cafe', arrive: { x: 240, y: 168 }, facing: 'up', label: '비투비씨 카페' },
+      { id: 'orbit-door', zone: { x: 158, y: 240, w: 12, h: 7 }, to: 'store', arrive: { x: 208, y: 258 }, facing: 'up', label: '오비트 테일러' },
+      { id: 'reporter-home', zone: { x: 282, y: 132, w: 20, h: 9 }, to: 'home', arrive: { x: 208, y: 258 }, facing: 'up', label: '기자 숙소' },
     ],
   });
 }
@@ -335,14 +356,18 @@ function heart(): Room {
   fill(13, 14, 14, 14, T.BRIDGE);
   return finish({
     id: 'heart', title: '바디스코프 · 심장 모형 입구', cols, rows, tiles, buildings: [], markings: [], npcs: [],
-    props: [P('heartcore', 224, 100), P('robot', 256, 190), P('pad', 120, 258)],
+    props: [P('heartcore', 224, 100), P('robot', 256, 190), P('pad', 120, 258), P('terminal', 336, 192)],
     targets: [
       target('heart-out', '내보내는 문', '관찰', 272, 116, 20),
       target('heart-in', '돌아오는 문', '관찰', 176, 116, 20),
       target('guide', '안내 로봇 바디', '대화', 256, 198, 22),
       target('return-pad', '귀환 장치', '귀환', 120, 258, 18),
+      target('terminal', '배달 길 연결 장치', '모형 조작', 336, 192, 22),
+      target('heart-map', '심장 구조와 탐사 지도', '지도', 56, 258, 20),
     ],
     doors: [],
+    modelIndex: 0,
+    labels: [{ text: '온몸으로 나가는 길', x: 332, y: 68, tone: 'warm' }, { text: '심장으로 돌아오는 길', x: 112, y: 68, tone: 'cool' }],
     flow: [{ x: 224, y: 88 }, { x: 360, y: 88 }, { x: 360, y: 232 }, { x: 88, y: 232 }, { x: 88, y: 88 }, { x: 224, y: 88 }],
     flowHidden: [{ x: 208, y: 224, w: 32, h: 16 }],
     interior: {
@@ -353,7 +378,76 @@ function heart(): Room {
   });
 }
 
-export const rooms: Record<RoomId, Room> = { newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), heart: heart() };
+/** Detail districts of one explorer. Travel corridors are not blood vessels. */
+function modelRoom(id: RoomId, index: number, title: string): Room {
+  const cols = 28, rows = 18, { tiles, fill } = interiorGrid(cols, rows, T.FLESH, [-1, -1]);
+  const props: Prop[] = [P('robot', 256, 238), P('pad', 120, 258), P('terminal', 360, 240), P('recordboard', 56, 264, 1)];
+  const labels: WorldLabel[] = [], streams: ModelStream[] = [];
+  const a = { x: 96, y: 164 }, b = { x: 304, y: 216 };
+  if (index === 1) {
+    props.push(P('heartanatomy', 224, 194, 1), P('observation', a.x, a.y, 0), P('observation', b.x, b.y, 1));
+    labels.push({ text: '해부학적 오른쪽', x: 160, y: 62, tone: 'cool' }, { text: '해부학적 왼쪽', x: 284, y: 62, tone: 'warm' }, { text: '중격 · 좌심실의 두꺼운 벽', x: 224, y: 206 });
+  } else if (index === 2) {
+    fill(4, 7, 23, 7, T.VESSEL); fill(12, 7, 14, 7, T.BRIDGE);
+    props.push(P('valve', 112, 128, 0), P('valve', 304, 128, 1), P('heartanatomy', 208, 202, 2));
+    labels.push({ text: '삼첨판 · 우심방 → 우심실', x: 112, y: 78, tone: 'cool' }, { text: '승모판 · 좌심방 → 좌심실', x: 314, y: 78, tone: 'warm' });
+    streams.push({ path: [{ x: 64, y: 120 }, { x: 384, y: 120 }], tone: 'delivery', speed: 24 });
+  } else if (index === 3) {
+    props.push(P('lungs', 104, 132), P('muscle', 344, 136, 1), P('heartanatomy', 224, 208, 3));
+    labels.push({ text: '폐 쪽 경로', x: 104, y: 70, tone: 'cool' }, { text: '온몸 쪽 경로', x: 344, y: 74, tone: 'warm' });
+    streams.push({ path: [{ x: 184, y: 176 }, { x: 64, y: 176 }, { x: 64, y: 104 }, { x: 148, y: 104 }, { x: 148, y: 160 }, { x: 248, y: 160 }], tone: 'return', speed: 24 }, { path: [{ x: 272, y: 176 }, { x: 384, y: 176 }, { x: 384, y: 104 }, { x: 304, y: 104 }, { x: 304, y: 152 }, { x: 184, y: 152 }], tone: 'delivery', speed: 24 });
+  } else if (index === 4) {
+    props.push(P('heartanatomy', 224, 208, 4));
+    for (const [x, y, v] of [[80, 104, 0], [136, 136, 1], [312, 144, 2], [360, 184, 3]]) props.push(P('signalnode', x!, y!, v!));
+    labels.push({ text: '동방결절', x: 80, y: 78 }, { text: '방실결절', x: 136, y: 111 }, { text: '히스속 · 푸르키네 섬유', x: 328, y: 120 });
+    streams.push({ path: [{ x: 80, y: 100 }, { x: 136, y: 132 }, { x: 312, y: 140 }, { x: 360, y: 180 }], tone: 'signal', speed: 44 });
+  } else if (index === 5) {
+    props.push(P('heartanatomy', 184, 192, 5), P('muscle', 320, 128, 0));
+    labels.push({ text: '대동맥 뿌리 → 관상동맥', x: 164, y: 70, tone: 'warm' }, { text: '심장근육에 공급하는 가지', x: 326, y: 78, tone: 'warm' });
+    streams.push({ path: [{ x: 222, y: 110 }, { x: 256, y: 110 }, { x: 256, y: 152 }, { x: 344, y: 152 }], tone: 'delivery', speed: 24 });
+  } else {
+    props.push(P('recordboard', 112, 124, 0), P('recordboard', 304, 124, 1), P('valve', 208, 192, 2));
+    labels.push({ text: '같은 조건에서 관찰하기', x: 112, y: 76 }, { text: '조건과 한계를 함께 기록', x: 304, y: 76 }, { text: '가상 통로 · 실제 진단 수치 아님', x: 224, y: 202 });
+    streams.push({ path: [{ x: 72, y: 168 }, { x: 344, y: 168 }], tone: 'delivery', speed: 24 });
+  }
+  // Distinct low evidence beacons stay outside the structures and can be touched from every side.
+  if (index !== 1) props.push(P('observation', a.x, a.y, 0), P('observation', b.x, b.y, 1));
+  return finish({ id, title, cols, rows, tiles, buildings: [], markings: [], npcs: [], props, labels, streams, modelIndex: index,
+    targets: [target('investigation-a', '첫 관찰 지점', '관찰', a.x, a.y, 22), target('investigation-b', '둘째 관찰 지점', '관찰', b.x, b.y, 22), target('terminal', '취재 모형 연결 장치', '모형 조작', 360, 240, 22), target('guide', '안내 로봇 바디', '대화', 256, 246, 22), target('return-pad', '귀환 장치', '귀환', 120, 258, 18), target('heart-map', '심장 구조와 탐사 지도', '지도', 56, 264, 20)], doors: [],
+    interior: { wall: 'heart', bottom: 'wall', door: [-1, -1], pendants: [], rugs: [], decor: [{ kind: 'neon', x: 32, w: 92, text: 'BODYSCOPE' }, { kind: 'sign', x: 136, w: 176, text: ['','CHAMBERS','VALVES','CIRCULATION','SIGNAL','CORONARY','RECORDS'][index]! }] }, spawn: { x: 224, y: 258 }, spawnFacing: 'up' });
+}
+
+function lifeRoom(id: 'home' | 'store'): Room {
+  const cols = 26, rows = 18, { tiles } = interiorGrid(cols, rows, id === 'home' ? T.WOOD : T.MARBLE, [12, 13]);
+  const isHome = id === 'home';
+  return finish({ id, title: isHome ? '기자 숙소 · 내 공간' : '오비트 테일러 · 취재 준비실', cols, rows, tiles, buildings: [], markings: [],
+    props: isHome ? [P('plant', 40, 96), P('mirror', 336, 104), P('recordboard', 336, 176, 2), P('plant', 360, 240, 1)] : [P('desk', 112, 100, 1), P('clothesrack', 264, 104), P('clothesrack', 340, 104, 1), P('mirror', 368, 184), P('sofa', 72, 204), P('lowtable', 72, 240), P('bookshelf', 312, 200), P('plant', 40, 70)],
+    npcs: [], labels: isHome ? [{ text: '옷장 · 외형 꾸미기', x: 336, y: 66 }, { text: '가구와 공간', x: 336, y: 134 }] : [{ text: '옷과 취재 준비물', x: 288, y: 62 }, { text: '선택 구매 · 취재는 무료', x: 112, y: 134 }],
+    targets: isHome ? [target('home-edit', '가구와 공간 꾸미기', '꾸미기', 336, 184, 22), target('wardrobe', '옷장과 외형 거울', '외형', 336, 112, 22)] : [target('shop-catalog', '옷·준비물·가구 진열', '구매', 112, 116, 22)],
+    doors: [{ id: 'exit', zone: { x: 194, y: 277, w: 28, h: 11 }, to: 'street', arrive: isHome ? { x: 292, y: 148 } : { x: 164, y: 254 }, facing: 'down', label: '논현로 거리' }],
+    interior: { wall: 'office', bottom: 'wall', door: [192, 224], pendants: isHome ? [] : [{ x: 264, y: 48 }, { x: 340, y: 48 }], rugs: isHome ? [] : [{ x: 40, y: 170, w: 80, h: 84 }], decor: [{ kind: 'window', x: 28, w: 64, text: '' }, { kind: 'sign', x: 128, w: 160, text: isHome ? 'REPORTER HOME' : 'ORBIT TAILOR' }, { kind: 'notice', x: 320, w: 64, text: '' }] }, spawn: { x: 208, y: 258 }, spawnFacing: 'up' });
+}
+
+/** Read-only view of validated application state. A fresh room object invalidates geometry caches. */
+export function projectHomeRoom(home: HomeState): Room {
+  const base = lifeRoom('home'), size = homeSize(home.kind);
+  const furnishings = home.placements.map(p => { const f = footprint(p), r = placementRect(p); return { id: p.id, x: r.x, y: r.y, w: f.w * TILE, h: f.h * TILE, rotated: p.rotated }; });
+  return { ...base, title: home.kind === 'house' ? '작은 내 집 · 기자의 작업실' : base.title, furnishings, homeArea: { x: 96, y: 64, w: size.w * TILE, h: size.h * TILE }, solids: [...base.solids, ...furnishings.filter(f => f.id !== 'rug').map(f => ({ x: f.x, y: f.y, w: f.w, h: f.h }))] };
+}
+
+export const rooms: Record<RoomId, Room> = { newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), heart: heart(), 'heart-chambers': modelRoom('heart-chambers', 1, '심장 안 · 네 방과 중격'), 'heart-valves': modelRoom('heart-valves', 2, '심장 안 · 네 판막'), 'heart-circulation': modelRoom('heart-circulation', 3, '심장 안 · 폐와 온몸으로 이어지는 길'), 'heart-signal': modelRoom('heart-signal', 4, '심장 안 · 박동을 전하는 신호'), 'heart-supply': modelRoom('heart-supply', 5, '심장 안 · 심장근육과 관상동맥'), 'heart-conditions': modelRoom('heart-conditions', 6, '심장 안 · 조건과 취재 기록'), home: projectHomeRoom(newHome()), store: lifeRoom('store') };
+
+// Neighboring districts are explored on foot. Unlock decisions remain in application/UI commands.
+const heartDistricts: RoomId[] = ['heart', 'heart-chambers', 'heart-valves', 'heart-circulation', 'heart-signal', 'heart-supply', 'heart-conditions'];
+for (let i = 0; i < heartDistricts.length; i++) {
+  const room = rooms[heartDistricts[i]!];
+  for (const direction of [-1, 1]) {
+    const neighbor = heartDistricts[i + direction]; if (!neighbor) continue;
+    const left = direction < 0, x = left ? 0 : (room.cols - 1) * TILE;
+    room.tiles[13 * room.cols + (left ? 0 : room.cols - 1)] = T.FLESH;
+    room.doors.push({ id: 'model-link:' + neighbor, zone: { x: x + (left ? 2 : 0), y: 210, w: 14, h: 10 }, to: neighbor, arrive: { x: left ? 408 : 40, y: 216 }, facing: left ? 'left' : 'right', label: rooms[neighbor].title });
+  }
+}
 export function tileAt(room: Room, tx: number, ty: number): number {
   if (tx < 0 || ty < 0 || tx >= room.cols || ty >= room.rows) return T.VOID;
   return room.tiles[ty * room.cols + tx] ?? T.VOID;

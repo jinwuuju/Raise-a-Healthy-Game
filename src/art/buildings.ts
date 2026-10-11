@@ -88,6 +88,7 @@ const SHOPS: { wall: Ramp; win: 'grid' | 'tall' | 'band' | 'slit'; awning: strin
   { wall: ['#e6f0f0', '#d1e1e1', '#b2c8c8', '#84a0a0'], win: 'band', awning: '#33a093', sign: 'CLINIC', signBg: '#2a8076', brick: false, roof: 'solar' },
   { wall: ['#e5ddd2', '#d3c8b8', '#b8ab98', '#8b7f6d'], win: 'grid', awning: '#e8a040', sign: 'BOOKS', signBg: '#a8681f', brick: false, roof: 'none' },
   { wall: ['#c9d1df', '#b3bdcf', '#96a2b8', '#6a7690'], win: 'band', awning: '#2f4470', sign: 'BANK', signBg: '#24365c', brick: false, roof: 'solar' },
+  { wall: ['#f3e5d8', '#dac6bb', '#b4968c', '#775c59'], win: 'tall', awning: '#518c91', sign: 'ORBIT', signBg: '#375d6d', brick: false, roof: 'garden' },
 ];
 
 function paintShop(p: Painter, b: Building) {

@@ -14,6 +14,11 @@ import { Hud } from './ui/hud';
 import { openCreator } from './ui/creator';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
 import { rooms, type Door, type Target } from './world/rooms';
+import { isModelRoom, type RoomId } from './world/types';
+import { campaignContent, questById, questIds, rewardFor, type QuestId } from './domain/content';
+import { canAcceptInvestigation, progressOf, publishedCount, readyForArticle, reputationOf } from './domain/campaign';
+import { openTaskPanel, openArticlePanel, openAtlas, openArchive } from './ui/campaign';
+import { openShop, openHome, openWardrobe, openLifeTools } from './ui/life';
 
 class MemoryStorage implements Storage {
   private m = new Map<string, string>();
@@ -142,7 +147,7 @@ function autoBodyscope(dt: number): void {
   const t = world.room.targets.find(t => t.id === 'device'), p = world.player;
   const inFront = world.roomId === 'newsroom' && t && Math.abs(p.x - t.x) <= 16 && p.y >= t.y - 3 && p.y <= t.y + t.r;
   if (!inFront) { scopePromptLatched = false; scopeStandTime = 0; return; }
-  if (scopePromptLatched || busy() || canEnterHeart(game.state) || p.moving || p.facing !== 'up') { scopeStandTime = 0; return; }
+  if (scopePromptLatched || busy() || !game.state.campaign.active || canEnterHeart(game.state) || p.moving || p.facing !== 'up') { scopeStandTime = 0; return; }
   scopeStandTime += dt;
   if (scopeStandTime >= 0.15) { scopePromptLatched = true; scopeStandTime = 0; void interact(t); }
 }
@@ -171,13 +176,21 @@ function refresh() {
   hud.update(s);
   if (!world) return;
   world.player.look = s.avatar.look; world.player.name = s.avatar.name; world.timeMode = s.settings.time;
+  world.setHome(s.home);
   hud.setObjective(objective(s, world.roomId));
   const has = (f: string) => s.flags.includes(f);
   const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed));
-  world.questNpc = world.roomId === 'newsroom' && needEditor ? 'editor' : null;
+  world.questNpc = world.roomId === 'newsroom' && (needEditor || (!s.campaign.active && publishedCount(s) < 10)) ? 'editor' : null;
   world.questTargets = [];
-  if (world.roomId === 'newsroom' && has(Q1.accepted) && !has(Q1.observed)) world.questTargets = ['device'];
-  if (world.roomId === 'heart') world.questTargets = has(Q1.observed) ? ['return-pad'] : Q1_OBSERVATIONS.filter(id => !s.inspected.includes(obsKey(id)));
+  const id = s.campaign.active;
+  if (id) {
+    const q = questById(id), p = progressOf(s, id);
+    if (world.roomId === 'newsroom') world.questTargets = [readyForArticle(s, id) ? 'my-desk' : 'device'];
+    if (world.roomId === q.region) {
+      world.questTargets = q.observations.flatMap((o, i) => p.evidence.includes(o.id) ? [] : [id === 'Q001' ? o.id : i === 0 ? 'investigation-a' : 'investigation-b']);
+      if (q.observations.every(o => p.evidence.includes(o.id))) world.questTargets = [readyForArticle(s, id) ? 'return-pad' : 'terminal'];
+    }
+  }
 }
 game.subscribe(refresh);
 
@@ -199,23 +212,29 @@ type Trip = Pick<Door, 'to' | 'arrive' | 'facing'> & { from?: string };
 let traveling = false;
 function travel(d: Trip) {
   if (!world) return;
+  if (d.to === 'home' && !progressOf(game.state, 'Q001').published) { hud.toast('첫 기사를 마치면 무료 기자 숙소가 열려요.'); return; }
+  if (isModelRoom(d.to)) {
+    const available = campaignContent.quests.some(q => q.region === d.to && progressOf(game.state, q.id).accepted);
+    if (!available) { hud.toast('편집장에게 이 구역의 취재를 받으면 탐험 길이 열려요.'); return; }
+  }
   const w = world;
   traveling = true;
   w.locked = true; keys.clear(); pointer.id = -1;
   fade.classList.add('on');
-  if (d.to === 'heart' || d.from === 'heart') fade.classList.add('scope');
+  const scope = isModelRoom(d.to) || isModelRoom(w.roomId);
+  if (scope) fade.classList.add('scope');
   window.setTimeout(() => {
-    try { if (d.to === 'heart') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
+    try { if (isModelRoom(d.to) && w.roomId === 'newsroom') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
     catch (e) { hud.toast(e instanceof Error ? e.message : '이동하지 못했어요.', true); }
     w.setRoom(game.state.at.room, game.state.at.x, game.state.at.y, game.state.at.facing);
     hud.setRoom(w.roomId, () => w.minimapBase());
     refresh();
     fade.classList.remove('on', 'scope');
     hud.showBanner(rooms[w.roomId].title);
-    if (w.roomId === 'heart') hud.toast(q1Text.disclaimer);
+    if (isModelRoom(w.roomId)) hud.toast(campaignContent.disclaimer);
     if (!game.persist()) hud.toast('저장하지 못했어요: ' + game.lastError, true);
     window.setTimeout(() => { w.locked = false; traveling = false; }, 120);
-  }, d.to === 'heart' || d.from === 'heart' ? 520 : 210);
+  }, scope ? 520 : 210);
 }
 
 async function say(lines: Line[]) { if (lines.length) await dialog.show(lines); }
@@ -227,30 +246,61 @@ async function interact(t: Target) {
   w.stop(); w.locked = true; keys.clear(); pointer.id = -1;
   w.faceToward(t);
   try {
-    if (t.npc) {
+    const id = game.state.campaign.active;
+    const q = id ? questById(id) : null;
+    if (t.npc === 'editor' && game.has('reported-back') && game.has(Q1.accepted)) {
+      if (game.has(Q1.observed) && !game.has(Q1.briefed)) {
+        await say(q1Text.editorBrief.map(text => ({ who: '편집장', text, npc: 'editor' })));
+        game.brief();
+      }
+      await editorCampaign();
+    } else if (t.npc) {
       const script = talk(t.npc, game.state);
       await say(script.lines);
       if (script.flag) game.flag(script.flag);
       if (script.action === 'offer-q1') await offerQ1();
-      if (script.action === 'brief-q1') { game.brief(); hud.toast('편집장 확인 완료 · 다음 단계는 곧 열려요'); }
+      if (script.action === 'brief-q1') { game.brief(); hud.toast('연결 장치를 살펴보고 내 책상에서 기사로 엮어요.'); }
       if (t.npc === 'barista') await cafeOrder();
-    } else if (t.id === 'device' && !canEnterHeart(game.state)) {
-      const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
-        [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
+    } else if (t.id === 'device' && id && !canEnterHeart(game.state)) {
+      const go = await dialog.show([{ who: '바디스코프', text: id === 'Q001' ? q1Text.deviceReady : q!.question + ' · ' + campaignContent.disclaimer, npc: null }],
+        [{ id: 'enter', label: id === 'Q001' ? q1Text.deviceChoices.enter : q!.title + ' 구역으로 들어가기', sub: '관찰·연결·귀환 · 중단 후 이어서 가능', disabled: false }]);
       game.inspect(t.id);
-      if (go === 'enter') travel({ to: 'heart', arrive: rooms.heart.spawn, facing: 'up' });
-    } else if (t.id === 'heart-out' || t.id === 'heart-in') {
+      if (go === 'enter') travel({ to: q!.region, arrive: rooms[q!.region].spawn, facing: 'up' });
+    } else if ((t.id === 'heart-out' || t.id === 'heart-in') && id === 'Q001') {
       const obs = q1Text.observations[t.id];
       await say([{ who: t.label, text: obs.text, npc: null }]);
       const r = game.observe(t.id);
       if (r.first) hud.toast('수첩에 적음 · ' + obs.note);
-      if (r.done) window.setTimeout(() => hud.toast('관찰 2개 완료! +20XP · 귀환 장치로 돌아가요'), 1600);
+      if (r.done) window.setTimeout(() => hud.toast('관찰 2개 완료! +20XP · 연결 장치에서 배달 길을 이어 보세요. 귀환도 가능해요.'), 1600);
+    } else if (t.id === 'investigation-a' || t.id === 'investigation-b') {
+      if (!id || q!.region !== w.roomId) { await say([{ who: t.label, text: '이곳의 구조는 도감에서 다시 살펴볼 수 있어요. 진행 중인 취재는 수첩에서 확인해 주세요.', npc: null }]); }
+      else {
+        const o = q!.observations[t.id === 'investigation-a' ? 0 : 1]!;
+        await say([{ who: o.title, text: o.text, npc: null }, { who: '취재 수첩', text: q!.limitations, npc: null }]);
+        game.recordObservation(id, o.id); hud.toast('근거 기록 · ' + o.title);
+      }
+    } else if (t.id === 'terminal') {
+      if (!id || q!.region !== w.roomId) hud.toast('진행 중인 취재의 구역에서 연결 장치를 살펴보세요.');
+      else { pauseInput(); openTaskPanel(game, id, refresh); }
+    } else if (t.id === 'heart-map') {
+      openHeartMap();
+    } else if (t.id === 'my-desk') {
+      if (id) { pauseInput(); openArticlePanel(game, id, refresh); }
+      else { pauseInput(); openArchive(game); }
+    } else if (t.id === 'shelf') {
+      pauseInput(); openAtlas(game);
+    } else if (t.id === 'shop-catalog') {
+      pauseInput(); openShop(game, refresh);
+    } else if (t.id === 'home-edit') {
+      pauseInput(); openHome(game, refresh);
+    } else if (t.id === 'wardrobe') {
+      pauseInput(); openWardrobe(game, refresh);
     } else if (t.id === 'guide') {
-      await say(talk('guide', game.state).lines);
+      await say([{ who: '안내 로봇 바디', text: q ? q.question + ' 두 표식을 관찰하고 연결 장치에서 직접 재생해 보세요. 심장 지도에서는 전체 구조와 연결 구역을 살펴볼 수 있어요.' : '심장 지도에서 방문한 구역을 이어 탐험해요.', npc: null }]);
     } else if (t.id === 'return-pad') {
       const go = await dialog.show([{ who: '귀환 장치', text: q1Text.returnPad, npc: null }],
         [{ id: 'go', label: q1Text.returnChoices.go, sub: q1Text.returnChoices.goSub, disabled: false }]);
-      if (go === 'go') travel({ to: 'newsroom', arrive: { x: 308, y: 152 }, facing: 'down', from: 'heart' });
+      if (go === 'go') travel({ to: 'newsroom', arrive: { x: 308, y: 152 }, facing: 'down', from: w.roomId });
     } else {
       const text = lookText[t.id] ?? '';
       await say([{ who: t.label, text, npc: null }]);
@@ -270,6 +320,44 @@ async function offerQ1() {
     await say([{ who: '편집장', text: q1Text.accepted, npc: 'editor' }]);
     hud.toast('새 취재 · ' + q1Text.title);
   } else await say([{ who: '편집장', text: q1Text.later, npc: 'editor' }]);
+}
+
+async function editorCampaign() {
+  const active = game.state.campaign.active;
+  if (active && !progressOf(game.state, active).published) {
+    const q = questById(active);
+    await say([{ who: '편집장', text: readyForArticle(game.state, active) ? q.debrief + ' 내 책상에서 근거를 연결해 발행해요.' : q.offer + ' 관찰과 새 배치 조작을 마치면 기사로 엮어요.', npc: 'editor' }]);
+    return;
+  }
+  const next = questIds.find(id => !progressOf(game.state, id).published);
+  if (next) {
+    const q = questById(next), why = canAcceptInvestigation(game.state, next);
+    if (why) { await say([{ who: '편집장', text: why, npc: 'editor' }]); return; }
+    const pick = await dialog.show([{ who: '편집장', text: q.offer, npc: 'editor' }, { who: '독자 편지', text: q.question, npc: null }],
+      [{ id: 'accept', label: '취재 맡기 · ' + next, sub: q.title, disabled: false }, { id: 'later', label: '나중에', sub: '거리와 숙소를 자유롭게 둘러봐요.', disabled: false }]);
+    if (pick === 'accept') { game.acceptInvestigation(next); hud.toast('새 취재 · ' + q.title); }
+    return;
+  }
+  const pick = await dialog.show([{ who: '편집장', text: '첫 특집호 완성! 신입기자로 승진했어요. 이제 취재를 다시 돌아보거나 도감·집·옷가게를 둘러봐요.', npc: 'editor' }],
+    questIds.map(id => ({ id, label: questById(id).title, sub: '다시 탐험 · 반복 보상 없음', disabled: false })));
+  if (pick && questIds.includes(pick as QuestId)) game.acceptInvestigation(pick as QuestId);
+}
+
+function openHeartMap() {
+  pauseInput();
+  openSheet('심장 탐험 지도', (c, close) => {
+    c.append(el('p', 'muted', campaignContent.disclaimer + ' · 연결 길은 탐험 동선이며 실제 혈관의 크기·거리·순서를 나타내지 않아요. 해부 연결은 심장 구조 도감에서 확인해요.'));
+    c.append(button('row', '심장 구조 도감 보기', () => { close(); openAtlas(game); }));
+    const seen = new Set<RoomId>();
+    for (const q of campaignContent.quests) {
+      if (seen.has(q.region)) continue; seen.add(q.region);
+      const allowed = campaignContent.quests.some(other => other.region === q.region && progressOf(game.state, other.id).accepted);
+      const row = button('row', rooms[q.region].title + (world?.roomId === q.region ? ' · 현재 위치' : ''), () => { close(); travel({ to: q.region, arrive: rooms[q.region].spawn, facing: 'up' }); });
+      row.disabled = !allowed || world?.roomId === q.region;
+      row.append(el('span', 'sub', allowed ? '연결 구역으로 이동' : q.id + ' 취재 수락 후 탐험'));
+      c.append(row);
+    }
+  }, () => {}, { dismissOnContentClick: false });
 }
 
 async function cafeOrder() {
@@ -295,24 +383,27 @@ function openNotebook() {
   if (busy() || !world) return;
   pauseInput();
   const s = game.state;
-  openSheet('취재 수첩', c => {
+  openSheet('취재 수첩', (c, close) => {
     const goal = el('div'); goal.append(el('h3', '', '지금 할 일'), el('p', '', objective(s, world!.roomId))); c.append(goal);
-    const notes = el('div'); notes.append(el('h3', '', '관찰 기록'));
-    const ids = s.inspected.filter(id => inspectLabels[id]);
-    if (ids.length) { const ul = el('ul', 'notes'); for (const id of ids) ul.append(el('li', '', inspectLabels[id]!)); notes.append(ul); }
-    else notes.append(el('p', 'muted', '아직 기록이 없어요. 반짝이는 표식이나 사람에게 다가가 살펴보세요.'));
-    c.append(notes);
-    if (s.flags.includes(Q1.accepted)) {
-      const q = el('div'); q.append(el('h3', '', '첫 취재 · ' + q1Text.title));
-      q.append(el('p', '', q1Text.offer[1]!.text));
-      const seen = q1Seen(s);
-      const ul = el('ul', 'notes');
-      for (const id of Q1_OBSERVATIONS) ul.append(el('li', seen.includes(id) ? '' : 'muted', seen.includes(id) ? q1Text.observations[id].note : '아직 관찰하지 않음'));
-      q.append(ul, el('p', 'muted', q1Text.disclaimer + '. 기사 쓰기는 다음 업데이트에서 열려요.'));
-      c.append(q);
+    const id = s.campaign.active;
+    if (id) {
+      const q = questById(id), p = progressOf(s, id);
+      const notes = el('div'); notes.append(el('h3', '', id + ' · ' + q.title), el('p', '', q.question));
+      for (const o of q.observations) notes.append(el('p', p.evidence.includes(o.id) ? '' : 'muted', (p.evidence.includes(o.id) ? '✓ ' : '○ ') + o.title + (p.evidence.includes(o.id) ? ' · ' + o.text : ' · 구역에서 표식 관찰')));
+      const completed = Object.values(p.tasks).filter(t => t.solved).length;
+      notes.append(el('p', 'muted', '모형 적용 ' + completed + '개 · ' + (p.published ? '기사 발행 완료' : readyForArticle(s, id) ? '기사에 쓸 근거가 모였어요.' : '연결 장치에서 새 배치를 직접 시험해요.')));
+      if (s.at.room === q.region) notes.append(button('row', '연결 장치의 기록 이어 보기', () => { close(); openTaskPanel(game, id, refresh); }));
+      if (s.at.room === 'newsroom') notes.append(button('row', '내 책상에서 기사 쓰기', () => { close(); openArticlePanel(game, id, refresh); }));
+      c.append(notes);
     }
-    const life = el('div'); life.append(el('h3', '', '생활'), el('p', '', '비투비씨 주문 ' + s.cafe.orderCount + '회 · 첫 방문 커피 ' + (s.cafe.welcomeUsed ? '받음' : '아직'))); c.append(life);
-    c.append(el('p', 'muted', '기사 작성·의학 도감은 첫 기사를 쓴 뒤 이 수첩에서 이어집니다.'));
+    const list = el('div', 'list');
+    list.append(button('row', '심장 구조·관찰 도감', () => { close(); openAtlas(game); }));
+    list.append(button('row', '발행 기사 보관함 · ' + publishedCount(s) + '/10', () => { close(); openArchive(game); }));
+    if (isModelRoom(s.at.room)) list.append(button('row', '하나의 심장 · 연결 구역 지도', () => { close(); openHeartMap(); }));
+    list.append(button('row', '근거 핀·자료 즐겨찾기·메모', () => { close(); openLifeTools(game, refresh); }));
+    c.append(list);
+    const life = el('div'); life.append(el('h3', '', '취재 사이의 생활'), el('p', '', '첫 기사 후 유로프라자 옆 옷가게·무료 숙소를 방문해요. 구매 없이 모든 취재를 마칠 수 있어요.'), el('p', 'muted', '비투비씨 주문 ' + s.cafe.orderCount + '회 · 보유 ' + s.gold + 'G')); c.append(life);
+    c.append(el('p', 'muted', campaignContent.disclaimer + ' · 출처와 단순화 한계는 각 도감·기사에서 확인해요.'));
   });
 }
 
@@ -324,7 +415,7 @@ function openReporter() {
     const st = el('div', 'stats');
     const stat = (v: string, l: string) => { const d = el('div', 'stat'); d.append(el('b', '', v), el('span', '', l)); return d; };
     const lv = levelOf(s.totalXp);
-    st.append(stat('Lv.' + lv.level, '수습기자'), stat(lv.into + '/' + lv.need, '경험치'), stat(s.gold + 'G', '골드'));
+    st.append(stat('Lv.' + lv.level, publishedCount(s) === 10 ? '신입기자' : '수습기자'), stat(lv.into + '/' + lv.need, '경험치'), stat(s.gold + 'G', '골드'), stat(String(reputationOf(s)), '명성'));
     c.append(st);
     const info = el('div'); info.append(el('h3', '', s.avatar.name), el('p', '', presetNames[s.avatar.preset] + ' · ' + outfits[s.avatar.look.outfit])); c.append(info);
     const list = el('div', 'list');
@@ -385,7 +476,7 @@ function openMenu() {
     const reset = el('div', 'list'); reset.append(button('row danger', '처음부터 다시 시작', () => { if (confirm('지금 기록을 백업하고 새 기자로 시작할까요? 파일로 내보내 두는 것도 권해요.')) { try { game.restart(); close(); location.reload(); } catch (e) { hud.toast('새로 시작하지 못했어요: ' + (e instanceof Error ? e.message : '저장 오류'), true); } } }));
     c.append(reset);
     const docs = el('a', 'row', '설계실(기획 문서) 열기'); docs.href = './design/'; docs.target = '_blank'; docs.rel = 'noopener'; c.append(docs);
-    c.append(el('p', 'muted', 'Medical Quest · redesign-1 · 기획·개발 진우주'));
+    c.append(el('p', 'muted', 'Medical Quest · cardio-0.1 초반 알파 · 기획·개발 진우주'));
   }, () => stopFeedback());
 }
 

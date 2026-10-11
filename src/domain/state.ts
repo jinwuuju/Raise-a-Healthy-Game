@@ -1,7 +1,9 @@
 import { defaultAppearance, outfits, presets, starterOutfits, validateAppearance, type Appearance, type OutfitId, type Preset } from './appearance';
-import { canStand } from '../world/collision';
-import { rooms } from '../world/rooms';
+import { canStand, canStandInRoom } from '../world/collision';
+import { projectHomeRoom, rooms } from '../world/rooms';
 import { roomIds, type Dir, type RoomId } from '../world/types';
+import { emptyCampaign, validateCampaignState, type CampaignState } from './campaign-state';
+import { newHome, validateHome, validateLifeProgress, placementRect, type HomeState } from './life';
 
 export type TimeMode = 'day' | 'dusk' | 'night' | 'auto';
 export const timeModes: Record<TimeMode, string> = { day: '낮', dusk: '노을', night: '밤', auto: '실제 시간' };
@@ -15,6 +17,8 @@ export type GameState = {
   totalXp: number; gold: number; ledger: string[]; inspected: string[]; flags: string[];
   cafe: { welcomeUsed: boolean; orderCount: number; lastOrder: { itemId: string; price: number; orderedAt: string } | null; restedAt: string | null };
   settings: { time: TimeMode };
+  campaign: CampaignState;
+  home: HomeState;
 };
 
 export function newState(): GameState {
@@ -29,6 +33,8 @@ export function newState(): GameState {
     totalXp: 0, gold: 0, ledger: [], inspected: [], flags: [],
     cafe: { welcomeUsed: false, orderCount: 0, lastOrder: null, restedAt: null },
     settings: { time: 'day' },
+    campaign: emptyCampaign(),
+    home: newHome(),
   };
 }
 
@@ -54,12 +60,16 @@ export function validateState(value: unknown): GameState {
   const preset = a.preset as Preset;
   const look = validateAppearance(a.look, preset, true);
   if (!strings(s.owned) || !s.owned.every(id => Object.hasOwn(outfits, id)) || !s.owned.includes(look.outfit)) throw new Error('옷장 기록이 잘못되었습니다.');
-  if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir) || !canStand(at.room as RoomId, { x: at.x, y: at.y })) throw new Error('저장된 위치가 올바르지 않습니다.');
+  const home = validateHome(s.home);
+  if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir) || !(at.room === 'home' ? canStandInRoom(projectHomeRoom(home), {x:at.x,y:at.y}) : canStand(at.room as RoomId, { x: at.x, y: at.y }))) throw new Error('저장된 위치가 올바르지 않습니다.');
   if (!integer(s.totalXp) || !integer(s.gold) || !strings(s.ledger, Infinity) || !strings(s.inspected) || !strings(s.flags)) throw new Error('진행 기록이 잘못되었습니다.');
   if (!cafe || typeof cafe.welcomeUsed !== 'boolean' || !integer(cafe.orderCount) || (cafe.restedAt !== null && !date(cafe.restedAt))) throw new Error('카페 기록이 잘못되었습니다.');
   const lo = cafe.lastOrder as Record<string, unknown> | null;
   if (lo !== null && (!lo || typeof lo.itemId !== 'string' || !integer(lo.price) || !date(lo.orderedAt))) throw new Error('카페 주문 기록이 잘못되었습니다.');
   const time = settings && typeof settings.time === 'string' && ['day', 'dusk', 'night', 'auto'].includes(settings.time) ? settings.time as TimeMode : 'day';
+  const campaign=validateCampaignState(s.campaign, { flags: s.flags, inspected: s.inspected, ledger: s.ledger, totalXp:s.totalXp });
+  validateLifeProgress(home,campaign,s.owned as OutfitId[]);
+  if(at.room==='home' && home.placements.some(p=>{if(p.id==='rug')return false;const r=placementRect(p);return (at.x as number)+4>r.x&&(at.x as number)-4<r.x+r.w&&(at.y as number)+1>r.y&&(at.y as number)-3<r.y+r.h;}))throw new Error('저장 위치가 가구 안에 있어요.');
   return {
     schemaVersion: 4, contentVersion: 'redesign-1', balanceVersion: 'cafe-0.1', saveId: s.saveId, revision: s.revision,
     createdAt: s.createdAt, updatedAt: s.updatedAt, started: s.started,
@@ -68,6 +78,8 @@ export function validateState(value: unknown): GameState {
     totalXp: s.totalXp, gold: s.gold, ledger: [...s.ledger], inspected: [...s.inspected], flags: [...s.flags],
     cafe: { welcomeUsed: cafe.welcomeUsed, orderCount: cafe.orderCount, restedAt: (cafe.restedAt as string | null), lastOrder: lo ? { itemId: lo.itemId as string, price: lo.price as number, orderedAt: lo.orderedAt as string } : null },
     settings: { time },
+    campaign,
+    home,
   };
 }
 

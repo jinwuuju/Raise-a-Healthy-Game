@@ -4,11 +4,13 @@ import { AX, AY, FIGURE_TOP, WALK_CYCLE, characterFrame, idleFrame } from '../ar
 import { bakeGround } from '../art/ground';
 import { ellipse, makeCanvas, pixelText, type Sprite } from '../art/pixel';
 import { propSprite } from '../art/props';
+import { furnitureSprite } from '../art/furniture';
+import type { HomeState } from '../domain/life';
 import type { Look } from '../domain/appearance';
 import type { TimeMode } from '../domain/state';
 import { canStand, crossingAt, doorAt, moveWithCollision, nearestTarget } from '../world/collision';
 import { findPath } from '../world/path';
-import { T, rooms, tileAt, type Building, type Crossing, type Door, type Room, type Target } from '../world/rooms';
+import { T, projectHomeRoom, rooms, tileAt, type Building, type Crossing, type Door, type Room, type Target } from '../world/rooms';
 import { TILE, type Dir, type Point, type RoomId } from '../world/types';
 import { Traffic } from './traffic';
 
@@ -49,6 +51,7 @@ export class World {
   private light = makeCanvas(2, 2);
   private cam = { x: 0, y: 0, ready: false };
   private leaves: { x: number; y: number; vx: number; vy: number; c: string; life: number }[] = [];
+  private homeSignature = '';
   view = { x: 0, y: 0, w: 1, h: 1, zoom: 1 };
 
   constructor(roomId: RoomId, x: number, y: number, facing: Dir, look: Look, name: string) {
@@ -66,6 +69,16 @@ export class World {
     const d = doorAt(roomId, { x, y }); this.doorLatch = d ? d.id : null;
     this.loadNpcs();
     this.near = null; this.onNear(null);
+  }
+
+  /** A rendering/collision projection; persistent state remains owned by application. */
+  setHome(home: HomeState): void {
+    const signature = home.kind + ':' + JSON.stringify(home.placements);
+    if (signature === this.homeSignature) return;
+    this.homeSignature = signature;
+    rooms.home = projectHomeRoom(home);
+    this.grounds.delete('home');
+    if (this.roomId === 'home') { this.room = rooms.home; this.stop(); this.near = null; }
   }
 
   private loadNpcs(): void {
@@ -272,6 +285,7 @@ export class World {
     }
 
     if (room.flow) this.drawFlow(g, cx, cy);
+    if (room.streams) this.drawModelStreams(g, cx, cy);
     const items: Drawable[] = [];
     const inView = (x: number, y: number, w: number, h: number) => x + w > cx - 8 && x < cx + vw + 8 && y + h > cy - 8 && y < cy + vh + 8;
     for (const b of room.buildings) {
@@ -280,7 +294,8 @@ export class World {
     }
     const frame4 = Math.floor(this.time * 6) % 4, beat4 = Math.floor(this.time * 4.4) % 4;
     for (const pr of room.props) {
-      const s = propSprite(pr.kind, pr.v, pr.kind === 'heartcore' ? beat4 : pr.kind === 'fountain' || pr.kind === 'bodyscope' || pr.kind === 'robot' || pr.kind === 'pad' ? frame4 : 0);
+      const animated = ['fountain','bodyscope','robot','pad','heartanatomy','terminal','observation','valve','signalnode'].includes(pr.kind);
+      const s = propSprite(pr.kind, pr.v, pr.kind === 'heartcore' ? beat4 : animated ? frame4 : 0);
       if (!inView(pr.x - s.ax, pr.y - s.ay, s.c.width, s.c.height)) continue;
       const tall = pr.kind === 'ginkgo' || pr.kind === 'parktree' || pr.kind === 'bookshelf' || pr.kind === 'lamp' || pr.kind === 'heartcore';
       items.push({ y: pr.y, x: pr.x, occluder: tall ? { x: pr.x - s.ax + 3, y: pr.y - s.ay, w: s.c.width - 6, h: s.c.height - 10 } : null, draw: () => {
@@ -288,6 +303,12 @@ export class World {
         if (pr.kind === 'signal') this.drawSignal(g, pr.x, pr.y, pr.v === 1 ? 'EW' : 'NS', cx, cy);
         if (pr.kind === 'pedsignal') this.drawPedSignal(g, pr.x, pr.y, pr.v === 1 ? 'EW' : 'NS', cx, cy);
       } });
+    }
+    for (const f of room.furnishings ?? []) {
+      const s = furnitureSprite(f.id, f.rotated), x = f.x + f.w / 2, y = f.y + f.h;
+      if (!inView(x - s.ax, y - s.ay, s.c.width, s.c.height)) continue;
+      const drawable = { y, x, occluder: f.id === 'rug' ? null : { x: x-s.ax, y: y-s.ay, w: s.c.width, h: s.c.height-3 }, draw: () => this.blit(g,s,x,y,cx,cy) };
+      if (f.id === 'rug') drawable.draw(); else items.push(drawable);
     }
     for (const n of this.npcs) items.push({ y: n.y, x: n.x, occluder: null, draw: () => this.drawActor(g, n, cx, cy) });
     if (this.roomId === 'street') for (const car of this.traffic.cars) {
@@ -306,7 +327,7 @@ export class World {
     for (const l of this.leaves) { g.fillStyle = l.c; g.fillRect(Math.round(l.x - cx), Math.round(l.y - cy), 2, 1); }
     if (room.interior) for (const pd of room.interior.pendants) this.drawPendant(g, pd.x - cx, pd.y - cy);
     if (!room.interior && tod !== 'day') this.applyLight(g, vw, vh, cx, cy, tod);
-    if (this.roomId === 'heart') { const pulse = Math.max(0, Math.sin(this.time * Math.PI * 2 * 1.1)) ** 3; g.fillStyle = `rgba(220,40,80,${(0.03 + pulse * 0.07).toFixed(3)})`; g.fillRect(0, 0, vw, vh); }
+    if (room.modelIndex !== null) { const pulse = Math.max(0, Math.sin(this.time * Math.PI * 2 * 1.1)) ** 3; g.fillStyle = `rgba(220,40,80,${(0.025 + pulse * 0.035).toFixed(3)})`; g.fillRect(0, 0, vw, vh); }
 
     out.imageSmoothingEnabled = false;
     out.drawImage(buf.c, 0, 0, vw * zoom, vh * zoom);
@@ -389,6 +410,21 @@ export class World {
     }
   }
 
+  private drawModelStreams(g: CanvasRenderingContext2D, cx: number, cy: number): void {
+    for (const stream of this.room.streams ?? []) {
+      const lengths = stream.path.slice(1).map((b,i) => Math.hypot(b.x-stream.path[i]!.x,b.y-stream.path[i]!.y));
+      const total = lengths.reduce((a,b) => a+b,0); if (!total) continue;
+      for (let k=0;k<5;k++) {
+        let dist = (this.time*stream.speed + k*total/5)%total, i=0;
+        while (i<lengths.length-1 && dist>lengths[i]!) { dist-=lengths[i]!; i++; }
+        const a=stream.path[i]!,b=stream.path[i+1]!, t=dist/lengths[i]!;
+        const x=Math.round(a.x+(b.x-a.x)*t-cx), y=Math.round(a.y+(b.y-a.y)*t-cy);
+        g.fillStyle=stream.tone==='signal'?'#ffee9e':stream.tone==='return'?'#9dd9ed':'#ffd0b0';g.fillRect(x-2,y-1,4,3);
+        if(stream.tone==='signal') { g.fillRect(x,y-3,1,7);g.fillRect(x-3,y,7,1); }
+      }
+    }
+  }
+
   private drawPendant(g: CanvasRenderingContext2D, x: number, y: number): void {
     g.fillStyle = '#3a3040'; g.fillRect(Math.round(x), Math.round(y - 30), 1, 26);
     g.fillStyle = '#2d2a33'; g.fillRect(Math.round(x - 3), Math.round(y - 5), 7, 3);
@@ -442,6 +478,9 @@ export class World {
       out.fillStyle = color; out.fillText(text, sx, sy);
     };
     const top = FIGURE_TOP + 2;
+    for (const l of this.room.labels ?? []) label(l.text, l.x, l.y, l.tone === 'cool' ? '#c7eeff' : l.tone === 'warm' ? '#ffe3d3' : '#fff2cb');
+    if (this.room.modelIndex !== null) label('검수 전 모형 · 탐험길은 실제 혈관이 아니에요', this.room.cols*TILE/2, 282, '#e6cfde');
+    for (const d of this.room.doors.filter(d => d.id.startsWith('model-link:'))) label(d.to === 'heart' ? '심장 입구 ←' : (d.zone.x < 32 ? '← 이전 구역' : '다음 구역 →'), d.zone.x < 32 ? 46 : this.room.cols*TILE-46, 208, '#ffe2a3');
     for (const n of this.npcs) if (n.name) label(n.name, n.x, n.y - top, this.near?.npc === n.id ? '#fff3c4' : '#f6d98a');
     label(this.player.name, this.player.x, this.player.y - top, '#ffffff');
     const bob = Math.sin(this.time * 5) * 2;

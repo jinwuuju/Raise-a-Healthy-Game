@@ -28,6 +28,9 @@ for path in sorted(ROOT.rglob('*.json')):
     except (ValueError, OSError) as exc:
         errors.append(f'{path.relative_to(ROOT)}: {exc}')
 
+from render_campaign import render as render_campaign
+require((ROOT / 'docs/production/CARDIO-CONTENT-REGISTER.md').read_text() == render_campaign(), 'Campaign numeric register is stale; run python3 tools/render_campaign.py')
+
 levels = load('data/balance/levels.v0.2.json')
 rows = levels['rows']
 require(levels['status'] == 'design_only', 'Level data must be labeled design_only')

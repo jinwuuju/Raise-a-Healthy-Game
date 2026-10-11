@@ -1,4 +1,5 @@
 import { portrait } from '../art/character';
+import { publishedCount } from '../domain/campaign';
 import { levelOf } from '../domain/quest';
 import type { GameState } from '../domain/state';
 import type { RoomId } from '../world/types';
@@ -72,7 +73,7 @@ export class Hud {
     this.nameEl.textContent = s.avatar.name;
     this.goldEl.textContent = s.gold.toLocaleString('ko-KR') + 'G';
     const lv = levelOf(s.totalXp);
-    this.levelEl.textContent = 'Lv.' + lv.level + ' 수습기자 · ' + lv.into + '/' + lv.need + 'XP';
+    this.levelEl.textContent = 'Lv.' + lv.level + ' ' + (publishedCount(s) === 10 ? '신입기자' : '수습기자') + (lv.need ? ' · ' + lv.into + '/' + lv.need + 'XP' : ' · 첫 특집호 완성');
     const key = JSON.stringify(s.avatar.look);
     if (key !== this.lookKey) {
       this.lookKey = key;

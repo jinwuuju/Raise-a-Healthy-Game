@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "status": "fictional_game_markers_only",
+  "compare": { "baselineMarkers": 8, "changedMarkers": 4 },
+  "virtualRecords": [37, 51],
+  "limitations": "게임용 표식 개수다. 혈류량·혈압·전도 시간·진단 수치로 사용하지 않는다."
+}

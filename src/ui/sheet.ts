@@ -6,7 +6,7 @@ let current: { close: () => void } | null = null;
 export function sheetOpen(): boolean { return current !== null; }
 export function closeSheet(): void { current?.close(); }
 
-export function openSheet(title: string, build: (content: HTMLElement, close: () => void) => void, onClose: () => void = () => {}): void {
+export function openSheet(title: string, build: (content: HTMLElement, close: () => void) => void, onClose: () => void = () => {}, options: { dismissOnContentClick?: boolean } = {}): void {
   current?.close();
   const before = document.activeElement as HTMLElement | null;
   const scrim = el('div', 'scrim');
@@ -29,6 +29,7 @@ export function openSheet(title: string, build: (content: HTMLElement, close: ()
   sheet.addEventListener('pointerdown', e => e.stopPropagation());
   // Tapping anywhere that is not a control closes the window (scroll gestures do not produce a click).
   sheet.addEventListener('click', e => {
+    if (options.dismissOnContentClick === false) return;
     const t = e.target as Element | null;
     if (!t?.closest?.('button, a, input, select, textarea, label, summary, [role=button], .seg, .opts')) close();
   });
