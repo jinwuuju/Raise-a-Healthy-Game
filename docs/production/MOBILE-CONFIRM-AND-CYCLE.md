@@ -25,3 +25,9 @@
 전체 회귀 검사와 배포 결과는 STATUS의 D064 기록과 이 작업의 실제 Actions/공개 URL 확인으로 구분한다.
 
 최종 로컬 타입·프로덕션 빌드·draft 경계, 단위 **171개**·브라우저 **39개** 전체 통과(약 2.3분, 재시도 없음). JS gzip 91.15KB. 설계 877개, 설계실 42문서/246링크·자산 검사 통과. 사용자 요청에 따라 D062~D064를 main에 반영하며, 이 로컬 검증을 원격 배포 성공으로 간주하지 않는다.
+
+## 실제 배포 확인
+
+소스 커밋 `3db3328ddde4f08264945de05d98dd7f6aa803bd`을 main에 push하고 [Actions 38132559142](https://github.com/jinwuuju/Raise-a-Healthy-Game/actions/runs/38132559142)의 build/deploy 성공과 원격 main SHA를 확인했다. 공개 게임과 `/design/`은 HTTP 200이며 JS `index-D0zgBfyl.js`와 CSS `index-D0ygt7q9.css`가 로컬 검증 파일과 바이트 단위로 같다.
+
+별도 Chromium 터치 프로필에서 공개 URL의 390×844·844×390 확인 버튼 위치, 주기 초기 접힘/토글/길 안내·지도, 대화 한 줄 진행, 첫 기사 발행과 저장(100XP·100G)을 확인했다. 페이지 오류 0. 사용자 브라우저 저장을 읽거나 테스트 fixture로 덮어쓰지 않았다. 근거는 `artifacts/mobile-controls/deployment.json`과 공개 캡처 2장이다. 이 기록의 후속 문서 커밋은 게임 소스를 바꾸지 않는다.

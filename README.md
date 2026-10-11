@@ -4,7 +4,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 > **지금 바로 플레이:** https://jinwuuju.github.io/Raise-a-Healthy-Game/ (설계실: [/design/](https://jinwuuju.github.io/Raise-a-Healthy-Game/design/))
 >
-> **현재 소스: redesign-1 + 심장 속 탐사 + Q001 첫 기사 + 모바일 확인·접는 주기 / 2026-10-11.** 유로프라자 편집국에서 시작해 동네를 익히고, 첫 취재 의뢰를 받아 바디스코프로 **심장 내부**의 실제 혈류 순서를 따라 걸어 다닌다. 관찰 2개를 얻고 귀환·보고하면 내 자리/수첩에서 첫 기사를 구성하고 게임 속 신문에 발행한다(총 100XP·100G, Lv.2). 그래픽은 코드로 그리는 픽셀 아트다. 배포 결과는 [현재 상태](docs/production/STATUS.md)에 구분한다. 의학 검수·아트 승인·실사용자 재미 평가는 별도다. [심장 속 탐사](docs/production/HEART-INTERIOR.md) · [첫 기사](docs/production/Q001-ARTICLE.md) · [모바일 확인·심장 주기](docs/production/MOBILE-CONFIRM-AND-CYCLE.md).
+> **현재 배포: redesign-1 + 심장 속 탐사 + Q001 첫 기사 + 모바일 확인·접는 주기 / 2026-10-11.** 유로프라자 편집국에서 시작해 동네를 익히고, 첫 취재 의뢰를 받아 바디스코프로 **심장 내부**의 실제 혈류 순서를 따라 걸어 다닌다. 관찰 2개를 얻고 귀환·보고하면 내 자리/수첩에서 첫 기사를 구성하고 게임 속 신문에 발행한다(총 100XP·100G, Lv.2). 그래픽은 코드로 그리는 픽셀 아트다. 배포 근거는 [현재 상태](docs/production/STATUS.md)에 기록했다. 의학 검수·아트 승인·실사용자 재미 평가는 별도다. [심장 속 탐사](docs/production/HEART-INTERIOR.md) · [첫 기사](docs/production/Q001-ARTICLE.md) · [모바일 확인·심장 주기](docs/production/MOBILE-CONFIRM-AND-CYCLE.md).
 
 ## 조작
 
