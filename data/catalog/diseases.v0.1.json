@@ -1,0 +1,66 @@
+{
+  "id": "catalog.diseases",
+  "status": "planned",
+  "review": null,
+  "coverageHubs": [
+    "circulation"
+  ],
+  "note": "D073/Q002 작업 단위의 순환 허브 장부 시작. 다른 허브는 아직 미배정이며 전체 질환 장부 완료가 아님.",
+  "entries": [
+    {
+      "id": "disease.valve",
+      "name": "판막질환",
+      "english": "Heart valve disease",
+      "tags": [
+        "퇴행"
+      ],
+      "primaryHubId": "circulation",
+      "anatomyIds": [
+        "anatomy.circulation.06"
+      ],
+      "relatedSystemIds": [
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "Q002.normal-chambers"
+      ],
+      "depth": "intro",
+      "levelRange": [
+        2,
+        4
+      ],
+      "status": "planned",
+      "review": null,
+      "contentRef": "data/content/diseases/valve.v0.1.json",
+      "questSlot": "Q003"
+    },
+    {
+      "id": "disease.hypertension",
+      "name": "고혈압 기초",
+      "english": "Hypertension",
+      "tags": [
+        "대사",
+        "노화"
+      ],
+      "primaryHubId": "circulation",
+      "anatomyIds": [
+        "anatomy.circulation.11"
+      ],
+      "relatedSystemIds": [
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "Q002.normal-chambers"
+      ],
+      "depth": "intro",
+      "levelRange": [
+        8,
+        9
+      ],
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": "Q008"
+    }
+  ]
+}

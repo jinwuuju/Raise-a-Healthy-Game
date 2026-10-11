@@ -15,7 +15,7 @@ export function openReaction(game: Game, result: Reaction, actions: { readArticl
     const band = bandFor(result.score), timers: number[] = [], frames = new Set<number>();
     let finished = false, alive = true;
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const meta = el('p', 'reaction-meta', (replay ? '당시 독자 반응 · ' : '새 신문이 도착했어요 · ') + result.round + '번째 발행');
+    const meta = el('p', 'reaction-meta', (replay ? '당시 독자 반응 · ' : '새 신문이 도착했어요 · ') + (result.questId ?? 'Q001') + ' · ' + result.round + '번째 발행');
     const stage = el('div', 'reaction-stage scene-' + result.scene);
     const newspaper = el('div', 'reaction-newspaper');
     newspaper.append(el('small', '', '메디컬 데스크'), el('b', '', '몸속에서 온 소식'), el('div', 'paper-lines'));

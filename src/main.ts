@@ -17,7 +17,15 @@ import { Joystick } from './ui/joystick';
 import { ConfirmControl } from './ui/confirm';
 import { openAtlas } from './ui/atlas';
 import { openArticle } from './ui/article';
+import { openQ2Article } from './ui/q002-article';
+import { canOfferQ2, q2Key, q2Seen } from './domain/q002';
+import { q2Text } from './domain/q002-state';
+import { canOfferQ3, q3NormalDone, q3CompareDone } from './domain/q003';
+import { q3Text } from './domain/q003-state';
+import { openQ3 } from './ui/q003';
+import { openValveComparison } from './ui/valve-comparison';
 import { openReaction } from './ui/reaction';
+import { showOrganEntry } from './ui/organ-entry';
 import { openNotebook as showNotebook } from './ui/notebook';
 import { latestReaction } from './domain/reaction-state';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
@@ -96,6 +104,7 @@ window.addEventListener('keydown', e => {
     return;
   }
   if (sheetOpen()) return;
+  if (world?.locked) return;
   if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd'].includes(k)) { keys.add(k); e.preventDefault(); }
   else if ((k === 'e' || k === ' ' || k === 'enter') && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); if (world?.near && !busy()) interact(world.near); }
   else if (k === 'escape') { e.preventDefault(); openMenu(); }
@@ -229,17 +238,22 @@ function refresh() {
   hud.update(s);
   if (!world) return;
   world.player.look = s.avatar.look; world.player.name = s.avatar.name; world.timeMode = s.settings.time;
-  hud.setObjective(objective(s, world.roomId));
+  hud.setObjective((world.roomId === 'heart' && s.q003.mode !== 'normal' ? '검수 전 모형 · ' + q3Text.comparison[s.q003.mode].label + ' 비교 · ' : '') + objective(s, world.roomId));
+  if (world.heart) world.heart.comparison = world.roomId === 'heart' ? s.q003.mode : 'normal';
   const has = (f: string) => s.flags.includes(f);
-  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed));
+  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed)) || canOfferQ2(s) || canOfferQ3(s) || (s.q002.accepted && !s.q002.reported && q2Seen(s).length === 4);
   world.questNpc = world.roomId === 'newsroom' && needEditor ? 'editor' : null;
   world.questTargets = [];
   if (world.roomId === 'newsroom' && has(Q1.accepted) && !has(Q1.observed)) world.questTargets = ['device'];
   if (world.roomId === 'newsroom' && has(Q1.briefed) && !s.article.publishedAt) world.questTargets = ['my-desk'];
+  if (world.roomId === 'newsroom' && s.q002.reported && !s.q002.publishedAt) world.questTargets = ['my-desk'];
+  if (world.roomId === 'newsroom' && s.q003.accepted && !s.q003.publishedAt) world.questTargets = q3CompareDone(s) ? ['my-desk'] : ['device'];
   world.sparkTargets = [];
   if (isHeartRoom(world.roomId)) {
     const here = world.roomId;
     world.questTargets = has(Q1.accepted) && !has(Q1.observed) ? Q1_OBSERVATIONS.filter(id => Q1_ROOM[id] === here && !s.inspected.includes(obsKey(id))) : has(Q1.observed) && !has(Q1.briefed) ? ['return-pad'] : [];
+    if (s.q002.accepted && !s.q002.reported) world.questTargets = q2Seen(s).length === 4 ? ['return-pad'] : q2Text.notes.filter(n => n.room === here && !s.inspected.includes(q2Key(n.id))).map(n => n.target);
+    if (s.q003.accepted && !s.q003.publishedAt) world.questTargets = !q3NormalDone(s) ? q3Text.normal.filter(n => n.room === here && !s.q003.notes.includes(n.id as 'tricuspid' | 'pulmonary')).map(n => n.target) : !q3CompareDone(s) && here === 'heart' ? ['hx-tricuspid'] : ['return-pad'];
     const found = discovered(s);
     world.sparkTargets = world.room.targets.filter(t => t.id.startsWith('hx-') && !found.includes(t.id)).map(t => t.id);
   }
@@ -265,22 +279,27 @@ function startWorld() {
   canvas.focus({ preventScroll: true });
   if (game.lastError) hud.toast(game.lastError, true);
   const pending = latestReaction(game.state);
-  if (pending && pending.round > game.state.reactions.seen) openReaction(game, pending, { readArticle: showArticle, exportSave }, true);
+  if (pending && pending.round > game.state.reactions.seen) showReaction(pending, true);
 }
 
 /** walk: ordinary doors · scope-in/out: the Bodyscope · flow: following the blood between heart rooms. */
 type Trip = { to: RoomId; arrive: Point; facing: Dir; mode: 'walk' | 'scope-in' | 'scope-out' | 'flow'; card?: string | null };
 let traveling = false;
-function travel(d: Trip) {
-  if (!world) return;
+async function travel(d: Trip) {
+  if (!world || traveling) return;
   const w = world;
   traveling = true;
-  w.locked = true; keys.clear(); pointer.id = -1;
+  w.locked = true; pauseInput();
+  if (d.mode === 'scope-in') {
+    try { await showOrganEntry(canvas); }
+    catch (e) { w.locked = false; traveling = false; hud.toast(e instanceof Error ? e.message : '입장 연출을 열지 못했어요.', true); return; }
+  }
   fade.classList.add('on');
   if (d.mode === 'flow') fade.classList.add('flow'); else if (d.mode !== 'walk') fade.classList.add('scope');
-  fadeCard.textContent = d.card ?? '';
-  fadeCard.classList.toggle('show', !!d.card);
-  const wait = d.mode === 'walk' ? 210 : d.card ? 1700 : d.mode === 'flow' ? 600 : 560;
+  const card = d.mode === 'scope-in' ? null : d.card;
+  fadeCard.textContent = card ?? '';
+  fadeCard.classList.toggle('show', !!card);
+  const wait = d.mode === 'walk' ? 210 : d.mode === 'scope-in' ? 80 : card ? 1700 : d.mode === 'flow' ? 600 : 560;
   window.setTimeout(() => {
     try { if (d.mode === 'scope-in') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
     catch (e) { hud.toast(e instanceof Error ? e.message : '이동하지 못했어요.', true); }
@@ -312,15 +331,26 @@ async function interact(t: Target) {
   w.stop(); w.locked = true; keys.clear(); pointer.id = -1;
   w.faceToward(t);
   try {
-    if (t.npc) {
+    if (t.id === 'hx-tricuspid' && game.state.q003.accepted && q3NormalDone(game.state)) {
+      pauseInput(); openValveComparison(game);
+    } else if (t.npc) {
       const script = talk(t.npc, game.state);
       await say(script.lines);
       if (script.flag) game.flag(script.flag);
       if (script.action === 'offer-q1') await offerQ1();
       if (script.action === 'brief-q1') { game.brief(); hud.toast('편집장 확인 완료 · 내 자리에서 첫 기사를 써 봐요'); }
+      if (script.action === 'offer-q2') {
+        const choice = await dialog.show([{ who: '편집장', text: q2Text.question, npc: 'editor' }], [{ id: 'accept', label: '네 방의 주소 취재 맡기', sub: '심장의 네 방을 걸으며 출입구를 확인해요', disabled: false }]);
+        if (choice === 'accept') { game.acceptQ2(); hud.toast('Q002 · 네 방의 주소 취재를 맡았어요'); }
+      }
+      if (script.action === 'brief-q2') { game.reportQ2(); hud.toast('네 방 보고 완료 · 내 자리에서 도해 기사 쓰기'); }
+      if (script.action === 'offer-q3') {
+        const choice = await dialog.show([{ who: '편집장', text: q3Text.question, npc: 'editor' }], [{ id: 'accept', label: '판막 취재 맡기', sub: '정상 기준부터 질환 비교와 자료 취재로', disabled: false }]);
+        if (choice === 'accept') { game.acceptQ3(); hud.toast('Q003 · 판막 취재를 맡았어요'); }
+      }
       if (t.npc === 'barista') await cafeOrder();
     } else if (t.id === 'my-desk' && game.has(Q1.briefed)) {
-      pauseInput(); showArticle();
+      pauseInput(); if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
         [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
@@ -347,6 +377,16 @@ async function interact(t: Target) {
       await say([{ who: t.label, text, npc: null }]);
       if (t.id === 'window-seat') { game.rest(); hud.toast('잠시 쉬었어요. (생활 행동: 경험치 없음)'); }
       game.inspect(t.id);
+    }
+    if (game.state.q002.accepted && q2Text.notes.some(n => n.target === t.id && n.room === w.roomId) && !game.state.inspected.includes(q2Key(w.roomId))) {
+      const note = q2Text.notes.find(n => n.target === t.id)!;
+      await say([{ who: note.name + ' · 출입구 취재', text: note.text + '\n' + note.route + '\n' + q2Text.disclaimer, npc: null }]);
+      if (game.observeQ2(t.id)) hud.toast('주소 카드 기록 · ' + note.name + ' (' + q2Seen(game.state).length + '/4)');
+    }
+    const normal = q3Text.normal.find(n => n.target === t.id && n.room === w.roomId);
+    if (game.state.q003.accepted && normal && !game.state.q003.notes.includes(normal.id as 'tricuspid' | 'pulmonary')) {
+      await say([{ who: normal.name, text: normal.text + '\n' + q3Text.disclaimer, npc: null }]);
+      if (game.recordQ3(normal.id as 'tricuspid' | 'pulmonary')) hud.toast('정상 기준 기록 · ' + normal.name);
     }
   } catch (e) { hud.toast(e instanceof Error ? e.message : '문제가 생겼어요.', true); }
   finally { w.locked = traveling; refresh(); }
@@ -378,8 +418,11 @@ async function cafeOrder() {
 
 // ---------- Sheets ----------
 function showArticle() {
-  openArticle(game, () => { const result = latestReaction(game.state); if (result) openReaction(game, result, { readArticle: showArticle, exportSave }); });
+  openArticle(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); });
 }
+function showQ2Article() { openQ2Article(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
+function showQ3() { openQ3(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
+function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
 function saveFeedback(c: HTMLElement): () => void {
   const message = el('p', 'save-message'); message.setAttribute('role', 'status'); c.append(message);
   const update = () => { message.textContent = game.lastError ?? ''; message.classList.toggle('hidden', !game.lastError); };
@@ -388,7 +431,7 @@ function saveFeedback(c: HTMLElement): () => void {
 function openNotebook() {
   if (busy() || !world) return;
   pauseInput();
-  showNotebook(game, world.roomId, { article: showArticle, reaction: r => openReaction(game, r, { readArticle: showArticle, exportSave }, true), map: openMap });
+  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, reaction: r => showReaction(r, true), map: openMap });
 }
 
 function openReporter() {

@@ -1,0 +1,12 @@
+{
+  "id": "Q002",
+  "publication": {
+    "key": "quest.Q002.first",
+    "xp": 150,
+    "gold": 120
+  },
+  "repeatXp": 0,
+  "repeatBaseGold": 0,
+  "reactionBalanceRef": "article-reactions.v0.1.json",
+  "note": "early-quests.v0.1.json의 Q002 기존 기본 보상 그대로. 관찰/보고에는 추가 XP·골드 없음. 명시적 재발행의 추가 응원금만 D066 적용."
+}

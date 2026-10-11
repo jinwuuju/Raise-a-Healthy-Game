@@ -1,0 +1,98 @@
+{
+  "id": "content.Q002",
+  "status": "draft_unreviewed",
+  "review": null,
+  "title": "네 방의 주소",
+  "question": "“심장에 방이 네 개라는데, 어느 방으로 들어가서 어디로 나오나요?”",
+  "offer": [
+    "첫 기사에서 피의 길을 찾았죠. 이번에는 네 방의 주소를 취재해 주세요.",
+    "각 방의 출구 앞에서 들어오는 길과 나가는 길을 살펴보세요. 폐를 거쳐 왼쪽 심장까지 걸어가면 네 방의 근거가 모여요."
+  ],
+  "brief": "네 방의 출입구가 모두 연결됐네요. 내 자리에서 모은 주소 카드를 도해 기사로 정리해 주세요.",
+  "waiting": "바디스코프로 네 방을 돌아보세요. 우심방의 삼첨판, 우심실의 폐동맥판, 좌심방의 승모판, 좌심실의 대동맥판 안쪽이 이번 취재 지점이에요.",
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 취재 연습이에요. 방의 위치·크기·속도는 탐험을 위해 단순화했어요.",
+  "sources": [
+    {
+      "id": "nhlbi-anatomy",
+      "title": "NHLBI · What the Heart Looks Like",
+      "url": "https://www.nhlbi.nih.gov/health/heart/anatomy",
+      "updated": "2022-03-24",
+      "checked": "2026-10-11",
+      "section": "Heart chambers"
+    },
+    {
+      "id": "nhlbi-flow",
+      "title": "NHLBI · How Blood Flows through the Heart",
+      "url": "https://www.nhlbi.nih.gov/health/heart/blood-flow",
+      "updated": "2025-06-25",
+      "checked": "2026-10-11",
+      "section": "Heart valves / Adding oxygen to blood"
+    }
+  ],
+  "notes": [
+    {
+      "id": "heart",
+      "room": "heart",
+      "name": "우심방",
+      "target": "hx-tricuspid",
+      "text": "온몸에서 온 피가 대정맥 등을 통해 들어와요. 삼첨판을 지나 우심실로 이어져요.",
+      "route": "대정맥 → 우심방 → 삼첨판 → 우심실",
+      "src": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "rv",
+      "room": "rv",
+      "name": "우심실",
+      "target": "heart-out",
+      "text": "우심방의 피가 삼첨판을 통해 들어와요. 폐동맥판을 지나 폐동맥으로 나가 폐로 향해요.",
+      "route": "삼첨판 → 우심실 → 폐동맥판 → 폐",
+      "src": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "la",
+      "room": "la",
+      "name": "좌심방",
+      "target": "hx-mitral",
+      "text": "폐에서 산소를 얻은 피가 폐정맥을 통해 들어와요. 승모판을 지나 좌심실로 이어져요.",
+      "route": "폐정맥 → 좌심방 → 승모판 → 좌심실",
+      "src": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "lv",
+      "room": "lv",
+      "name": "좌심실",
+      "target": "hx-av-below",
+      "text": "좌심방의 피가 승모판을 통해 들어와요. 대동맥판을 지나 대동맥으로 나가 온몸으로 향해요.",
+      "route": "승모판 → 좌심실 → 대동맥판 → 온몸",
+      "src": [
+        "nhlbi-flow"
+      ]
+    }
+  ],
+  "leads": [
+    {
+      "id": "addresses",
+      "label": "네 방의 주소로 시작",
+      "title": "심장의 네 방, 피는 어디에서 어디로 갈까",
+      "text": "심장에는 우심방·우심실·좌심방·좌심실이 있어요. 각 방의 이름과 출입구를 따라 피의 길을 연결해 봤어요."
+    },
+    {
+      "id": "journey",
+      "label": "피의 여행으로 시작",
+      "title": "폐를 거쳐 돌아오는 피의 여행",
+      "text": "온몸에서 돌아온 피는 오른쪽 심장을 지나 폐로 가요. 폐에서 돌아온 피는 왼쪽 심장을 지나 온몸으로 향해요."
+    }
+  ],
+  "ending": "심방은 들어오는 피를 받고, 심실은 피를 밖으로 내보내요. 우심실과 좌심방 사이에는 폐순환이 있어요. 도해의 좌우는 사람의 좌우를 따르며, 화면의 왼쪽이 몸의 오른쪽이에요.",
+  "reply": "이제 네 방의 이름만 외우는 대신, 피가 드나드는 길과 함께 기억할 수 있겠어요!",
+  "simplification": [
+    "방의 도보 공간은 정면 단면을 펼친 근사이고, 실제 입체 위치·크기를 재현한 도해가 아닙니다.",
+    "정상 혈류를 따르는 취재예요. 판막질환 비교 취재는 정상 출입구를 먼저 확인한 뒤 Q003에서 이어질 준비 단계입니다."
+  ]
+}

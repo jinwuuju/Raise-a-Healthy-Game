@@ -4,6 +4,7 @@ import { coronaryFlowFactor, openness, squeeze, travel, type ValveSet } from '..
 import type { Band, Lane, Organ, Valve } from '../world/organ-types';
 import type { Room } from '../world/rooms';
 import type { Point } from '../world/types';
+import { comparisonOpening, hasBackflow, type ValveMode } from '../domain/valve-model';
 
 /*
  * Live layer of an organ room: blood cells streaming along lanes and piling up at closed valves, leaflets and
@@ -55,6 +56,7 @@ export function fillPoly(g: Ctx, pts: Point[], color: string): void {
 }
 
 export class HeartView {
+  comparison: ValveMode = 'normal';
   readonly organ: Organ;
   private tracks: Track[];
   private motes: { x: number; y: number; r: number; v: number }[] = [];
@@ -115,7 +117,22 @@ export class HeartView {
     this.drawSignals(g, cx, cy, real);
     if (o.kind === 'lung') this.drawGas(g, cx, cy);
     for (const t of this.tracks) this.drawTrack(g, t, cx, cy, vw, vh);
-    for (const v of o.valves) drawValve(g, v, openness(valveSet(v), real), cx, cy);
+    for (const v of o.valves) {
+      const affected = this.room.id === 'heart' && v.kind === 'tricuspid';
+      const normal = openness(valveSet(v), real);
+      drawValve(g, v, affected ? comparisonOpening(this.comparison, normal) : normal, cx, cy);
+      if (affected && hasBackflow(this.comparison, normal)) {
+        const x = Math.round(v.x + v.w / 2 - cx), y = Math.round(v.y - cy);
+        g.fillStyle = '#682138'; g.fillRect(x - 2, y - 5, 5, 12);
+        // Separate qualitative reverse-flow marks, never reversing actor movement or normal blood tracks.
+        for (let i = 0; i < 5; i++) {
+          const d = (this.time * 18 + i * 10) % 50;
+          rbc(g, x + (i % 2 ? 2 : -2), Math.round(y + 16 - d), 0, false);
+        }
+        g.fillStyle = '#ffcb8a';
+        for (let k = 0; k < 3; k++) { g.fillRect(x - k, y - 21 + k, 1, 1); g.fillRect(x + k, y - 21 + k, 1, 1); }
+      }
+    }
   }
 
   /** Above actors: chordae (held up in the blood), raised bands are drawn through drawBand. */
@@ -124,7 +141,8 @@ export class HeartView {
     for (const c of o.cords) {
       const v = o.valves.find(q => q.id === c.valve);
       if (!v) continue;
-      const open = openness(valveSet(v), real);
+      const normal = openness(valveSet(v), real);
+      const open = this.room.id === 'heart' && v.kind === 'tricuspid' ? comparisonOpening(this.comparison, normal) : normal;
       for (const slot of c.slots) drawCord(g, c.x - cx, c.y - cy, v, slot, open, cx, cy);
     }
     // Floating plasma motes give depth to the blood-filled space.

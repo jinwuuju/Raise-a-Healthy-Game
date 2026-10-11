@@ -97,6 +97,8 @@ E키/클릭 → Interact(targetId)
 
 ## v0.2 모듈·상태 확장
 
+질환(D071) 데이터는 커버리지 장부 data/catalog/diseases.v0.1.json과 본문 data/content/diseases/에 두고, 질환 레이어는 기존 기관 공간의 상태를 바꾸는 표현 규칙으로 구현해 새 맵을 복제하지 않는다. 세부는 [질환 아카데미](16-DISEASE-ACADEMY.md).
+
 Phaser 2D 렌더러로 2.5D 공간 표현을 구현한다. AvatarAppearance, Wardrobe, ShopCatalog, HousingOwnership, FurniturePlacement를 domain에 추가하고 PurchaseCosmetic, EquipItem, PurchaseHome, PlaceFurniture 명령을 application에서 처리한다. save에는 avatar, ownedCosmetics, ownedHomes, activeHomeId, roomLayouts, furnitureInventory를 버전과 함께 넣는다. Y정렬·가림·고도는 game 표현 계층 책임이다.
 
 현재 공개 설계실은 `site/` 정적 HTML/CSS/JS와 `tools/build_site.py`로 만든다. 게임 런타임과 별개이며 아직 Phaser 게임을 배포하지 않는다. `_site/`는 생성 결과로 Git에서 제외, GitHub Actions가 docs/data 원본에서 다시 만든다. GitHub 프로젝트 하위 경로를 지원하도록 상대 링크를 사용한다. 향후 게임 빌드를 별도 game/ 경로로 추가하더라도 설계실을 유지한다.

@@ -13,7 +13,7 @@ DISCLAIMER = '검수 전 모형'
 for path in dist.rglob('*'):
     if path.is_file():
         assert path.suffix not in ('.md', '.json', '.ts'), f'Unexpected source/data: {path}'
-        assert not any(p in ('raw', 'examples', 'balance', 'catalog') for p in path.relative_to(dist).parts), f'Draft/source copied: {path}'
+        assert not any(p in ('raw', 'sources', 'examples', 'balance', 'catalog') for p in path.relative_to(dist).parts), f'Draft/source copied: {path}'
         if path.suffix in ('.js', '.html'):
             text = path.read_text()
             for marker in ('medical_reviewed', '심근경색', 'runtimeReady'):
@@ -28,4 +28,13 @@ for path in dist.rglob('*'):
             if 'content.Q001.article' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Draft article must carry its unreviewed disclaimer'
                 assert '의학 전문가 검수 전 초안' in text, 'Article publication must remain a game exercise'
+            if 'content.Q002' in text or 'content.organ.entry' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Q002/entry must preserve the unreviewed draft contract'
+            if 'content.Q003' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Q003 must remain a labelled draft inside the quest'
+                assert '가상 검사자료' in text, 'Q003 diagnostic materials must be labelled fictional'
+            assert 'disease.valve' not in text, 'Standalone unreviewed disease atlas draft must stay outside the runtime; Q003 is the labelled quest exception'
+            if 'content.lunch.menus' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Lunch menus (D068) must carry the unreviewed disclaimer'
+                assert 'medical_reviewed' not in text, 'Lunch menus must not claim review'
 print('Game build boundary passed: Q001 and the heart interior are labelled as unreviewed drafts; no catalogs, examples or raw/source files')

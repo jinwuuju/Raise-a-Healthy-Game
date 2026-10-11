@@ -1,0 +1,5 @@
+{
+  "id":"Q003","publication":{"key":"quest.Q003.first","xp":200,"gold":150},
+  "repeatXp":0,"repeatBaseGold":0,"reactionBalanceRef":"article-reactions.v0.1.json",
+  "note":"기존 Q003 보상 그대로. 관찰·비교·자료 취재에는 보상을 추가하지 않는다. 반복 발행의 추가 골드만 D066 적용."
+}

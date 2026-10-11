@@ -1,7 +1,12 @@
 import { defaultAppearance, validateAppearance, type Appearance, type Preset } from '../domain/appearance';
 import { orderDrink } from '../domain/cafe';
 import { checkArticle, selectArticle } from '../domain/article';
-import { publishWithReaction, reprintArticle, seeReaction } from '../domain/reaction';
+import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
+import { acceptQ3, setQ3Mode, recordQ3, selectQ3, checkQ3 } from '../domain/q003';
+import type { Q3Evidence } from '../domain/q003-state';
+import type { ValveMode } from '../domain/valve-model';
+import { acceptQ2, observeQ2, reportQ2, selectQ2, checkQ2 } from '../domain/q002';
+import type { ChamberId } from '../domain/q002-state';
 import type { ArticleSlot } from '../domain/article-state';
 import { discover } from '../domain/heart';
 import { Q1, acceptQ1, briefQ1, canEnterHeart, observeQ1 } from '../domain/quest';
@@ -75,7 +80,7 @@ export class Game {
 
   enter(room: RoomId, x: number, y: number, facing: Dir): void {
     if (!rooms[room] || !canStand(room, { x, y })) throw new Error('이동할 수 없는 위치예요.');
-    this.commit({ ...this.state, at: { room, x, y, facing } });
+    this.commit({ ...this.state, at: { room, x, y, facing }, q003: { ...this.state.q003, mode: 'normal' } });
   }
 
   inspect(id: string): void {
@@ -95,6 +100,18 @@ export class Game {
   }
 
   acceptQuest(): void { this.commit(acceptQ1(this.state)); }
+  acceptQ2(): void { const next = acceptQ2(this.state); if (next !== this.state) this.commit(next); }
+  acceptQ3(): void { const next = acceptQ3(this.state); if (next !== this.state) this.commit(next); }
+  setQ3Mode(mode: ValveMode): void { const next = setQ3Mode(this.state, mode); if (next !== this.state) this.commit(next); }
+  recordQ3(id: Q3Evidence): boolean { const next = recordQ3(this.state, id); if (next === this.state) return false; this.commit(next); return true; }
+  selectQ3(slot: 'lead' | 'limit', id: string | null): void { const next = selectQ3(this.state, slot, id); if (next !== this.state) this.commit(next); }
+  checkQ3(): void { const next = checkQ3(this.state); if (next !== this.state) this.commit(next); }
+  publishQ3(): boolean { const next = publishQ3WithReaction(this.state); if (next === this.state) { this.persist(); return false; } this.commit(next); return true; }
+  observeQ2(id: string): boolean { const next = observeQ2(this.state, id); if (next === this.state) return false; this.commit(next); return true; }
+  reportQ2(): void { const next = reportQ2(this.state); if (next !== this.state) this.commit(next); }
+  selectQ2(slot: ChamberId | 'lead', id: string | null): void { const next = selectQ2(this.state, slot, id); if (next !== this.state) this.commit(next); }
+  checkQ2(): void { const next = checkQ2(this.state); if (next !== this.state) this.commit(next); }
+  publishQ2(): boolean { const next = publishQ2WithReaction(this.state); if (next === this.state) { this.persist(); return false; } this.commit(next); return true; }
 
   /** Moves into the Bodyscope heart through the superior vena cava (safe entry point is saved). */
   enterHeart(): void {
@@ -102,7 +119,7 @@ export class Game {
     if (why) throw new Error(why);
     const sp = rooms.heart.spawn;
     const s = this.state.flags.includes(Q1.entered) ? this.state : { ...this.state, flags: [...this.state.flags, Q1.entered] };
-    this.commit({ ...s, at: { room: 'heart', x: sp.x, y: sp.y, facing: rooms.heart.spawnFacing } });
+    this.commit({ ...s, at: { room: 'heart', x: sp.x, y: sp.y, facing: rooms.heart.spawnFacing }, q003: { ...s.q003, mode: 'normal' } });
   }
 
   /** Records an observation; returns whether it was new and whether it completed the checkpoint. */
@@ -125,8 +142,8 @@ export class Game {
     const next = publishWithReaction(this.state); if (next === this.state) { this.persist(); return false; }
     this.commit(next); return true;
   }
-  reprintArticle(expectedCount: number): boolean {
-    const next = reprintArticle(this.state, expectedCount); if (next === this.state) return false;
+  reprintArticle(expectedCount: number, questId: 'Q001' | 'Q002' | 'Q003' = 'Q001'): boolean {
+    const next = reprintArticle(this.state, expectedCount, randomReactionValue, new Date().toISOString(), questId); if (next === this.state) return false;
     this.commit(next); return true;
   }
   seeReaction(round: number): void {

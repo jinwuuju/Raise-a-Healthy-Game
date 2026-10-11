@@ -17,6 +17,7 @@
 | 엔티티 | 필수 내용 | 검증할 관계 |
 |---|---|---|
 | Concept | 정의, 선수개념, 정상 기능, 이상 변화, 관련 질환, 단순화 한계, 흔한 오해 | 선수개념 DAG, 검수 출처 |
+| Disease | 이름·관점 태그·주 허브·해부/계통 ID, 정의·원인·병태생리·증상·검사 의미·치료 원리·예방·합병증·흔한 오해·단순화 한계, 판본 있는 기준 수치 | 해부·개념·허브 ID 실재, 정상 개념 선수 관계, 검수 출처 ([질환 아카데미](16-DISEASE-ACADEMY.md)) |
 | Quest | 발단, 상태 전이, steps, evidenceRequirements, articleRubric, rewards, repeatPolicy | 개념·맵·보상 ID 실재 |
 | Region | mapAsset, spawns, exits, conceptIds, questIds, puzzleDefinitions | 출구 도달 가능·안전 귀환 |
 | Evidence | conceptId, actionType, variantId, hintTier, provenance | 해당 과제와 개념 버전 일치 |

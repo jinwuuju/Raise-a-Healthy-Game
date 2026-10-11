@@ -3,11 +3,15 @@ import q1 from '../../data/content/q001-entry.v0.1.json';
 import { discovered, discoveryIds } from '../domain/heart';
 import { Q1, q1CanOffer, q1Seen } from '../domain/quest';
 import { articleText } from '../domain/article-state';
+import { canOfferQ2, q2Seen } from '../domain/q002';
+import { q2Text } from '../domain/q002-state';
+import { canOfferQ3, q3NormalDone, q3CompareDone, q3Ready } from '../domain/q003';
+import { q3Text } from '../domain/q003-state';
 import type { GameState } from '../domain/state';
 import { isHeartRoom, type RoomId } from '../world/types';
 
 export type Line = { who: string; text: string; npc: string | null };
-export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' };
+export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' };
 export const q1Text = q1;
 export const heartText = heart;
 
@@ -22,6 +26,29 @@ export function objective(s: GameState, room: RoomId): string {
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
+  if (canOfferQ3(s)) return '편집장에게 판막 취재 ‘거꾸로 열리는 문’ 받기';
+  if (s.q003.accepted) {
+    if (s.q003.publishedAt) return '판막 팩트체크 발행 완료! 수첩에서 기사·반응 읽기 · 다음 순환 취재는 준비 중';
+    if (!q3NormalDone(s)) {
+      const missing = q3Text.normal.find(n => !s.q003.notes.includes(n.id as 'tricuspid' | 'pulmonary'))!;
+      return '정상 기준 취재 · ' + missing.name + ' 살펴보기 · ' + (missing.room === 'heart' ? '우심방' : '우심실');
+    }
+    if (!q3CompareDone(s)) return room === 'heart' ? '삼첨판 앞에서 정상과 협착·역류 비교하기' : '귀환 후 바디스코프로 우심방에 들어가 삼첨판 비교하기';
+    if (!q3Ready(s)) return '편집국 내 자리에서 원인 자료→검사 해석→관리 원리 취재 이어가기';
+    return '내 자리에서 판막 팩트체크 기사 쓰기 · 모형의 한계 함께 밝히기';
+  }
+  if (s.article.publishedAt) {
+    if (canOfferQ2(s)) return '편집장에게 다음 취재 ‘네 방의 주소’ 받기';
+    if (s.q002.accepted && !s.q002.reported) {
+      const seen = q2Seen(s);
+      if (seen.length === 4) return '네 방 취재 완료! 편집국으로 돌아가 편집장에게 보고하기';
+      const note = q2Text.notes.find(n => !seen.includes(n.id as 'heart' | 'rv' | 'la' | 'lv'))!;
+      if (!isHeartRoom(room)) return '바디스코프로 네 방의 출입구 취재하기 (' + seen.length + '/4)';
+      return (room === note.room ? note.name + '의 출구 앞에서 주소 기록하기' : '피를 따라 ' + note.name + '으로 · 이 방의 출구로 다음 공간에 가요') + ' (' + seen.length + '/4)';
+    }
+    if (s.q002.reported && !s.q002.publishedAt) return '편집국 내 자리에서 ‘네 방의 주소’ 도해 기사 쓰기';
+    if (s.q002.publishedAt) return '두 번째 기사 발행 완료! 편집장에게 다음 판막 취재 받기';
+  }
   const record = '탐험 기록 ' + discovered(s).length + '/' + discoveryIds.length;
   if (!has(Q1.observed)) {
     if (isHeartRoom(room)) {
@@ -49,6 +76,11 @@ export function talk(id: string, s: GameState): Talk {
   const has = (f: string) => s.flags.includes(f);
   switch (id) {
     case 'editor':
+      if (canOfferQ3(s)) return { flag: null, action: 'offer-q3', lines: say('편집장', 'editor', ...q3Text.offer) };
+      if (s.q003.accepted) return { flag: null, lines: say('편집장', 'editor', objective(s, s.at.room)) };
+      if (canOfferQ2(s)) return { flag: null, action: 'offer-q2', lines: say('편집장', 'editor', ...q2Text.offer) };
+      if (s.q002.accepted && !s.q002.reported) return q2Seen(s).length === 4 ? { flag: null, action: 'brief-q2', lines: say('편집장', 'editor', q2Text.brief) } : { flag: null, lines: say('편집장', 'editor', q2Text.waiting) };
+      if (s.q002.reported) return { flag: null, lines: say('편집장', 'editor', s.q002.publishedAt ? '네 방을 연결한 도해 기사도 도착했어요. 다음 판막 취재를 준비하고 있어요.' : q2Text.brief) };
       if (!has('met-editor')) return { flag: 'met-editor', lines: say('편집장', 'editor',
         `어서 와요, ${name} 기자. 메디컬 데스크에 온 걸 환영해요.`,
         '여기는 논현로 유로프라자 3층 편집국이에요. 우리는 몸에 관한 궁금증을 직접 취재해서 쉽게 전하는 곳이죠.',

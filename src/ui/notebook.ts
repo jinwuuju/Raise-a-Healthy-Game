@@ -3,6 +3,9 @@ import { notebookRecords } from '../application/notebook';
 import { heartText, inspectLabels, lookText, objective, q1Text } from '../application/story';
 import { discoveries, discoveryIds, roomProgress } from '../domain/heart';
 import { Q1, Q1_OBSERVATIONS, q1Seen } from '../domain/quest';
+import { q2Text } from '../domain/q002-state';
+import { q3Text } from '../domain/q003-state';
+import { q3Ready } from '../domain/q003';
 import { latestReaction, type Reaction } from '../domain/reaction-state';
 import { heartRoute } from '../world/heart-rooms';
 import { rooms } from '../world/rooms';
@@ -13,7 +16,7 @@ import { openSheet } from './sheet';
 const tabs = ['지금 할 일', '취재 파일', '발행 기사', '인체 탐험', '동네·생활'] as const;
 let selectedTab = 0;
 const expanded = new Map<string, boolean>();
-type Actions = { article: () => void; reaction: (r: Reaction) => void; map: () => void };
+type Actions = { article: () => void; q002: () => void; q003: () => void; reaction: (r: Reaction) => void; map: () => void };
 
 export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
   openSheet('취재 수첩', (c, close) => {
@@ -52,10 +55,12 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
     const current = panels[0]!;
     current.append(el('h3', '', '지금 할 일'), el('p', 'notebook-goal', objective(s, room)));
     const overview = el('div', 'notebook-overview');
-    overview.append(el('span', '', '취재 근거 ' + records.evidence.length + '/2'), el('span', '', '탐험 구조 ' + Object.values(records.anatomy).flat().length + '/' + discoveryIds.length), el('span', '', '발행 기사 ' + (s.article.publishedAt ? '1편' : '0편')));
+    overview.append(el('span', '', '취재 근거 ' + records.evidence.length + '/2' + (s.q002.accepted ? ' · Q002 ' + records.q2Evidence.length + '/4' : '')), el('span', '', '탐험 구조 ' + Object.values(records.anatomy).flat().length + '/' + discoveryIds.length), el('span', '', '발행 기사 ' + (Number(!!s.article.publishedAt) + Number(!!s.q002.publishedAt) + Number(!!s.q003.publishedAt)) + '편'));
     current.append(overview);
     if (s.flags.includes(Q1.briefed)) current.append(action(s.article.publishedAt ? '첫 기사와 독자 답장 읽기' : '첫 기사 쓰기 · 초안 이어서', actions.article));
     else current.append(button('row notebook-link', '취재 파일 확인하기', () => choose(1)));
+    if (s.q002.reported) current.append(action(s.q002.publishedAt ? '네 방의 도해 기사 읽기' : '네 방의 도해 기사 쓰기 · 초안 이어서', actions.q002));
+    if (s.q003.accepted) current.append(action(s.q003.publishedAt ? '판막 팩트체크 기사 읽기' : '판막 취재 자료와 기사 이어서', actions.q003));
     const latest = latestReaction(s);
     if (latest) current.append(action('최근 독자 반응 · ' + latest.score + '점', () => actions.reaction(latest)));
     if (room === 'street' || isHeartRoom(room)) current.append(action('현재 장소 지도 보기', actions.map));
@@ -79,14 +84,31 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
       if (s.flags.includes(Q1.briefed)) body.append(action(s.article.publishedAt ? '발행 기사 보기' : '첫 기사 쓰기 · 초안 이어서', actions.article));
       body.append(el('p', 'muted', q1Text.disclaimer));
     }, true);
+    if (s.q002.accepted) fold(file, 'q002', 'Q002 · ' + q2Text.title + (s.q002.publishedAt ? ' · 발행 완료' : ' · 취재 중'), body => {
+      body.append(el('p', 'notebook-question', q2Text.question), el('p', '', '주소 카드 ' + records.q2Evidence.length + '/4 · ' + (s.q002.reported ? '편집장 보고 완료' : '네 방 취재 후 편집장에게 보고')));
+      for (const note of q2Text.notes) {
+        if (!records.q2Evidence.includes('q002:' + note.id)) { body.append(el('p', 'muted', note.name + ' · 출구 앞에서 취재할 주소')); continue; }
+        fold(body, 'q002-' + note.id, note.name + '의 출입구', detail => { detail.append(el('p', '', note.route), el('p', '', note.text)); sources(detail, note.src, q2Text.sources); });
+      }
+      if (s.q002.reported) body.append(action(s.q002.publishedAt ? '도해 기사 읽기' : '도해 기사 쓰기 · 초안 이어서', actions.q002));
+      body.append(el('p', 'muted', q2Text.disclaimer));
+    }, true);
 
+    if (s.q003.accepted) fold(file, 'q003', 'Q003 · ' + q3Text.title, body => {
+      body.append(el('p', 'notebook-question', q3Text.question));
+      for (const note of q3Text.normal.filter(n => s.q003.notes.includes(n.id as 'tricuspid' | 'pulmonary'))) fold(body, 'q003-' + note.id, note.name, detail => { detail.append(el('p', '', note.text)); sources(detail, note.src, q3Text.sources); });
+      for (const m of q3Text.materials.filter(m => s.q003.notes.includes(m.id as 'causes' | 'tests' | 'care'))) fold(body, 'q003-' + m.id, m.title, detail => { detail.append(el('p', '', m.text)); m.cards.forEach(card => detail.append(el('h4', '', card.title), el('p', '', card.text))); sources(detail, m.src, q3Text.sources); });
+      body.append(button('row notebook-link', '판막 비교 기록은 인체 탐험에서 보기', () => choose(3)), action(s.q003.publishedAt ? '팩트체크 기사 읽기' : '자료 취재·기사 이어서', actions.q003), el('p', 'muted', q3Text.disclaimer));
+    });
     const archive = panels[2]!; archive.append(el('h3', '', '발행 기사와 독자 반응'));
     if (!s.article.publishedAt) archive.append(el('p', 'muted', '첫 기사를 발행하면 기사와 발행별 독자 반응이 이곳에 보관돼요.'));
     else {
       archive.append(el('p', '', 'Q001 · ' + q1Text.title), action('첫 기사와 독자 답장 읽기', actions.article));
+      if (s.q002.publishedAt) archive.append(el('p', '', 'Q002 · ' + q2Text.title), action('네 방의 도해 기사와 독자 답장 읽기', actions.q002));
+      if (s.q003.publishedAt) archive.append(el('p', '', 'Q003 · ' + q3Text.title), action('판막 팩트체크 기사와 독자 답장 읽기', actions.q003));
       archive.append(el('p', 'muted', '독자 반응은 당시 기록이에요. 다시 보기로 새 점수나 보상이 생기지 않아요.'));
       if (!latest) archive.append(el('p', 'muted', '이전 발행 · 독자 반응 점수 기록 없음. 기사와 기존 진척은 보존했어요.'));
-      const renderResult = (parent: HTMLElement, r: Reaction) => parent.append(action(`${r.round}번째 발행 · ${r.score}점 · 응원금 ${r.bonusGold}G`, () => actions.reaction(r)));
+      const renderResult = (parent: HTMLElement, r: Reaction) => parent.append(action(`${r.questId ?? 'Q001'} · ${r.round}번째 발행 · ${r.score}점 · 응원금 ${r.bonusGold}G`, () => actions.reaction(r)));
       if (latest) renderResult(archive, latest);
       const earlier = s.reactions.results.slice(0, -1).reverse();
       if (earlier.length) fold(archive, 'earlier-reactions', '지난 발행 반응 · ' + earlier.length + '건', body => earlier.forEach(r => renderResult(body, r)));
@@ -110,6 +132,10 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
         }
       }, true);
       atlas.append(el('p', 'muted', heartText.disclaimer));
+      if (s.q003.accepted) fold(atlas, 'heart-disease-compare', '심장 · 질환 비교 (Q003 취재 초안)', body => {
+        for (const mode of ['stenosis', 'regurgitation'] as const) if (s.q003.notes.includes(mode)) fold(body, 'compare-' + mode, q3Text.comparison[mode].label, detail => { detail.append(el('p', '', q3Text.comparison[mode].text), el('p', 'muted', q3Text.layerLimit)); sources(detail, ['nhlbi-valve-types'], q3Text.sources); });
+        body.append(el('p', 'muted', q3Text.disclaimer), el('p', 'muted', '합병증 연결 기관 · 준비 중'), button('row notebook-link', q3Ready(s) ? '취재 파일의 근거 확인하기' : '자료 취재 위치 확인하기', () => choose(1)));
+      });
     }
 
     const life = panels[4]!; life.append(el('h3', '', '동네·생활 기록'));

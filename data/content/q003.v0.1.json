@@ -1,0 +1,36 @@
+{
+  "id": "content.Q003", "status": "draft_unreviewed", "review": null,
+  "title": "거꾸로 열리는 문",
+  "question": "판막이 좁아지는 것과 피가 새는 것은 같은 문제인가요?",
+  "offer": ["이번에는 문이 열리고 닫히는 순간을 취재해 주세요.", "정상 삼첨판과 폐동맥판을 먼저 보고, 우심방 삼첨판 앞에서 비교 단말을 열어요. 정상과 협착·역류를 비교한 뒤 내 자리의 자료 취재를 기사로 이어가요."],
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 질환 취재 연습이에요. 실제 환자의 검사나 진단이 아닙니다.",
+  "sources": [
+    {"id":"nhlbi-valve-types","title":"NHLBI · Heart Valve Diseases · Types","url":"https://www.nhlbi.nih.gov/health/heart-valve-diseases/types","updated":"2022-03-24","checked":"2026-10-11","section":"What are heart valves? / Regurgitation / Stenosis"},
+    {"id":"nhlbi-valve-causes","title":"NHLBI · Causes and Risk Factors","url":"https://www.nhlbi.nih.gov/health/heart-valve-diseases/causes","updated":"2022-03-24","checked":"2026-10-11","section":"Heart valve diseases at birth / Acquired heart valve diseases"},
+    {"id":"nhlbi-valve-tests","title":"NHLBI · Diagnosis","url":"https://www.nhlbi.nih.gov/health/heart-valve-diseases/diagnosis","updated":"2022-03-24","checked":"2026-10-11","section":"Echocardiography"},
+    {"id":"nhlbi-valve-treatment","title":"NHLBI · Treatment","url":"https://www.nhlbi.nih.gov/health/heart-valve-diseases/treatment","updated":"2022-03-24","checked":"2026-10-11","section":"Medicines / Heart valve repair / Heart valve replacement"},
+    {"id":"openstax-cycle","title":"OpenStax · Cardiac Cycle","url":"https://openstax.org/books/anatomy-and-physiology-2e/pages/19-3-cardiac-cycle","checked":"2026-10-11","section":"Cardiac Cycle"}
+  ],
+  "normal": [
+    {"id":"tricuspid","target":"hx-tricuspid","room":"heart","name":"정상 삼첨판","text":"우심방과 우심실 사이의 문이에요. 심실에 피가 채워질 때 열리고, 심실 수축이 시작할 때 닫혀요.","src":["nhlbi-valve-types","openstax-cycle"]},
+    {"id":"pulmonary","target":"heart-out","room":"rv","name":"정상 폐동맥판","text":"우심실에서 폐로 나가는 문이에요. 심실이 피를 내보낼 때 열려요. 정상 판막은 압력 차에 따라 여닫히며 피의 되돌아감을 막아요.","src":["nhlbi-valve-types","openstax-cycle"]}
+  ],
+  "comparison": {
+    "normal":{"label":"정상","text":"열릴 때 통로를 내주고 닫힐 때 피의 되돌아감을 막는 기준 모형이에요."},
+    "stenosis":{"label":"협착","text":"열리는 통로가 좁아져 피가 지나가기 어려워지는 변화예요. 이 모형은 통로와 움직임의 차이만 보여 줍니다."},
+    "regurgitation":{"label":"역류","text":"닫힐 때 제대로 밀봉되지 않아 일부 피가 되돌아가는 변화예요. 협착과 역류가 함께 있을 수도 있어요."}
+  },
+  "layerLimit":"비교 레이어 · 통로 크기·혈구 수·속도는 중증도나 혈류량의 측정값이 아니에요. 기자 이동은 정상 혈류를 따르는 일방향 규칙을 유지해요.",
+  "materials": [
+    {"id":"causes","title":"3 · 원인과 맥락 취재","text":"태어날 때부터의 구조와 시간이 흐르면서 생기는 변화를 함께 살펴요. 나이·가족력·다른 건강 상태 등 여러 맥락이 관련됩니다. 개인의 잘못으로 단정하지 않아요.","cards":[{"title":"태어날 때부터의 구조","text":"발달 과정에서 판막의 모양이나 통로가 달라질 수 있어요."},{"title":"시간에 따른 변화","text":"나이와 다른 건강 상태 등 여러 조건이 관련될 수 있어요."}],"src":["nhlbi-valve-causes"]},
+    {"id":"tests","title":"4 · 검사 자료의 의미","text":"심장초음파는 움직이는 심장 구조를, 도플러 초음파는 혈류를 살펴요. 구조와 흐름을 함께 해석하는 원리를 취재합니다.","cards":[{"title":"가상 검사자료 A · 구조","text":"‘열릴 때 통로가 좁게 보인다.’ 교육용으로 만든 가상 서술이며 실제 환자의 영상·수치가 아니에요."},{"title":"가상 검사자료 B · 흐름","text":"‘닫히는 시기에 뒤로 향하는 흐름이 보인다.’ 교육용 가상 서술이에요. 이 모형만으로 개인 진단이나 중증도를 정할 수 없어요."}],"src":["nhlbi-valve-tests"]},
+    {"id":"care","title":"5 · 치료·관리 원리 취재","text":"기관 자료를 요약한 가상 취재 녹취예요. 증상과 동반 상태를 관리하는 치료, 판막을 수리·교체하는 치료의 목적을 구분해요. 개인 치료 선택을 추천하지 않습니다.","cards":[{"title":"관리의 목적","text":"약물 등은 증상이나 동반 상태를 관리하는 데 쓰여요. 제품·용량·복용법은 다루지 않아요."},{"title":"수리·교체의 목적","text":"문제 있는 판막의 구조와 기능을 다루는 원리예요. 실제 치료 방법은 개인 상태를 종합해 의료진이 판단해요."}],"src":["nhlbi-valve-treatment"]}
+  ],
+  "article": {
+    "leads":[{"id":"compare","label":"좁은 문과 새는 문으로 시작","title":"협착과 역류, 무엇이 다를까","text":"판막 변화는 한 가지가 아니에요. 정상과 비교하며 좁아지는 통로와 뒤로 새는 흐름을 취재했어요."},{"id":"timing","label":"문이 여닫히는 순간으로 시작","title":"열릴 때의 통로, 닫힐 때의 흐름","text":"정상 판막이 여닫히는 순간을 확인한 뒤 같은 공간에서 판막 변화를 비교했어요."}],
+    "limitations":[{"id":"model","label":"모형의 한계로 마무리","text":"교육용 비교 모형으로 개인 진단·중증도·치료 선택을 결정할 수 없어요."},{"id":"evidence","label":"검사 해석의 범위로 마무리","text":"실제 판단에는 검사에서 확인한 구조·흐름과 개인의 상태를 함께 살펴야 해요. 가상 자료는 실제 검사가 아닙니다."}],
+    "factcheck":"협착은 열리는 통로가 좁아지는 변화, 역류는 제대로 닫히지 않아 피가 되돌아가는 변화예요. 두 변화가 함께 있을 수도 있어요.",
+    "reply":"열림과 닫힘을 따로 살펴야 한다는 걸 이해했어요!"
+  },
+  "simplification":["삼첨판에서 보여 주는 변화는 특정 환자나 유병률을 재현한 것이 아닌 대표적 변화의 근사입니다.","기자의 도보 통과는 정상 주기를 따릅니다. 질환 표식이 역방향 출입을 만들지 않습니다.","검사자료 A/B와 취재 녹취는 교육용 가상 자료이며 진단·치료 선택에 쓰지 않습니다.","합병증 연결 기관은 준비 중입니다."]
+}

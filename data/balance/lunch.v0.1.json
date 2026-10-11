@@ -1,0 +1,72 @@
+{
+ "version": "0.1",
+ "decision": "D068~D069",
+ "clock": {
+  "timezone": "Asia/Seoul",
+  "source": "기기 시계(실시간). 게임 안 시간대 설정 없음",
+  "dayStartsAt": "00:00",
+  "everyDay": true,
+  "note": "주말·공휴일 개념이 없다. 매일 같은 규칙."
+ },
+ "window": {
+  "opensAt": "00:00",
+  "closesAt": "11:30",
+  "closesExclusive": true,
+  "note": "11:30:00(Asia/Seoul) 이전에 주문 확정해야 한다."
+ },
+ "mealAllowance": {
+  "cost": 0,
+  "label": "편집국 식대",
+  "note": "점심은 골드를 쓰지 않는다."
+ },
+ "skip": {
+  "manualChoice": true,
+  "autoAfterClose": true,
+  "reward": 0,
+  "penalty": 0,
+  "healthEffect": "none",
+  "label": "오늘 점심은 건너뛰었어요.",
+  "note": "직접 굶기를 고르거나 11:30까지 고르지 않으면 그날은 굶음으로 기록한다. 보상·벌칙·상태 변화 없음. 접속하지 않은 날은 소급 기록하지 않는다."
+ },
+ "candidates": {
+  "sameCrave": 3,
+  "otherCrave": 1,
+  "anyCraveDistinct": 4,
+  "adClaimsPerDraw": 1
+ },
+ "display": {
+  "showKcal": true,
+  "nutrients": [
+   "kcal",
+   "sodium",
+   "protein",
+   "carb",
+   "sugar",
+   "fat",
+   "saturatedFat",
+   "fiber"
+  ],
+  "colorJudgement": false,
+  "showRangeWhenOtherAnalyses": true
+ },
+ "dailyReference": {
+  "source": "식품등의 표시기준 1일 영양성분 기준치(원문 대조 필요)",
+  "kcal": 2000,
+  "carb": 324,
+  "sugar": 100,
+  "fiber": 25,
+  "protein": 55,
+  "fat": 54,
+  "saturatedFat": 15,
+  "sodium": 2000
+ },
+ "rewards": {
+  "status": "미정",
+  "basis": "참여·팩트체크·도감 수집에만 연동. 메뉴 건강도와 무관."
+ },
+ "animation": {
+  "tableRevealSec": 3,
+  "skippable": true,
+  "reducedMotion": "완성 화면만"
+ }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "content.organ.entry",
+  "status": "draft_unreviewed",
+  "review": null,
+  "sources": [
+    {
+      "id": "nhlbi-anatomy",
+      "title": "NHLBI · What the Heart Looks Like",
+      "url": "https://www.nhlbi.nih.gov/health/heart/anatomy",
+      "updated": "2022-03-24",
+      "checked": "2026-10-11",
+      "section": "Heart chambers"
+    },
+    {
+      "id": "nhlbi-flow",
+      "title": "NHLBI · How Blood Flows through the Heart",
+      "url": "https://www.nhlbi.nih.gov/health/heart/blood-flow",
+      "updated": "2025-06-25",
+      "checked": "2026-10-11",
+      "section": "Heart valves / Adding oxygen to blood"
+    }
+  ],
+  "captions": {
+    "body": "온몸에서, 심장을 찾아요",
+    "zoom": "가슴 가운데에서 왼쪽으로 이어진 심장",
+    "beat": "수축하고 이완하는 심장",
+    "enter": "상대정맥을 따라 우심방으로"
+  },
+  "route": "인체 › 심장 › 상대정맥 › 우심방",
+  "limit": "박동은 위치와 움직임을 보여 주는 단순화 연출이에요"
+}
