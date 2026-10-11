@@ -14,8 +14,7 @@ import { button, el } from './ui/dom';
 import { Hud } from './ui/hud';
 import { openCreator } from './ui/creator';
 import { Joystick } from './ui/joystick';
-import bodyMap from '../data/content/body-map.v0.1.json';
-import { organMinimap } from './art/organ';
+import { openAtlas } from './ui/atlas';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
 import { heartRoute } from './world/heart-rooms';
 import { rooms, type Target } from './world/rooms';
@@ -67,7 +66,7 @@ hud.setVisible(false);
 const touchMode = 'ontouchstart' in window;
 const joy = new Joystick(hud.root);
 let touchUI = false;
-function enableTouchUI(): void { if (touchUI) return; touchUI = true; joy.setVisible(true); hud.setTouch(true); }
+function enableTouchUI(): void { if (touchUI) return; touchUI = true; joy.setVisible(true); hud.setTouch(true); if (world) world.touchHint = true; }
 if (window.matchMedia?.('(pointer: coarse)').matches) enableTouchUI();
 window.addEventListener('touchstart', () => enableTouchUI(), { passive: true, capture: true });
 
@@ -244,6 +243,7 @@ function startWorld() {
   world.onBeat = snd => { if (world && world.roomId !== 'lung') world.showBeat(heartText.sounds[snd]); };
   world.onSignalWait = (_c, sec) => hud.toast(sec > 0 ? '빨간불이에요. 초록불이 켜지면 건너요 · 약 ' + Math.ceil(sec) + '초' : '보행 신호가 곧 바뀌어요. 다음 초록불을 기다려요.');
   world.onTarget = t => interact(t);
+  world.touchHint = touchUI;
   hud.setVisible(true);
   hud.setRoom(s.at.room, () => world!.miniMap(), mapCaption(s.at.room));
   refresh();
@@ -429,7 +429,7 @@ function editLook() {
 
 function openMap() {
   if (busy() || !world) return;
-  if (isHeartRoom(world.roomId)) { openAtlas('room'); return; }
+  if (isHeartRoom(world.roomId)) { pauseInput(); openAtlas({ room: world.room, roomId: world.roomId, player: { x: world.player.x, y: world.player.y }, state: game.state }, 'room'); return; }
   if (world.roomId !== 'street') return;
   pauseInput();
   openSheet('동네 지도 · 논현로 일대', c => {
@@ -442,119 +442,6 @@ function openMap() {
     const p = world!.player; g.fillStyle = '#ff5a6e'; g.beginPath(); g.arc(p.x * S, p.y * S, 9, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
     c.append(cv, el('p', 'muted', '게임 지도는 실제 거리를 줄이고 단순화했어요. 큰길은 횡단보도로만 건널 수 있어요.'));
   });
-}
-
-type AtlasTab = 'room' | 'heart' | 'body';
-/**
- * Map in three scales: this room (where you are, exits, records), the heart (the order blood takes) and
- * the human body (which organs can be explored now). The body level is the parent for the later full atlas.
- */
-function openAtlas(tab: AtlasTab) {
-  pauseInput();
-  openSheet('지도', c => {
-    const seg = el('div', 'seg three'), area = el('div', 'atlas');
-    const tabs: [AtlasTab, string][] = [['room', '이 방'], ['heart', '심장'], ['body', '인체']];
-    const show = (t: AtlasTab) => {
-      seg.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-pressed', String(tabs[i]![0] === t)));
-      area.replaceChildren(...(t === 'room' ? roomMap() : t === 'heart' ? heartRouteMap() : bodyAtlas()));
-    };
-    for (const [id, label] of tabs) seg.append(button('', label, () => show(id)));
-    c.append(seg, area);
-    show(tab);
-  });
-}
-
-function label(g: CanvasRenderingContext2D, text: string, x: number, y: number, color: string, size = 20) {
-  g.font = '800 ' + size + 'px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.lineWidth = 5; g.strokeStyle = 'rgba(16,8,14,0.92)'; g.strokeText(text, x, y); g.fillStyle = color; g.fillText(text, x, y);
-}
-
-function roomMap(): HTMLElement[] {
-  const w = world!, room = w.room, s = game.state, found = discovered(s);
-  const m = organMinimap(room, 0.5), k = 2, n = m.c.width * k;
-  const cv = el('canvas'); cv.className = 'heartmap'; cv.width = n; cv.height = n;
-  const g = cv.getContext('2d')!; g.imageSmoothingEnabled = false;
-  g.fillStyle = '#1a0d16'; g.fillRect(0, 0, n, n); g.drawImage(m.c, 0, 0, n, n);
-  const P = (x: number, y: number) => [(m.ox + x * m.s) * k, (m.oy + y * m.s) * k] as const;
-  for (const t of room.targets) {
-    const [x, y] = P(t.x, t.y);
-    if (t.id.startsWith('hx-')) {
-      const seen = found.includes(t.id);
-      g.fillStyle = seen ? '#7fdcca' : 'rgba(255,246,214,0.55)'; g.beginPath(); g.arc(x, y, seen ? 6 : 5, 0, Math.PI * 2); g.fill();
-      if (seen) label(g, discoveries[t.id]!.name, x, y - 16, '#dff7f1', 17); else label(g, '?', x, y - 14, '#fff3c4', 17);
-    } else if (t.id === 'return-pad') label(g, '귀환', x, y - 14, '#7ff0f2', 17);
-    else if (t.id === 'heart-in' || t.id === 'heart-out') { g.fillStyle = '#f2b53a'; g.beginPath(); g.arc(x, y, 7, 0, Math.PI * 2); g.fill(); if (!s.inspected.includes(obsKey(t.id))) label(g, '!', x, y - 16, '#f2b53a', 20); }
-  }
-  for (const d of room.doors) { const [x, y] = P(d.zone.x + d.zone.w / 2, d.zone.y + d.zone.h / 2); label(g, '출구 · ' + d.label, Math.min(n - 110, Math.max(110, x)), Math.min(n - 14, Math.max(14, y)), '#f1cf8b', 18); }
-  const [px, py] = P(w.player.x, w.player.y);
-  g.fillStyle = '#ff5a6e'; g.beginPath(); g.arc(px, py, 9, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
-  const pr = roomProgress(s, w.roomId);
-  return [cv, el('p', '', rooms[w.roomId].title + ' · 탐험 기록 ' + pr.found + '/' + pr.total),
-    el('p', 'muted', '빨간 점이 지금 위치예요. 밝은 선은 이 방에서 나가는 판막, 흐린 선은 들어온 판막(이쪽에서는 열리지 않음), 하늘색은 귀환 장치예요. 물음표는 아직 기록하지 않은 구조예요.')];
-}
-
-function heartRouteMap(): HTMLElement[] {
-  const s = game.state, here = world!.roomId;
-  const cv = el('canvas'); cv.className = 'heartmap'; cv.width = 960; cv.height = 600;
-  const g = cv.getContext('2d')!;
-  const node: Record<string, [number, number, string]> = {
-    heart: [170, 420, '우심방'], rv: [170, 200, '우심실'], lung: [480, 80, '폐'], la: [790, 200, '좌심방'], lv: [790, 420, '좌심실'], aorta: [600, 540, '대동맥'], body: [360, 540, '온몸'],
-  };
-  const order = ['heart', 'rv', 'lung', 'la', 'lv', 'aorta', 'body', 'heart'];
-  g.lineWidth = 6; g.lineCap = 'round';
-  for (let i = 1; i < order.length; i++) {
-    const [x1, y1] = node[order[i - 1]!]!, [x2, y2] = node[order[i]!]!;
-    g.strokeStyle = ['heart', 'rv', 'body'].includes(order[i - 1]!) ? '#8e2c44' : '#e2445c';
-    g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
-    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, ang = Math.atan2(y2 - y1, x2 - x1);
-    g.fillStyle = g.strokeStyle; g.beginPath(); g.moveTo(mx + Math.cos(ang) * 16, my + Math.sin(ang) * 16); g.lineTo(mx + Math.cos(ang + 2.5) * 16, my + Math.sin(ang + 2.5) * 16); g.lineTo(mx + Math.cos(ang - 2.5) * 16, my + Math.sin(ang - 2.5) * 16); g.fill();
-  }
-  for (const [id, [x, y, name]] of Object.entries(node)) {
-    const cur = id === here;
-    g.fillStyle = cur ? '#f1cf8b' : id === 'body' ? '#2b2236' : '#3a1e2e'; g.strokeStyle = cur ? '#ffffff' : '#f1cf8b88'; g.lineWidth = 3;
-    g.beginPath(); g.roundRect(x - 92, y - 44, 184, 88, 18); g.fill(); g.stroke();
-    g.fillStyle = cur ? '#2a1d08' : '#fff4ea'; g.font = '800 30px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText(name, x, y - (id === 'body' ? 0 : 12));
-    if (id !== 'body') { const pr = roomProgress(s, id as RoomId); g.font = '700 22px system-ui, sans-serif'; g.fillStyle = cur ? '#4a3510' : '#d8c4b8'; g.fillText((cur ? '지금 여기 · ' : '') + '기록 ' + pr.found + '/' + pr.total, x, y + 22); }
-  }
-  g.fillStyle = '#b8afc6'; g.font = '600 20px system-ui, sans-serif'; g.fillText('밝은 빨강: 산소가 많은 피 · 어두운 빨강: 산소가 적은 피', 480, 300);
-  return [cv, el('p', '', '판막은 피가 흐르는 방향으로만 열려요. 지나온 판막으로는 되돌아갈 수 없으니 피를 따라 한 바퀴 돌거나 각 방의 귀환 장치를 쓰세요. 심장 탐험 기록 ' + discovered(s).length + '/' + discoveryIds.length),
-    el('p', 'muted', '피가 지나는 순서를 보여 주는 길 안내예요. 실제 심장 속 방들의 위치·크기는 다릅니다(예: 우심실이 가장 앞쪽). ' + heartText.disclaimer)];
-}
-
-type BodyOrgan = { id: string; name: string; x: number; y: number; rx: number; ry: number; state: string; rooms: string[]; note?: string };
-function bodyAtlas(): HTMLElement[] {
-  const here = world!.roomId;
-  const cv = el('canvas'); cv.className = 'heartmap'; cv.width = 600; cv.height = 860;
-  const g = cv.getContext('2d')!;
-  g.fillStyle = '#1a1424'; g.fillRect(0, 0, 600, 860);
-  // Front-view silhouette (the screen's left is the body's right).
-  g.fillStyle = '#2c2440'; g.strokeStyle = 'rgba(241,207,139,0.45)'; g.lineWidth = 3;
-  const shape = (f: () => void) => { g.beginPath(); f(); g.fill(); g.stroke(); };
-  shape(() => g.ellipse(300, 92, 64, 74, 0, 0, Math.PI * 2));
-  shape(() => g.roundRect(272, 150, 56, 44, 14));
-  shape(() => g.roundRect(170, 184, 260, 540, [70, 70, 46, 46]));
-  shape(() => { g.moveTo(176, 210); g.lineTo(108, 470); g.lineTo(140, 480); g.lineTo(200, 290); g.closePath(); });
-  shape(() => { g.moveTo(424, 210); g.lineTo(492, 470); g.lineTo(460, 480); g.lineTo(400, 290); g.closePath(); });
-  shape(() => g.roundRect(196, 700, 92, 150, 30));
-  shape(() => g.roundRect(312, 700, 92, 150, 30));
-  const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 300);
-  for (const o of bodyMap.organs as BodyOrgan[]) {
-    const open = o.state === 'open', part = o.state === 'partial', isHere = o.rooms.includes(here);
-    const fill = o.id === 'heart' ? '#d8435a' : o.id.startsWith('lung') ? '#e48a9c' : '#4a4058';
-    g.globalAlpha = open ? 1 : part ? 0.75 : 0.9;
-    g.fillStyle = open || part ? fill : '#4a4058';
-    g.beginPath(); g.ellipse(o.x, o.y, o.rx, o.ry, 0, 0, Math.PI * 2); g.fill();
-    g.globalAlpha = 1;
-    g.setLineDash(part ? [8, 6] : []); g.lineWidth = isHere ? 5 : 2; g.strokeStyle = isHere ? '#fff3c4' : open ? '#ffb3bf' : 'rgba(255,255,255,0.25)';
-    g.beginPath(); g.ellipse(o.x, o.y, o.rx + (isHere ? 4 + pulse * 3 : 0), o.ry + (isHere ? 4 + pulse * 3 : 0), 0, 0, Math.PI * 2); g.stroke(); g.setLineDash([]);
-    label(g, o.name, o.x, o.y + (o.id === 'heart' ? 0 : -6), open ? '#ffffff' : part ? '#ffe3e8' : '#9d93ad', 19);
-    if (!open && !part) label(g, '준비 중', o.x, o.y + 16, '#7d7390', 14);
-  }
-  label(g, '오른쪽', 120, 820, '#b8afc6', 16); label(g, '왼쪽', 480, 820, '#b8afc6', 16);
-  const openNames = (bodyMap.organs as BodyOrgan[]).filter(o => o.state !== 'locked').map(o => o.name + (o.state === 'partial' ? '(일부)' : ''));
-  return [cv, el('p', '', '지금 탐험할 수 있는 곳: ' + openNames.join(' · ') + '. 다른 기관은 취재가 열리면 하나씩 이어져요.'),
-    el('p', 'muted', bodyMap.note + ' ' + bodyMap.disclaimer)];
 }
 
 function openMenu() {

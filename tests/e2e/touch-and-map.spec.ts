@@ -47,11 +47,16 @@ test.describe('touch screen', () => {
     await expect(page.locator('.minimap .cap')).toHaveText('우심방');
     await page.locator('.minimap').tap();
     await expect(page.locator('.sheet')).toBeVisible();
-    for (const [tab, text] of [['이 방', '탐험 기록'], ['심장', '판막은'], ['인체', '심장']] as const) {
-      await page.locator('.sheet .seg button', { hasText: tab }).tap();
-      await expect(page.locator('.sheet .atlas p').first()).toContainText(text);
+    await expect(page.locator('.sheet .place .meter')).toContainText('이 방에서 찾은 구조');
+    for (const [tab, text] of [['인체', '탐험할 수 있는 기관'], ['심장', '심장 탐험 기록'], ['이 방', '이 방에서 찾은 구조']] as const) {
+      await page.locator('.sheet .scale button', { hasText: tab }).tap();
+      await expect(page.locator('.sheet .place .meter')).toContainText(text);
       await expect(page.locator('.sheet canvas')).toHaveCount(1);
+      await expect(page.locator('.sheet .scale button.on')).toHaveText(tab);
     }
+    // Tapping the map itself does not close the window.
+    await page.locator('.sheet .stage').tap();
+    await expect(page.locator('.sheet')).toBeVisible();
     expect(errors).toEqual([]);
   });
 
@@ -70,4 +75,13 @@ test('PC shows no movement ball but keeps the heart minimap', async ({ page }) =
   await expect(page.locator('.joystick')).toBeHidden();
   await expect(page.locator('.minimap')).toBeVisible();
   await expect(page.locator('.cycle')).toBeVisible();
+});
+
+test('heart structures are named from a few steps away, not only when touching them', async ({ page }) => {
+  await enterHeart(page, false);
+  // At (230, 200) the guide robot is about 50px away and the return pad about 90px: both reach range is wider now.
+  await page.waitForTimeout(300);
+  const seen = await page.evaluate(() => { const w = (window as unknown as { __mq: { world: { aware: { id: string }[]; near: { id: string } | null } } }).__mq.world; return { aware: w.aware.map(t => t.id), near: w.near?.id ?? null }; });
+  expect(seen.aware).toContain('guide');
+  expect(seen.near).toBeNull();
 });

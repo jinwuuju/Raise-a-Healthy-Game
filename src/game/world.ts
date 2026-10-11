@@ -31,6 +31,10 @@ export class World {
   path: Point[] = [];
   pendingTarget: Target | null = null;
   near: Target | null = null;
+  /** Nearby things worth naming before the reporter reaches them (wider in the heart). */
+  aware: Target[] = [];
+  /** Touch screens say ‘누르기’, keyboards say ‘E’. */
+  touchHint = false;
   locked = false;
   timeMode: TimeMode = 'day';
   questNpc: string | null = null;
@@ -206,6 +210,11 @@ export class World {
 
     const near = locked ? null : nearestTarget(this.roomId, p) ?? null;
     if ((near?.id ?? null) !== (this.near?.id ?? null)) { this.near = near; this.onNear(near); }
+    const reach = this.room.organ ? 84 : 44;
+    this.aware = locked ? [] : this.room.targets
+      .map(t => ({ t, d: Math.hypot(t.x - p.x, t.y - p.y) }))
+      .filter(({ t, d }) => !t.npc && d <= Math.max(t.r, reach))
+      .sort((a, b) => a.d - b.d).slice(0, 4).map(({ t }) => t);
 
     this.updateNpcs(dt);
     if (this.roomId === 'street') { this.traffic.update(dt, [p, ...this.npcs]); this.updateLeaves(dt); }
@@ -496,7 +505,7 @@ export class World {
     }
     for (const id of this.sparkTargets) {
       const t = this.room.targets.find(q => q.id === id);
-      if (!t || this.near?.id === id || this.questTargets.includes(id)) continue;
+      if (!t || this.aware.includes(t) || this.questTargets.includes(id)) continue;
       const tw = 0.5 + 0.5 * Math.sin(this.time * 2.6 + t.x * 0.05);
       const sx = (t.x - cx) * zoom, sy = (t.y - 10 - cy) * zoom, r = (2 + tw * 2.5) * dpr;
       out.fillStyle = `rgba(255,246,214,${(0.35 + tw * 0.5).toFixed(3)})`;
@@ -527,19 +536,54 @@ export class World {
         out.font = LABEL_FONT(fs); out.textBaseline = 'bottom';
       }
     }
-    const t = this.near;
-    if (t && !t.npc && !this.locked) {
-      const sx = (t.x - cx) * zoom, sy = (t.y - 20 - cy) * zoom + bob * dpr;
-      out.beginPath(); out.moveTo(sx - 5 * dpr, sy - 6 * dpr); out.lineTo(sx + 5 * dpr, sy - 6 * dpr); out.lineTo(sx, sy); out.closePath();
-      out.fillStyle = '#fff3c4'; out.fill(); out.lineWidth = 1.5 * dpr; out.strokeStyle = 'rgba(22,18,34,0.85)'; out.stroke();
-      label(t.label, t.x, t.y - 23 + bob / zoom * dpr, '#fff3c4');
-    }
+    if (!this.locked) this.drawAware(out, cx, cy, zoom, dpr, bob);
   }
 
   /** HUD minimap for the current room: the street, or a heart room (null indoors at the office and cafe). */
   miniMap(): MiniMap | null {
     if (this.roomId === 'street') return { c: this.minimapBase(), s: 1 / 8, ox: 0, oy: 0 };
     return this.room.organ ? organMinimap(this.room, 1 / 4) : null;
+  }
+
+  /**
+   * Name tags for things around the reporter: a bouncing arrow over each one and a readable tag.
+   * The one within reach is gold and says how to look at it; farther ones fade with distance.
+   * New heart structures carry a ‘새 구조’ badge. Tags are stacked so they never cover each other.
+   */
+  private drawAware(out: CanvasRenderingContext2D, cx: number, cy: number, zoom: number, dpr: number, bob: number): void {
+    const placed: { x: number; y: number; w: number; h: number }[] = [];
+    const p = this.player, reach = this.room.organ ? 84 : 44;
+    for (const t of this.aware) {
+      const isNear = this.near?.id === t.id, d = Math.hypot(t.x - p.x, t.y - p.y);
+      const a = isNear ? 1 : Math.max(0.55, 1 - (d - t.r) / (reach * 1.4));
+      const fresh = this.sparkTargets.includes(t.id), quest = this.questTargets.includes(t.id);
+      const ax = (t.x - cx) * zoom, ay = (t.y - 16 - cy) * zoom + (isNear ? bob * dpr : 0);
+      out.save(); out.globalAlpha = a;
+      const aw = (isNear ? 8 : 6) * dpr;
+      out.beginPath(); out.moveTo(ax - aw, ay - aw * 1.3); out.lineTo(ax + aw, ay - aw * 1.3); out.lineTo(ax, ay); out.closePath();
+      out.fillStyle = isNear || quest ? '#f6d27a' : '#fff6e4'; out.fill(); out.lineWidth = 2 * dpr; out.strokeStyle = 'rgba(22,14,26,0.9)'; out.stroke();
+      const name = t.label, sub = isNear ? (this.touchHint ? '눌러서 ' + t.verb : 'E · ' + t.verb) : fresh ? '새 구조' : '';
+      const fs1 = Math.round((isNear ? 16 : 14) * dpr), fs2 = Math.round(12 * dpr), pad = 9 * dpr;
+      out.font = LABEL_FONT(fs1); const w1 = out.measureText(name).width;
+      out.font = LABEL_FONT(fs2); const w2 = sub ? out.measureText(sub).width + 14 * dpr : 0;
+      const w = w1 + w2 + pad * 2, h = (isNear ? 30 : 26) * dpr;
+      let x = Math.round(ax - w / 2), y = Math.round(ay - aw * 1.3 - 6 * dpr - h);
+      for (let k = 0; k < 6 && placed.some(r => x < r.x + r.w && x + w > r.x && y < r.y + r.h && y + h > r.y); k++) y -= h + 4 * dpr;
+      placed.push({ x, y, w, h });
+      out.beginPath(); out.roundRect(x, y, w, h, h / 2);
+      out.fillStyle = isNear ? 'rgba(40,26,14,0.92)' : 'rgba(24,16,30,0.84)'; out.fill();
+      out.lineWidth = (isNear ? 2 : 1.2) * dpr; out.strokeStyle = isNear || quest ? 'rgba(246,210,122,0.95)' : fresh ? 'rgba(127,240,242,0.65)' : 'rgba(255,240,220,0.3)'; out.stroke();
+      out.textAlign = 'left'; out.textBaseline = 'middle';
+      out.font = LABEL_FONT(fs1); out.fillStyle = isNear ? '#fff3cf' : '#fbf1e6'; out.fillText(name, x + pad, y + h / 2 + dpr);
+      if (sub) {
+        const bx = x + pad + w1 + 8 * dpr, bw = w2 - 4 * dpr, bh = 18 * dpr;
+        out.beginPath(); out.roundRect(bx, y + (h - bh) / 2, bw, bh, bh / 2);
+        out.fillStyle = isNear ? '#f6d27a' : 'rgba(127,240,242,0.2)'; out.fill();
+        out.font = LABEL_FONT(fs2); out.fillStyle = isNear ? '#2b1c06' : '#a9f6f3'; out.textAlign = 'center'; out.fillText(sub, bx + bw / 2, y + h / 2 + dpr);
+      }
+      out.restore();
+    }
+    out.textAlign = 'center'; out.textBaseline = 'bottom'; out.font = LABEL_FONT(Math.round(11 * dpr));
   }
 
   /** Small overview used by the HUD minimap (street only). */

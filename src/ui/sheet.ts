@@ -30,7 +30,7 @@ export function openSheet(title: string, build: (content: HTMLElement, close: ()
   // Tapping anywhere that is not a control closes the window (scroll gestures do not produce a click).
   sheet.addEventListener('click', e => {
     const t = e.target as Element | null;
-    if (!t?.closest?.('button, a, input, select, textarea, label, summary, [role=button], .seg, .opts')) close();
+    if (!t?.closest?.('button, a, input, select, textarea, label, summary, [role=button], .seg, .opts, .keep-open')) close();
   });
   document.addEventListener('keydown', onKey, true);
   build(content, close);
