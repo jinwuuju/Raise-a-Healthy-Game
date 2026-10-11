@@ -2,6 +2,7 @@ import heart from '../../data/content/heart-interior.v0.1.json';
 import q1 from '../../data/content/q001-entry.v0.1.json';
 import { discovered, discoveryIds } from '../domain/heart';
 import { Q1, q1CanOffer, q1Seen } from '../domain/quest';
+import { articleText } from '../domain/article-state';
 import type { GameState } from '../domain/state';
 import { isHeartRoom, type RoomId } from '../world/types';
 
@@ -37,7 +38,8 @@ export function objective(s: GameState, room: RoomId): string {
   }
   if (isHeartRoom(room)) return '관찰 완료! 귀환 장치로 돌아가거나 피를 따라 계속 탐험하기 · ' + record;
   if (!has(Q1.briefed)) return room === 'newsroom' ? '편집장에게 관찰 결과 알리기' : '편집국으로 돌아가 편집장에게 알리기';
-  return '바디스코프로 심장 속을 자유롭게 탐험하기 · ' + record + ' · 기사 작성은 다음 업데이트';
+  if (!s.article.publishedAt) return room === 'newsroom' ? '내 자리에서 관찰 카드를 붙여 첫 기사 쓰기 · 수첩에서도 열 수 있어요' : '편집국 내 자리로 돌아가 첫 기사 쓰기';
+  return '첫 기사 발행 완료! 수첩에서 독자 답장 읽기 · 바디스코프로 더 탐험하기';
 }
 
 const say = (who: string, npc: string | null, ...texts: string[]): Line[] => texts.map(text => ({ who, text, npc }));
@@ -56,7 +58,7 @@ export function talk(id: string, s: GameState): Talk {
       if (q1CanOffer(s)) return { flag: null, action: 'offer-q1', lines: [] };
       if (!has(Q1.observed)) return { flag: null, lines: say('편집장', 'editor', q1.editorWaiting) };
       if (!has(Q1.briefed)) return { flag: null, action: 'brief-q1', lines: say('편집장', 'editor', ...q1.editorBrief) };
-      return { flag: null, lines: say('편집장', 'editor', q1.editorDone) };
+      return { flag: null, lines: say('편집장', 'editor', s.article.publishedAt ? articleText.editorPublished : q1.editorDone) };
     case 'senior':
       return { flag: 'met-senior', lines: say('선배 기자', 'senior',
         '반가워요! 화면을 누르면 그곳까지 걸어가요. 사람이나 물건을 누르면 다가가서 말을 걸거나 살펴봐요.',

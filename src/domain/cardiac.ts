@@ -57,6 +57,15 @@ export function openness(v: ValveSet, real: number): number {
 /** A reporter may pass a valve only while it is clearly open. */
 export const passable = (v: ValveSet, real: number): boolean => openness(v, real) >= 0.5;
 
+/** Qualitative animation only, not measured flow. Left systolic suppression is stronger than right.
+ * Coronary flow depends on myocardial compression, not whether the aortic leaflets cover the ostia.
+ * Source: human measurements in data/content/heart-interior.v0.1.json (coronary-phasic).
+ */
+export function coronaryFlowFactor(side: 'left' | 'right', real: number): number {
+  const c = beat(real), systole = c >= EV.s1 && c < EV.s2;
+  return systole ? (side === 'left' ? 0.12 : 0.6) : 1;
+}
+
 /** Game seconds until the valve can be passed (0 if it already can). */
 export function secondsUntilOpen(v: ValveSet, real: number): number {
   for (let k = 0; k <= 160; k++) if (passable(v, real + k * 0.005)) return (k * 0.005) * SLOW;

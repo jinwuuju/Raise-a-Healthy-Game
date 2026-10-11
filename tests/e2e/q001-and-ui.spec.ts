@@ -77,6 +77,20 @@ test('Q001 inside the heart: commission → Bodyscope → right atrium → wait 
   await expect(page.locator('.dialog')).toBeVisible({ timeout: 10000 });
   await finishDialog(page);
   expect((await saved(page)).flags).toContain('q001-briefed');
+  await expect(page.locator('.quest p')).toContainText('첫 기사');
+  // The actual reporting route now continues from the newsroom desk to the first issue.
+  await tap(page, 184, 142);
+  const article = page.getByRole('dialog', { name: '첫 기사 · 사라진 혈액 배달표' });
+  await expect(article).toBeVisible({ timeout: 10000 });
+  await article.getByRole('button', { name: /독자의 질문으로 시작/ }).click();
+  await article.getByLabel('2 · 돌아오는 피의 근거').selectOption('heart-in');
+  await article.getByLabel('3 · 폐로 향하는 피의 근거').selectOption('heart-out');
+  await article.getByRole('button', { name: '편집장에게 초안 보여주기' }).click();
+  await article.getByRole('button', { name: '게임 속 신문에 발행' }).click();
+  await expect(article).toContainText('하윤 독자:');
+  expect([(await saved(page)).totalXp, (await saved(page)).gold]).toEqual([100, 100]);
+  await article.getByRole('button', { name: '월드로 돌아가기' }).click();
+  await expect(page.locator('.chip .rank')).toContainText('Lv.2');
   expect(errors).toEqual([]);
 });
 

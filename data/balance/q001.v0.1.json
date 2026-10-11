@@ -1,0 +1,8 @@
+{
+  "id": "Q001",
+  "totalXp": 100,
+  "totalGold": 100,
+  "observation": { "key": "quest.Q001.observe", "xp": 20, "gold": 0 },
+  "publication": { "key": "quest.Q001.first", "xp": 80, "gold": 100 },
+  "note": "early-quests.v0.1.json의 Q001 총 보상을 관찰과 첫 기사 발행으로 나눈 실행 원본. 추가 탐험 기록은 보상 없음."
+}

@@ -24,6 +24,10 @@ export class Hud {
   private saveError = el('div', 'save-error glass hidden');
   private lastSaveError: string | null | undefined;
   private cycle = el('section', 'cycle glass hidden');
+  private cycleBody = el('div', 'cycle-body');
+  private cycleToggle: HTMLButtonElement;
+  private cycleCollapsed = false;
+  private cycleChosen = false;
   private cycleCanvas = el('canvas');
   private cyclePhase = el('b');
   private avPill = el('span', 'pill', '방실판');
@@ -58,12 +62,15 @@ export class Hud {
     this.mini.setAttribute('role', 'button'); this.mini.setAttribute('aria-label', '지도 크게 보기'); this.mini.tabIndex = 0;
     this.mini.addEventListener('click', e => { e.stopPropagation(); a.onMap(); });
     this.mini.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); a.onMap(); } });
+    this.cycleToggle = button('cycle-toggle', '', () => { this.cycleChosen = true; this.setCycleCollapsed(!this.cycleCollapsed); }, '심장 주기 접기/펼치기');
+    this.cycleToggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h5l3-7 4 14 3-7h5"/></svg><span>심장 주기</span><span class="chev">▾</span>';
+    this.cycleToggle.setAttribute('aria-controls', 'heart-cycle-detail');
+    this.cycleBody.id = 'heart-cycle-detail';
     const ch = el('div', 'cycle-head'); ch.append(this.cyclePhase, el('small', '', '×' + SLOW + ' 느리게'));
     const pills = el('div', 'pills'); pills.append(this.avPill, this.slPill);
-    this.cycle.append(ch, this.cycleCanvas, pills, this.cycleNote);
-    this.cycle.setAttribute('role', 'button'); this.cycle.setAttribute('aria-label', '심장 주기 · 눌러서 심장 길 안내 열기'); this.cycle.tabIndex = 0;
-    this.cycle.addEventListener('click', e => { e.stopPropagation(); a.onMap(); });
-    this.cycle.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); a.onMap(); } });
+    this.cycleBody.append(ch, this.cycleCanvas, pills, this.cycleNote, button('cycle-map', '심장 길 안내', a.onMap));
+    this.cycle.append(this.cycleToggle, this.cycleBody);
+    this.setCycleCollapsed(false);
     tr.append(row, this.mini, this.cycle);
 
     this.saveError.setAttribute('role', 'status');
@@ -76,7 +83,17 @@ export class Hud {
   /** Touch screens: room for the movement ball, and a hint that matches it. */
   setTouch(on: boolean): void {
     this.root.classList.toggle('touch', on);
-    if (on) this.hintEl.textContent = '왼쪽 아래 조작볼로 걸어요 · 사람이나 물건을 누르면 다가가서 말을 걸어요';
+    if (on) {
+      this.hintEl.textContent = '왼쪽 조작볼로 걷고 · 오른쪽 확인으로 대화/살펴보기';
+      if (!this.cycleChosen) this.setCycleCollapsed(true);
+    }
+  }
+
+  private setCycleCollapsed(collapsed: boolean): void {
+    this.cycleCollapsed = collapsed;
+    this.cycle.classList.toggle('collapsed', collapsed);
+    this.cycleBody.hidden = collapsed;
+    this.cycleToggle.setAttribute('aria-expanded', String(!collapsed));
   }
 
   setVisible(v: boolean): void { this.root.classList.toggle('hidden', !v); }
@@ -141,7 +158,7 @@ export class Hud {
 
   /** Cardiac cycle panel: lead-II–like trace over one beat, a cursor, the phase and which valves are open. */
   drawCycle(real: number, dpr: number): void {
-    if (this.cycle.classList.contains('hidden')) return;
+    if (this.cycle.classList.contains('hidden') || this.cycleCollapsed) return;
     const cv = this.cycleCanvas, w = Math.round(cv.clientWidth * dpr) || 1, h = Math.round(cv.clientHeight * dpr) || 1;
     if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
     const g = cv.getContext('2d')!;

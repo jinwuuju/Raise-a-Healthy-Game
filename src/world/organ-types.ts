@@ -14,7 +14,7 @@ export type Valve = { id: string; kind: ValveKind; x: number; y: number; w: numb
 
 /** A stream of blood cells following a polyline. `valve` gates the stream where it crosses that valve. */
 export type Lane = {
-  pts: Point[]; when: 'av' | 'sl' | 'always' | 'diastole'; blood: 'venous' | 'arterial' | 'mix';
+  pts: Point[]; when: 'av' | 'sl' | 'always' | 'coronary-left' | 'coronary-right'; blood: 'venous' | 'arterial' | 'mix';
   n: number; speed: number; width: number; valve: string | null;
 };
 

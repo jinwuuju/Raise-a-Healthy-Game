@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import content from '../../data/content/heart-interior.v0.1.json';
-import { EV, REAL_CYCLE, SLOW, ecg, openness, passable, phaseAt, phases, secondsUntilOpen, soundBetween } from '../../src/domain/cardiac';
+import { EV, REAL_CYCLE, SLOW, coronaryFlowFactor, ecg, openness, passable, phaseAt, phases, secondsUntilOpen, soundBetween } from '../../src/domain/cardiac';
 import { discover, discovered, discoveries, discoveryIds, hxKey } from '../../src/domain/heart';
 import { newState, type GameState } from '../../src/domain/state';
 import { canStand, doorAt } from '../../src/world/collision';
@@ -81,7 +81,7 @@ describe('heart rooms follow the real path of blood', () => {
       expect(r.targets.some(t => t.id === 'return-pad'), id).toBe(true);
     }
   });
-  it('the way out of each chamber crosses its outflow valve; the valve blood came through is closed from this side', () => {
+  it('the way out crosses the outflow valve; reporter backtracking through the inflow valve is blocked', () => {
     const expected: Record<string, [string | null, string | null]> = {
       heart: [null, 'tricuspid'], rv: ['tricuspid', 'pulmonary'], lung: [null, null], la: [null, 'mitral'], lv: ['mitral', 'aortic'], aorta: ['aortic', null],
     };
@@ -111,6 +111,34 @@ describe('heart rooms follow the real path of blood', () => {
   it('the reporter enters through the superior vena cava, not on a door', () => {
     expect(doorAt('heart', rooms.heart.spawn)).toBeUndefined();
     expect(rooms.heart.spawn.y).toBeLessThan(60);
+  });
+  it('the coronary sinus opening is superior and medial to the IVC opening in the anterior projection', () => {
+    const [ivc, cs] = rooms.heart.organ!.features.filter(f => f.kind === 'rim');
+    if (ivc?.kind !== 'rim' || cs?.kind !== 'rim') throw new Error('Missing vein openings');
+    expect(cs.y).toBeLessThan(ivc.y);
+    expect(cs.x).toBeGreaterThan(ivc.x); // screen-right is medial in the right atrium
+    expect(rooms.heart.targets.find(t => t.id === 'hx-avnode')!.y).toBeLessThan(cs.y);
+    const stream = rooms.heart.organ!.lanes[2]!;
+    expect(stream.pts[0]).toEqual({ x: cs.x, y: cs.y });
+    const target = rooms.heart.targets.find(t => t.id === 'hx-cs')!;
+    expect(Math.hypot(target.x - cs.x, target.y - cs.y)).toBeLessThan(target.r + cs.r);
+  });
+  it('each left ventricular papillary group sends chordae to both mitral leaflets', () => {
+    expect(rooms.lv.organ!.cords).toHaveLength(2);
+    for (const cord of rooms.lv.organ!.cords) {
+      expect(cord.valve).toBe('mv');
+      expect(cord.slots.some(s => s < 0.56)).toBe(true);
+      expect(cord.slots.some(s => s > 0.56)).toBe(true);
+    }
+  });
+  it('coronary streams continue in systole, with stronger left suppression independent of aortic valve closure', () => {
+    const streams = rooms.aorta.organ!.lanes.slice(1);
+    expect(streams.map(s => s.when)).toEqual(['coronary-right', 'coronary-left']);
+    for (const t of [EV.s1 + 0.01, EV.slOpen + 0.05]) { // closed valve in IVC, open valve in ejection
+      expect(coronaryFlowFactor('left', t)).toBeGreaterThan(0);
+      expect(coronaryFlowFactor('right', t)).toBeGreaterThan(coronaryFlowFactor('left', t));
+      for (const side of ['left', 'right'] as const) expect(coronaryFlowFactor(side, t)).toBeLessThan(coronaryFlowFactor(side, EV.avOpen + 0.05));
+    }
   });
 });
 

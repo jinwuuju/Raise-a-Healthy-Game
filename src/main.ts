@@ -14,7 +14,9 @@ import { button, el } from './ui/dom';
 import { Hud } from './ui/hud';
 import { openCreator } from './ui/creator';
 import { Joystick } from './ui/joystick';
+import { ConfirmControl } from './ui/confirm';
 import { openAtlas } from './ui/atlas';
+import { openArticle } from './ui/article';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
 import { heartRoute } from './world/heart-rooms';
 import { rooms, type Target } from './world/rooms';
@@ -53,7 +55,8 @@ const fade = el('div', 'fade'); const fadeCard = el('div', 'card'); fade.append(
 let world: World | null = null;
 const npcLooks: Record<string, Look> = {};
 for (const r of Object.values(rooms)) for (const n of r.npcs) npcLooks[n.id] = n.look;
-const dialog = new Dialog(id => (id ? npcLooks[id] ?? null : null));
+const confirmControl = new ConfirmControl(() => confirmAction());
+const dialog = new Dialog(id => (id ? npcLooks[id] ?? null : null), () => confirmControl.visible ? [confirmControl.root] : []);
 
 const hud = new Hud({
   onChip: () => openReporter(),
@@ -66,7 +69,7 @@ hud.setVisible(false);
 const touchMode = 'ontouchstart' in window;
 const joy = new Joystick(hud.root);
 let touchUI = false;
-function enableTouchUI(): void { if (touchUI) return; touchUI = true; joy.setVisible(true); hud.setTouch(true); if (world) world.touchHint = true; }
+function enableTouchUI(): void { if (touchUI) return; touchUI = true; document.body.classList.add('touch-controls'); joy.setVisible(true); hud.setTouch(true); if (world) world.touchHint = true; }
 if (window.matchMedia?.('(pointer: coarse)').matches) enableTouchUI();
 window.addEventListener('touchstart', () => enableTouchUI(), { passive: true, capture: true });
 
@@ -76,6 +79,11 @@ const pointer = { id: -1, sx: 0, sy: 0, x: 0, y: 0, t: 0, steering: false };
 const dpr = () => Math.min(3, window.devicePixelRatio || 1);
 const busy = () => dialog.open || sheetOpen() || !world || world.locked || document.querySelector('.creator') !== null;
 function pauseInput(): void { keys.clear(); pointer.id = -1; pointer.steering = false; joy.reset(); world?.stop(); }
+function confirmAction(): void {
+  if (dialog.open) { pauseInput(); dialog.advance(); return; }
+  if (busy() || !world?.near) return;
+  pauseInput(); void interact(world.near);
+}
 
 window.addEventListener('keydown', e => {
   if (document.querySelector('.creator')) return;
@@ -98,8 +106,9 @@ window.addEventListener('blur', pauseInput);
 // Any tap while a dialog is open advances it (and closes it after the last line), wherever it lands.
 let swallowClickUntil = 0, lastAdvance = 0;
 const onChoice = (e: Event) => !!(e.target as Element | null)?.closest?.('.dialog .choices button');
+const onConfirm = (e: Event) => !!(e.target as Element | null)?.closest?.('.mobile-confirm');
 document.addEventListener('pointerdown', e => {
-  if (!dialog.open || onChoice(e)) return;
+  if (!dialog.open || onChoice(e) || onConfirm(e)) return;
   e.preventDefault(); e.stopPropagation();
   swallowClickUntil = performance.now() + 500;
   lastAdvance = performance.now();
@@ -107,7 +116,7 @@ document.addEventListener('pointerdown', e => {
 }, true);
 // Some mobile browsers drop pointer events for touches; advance on the touch itself as well (once per tap).
 if (touchMode) document.addEventListener('touchstart', e => {
-  if (!dialog.open || onChoice(e)) return;
+  if (!dialog.open || onChoice(e) || onConfirm(e)) return;
   e.stopPropagation();
   const now = performance.now();
   swallowClickUntil = now + 500;
@@ -116,7 +125,7 @@ if (touchMode) document.addEventListener('touchstart', e => {
   dialog.tapAnywhere();
 }, { capture: true, passive: true });
 document.addEventListener('click', e => {
-  if (performance.now() < swallowClickUntil && !onChoice(e)) { e.preventDefault(); e.stopPropagation(); }
+  if (performance.now() < swallowClickUntil && !onChoice(e) && !onConfirm(e)) { e.preventDefault(); e.stopPropagation(); }
 }, true);
 
 canvas.addEventListener('pointerdown', e => {
@@ -204,6 +213,8 @@ function frame(now: number) {
     if (miniClock > 0.12) { miniClock = 0; hud.drawMinimap(p.x, p.y, now / 1000); }
     if (world.heart) hud.drawCycle(world.real, dpr());
   } else { ctx.fillStyle = '#15111f'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+  const showConfirm = touchUI && !!world && !sheetOpen() && !document.querySelector('.creator') && (!world.locked || dialog.open) && !dialog.awaitingChoice;
+  confirmControl.setState(showConfirm, dialog.open || (!busy() && !!world?.near), dialog.open ? '대화 다음 줄' : world?.near ? world.near.label + ' · 대화/살펴보기' : '가까운 사람이나 구조 앞에서 확인');
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
@@ -222,6 +233,7 @@ function refresh() {
   world.questNpc = world.roomId === 'newsroom' && needEditor ? 'editor' : null;
   world.questTargets = [];
   if (world.roomId === 'newsroom' && has(Q1.accepted) && !has(Q1.observed)) world.questTargets = ['device'];
+  if (world.roomId === 'newsroom' && has(Q1.briefed) && !s.article.publishedAt) world.questTargets = ['my-desk'];
   world.sparkTargets = [];
   if (isHeartRoom(world.roomId)) {
     const here = world.roomId;
@@ -301,8 +313,10 @@ async function interact(t: Target) {
       await say(script.lines);
       if (script.flag) game.flag(script.flag);
       if (script.action === 'offer-q1') await offerQ1();
-      if (script.action === 'brief-q1') { game.brief(); hud.toast('편집장 확인 완료 · 다음 단계는 곧 열려요'); }
+      if (script.action === 'brief-q1') { game.brief(); hud.toast('편집장 확인 완료 · 내 자리에서 첫 기사를 써 봐요'); }
       if (t.npc === 'barista') await cafeOrder();
+    } else if (t.id === 'my-desk' && game.has(Q1.briefed)) {
+      pauseInput(); showArticle();
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
         [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
@@ -359,6 +373,9 @@ async function cafeOrder() {
 }
 
 // ---------- Sheets ----------
+function showArticle() {
+  openArticle(game, () => hud.toast(game.lastError ? '기사는 발행했지만 저장하지 못했어요. 기록을 파일로 내보내 주세요.' : '첫 기사 발행! +80XP · +100G · Lv.2', !!game.lastError));
+}
 function saveFeedback(c: HTMLElement): () => void {
   const message = el('p', 'save-message'); message.setAttribute('role', 'status'); c.append(message);
   const update = () => { message.textContent = game.lastError ?? ''; message.classList.toggle('hidden', !game.lastError); };
@@ -368,7 +385,7 @@ function openNotebook() {
   if (busy() || !world) return;
   pauseInput();
   const s = game.state;
-  openSheet('취재 수첩', c => {
+  openSheet('취재 수첩', (c, close) => {
     const goal = el('div'); goal.append(el('h3', '', '지금 할 일'), el('p', '', objective(s, world!.roomId))); c.append(goal);
     const notes = el('div'); notes.append(el('h3', '', '관찰 기록'));
     const ids = s.inspected.filter(id => inspectLabels[id]);
@@ -381,7 +398,8 @@ function openNotebook() {
       const seen = q1Seen(s);
       const ul = el('ul', 'notes');
       for (const id of Q1_OBSERVATIONS) ul.append(el('li', seen.includes(id) ? '' : 'muted', seen.includes(id) ? q1Text.observations[id].note : '아직 관찰하지 않음'));
-      q.append(ul, el('p', 'muted', q1Text.disclaimer + '. 기사 쓰기는 다음 업데이트에서 열려요.'));
+      q.append(ul, el('p', 'muted', q1Text.disclaimer));
+      if (s.flags.includes(Q1.briefed)) q.append(button('row', s.article.publishedAt ? '첫 기사와 독자 답장 읽기' : '첫 기사 쓰기 · 초안 이어서', () => { close(); pauseInput(); showArticle(); }));
       c.append(q);
     }
     if (s.flags.includes(Q1.entered)) {
@@ -397,7 +415,7 @@ function openNotebook() {
       c.append(h);
     }
     const life = el('div'); life.append(el('h3', '', '생활'), el('p', '', '비투비씨 주문 ' + s.cafe.orderCount + '회 · 첫 방문 커피 ' + (s.cafe.welcomeUsed ? '받음' : '아직'))); c.append(life);
-    c.append(el('p', 'muted', '기사 작성·의학 도감은 첫 기사를 쓴 뒤 이 수첩에서 이어집니다.'));
+    c.append(el('p', 'muted', '관찰을 마치고 편집장에게 보고하면 첫 기사 쓰기가 열려요. 의학 도감과 다음 취재 의뢰는 준비 중이에요.'));
   });
 }
 
@@ -468,8 +486,8 @@ function openMenu() {
     help.append(el('p', '', 'PC: 방향키/WASD 이동 · E/Space 대화·살펴보기 · J 수첩 · M 지도 · Esc 메뉴'));
     help.append(el('p', '', '마우스·터치: 화면을 누르면 그곳으로 걷고, 사람이나 물건을 누르면 다가가서 말을 걸어요. 꾹 누른 채 움직이면 손가락 쪽으로 계속 걸어요. 대화창·창은 아무 곳이나 누르면 넘어가거나 닫혀요.'));
     help.append(el('p', '', '큰길 횡단보도는 보행 신호가 초록불일 때만 건널 수 있어요. 깜빡이기 시작하면 새로 건너지 않아요.'));
-    help.append(el('p', '', '휴대폰·태블릿: 왼쪽 아래 조작볼을 엄지로 밀면 그 방향으로 걸어요. 사람·물건은 화면에서 눌러요.'));
-    help.append(el('p', '', '심장 속: 판막은 열려 있을 때, 피가 흐르는 방향으로만 지나갈 수 있어요. 오른쪽 위 작은 지도나 심장 주기 창을 누르면 이 방·심장·인체 지도가 열려요.'));
+    help.append(el('p', '', '휴대폰·태블릿: 왼쪽 아래 조작볼로 걷고 오른쪽 확인 버튼으로 가까운 사람·구조를 살펴봐요. 확인은 대화도 넘겨요. 선택지는 직접 눌러 주세요.'));
+    help.append(el('p', '', '심장 속: 판막은 열려 있을 때, 피가 흐르는 방향으로만 지나갈 수 있어요. 오른쪽 위 심장 주기는 접고 펼칠 수 있어요. 작은 지도나 펼친 주기의 심장 길 안내를 누르면 이 방·심장·인체 지도가 열려요.'));
     c.append(help);
     const reset = el('div', 'list'); reset.append(button('row danger', '처음부터 다시 시작', () => { if (confirm('지금 기록을 백업하고 새 기자로 시작할까요? 파일로 내보내 두는 것도 권해요.')) { try { game.restart(); close(); location.reload(); } catch (e) { hud.toast('새로 시작하지 못했어요: ' + (e instanceof Error ? e.message : '저장 오류'), true); } } }));
     c.append(reset);

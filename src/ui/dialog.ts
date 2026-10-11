@@ -16,10 +16,11 @@ export class Dialog {
   private choices: Choice[] = [];
   private done: ((v: string | null) => void) | null = null;
   private before: HTMLElement | null = null;
-  private onKey = (e: KeyboardEvent) => { if (this.root) trapTab(this.root, e); };
-  constructor(private lookOf: (npc: string | null) => Look | null) {}
+  private onKey = (e: KeyboardEvent) => { if (this.root) trapTab(this.root, e, this.controls()); };
+  constructor(private lookOf: (npc: string | null) => Look | null, private controls: () => HTMLElement[] = () => []) {}
 
   get open(): boolean { return this.root !== null; }
+  get awaitingChoice(): boolean { return !!this.root?.querySelector('.choices'); }
 
   show(lines: Line[], choices: Choice[] = []): Promise<string | null> {
     this.close(null);
@@ -67,6 +68,7 @@ export class Dialog {
     const root = el('div', 'dialog glass');
     root.tabIndex = -1;
     root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', line.who); root.setAttribute('aria-live', 'polite');
+    const owned = this.controls().map(c => c.id).filter(Boolean); if (owned.length) root.setAttribute('aria-owns', owned.join(' '));
     const look = this.lookOf(line.npc);
     const face = el('div', 'face');
     if (look) face.append(pixelCanvas(portrait(look))); else face.classList.add('hidden');

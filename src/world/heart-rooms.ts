@@ -51,7 +51,7 @@ function build(s: Spec): Room {
   for (let ty = 0; ty < s.rows; ty++) for (let tx = 0; tx < s.cols; tx++) tiles[ty * s.cols + tx] = walk(tx * TILE + 8, ty * TILE + 8) ? 16 : 0;
   const solids: Rect[] = [];
   for (const p of s.props) if (p.solid) solids.push(p.solid);
-  // Blood arrived through these valves: their leaflets and chordae close the way back.
+  // Block reporter backtracking, not valve opening: inflow valves still open during filling.
   for (const v of s.valves) if (!v.pass) solids.push(v.toward === 1 ? { x: v.x - 4, y: v.y - 14, w: v.w + 8, h: 46 } : { x: v.x - 4, y: v.y - 32, w: v.w + 8, h: 46 });
   return {
     id: s.id, title: rt[s.id]?.title ?? s.id, cols: s.cols, rows: s.rows, tiles, buildings: [], props: s.props, npcs: [], targets: s.targets,
@@ -76,7 +76,7 @@ function rightAtrium(): Room {
   const body = ellipse(232, 225, 168, 130);
   const auricle = cone(300, 122, 44, 374, 46, 24);
   const floor = wobble(blend(18, body, capsule(178, -40, 182, 120, 46), auricle, capsule(300, 300, 300, 480, 40)), 3, 26, 11);
-  const holes = union(circle(138, 300, 26), circle(210, 330, 10));
+  const holes = union(circle(138, 300, 26), circle(210, 270, 10));
   const crista = pts([[150, 116], [124, 160], [108, 210], [110, 252], [124, 276]]);
   return build({
     id: 'heart', kind: 'ra', cols: 30, rows: 27, floor, holes, squeeze: 'atria',
@@ -90,27 +90,27 @@ function rightAtrium(): Room {
     lanes: [
       lane([[182, -12], [186, 120], [238, 232], [294, 330], [300, 440]], 'av', 'venous', 'tv', 34, 52, 60),
       lane([[138, 300], [200, 302], [270, 332], [300, 440]], 'av', 'venous', 'tv', 16, 46, 26),
-      lane([[210, 330], [276, 350], [300, 440]], 'av', 'venous', 'tv', 5, 40, 8),
+      lane([[210, 270], [276, 350], [300, 440]], 'av', 'venous', 'tv', 5, 40, 8),
     ],
     signals: [
       sig('glow', [[140, 104]], 0, 0.05, 16),
       sig('ripple', [[140, 104]], 0, 0.08, 420),
-      sig('line', [[140, 104], [214, 196], [300, 286], [322, 300]], 0.01, 0.07),
-      sig('glow', [[322, 300]], 0.07, 0.15, 10),
+      sig('line', [[140, 104], [214, 196], [300, 240], [322, 254]], 0.01, 0.07),
+      sig('glow', [[322, 254]], 0.07, 0.15, 10),
     ],
     features: [
       { kind: 'crista', pts: crista },
       { kind: 'fossa', x: 372, y: 230, rx: 22, ry: 30, flap: false },
       { kind: 'rim', x: 138, y: 300, r: 26, a0: -1.9, a1: 0.5 },
-      { kind: 'rim', x: 210, y: 330, r: 10, a0: -2.4, a1: -0.2 },
-      { kind: 'tendon', pts: pts([[166, 286], [240, 290], [316, 296]]) },
+      { kind: 'rim', x: 210, y: 270, r: 10, a0: -2.4, a1: -0.2 },
+      { kind: 'tendon', pts: pts([[166, 286], [240, 256], [316, 250]]) },
     ],
     props: [P('robot', 206, 152), P('pad', 280, 128)],
     targets: [
       { id: 'guide', label: '안내 로봇 바디', verb: '대화', x: 206, y: 160, r: 22, npc: null }, pad(280, 128),
       obs('heart-in', '하대정맥 입구', 150, 262),
       hx('hx-svc', 182, 92), hx('hx-crista', 114, 200), hx('hx-pectinate', 90, 246), hx('hx-auricle', 338, 92),
-      hx('hx-sa', 150, 116, 18), hx('hx-fossa', 366, 232), hx('hx-cs', 214, 306), hx('hx-avnode', 316, 296), hx('hx-tricuspid', 248, 350, 18),
+      hx('hx-sa', 150, 116, 18), hx('hx-fossa', 366, 232), hx('hx-cs', 214, 246), hx('hx-avnode', 316, 250), hx('hx-tricuspid', 248, 350, 18),
     ],
     doors: [door('tricuspid', { x: 262, y: 400, w: 76, h: 24 }, 'rv', { x: 150, y: 92 }, 'down', '삼첨판 → 우심실')],
     spawn: RA_SPAWN, spawnFacing: 'down',
@@ -232,8 +232,9 @@ function leftVentricle(): Room {
       lane([[300, 560], [250, 380], [212, 200], [192, 60], [190, -20]], 'sl', 'arterial', 'av', 40, 64, 50),
     ],
     cords: [
-      { x: 410, y: 296, valve: 'mv', slots: [0.55, 0.72, 0.9] },
-      { x: 262, y: 376, valve: 'mv', slots: [0.08, 0.26, 0.44] },
+      // Each papillary group supports BOTH mitral leaflets (split at slot 0.56).
+      { x: 410, y: 296, valve: 'mv', slots: [0.26, 0.44, 0.72] },
+      { x: 262, y: 376, valve: 'mv', slots: [0.08, 0.64, 0.9] },
     ],
     signals: [
       sig('glow', [[214, 100]], 0.13, 0.16, 8),
@@ -261,8 +262,8 @@ function aorta(): Room {
     valves: [{ id: 'av', kind: 'aortic', x: 150, y: 384, w: 116, toward: -1, pass: false }],
     lanes: [
       lane([[208, 440], [208, 300], [208, -20]], 'sl', 'arterial', null, 40, 120, 92),
-      lane([[176, 372], [124, 330], [98, 292]], 'diastole', 'arterial', null, 8, 22, 10),
-      lane([[240, 372], [294, 330], [318, 292]], 'diastole', 'arterial', null, 10, 22, 12),
+      lane([[176, 372], [124, 330], [98, 292]], 'coronary-right', 'arterial', null, 8, 22, 10),
+      lane([[240, 372], [294, 330], [318, 292]], 'coronary-left', 'arterial', null, 10, 22, 12),
     ],
     features: [
       { kind: 'ridge', pts: pts([[146, 246], [208, 240], [270, 246]]), w: 4 },

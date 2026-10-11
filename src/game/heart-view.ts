@@ -1,6 +1,6 @@
 import { bakeOrgan, type OrganArt } from '../art/organ';
 import type { Ctx } from '../art/pixel';
-import { openness, squeeze, travel, type ValveSet } from '../domain/cardiac';
+import { coronaryFlowFactor, openness, squeeze, travel, type ValveSet } from '../domain/cardiac';
 import type { Band, Lane, Organ, Valve } from '../world/organ-types';
 import type { Room } from '../world/rooms';
 import type { Point } from '../world/types';
@@ -83,7 +83,7 @@ export class HeartView {
     this.time += dt;
     for (const t of this.tracks) {
       const L = t.lane;
-      const o = openness(L.when === 'sl' ? 'sl' : 'av', real), osl = openness('sl', real);
+      const o = openness(L.when === 'sl' ? 'sl' : 'av', real);
       const gateOpen = t.valve ? openness(valveSet(t.valve), real) > 0.3 : true;
       for (let i = 0; i < L.n; i++) {
         let d = t.d[i]!;
@@ -91,7 +91,7 @@ export class HeartView {
         let f: number;
         if (L.when === 'av') f = up ? 0.55 + 0.45 * o : 0.12 + 1.1 * o;
         else if (L.when === 'sl') f = up ? 0.06 + 1.25 * o : 0.2 + 1.5 * o;
-        else if (L.when === 'diastole') f = 0.12 + 0.88 * (1 - osl);
+        else if (L.when === 'coronary-left' || L.when === 'coronary-right') f = coronaryFlowFactor(L.when === 'coronary-left' ? 'left' : 'right', real);
         else f = 0.8 + 0.2 * Math.sin(this.time * 1.3 + i);
         const step = L.speed * f * dt * (0.85 + 0.3 * ((i * 37) % 10) / 10);
         const hold = t.gateD - 2 - (i % 6) * 2.2;

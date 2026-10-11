@@ -1,4 +1,5 @@
 import { defaultAppearance, outfits, presets, starterOutfits, validateAppearance, type Appearance, type OutfitId, type Preset } from './appearance';
+import { emptyArticle, validateArticle, type Q1Article } from './article-state';
 import { canStand } from '../world/collision';
 import { rooms } from '../world/rooms';
 import { isHeartRoom, roomIds, type Dir, type RoomId } from '../world/types';
@@ -13,6 +14,7 @@ export type GameState = {
   owned: OutfitId[];
   at: { room: RoomId; x: number; y: number; facing: Dir };
   totalXp: number; gold: number; ledger: string[]; inspected: string[]; flags: string[];
+  article: Q1Article;
   cafe: { welcomeUsed: boolean; orderCount: number; lastOrder: { itemId: string; price: number; orderedAt: string } | null; restedAt: string | null };
   settings: { time: TimeMode };
 };
@@ -27,6 +29,7 @@ export function newState(): GameState {
     avatar: { preset: 'male', name: '새 기자', look: defaultAppearance('male') }, owned: [...starterOutfits],
     at: { room: 'newsroom', x: spawn.x, y: spawn.y, facing: 'down' },
     totalXp: 0, gold: 0, ledger: [], inspected: [], flags: [],
+    article: emptyArticle(),
     cafe: { welcomeUsed: false, orderCount: 0, lastOrder: null, restedAt: null },
     settings: { time: 'day' },
   };
@@ -63,6 +66,10 @@ export function validateState(value: unknown): GameState {
     place = { room: place.room, x: r.spawn.x, y: r.spawn.y, facing: r.spawnFacing };
   }
   if (!integer(s.totalXp) || !integer(s.gold) || !strings(s.ledger, Infinity) || !strings(s.inspected) || !strings(s.flags)) throw new Error('진행 기록이 잘못되었습니다.');
+  const article = validateArticle(s.article);
+  for (const id of [article.returning, article.outgoing]) if (id && !s.inspected.includes('q001:' + id)) throw new Error('기사의 관찰 기록이 없습니다.');
+  if (article.extra && !s.inspected.includes('hx:' + article.extra)) throw new Error('기사의 탐험 기록이 없습니다.');
+  if (article.publishedAt && !s.ledger.includes('quest.Q001.first')) throw new Error('기사 발행 보상 기록이 없습니다.');
   if (!cafe || typeof cafe.welcomeUsed !== 'boolean' || !integer(cafe.orderCount) || (cafe.restedAt !== null && !date(cafe.restedAt))) throw new Error('카페 기록이 잘못되었습니다.');
   const lo = cafe.lastOrder as Record<string, unknown> | null;
   if (lo !== null && (!lo || typeof lo.itemId !== 'string' || !integer(lo.price) || !date(lo.orderedAt))) throw new Error('카페 주문 기록이 잘못되었습니다.');
@@ -73,6 +80,7 @@ export function validateState(value: unknown): GameState {
     avatar: { preset, name: a.name.trim(), look }, owned: [...s.owned] as OutfitId[],
     at: place,
     totalXp: s.totalXp, gold: s.gold, ledger: [...s.ledger], inspected: [...s.inspected], flags: [...s.flags],
+    article,
     cafe: { welcomeUsed: cafe.welcomeUsed, orderCount: cafe.orderCount, restedAt: (cafe.restedAt as string | null), lastOrder: lo ? { itemId: lo.itemId as string, price: lo.price as number, orderedAt: lo.orderedAt as string } : null },
     settings: { time },
   };

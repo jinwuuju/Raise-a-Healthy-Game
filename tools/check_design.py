@@ -52,6 +52,10 @@ early = load('data/balance/early-quests.v0.1.json')
 quests = early['quests']
 require([q['id'] for q in quests] == [f'Q{i:03d}' for i in range(1, 11)], 'Expected Q001..Q010')
 require(len({q['completionKey'] for q in quests}) == 10, 'Duplicate quest completion key')
+q001 = load('data/balance/q001.v0.1.json')
+require(q001['observation']['xp'] + q001['publication']['xp'] == q001['totalXp'] == quests[0]['xp'], 'Q001 runtime XP split mismatch')
+require(q001['observation']['gold'] + q001['publication']['gold'] == q001['totalGold'] == quests[0]['gold'], 'Q001 runtime gold split mismatch')
+require(q001['publication']['key'] == quests[0]['completionKey'] and q001['observation']['key'] != q001['publication']['key'], 'Q001 runtime completion key mismatch')
 
 def level_at(xp):
     return max(row['level'] for row in rows if row['cumulativeXp'] <= xp)

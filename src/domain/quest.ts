@@ -1,5 +1,6 @@
 import { isHeartRoom, type RoomId } from '../world/types';
 import { grantOnce, type GameState } from './state';
+import balance from '../../data/balance/q001.v0.1.json';
 
 /*
  * Q001 entry rules (P2-01 scope): accept -> enter the heart -> two observations -> return.
@@ -11,7 +12,7 @@ export const Q1 = { accepted: 'q001-accepted', entered: 'q001-entered', observed
 export const Q1_OBSERVATIONS = ['heart-out', 'heart-in'] as const;
 export type Q1Observation = (typeof Q1_OBSERVATIONS)[number];
 export const Q1_ROOM: Record<Q1Observation, RoomId> = { 'heart-in': 'heart', 'heart-out': 'rv' };
-export const Q1_OBSERVE_REWARD = { key: 'quest.Q001.observe', xp: 20, gold: 0 } as const;
+export const Q1_OBSERVE_REWARD = balance.observation;
 
 const has = (s: GameState, f: string) => s.flags.includes(f);
 const addFlag = (s: GameState, f: string): GameState => (has(s, f) ? s : { ...s, flags: [...s.flags, f] });

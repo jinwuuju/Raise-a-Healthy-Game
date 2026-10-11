@@ -25,4 +25,7 @@ for path in dist.rglob('*'):
                 assert DISCLAIMER in text, 'Draft heart interior content must carry the in-game disclaimer'
                 assert 'draft_unreviewed' in text, 'Heart interior content must keep its draft status in the bundle'
                 assert 'medical_reviewed' not in text, 'Heart interior content must not claim review'
+            if 'content.Q001.article' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Draft article must carry its unreviewed disclaimer'
+                assert '의학 전문가 검수 전 초안' in text, 'Article publication must remain a game exercise'
 print('Game build boundary passed: Q001 and the heart interior are labelled as unreviewed drafts; no catalogs, examples or raw/source files')

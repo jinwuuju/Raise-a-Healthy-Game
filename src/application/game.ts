@@ -1,5 +1,7 @@
 import { defaultAppearance, validateAppearance, type Appearance, type Preset } from '../domain/appearance';
 import { orderDrink } from '../domain/cafe';
+import { checkArticle, publishArticle, selectArticle } from '../domain/article';
+import type { ArticleSlot } from '../domain/article-state';
 import { discover } from '../domain/heart';
 import { Q1, acceptQ1, briefQ1, canEnterHeart, observeQ1 } from '../domain/quest';
 import { newState, validateState, type GameState, type TimeMode } from '../domain/state';
@@ -111,6 +113,17 @@ export class Game {
   }
 
   brief(): void { this.commit(briefQ1(this.state)); }
+
+  selectArticle(slot: ArticleSlot, id: string | null): void {
+    const next = selectArticle(this.state, slot, id); if (next !== this.state) this.commit(next);
+  }
+  checkArticle(): void {
+    const next = checkArticle(this.state); if (next !== this.state) this.commit(next);
+  }
+  publishArticle(): boolean {
+    const next = publishArticle(this.state); if (next === this.state) { this.persist(); return false; }
+    this.commit(next); return true;
+  }
 
   /** Records a heart structure in the exploration record; returns true the first time. No XP or gold. */
   discover(id: string): boolean {
