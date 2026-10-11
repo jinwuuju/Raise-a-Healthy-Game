@@ -1,4 +1,5 @@
 import { portrait } from '../art/character';
+import type { MiniMap } from '../art/organ';
 import { levelOf } from '../domain/quest';
 import type { GameState } from '../domain/state';
 import { REAL_CYCLE, SLOW, beat, ecg, openness, phaseAt } from '../domain/cardiac';
@@ -33,7 +34,9 @@ export class Hud {
   private lookKey = '';
   private toastTimer = 0;
   private bannerTimer = 0;
-  private miniBase: HTMLCanvasElement | null = null;
+  private miniCur: MiniMap | null = null;
+  private miniCache = new Map<RoomId, MiniMap>();
+  private miniCap = el('span', 'cap');
 
   constructor(private a: HudActions) {
     this.chip = button('chip glass', '', a.onChip, '기자 정보');
@@ -51,8 +54,8 @@ export class Hud {
     const note = button('iconbtn glass', '', a.onNote, '취재 수첩'); note.innerHTML = ICONS.note + '<span>수첩</span>';
     const menu = button('iconbtn glass', '', a.onMenu, '메뉴'); menu.innerHTML = ICONS.menu + '<span>메뉴</span>';
     row.append(note, menu);
-    this.mini.append(this.miniCanvas);
-    this.mini.setAttribute('role', 'button'); this.mini.setAttribute('aria-label', '동네 지도 크게 보기'); this.mini.tabIndex = 0;
+    this.mini.append(this.miniCanvas, this.miniCap);
+    this.mini.setAttribute('role', 'button'); this.mini.setAttribute('aria-label', '지도 크게 보기'); this.mini.tabIndex = 0;
     this.mini.addEventListener('click', e => { e.stopPropagation(); a.onMap(); });
     this.mini.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); a.onMap(); } });
     const ch = el('div', 'cycle-head'); ch.append(this.cyclePhase, el('small', '', '×' + SLOW + ' 느리게'));
@@ -68,6 +71,12 @@ export class Hud {
     this.root.addEventListener('pointerdown', e => { if (e.target !== this.root) e.stopPropagation(); });
     document.body.append(this.root);
     window.setTimeout(() => { this.hintEl.style.opacity = '0'; }, 9000);
+  }
+
+  /** Touch screens: room for the movement ball, and a hint that matches it. */
+  setTouch(on: boolean): void {
+    this.root.classList.toggle('touch', on);
+    if (on) this.hintEl.textContent = '왼쪽 아래 조작볼로 걸어요 · 사람이나 물건을 누르면 다가가서 말을 걸어요';
   }
 
   setVisible(v: boolean): void { this.root.classList.toggle('hidden', !v); }
@@ -103,22 +112,29 @@ export class Hud {
     if (changed) { this.quest.classList.remove('closed', 'pulse'); void this.quest.offsetWidth; this.quest.classList.add('pulse'); }
   }
 
-  setRoom(room: RoomId, minimapBase: () => HTMLCanvasElement): void {
+  setRoom(room: RoomId, make: () => MiniMap | null, caption = ''): void {
     const street = room === 'street', heart = isHeartRoom(room);
-    this.mini.classList.toggle('hidden', !street);
+    let m = this.miniCache.get(room) ?? null;
+    if (!m && (street || heart)) { m = make(); if (m) this.miniCache.set(room, m); }
+    this.miniCur = m;
+    this.mini.classList.toggle('hidden', !m);
+    if (m) { this.miniCanvas.width = m.c.width; this.miniCanvas.height = m.c.height; }
+    this.miniCap.textContent = caption;
+    this.mini.classList.toggle('organ', heart);
     this.cycle.classList.toggle('hidden', !heart);
     this.root.classList.toggle('in-heart', heart);
     this.cycle.classList.toggle('lung', room === 'lung');
     this.lastPhase = '';
-    if (street && !this.miniBase) { this.miniBase = minimapBase(); this.miniCanvas.width = this.miniBase.width; this.miniCanvas.height = this.miniBase.height; }
   }
 
   drawMinimap(px: number, py: number, t: number): void {
-    if (!this.miniBase || this.mini.classList.contains('hidden')) return;
+    const m = this.miniCur;
+    if (!m || this.mini.classList.contains('hidden')) return;
     const g = this.miniCanvas.getContext('2d')!;
     g.imageSmoothingEnabled = false;
-    g.drawImage(this.miniBase, 0, 0);
-    const x = Math.round(px / 8), y = Math.round(py / 8);
+    g.clearRect(0, 0, m.c.width, m.c.height);
+    g.drawImage(m.c, 0, 0);
+    const x = Math.round(m.ox + px * m.s), y = Math.round(m.oy + py * m.s);
     g.fillStyle = 'rgba(255,255,255,' + (0.35 + 0.25 * Math.sin(t * 6)) + ')'; g.fillRect(x - 3, y - 3, 7, 7);
     g.fillStyle = '#ff5a6e'; g.fillRect(x - 2, y - 2, 5, 5); g.fillStyle = '#ffffff'; g.fillRect(x - 1, y - 1, 3, 3);
   }

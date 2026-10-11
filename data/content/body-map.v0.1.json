@@ -1,0 +1,136 @@
+{
+ "id": "content.body.map",
+ "status": "draft_unreviewed",
+ "review": null,
+ "updatedAt": "2026-10-11",
+ "disclaimer": "검수 전 모형 · 기관의 위치와 크기를 알아보기 쉽게 단순화한 앞모습 지도예요",
+ "note": "사람을 앞에서 본 모습이라 화면의 왼쪽이 몸의 오른쪽이다. 기관 모양·크기·겹침은 단순화했다. 전체 인체 아틀라스(설계 v0.2의 12허브·148항목)로 확장할 때 이 파일을 부모 지도로 쓴다.",
+ "sources": [
+  {
+   "id": "nhlbi-anatomy",
+   "title": "NHLBI · What the Heart Looks Like",
+   "url": "https://www.nhlbi.nih.gov/health/heart/anatomy",
+   "checked": "2026-10-11"
+  },
+  {
+   "id": "nhlbi-lungs",
+   "title": "NHLBI · How the Lungs Work",
+   "url": "https://www.nhlbi.nih.gov/health/lungs",
+   "checked": "2026-10-11"
+  }
+ ],
+ "organs": [
+  {
+   "id": "brain",
+   "name": "뇌",
+   "x": 300,
+   "y": 92,
+   "rx": 58,
+   "ry": 46,
+   "state": "locked",
+   "rooms": []
+  },
+  {
+   "id": "lung-right",
+   "name": "오른폐",
+   "x": 242,
+   "y": 300,
+   "rx": 54,
+   "ry": 92,
+   "state": "partial",
+   "rooms": [
+    "lung"
+   ],
+   "note": "폐포 모세혈관 구역만 탐사 가능"
+  },
+  {
+   "id": "lung-left",
+   "name": "왼폐",
+   "x": 360,
+   "y": 306,
+   "rx": 48,
+   "ry": 86,
+   "state": "partial",
+   "rooms": [
+    "lung"
+   ],
+   "note": "폐포 모세혈관 구역만 탐사 가능"
+  },
+  {
+   "id": "heart",
+   "name": "심장",
+   "x": 318,
+   "y": 336,
+   "rx": 38,
+   "ry": 44,
+   "state": "open",
+   "rooms": [
+    "heart",
+    "rv",
+    "la",
+    "lv",
+    "aorta"
+   ]
+  },
+  {
+   "id": "liver",
+   "name": "간",
+   "x": 252,
+   "y": 432,
+   "rx": 66,
+   "ry": 40,
+   "state": "locked",
+   "rooms": []
+  },
+  {
+   "id": "stomach",
+   "name": "위",
+   "x": 352,
+   "y": 440,
+   "rx": 38,
+   "ry": 34,
+   "state": "locked",
+   "rooms": []
+  },
+  {
+   "id": "kidney-right",
+   "name": "오른콩팥",
+   "x": 252,
+   "y": 512,
+   "rx": 20,
+   "ry": 30,
+   "state": "locked",
+   "rooms": []
+  },
+  {
+   "id": "kidney-left",
+   "name": "왼콩팥",
+   "x": 348,
+   "y": 502,
+   "rx": 20,
+   "ry": 30,
+   "state": "locked",
+   "rooms": []
+  },
+  {
+   "id": "intestine",
+   "name": "창자",
+   "x": 300,
+   "y": 582,
+   "rx": 76,
+   "ry": 58,
+   "state": "locked",
+   "rooms": []
+  },
+  {
+   "id": "bladder",
+   "name": "방광",
+   "x": 300,
+   "y": 676,
+   "rx": 30,
+   "ry": 22,
+   "state": "locked",
+   "rooms": []
+  }
+ ]
+}

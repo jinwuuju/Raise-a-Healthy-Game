@@ -2,6 +2,7 @@ import motion from '../../data/balance/movement.v0.2.json';
 import { buildingArt } from '../art/buildings';
 import { AX, AY, FIGURE_TOP, WALK_CYCLE, characterFrame, idleFrame } from '../art/character';
 import { bakeGround } from '../art/ground';
+import { organMinimap, type MiniMap } from '../art/organ';
 import { ellipse, makeCanvas, pixelText, type Sprite } from '../art/pixel';
 import { propSprite } from '../art/props';
 import type { Look } from '../domain/appearance';
@@ -533,6 +534,12 @@ export class World {
       out.fillStyle = '#fff3c4'; out.fill(); out.lineWidth = 1.5 * dpr; out.strokeStyle = 'rgba(22,18,34,0.85)'; out.stroke();
       label(t.label, t.x, t.y - 23 + bob / zoom * dpr, '#fff3c4');
     }
+  }
+
+  /** HUD minimap for the current room: the street, or a heart room (null indoors at the office and cafe). */
+  miniMap(): MiniMap | null {
+    if (this.roomId === 'street') return { c: this.minimapBase(), s: 1 / 8, ox: 0, oy: 0 };
+    return this.room.organ ? organMinimap(this.room, 1 / 4) : null;
   }
 
   /** Small overview used by the HUD minimap (street only). */

@@ -219,3 +219,31 @@ function feature(g: Ctx, ft: Feature, p: Pal) {
       break;
   }
 }
+
+export type MiniMap = { c: HTMLCanvasElement; s: number; ox: number; oy: number };
+
+/** Small square overview of an organ room: lumen, openings, cut wall, valves (bright = way out), exit and return pad. */
+export function organMinimap(room: Room, scale: number): MiniMap {
+  const o = room.organ!, W = room.cols * 16, H = room.rows * 16;
+  const w = Math.ceil(W * scale), h = Math.ceil(H * scale), n = Math.max(w, h);
+  const { c, g } = makeCanvas(n, n);
+  const ox = Math.floor((n - w) / 2), oy = Math.floor((n - h) / 2);
+  const lumen = { ra: '#9a394b', rv: '#9a394b', la: '#cf4a5d', lv: '#cf4a5d', aorta: '#dfa0a2', lung: '#bf4a5d' }[o.kind];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const wx = (x + 0.5) / scale, wy = (y + 0.5) / scale, f = o.floor(wx, wy);
+    let col: string | null = null;
+    if (f < 0) col = o.holes(wx, wy) < 0 ? '#36091a' : lumen;
+    else if (o.kind === 'lung') col = o.alveoli.some(a => Math.hypot(wx - a.x, wy - a.y) < a.r - 2) ? '#dfe8f5' : f < 5 ? '#f0b9c4' : null;
+    else if (f <= o.wall(wx, wy)) col = f < 2.5 / scale ? '#7a2434' : '#561626';
+    if (col) { g.fillStyle = col; g.fillRect(ox + x, oy + y, 1, 1); }
+  }
+  const t = Math.max(1, Math.round(scale * 6));
+  for (const v of o.valves) { g.fillStyle = v.pass ? '#fff1bf' : '#c9b2a8'; g.fillRect(ox + Math.round(v.x * scale), oy + Math.round(v.y * scale - t / 2), Math.max(2, Math.round(v.w * scale)), t); }
+  for (const d of room.doors) {
+    const cx = ox + (d.zone.x + d.zone.w / 2) * scale, cy = oy + (d.zone.y + d.zone.h / 2) * scale, r = Math.max(2, Math.round(scale * 8));
+    g.fillStyle = '#f1cf8b'; g.fillRect(Math.round(cx - r), Math.round(cy - r / 2), r * 2, r);
+  }
+  const pad = room.targets.find(q => q.id === 'return-pad');
+  if (pad) { const r = Math.max(2, Math.round(scale * 7)); g.fillStyle = '#7ff0f2'; g.fillRect(Math.round(ox + pad.x * scale - r / 2), Math.round(oy + pad.y * scale - r / 2), r, r); }
+  return { c, s: scale, ox, oy };
+}

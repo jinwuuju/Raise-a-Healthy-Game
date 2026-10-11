@@ -214,3 +214,33 @@ button { font: inherit; color: inherit; }
 @media (max-width: 760px) { .hint { left: calc(12px + var(--safe-l)); transform: none; max-width: calc(100vw - 130px); white-space: normal; line-height: 1.4; } }
 a.row { color: var(--text); text-decoration: none; }
 .sheet .content, .dialog .choices { touch-action: pan-y; }
+
+/* ---------- Minimap caption (street and heart rooms) ---------- */
+.minimap { position: relative; }
+.minimap.organ canvas { background: radial-gradient(circle at 50% 45%, #2a1220, #140910); }
+.minimap .cap { position: absolute; left: 8px; bottom: 6px; font-size: 11px; font-weight: 900; color: #fff3e6; text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9); pointer-events: none; }
+.seg.three { grid-template-columns: repeat(3, 1fr); }
+.atlas { display: grid; gap: 10px; }
+
+/* ---------- Movement ball (touch screens, D058) ---------- */
+.joystick { position: absolute; left: calc(8px + var(--safe-l)); bottom: calc(8px + var(--safe-b)); width: 164px; height: 164px; display: grid; place-items: center; touch-action: none; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.joystick .base { position: relative; width: 124px; height: 124px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, rgba(28,22,44,0.30) 0%, rgba(28,22,44,0.55) 62%, rgba(18,14,28,0.70) 100%); border: 2px solid rgba(241,207,139,0.45); box-shadow: 0 6px 22px rgba(0,0,0,0.35), inset 0 0 18px rgba(0,0,0,0.35); display: grid; place-items: center; transition: border-color .15s, transform .15s; }
+.joystick.active .base { border-color: rgba(241,207,139,0.85); transform: scale(1.03); }
+.joystick .knob { width: 56px; height: 56px; border-radius: 50%; background: radial-gradient(circle at 36% 30%, #fff8e6 0%, #f3d79c 32%, #c99a4c 72%, #8a6526 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.45), inset 0 -3px 6px rgba(80,50,10,0.35); will-change: transform; pointer-events: none; }
+.joystick:not(.active) .knob { transition: transform .12s ease-out; }
+.joystick .arrow { position: absolute; width: 0; height: 0; border: 7px solid transparent; opacity: 0.7; pointer-events: none; }
+.joystick .arrow.up { top: 7px; left: calc(50% - 7px); border-bottom-color: rgba(241,207,139,0.8); border-top-width: 0; }
+.joystick .arrow.down { bottom: 7px; left: calc(50% - 7px); border-top-color: rgba(241,207,139,0.8); border-bottom-width: 0; }
+.joystick .arrow.left { left: 7px; top: calc(50% - 7px); border-right-color: rgba(241,207,139,0.8); border-left-width: 0; }
+.joystick .arrow.right { right: 7px; top: calc(50% - 7px); border-left-color: rgba(241,207,139,0.8); border-right-width: 0; }
+.hud.touch .toast { bottom: calc(186px + var(--safe-b)); }
+.hud.touch .hint { bottom: calc(176px + var(--safe-b)); white-space: normal; max-width: calc(100vw - 40px); text-align: center; }
+.hud.touch .save-error { bottom: calc(176px + var(--safe-b)); }
+@media (max-height: 480px) {
+  .joystick { width: 140px; height: 140px; }
+  .joystick .base { width: 108px; height: 108px; }
+  .joystick .knob { width: 48px; height: 48px; }
+  .hud.touch .toast { left: auto; right: calc(16px + var(--safe-r)); transform: none; bottom: calc(14px + var(--safe-b)); max-width: calc(100vw - 200px); }
+  .hud.touch .hint { left: auto; right: calc(16px + var(--safe-r)); transform: none; bottom: calc(14px + var(--safe-b)); max-width: calc(100vw - 200px); }
+}
+

@@ -13,6 +13,9 @@ import { Dialog } from './ui/dialog';
 import { button, el } from './ui/dom';
 import { Hud } from './ui/hud';
 import { openCreator } from './ui/creator';
+import { Joystick } from './ui/joystick';
+import bodyMap from '../data/content/body-map.v0.1.json';
+import { organMinimap } from './art/organ';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
 import { heartRoute } from './world/heart-rooms';
 import { rooms, type Target } from './world/rooms';
@@ -60,13 +63,20 @@ const hud = new Hud({
   onMap: () => openMap(),
 });
 hud.setVisible(false);
+// Touch screens get a movement ball at the bottom left (D058); PC keeps keyboard/mouse only.
+const touchMode = 'ontouchstart' in window;
+const joy = new Joystick(hud.root);
+let touchUI = false;
+function enableTouchUI(): void { if (touchUI) return; touchUI = true; joy.setVisible(true); hud.setTouch(true); }
+if (window.matchMedia?.('(pointer: coarse)').matches) enableTouchUI();
+window.addEventListener('touchstart', () => enableTouchUI(), { passive: true, capture: true });
 
 // ---------- Input ----------
 const keys = new Set<string>();
 const pointer = { id: -1, sx: 0, sy: 0, x: 0, y: 0, t: 0, steering: false };
 const dpr = () => Math.min(3, window.devicePixelRatio || 1);
 const busy = () => dialog.open || sheetOpen() || !world || world.locked || document.querySelector('.creator') !== null;
-function pauseInput(): void { keys.clear(); pointer.id = -1; pointer.steering = false; world?.stop(); }
+function pauseInput(): void { keys.clear(); pointer.id = -1; pointer.steering = false; joy.reset(); world?.stop(); }
 
 window.addEventListener('keydown', e => {
   if (document.querySelector('.creator')) return;
@@ -87,43 +97,75 @@ window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
 window.addEventListener('blur', pauseInput);
 
 // Any tap while a dialog is open advances it (and closes it after the last line), wherever it lands.
-let swallowClickUntil = 0;
+let swallowClickUntil = 0, lastAdvance = 0;
 const onChoice = (e: Event) => !!(e.target as Element | null)?.closest?.('.dialog .choices button');
 document.addEventListener('pointerdown', e => {
   if (!dialog.open || onChoice(e)) return;
   e.preventDefault(); e.stopPropagation();
   swallowClickUntil = performance.now() + 500;
+  lastAdvance = performance.now();
   dialog.tapAnywhere();
 }, true);
+// Some mobile browsers drop pointer events for touches; advance on the touch itself as well (once per tap).
+if (touchMode) document.addEventListener('touchstart', e => {
+  if (!dialog.open || onChoice(e)) return;
+  e.stopPropagation();
+  const now = performance.now();
+  swallowClickUntil = now + 500;
+  if (now - lastAdvance < 350) return;
+  lastAdvance = now;
+  dialog.tapAnywhere();
+}, { capture: true, passive: true });
 document.addEventListener('click', e => {
   if (performance.now() < swallowClickUntil && !onChoice(e)) { e.preventDefault(); e.stopPropagation(); }
 }, true);
 
 canvas.addEventListener('pointerdown', e => {
-  if (busy()) return;
+  if (busy() || (touchMode && e.pointerType === 'touch')) return;
   canvas.focus({ preventScroll: true });
   canvas.setPointerCapture(e.pointerId);
   Object.assign(pointer, { id: e.pointerId, sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY, t: performance.now(), steering: false });
 });
 canvas.addEventListener('pointermove', e => {
-  if (e.pointerId !== pointer.id) return;
+  if (e.pointerId !== pointer.id || (touchMode && e.pointerType === 'touch')) return;
   pointer.x = e.clientX; pointer.y = e.clientY;
   if (!pointer.steering && (Math.hypot(pointer.x - pointer.sx, pointer.y - pointer.sy) > motion.holdToSteerCssPixels)) pointer.steering = true;
 });
-const endPointer = (e: PointerEvent, tap: boolean) => {
-  if (e.pointerId !== pointer.id) return;
+const finishPointer = (x: number, y: number, tap: boolean) => {
   const wasSteering = pointer.steering;
   pointer.id = -1; pointer.steering = false;
-  if (tap && !wasSteering && world && !busy()) world.tap(world.screenToWorld(e.clientX * dpr(), e.clientY * dpr()));
+  if (tap && !wasSteering && world && !busy()) world.tap(world.screenToWorld(x * dpr(), y * dpr()));
 };
+const endPointer = (e: PointerEvent, tap: boolean) => { if (e.pointerId === pointer.id) finishPointer(e.clientX, e.clientY, tap); };
+// Touch path: taps and hold-to-steer on the world work from touch events directly (ids offset from pointer ids).
+const TOUCH = 1e6;
+const findTouch = (list: TouchList) => { for (let i = 0; i < list.length; i++) if (TOUCH + list[i]!.identifier === pointer.id) return list[i]!; return null; };
+if (touchMode) {
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    if (!t || busy() || pointer.id !== -1 || performance.now() < swallowClickUntil) return;
+    Object.assign(pointer, { id: TOUCH + t.identifier, sx: t.clientX, sy: t.clientY, x: t.clientX, y: t.clientY, t: performance.now(), steering: false });
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    const t = findTouch(e.changedTouches);
+    if (!t) return;
+    e.preventDefault();
+    pointer.x = t.clientX; pointer.y = t.clientY;
+    if (!pointer.steering && Math.hypot(pointer.x - pointer.sx, pointer.y - pointer.sy) > motion.holdToSteerCssPixels) pointer.steering = true;
+  }, { passive: false });
+  canvas.addEventListener('touchend', e => { const t = findTouch(e.changedTouches); if (t) { e.preventDefault(); finishPointer(t.clientX, t.clientY, true); } }, { passive: false });
+  canvas.addEventListener('touchcancel', e => { const t = findTouch(e.changedTouches); if (t) finishPointer(t.clientX, t.clientY, false); });
+}
 canvas.addEventListener('pointerup', e => endPointer(e, true));
 canvas.addEventListener('pointercancel', e => endPointer(e, false));
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 
 function inputState() {
   if (busy()) return { vx: 0, vy: 0, steer: null };
-  const vx = (keys.has('arrowright') || keys.has('d') ? 1 : 0) - (keys.has('arrowleft') || keys.has('a') ? 1 : 0);
-  const vy = (keys.has('arrowdown') || keys.has('s') ? 1 : 0) - (keys.has('arrowup') || keys.has('w') ? 1 : 0);
+  let vx = (keys.has('arrowright') || keys.has('d') ? 1 : 0) - (keys.has('arrowleft') || keys.has('a') ? 1 : 0);
+  let vy = (keys.has('arrowdown') || keys.has('s') ? 1 : 0) - (keys.has('arrowup') || keys.has('w') ? 1 : 0);
+  if (joy.active && !vx && !vy) { vx = joy.vector.x; vy = joy.vector.y; }
   if (pointer.id !== -1 && !pointer.steering && performance.now() - pointer.t > motion.holdToSteerMilliseconds) pointer.steering = true;
   const steer = pointer.id !== -1 && pointer.steering && world ? world.screenToWorld(pointer.x * dpr(), pointer.y * dpr()) : null;
   return { vx, vy, steer };
@@ -191,6 +233,9 @@ function refresh() {
 }
 game.subscribe(refresh);
 
+/** Short place name shown on the minimap. */
+function mapCaption(room: RoomId): string { const t = rooms[room].title; return room === 'street' ? t.split(' · ')[0]! : t.split(' · ').pop()!.replace(/ \(.*\)/, ''); }
+
 function startWorld() {
   const s = game.state;
   world = new World(s.at.room, s.at.x, s.at.y, s.at.facing, s.avatar.look, s.avatar.name);
@@ -200,7 +245,7 @@ function startWorld() {
   world.onSignalWait = (_c, sec) => hud.toast(sec > 0 ? '빨간불이에요. 초록불이 켜지면 건너요 · 약 ' + Math.ceil(sec) + '초' : '보행 신호가 곧 바뀌어요. 다음 초록불을 기다려요.');
   world.onTarget = t => interact(t);
   hud.setVisible(true);
-  hud.setRoom(s.at.room, () => world!.minimapBase());
+  hud.setRoom(s.at.room, () => world!.miniMap(), mapCaption(s.at.room));
   refresh();
   hud.showBanner(rooms[s.at.room].title);
   canvas.focus({ preventScroll: true });
@@ -224,7 +269,7 @@ function travel(d: Trip) {
     try { if (d.mode === 'scope-in') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
     catch (e) { hud.toast(e instanceof Error ? e.message : '이동하지 못했어요.', true); }
     w.setRoom(game.state.at.room, game.state.at.x, game.state.at.y, game.state.at.facing);
-    hud.setRoom(w.roomId, () => w.minimapBase());
+    hud.setRoom(w.roomId, () => w.miniMap(), mapCaption(w.roomId));
     refresh();
     fade.classList.remove('on', 'scope', 'flow'); fadeCard.classList.remove('show');
     hud.showBanner(rooms[w.roomId].title);
@@ -384,7 +429,7 @@ function editLook() {
 
 function openMap() {
   if (busy() || !world) return;
-  if (isHeartRoom(world.roomId)) { openHeartMap(); return; }
+  if (isHeartRoom(world.roomId)) { openAtlas('room'); return; }
   if (world.roomId !== 'street') return;
   pauseInput();
   openSheet('동네 지도 · 논현로 일대', c => {
@@ -399,39 +444,117 @@ function openMap() {
   });
 }
 
-/** Route guide inside the heart: the order blood takes, where the reporter is, and how much has been found. */
-function openHeartMap() {
+type AtlasTab = 'room' | 'heart' | 'body';
+/**
+ * Map in three scales: this room (where you are, exits, records), the heart (the order blood takes) and
+ * the human body (which organs can be explored now). The body level is the parent for the later full atlas.
+ */
+function openAtlas(tab: AtlasTab) {
   pauseInput();
-  const s = game.state, here = world!.roomId;
-  openSheet('심장 길 안내 · 피가 지나는 순서', c => {
-    const cv = el('canvas'); cv.className = 'heartmap'; cv.width = 960; cv.height = 600;
-    const g = cv.getContext('2d')!;
-    const node: Record<string, [number, number, string]> = {
-      heart: [170, 420, '우심방'], rv: [170, 200, '우심실'], lung: [480, 80, '폐'], la: [790, 200, '좌심방'], lv: [790, 420, '좌심실'], aorta: [600, 540, '대동맥'], body: [360, 540, '온몸'],
+  openSheet('지도', c => {
+    const seg = el('div', 'seg three'), area = el('div', 'atlas');
+    const tabs: [AtlasTab, string][] = [['room', '이 방'], ['heart', '심장'], ['body', '인체']];
+    const show = (t: AtlasTab) => {
+      seg.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-pressed', String(tabs[i]![0] === t)));
+      area.replaceChildren(...(t === 'room' ? roomMap() : t === 'heart' ? heartRouteMap() : bodyAtlas()));
     };
-    const order = ['heart', 'rv', 'lung', 'la', 'lv', 'aorta', 'body', 'heart'];
-    g.lineWidth = 6; g.lineCap = 'round';
-    for (let i = 1; i < order.length; i++) {
-      const [x1, y1] = node[order[i - 1]!]!, [x2, y2] = node[order[i]!]!;
-      const venous = ['heart', 'rv', 'body'].includes(order[i - 1]!);
-      g.strokeStyle = venous ? '#8e2c44' : '#e2445c';
-      g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
-      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, ang = Math.atan2(y2 - y1, x2 - x1);
-      g.fillStyle = g.strokeStyle; g.beginPath(); g.moveTo(mx + Math.cos(ang) * 16, my + Math.sin(ang) * 16); g.lineTo(mx + Math.cos(ang + 2.5) * 16, my + Math.sin(ang + 2.5) * 16); g.lineTo(mx + Math.cos(ang - 2.5) * 16, my + Math.sin(ang - 2.5) * 16); g.fill();
-    }
-    for (const [id, [x, y, label]] of Object.entries(node)) {
-      const cur = id === here, room = id as RoomId;
-      g.fillStyle = cur ? '#f1cf8b' : id === 'body' ? '#2b2236' : '#3a1e2e'; g.strokeStyle = cur ? '#ffffff' : '#f1cf8b88'; g.lineWidth = 3;
-      g.beginPath(); g.roundRect(x - 92, y - 44, 184, 88, 18); g.fill(); g.stroke();
-      g.fillStyle = cur ? '#2a1d08' : '#fff4ea'; g.font = '800 30px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-      g.fillText(label, x, y - (id === 'body' ? 0 : 12));
-      if (id !== 'body') { const pr = roomProgress(s, room); g.font = '700 22px system-ui, sans-serif'; g.fillStyle = cur ? '#4a3510' : '#d8c4b8'; g.fillText((cur ? '지금 여기 · ' : '') + '기록 ' + pr.found + '/' + pr.total, x, y + 22); }
-    }
-    g.fillStyle = '#b8afc6'; g.font = '600 20px system-ui, sans-serif'; g.fillText('밝은 빨강: 산소가 많은 피 · 어두운 빨강: 산소가 적은 피', 480, 300);
-    c.append(cv);
-    c.append(el('p', '', '판막은 피가 흐르는 방향으로만 열려요. 지나온 판막으로는 되돌아갈 수 없으니, 피를 따라 한 바퀴 돌거나 각 방의 귀환 장치를 쓰세요.'));
-    c.append(el('p', 'muted', '이 그림은 피가 지나는 순서를 보여 주는 길 안내예요. 실제 심장 속 방들의 위치·크기는 다릅니다(예: 우심실이 가장 앞쪽에 있어요). ' + heartText.disclaimer));
+    for (const [id, label] of tabs) seg.append(button('', label, () => show(id)));
+    c.append(seg, area);
+    show(tab);
   });
+}
+
+function label(g: CanvasRenderingContext2D, text: string, x: number, y: number, color: string, size = 20) {
+  g.font = '800 ' + size + 'px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.lineWidth = 5; g.strokeStyle = 'rgba(16,8,14,0.92)'; g.strokeText(text, x, y); g.fillStyle = color; g.fillText(text, x, y);
+}
+
+function roomMap(): HTMLElement[] {
+  const w = world!, room = w.room, s = game.state, found = discovered(s);
+  const m = organMinimap(room, 0.5), k = 2, n = m.c.width * k;
+  const cv = el('canvas'); cv.className = 'heartmap'; cv.width = n; cv.height = n;
+  const g = cv.getContext('2d')!; g.imageSmoothingEnabled = false;
+  g.fillStyle = '#1a0d16'; g.fillRect(0, 0, n, n); g.drawImage(m.c, 0, 0, n, n);
+  const P = (x: number, y: number) => [(m.ox + x * m.s) * k, (m.oy + y * m.s) * k] as const;
+  for (const t of room.targets) {
+    const [x, y] = P(t.x, t.y);
+    if (t.id.startsWith('hx-')) {
+      const seen = found.includes(t.id);
+      g.fillStyle = seen ? '#7fdcca' : 'rgba(255,246,214,0.55)'; g.beginPath(); g.arc(x, y, seen ? 6 : 5, 0, Math.PI * 2); g.fill();
+      if (seen) label(g, discoveries[t.id]!.name, x, y - 16, '#dff7f1', 17); else label(g, '?', x, y - 14, '#fff3c4', 17);
+    } else if (t.id === 'return-pad') label(g, '귀환', x, y - 14, '#7ff0f2', 17);
+    else if (t.id === 'heart-in' || t.id === 'heart-out') { g.fillStyle = '#f2b53a'; g.beginPath(); g.arc(x, y, 7, 0, Math.PI * 2); g.fill(); if (!s.inspected.includes(obsKey(t.id))) label(g, '!', x, y - 16, '#f2b53a', 20); }
+  }
+  for (const d of room.doors) { const [x, y] = P(d.zone.x + d.zone.w / 2, d.zone.y + d.zone.h / 2); label(g, '출구 · ' + d.label, Math.min(n - 110, Math.max(110, x)), Math.min(n - 14, Math.max(14, y)), '#f1cf8b', 18); }
+  const [px, py] = P(w.player.x, w.player.y);
+  g.fillStyle = '#ff5a6e'; g.beginPath(); g.arc(px, py, 9, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
+  const pr = roomProgress(s, w.roomId);
+  return [cv, el('p', '', rooms[w.roomId].title + ' · 탐험 기록 ' + pr.found + '/' + pr.total),
+    el('p', 'muted', '빨간 점이 지금 위치예요. 밝은 선은 이 방에서 나가는 판막, 흐린 선은 들어온 판막(이쪽에서는 열리지 않음), 하늘색은 귀환 장치예요. 물음표는 아직 기록하지 않은 구조예요.')];
+}
+
+function heartRouteMap(): HTMLElement[] {
+  const s = game.state, here = world!.roomId;
+  const cv = el('canvas'); cv.className = 'heartmap'; cv.width = 960; cv.height = 600;
+  const g = cv.getContext('2d')!;
+  const node: Record<string, [number, number, string]> = {
+    heart: [170, 420, '우심방'], rv: [170, 200, '우심실'], lung: [480, 80, '폐'], la: [790, 200, '좌심방'], lv: [790, 420, '좌심실'], aorta: [600, 540, '대동맥'], body: [360, 540, '온몸'],
+  };
+  const order = ['heart', 'rv', 'lung', 'la', 'lv', 'aorta', 'body', 'heart'];
+  g.lineWidth = 6; g.lineCap = 'round';
+  for (let i = 1; i < order.length; i++) {
+    const [x1, y1] = node[order[i - 1]!]!, [x2, y2] = node[order[i]!]!;
+    g.strokeStyle = ['heart', 'rv', 'body'].includes(order[i - 1]!) ? '#8e2c44' : '#e2445c';
+    g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, ang = Math.atan2(y2 - y1, x2 - x1);
+    g.fillStyle = g.strokeStyle; g.beginPath(); g.moveTo(mx + Math.cos(ang) * 16, my + Math.sin(ang) * 16); g.lineTo(mx + Math.cos(ang + 2.5) * 16, my + Math.sin(ang + 2.5) * 16); g.lineTo(mx + Math.cos(ang - 2.5) * 16, my + Math.sin(ang - 2.5) * 16); g.fill();
+  }
+  for (const [id, [x, y, name]] of Object.entries(node)) {
+    const cur = id === here;
+    g.fillStyle = cur ? '#f1cf8b' : id === 'body' ? '#2b2236' : '#3a1e2e'; g.strokeStyle = cur ? '#ffffff' : '#f1cf8b88'; g.lineWidth = 3;
+    g.beginPath(); g.roundRect(x - 92, y - 44, 184, 88, 18); g.fill(); g.stroke();
+    g.fillStyle = cur ? '#2a1d08' : '#fff4ea'; g.font = '800 30px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(name, x, y - (id === 'body' ? 0 : 12));
+    if (id !== 'body') { const pr = roomProgress(s, id as RoomId); g.font = '700 22px system-ui, sans-serif'; g.fillStyle = cur ? '#4a3510' : '#d8c4b8'; g.fillText((cur ? '지금 여기 · ' : '') + '기록 ' + pr.found + '/' + pr.total, x, y + 22); }
+  }
+  g.fillStyle = '#b8afc6'; g.font = '600 20px system-ui, sans-serif'; g.fillText('밝은 빨강: 산소가 많은 피 · 어두운 빨강: 산소가 적은 피', 480, 300);
+  return [cv, el('p', '', '판막은 피가 흐르는 방향으로만 열려요. 지나온 판막으로는 되돌아갈 수 없으니 피를 따라 한 바퀴 돌거나 각 방의 귀환 장치를 쓰세요. 심장 탐험 기록 ' + discovered(s).length + '/' + discoveryIds.length),
+    el('p', 'muted', '피가 지나는 순서를 보여 주는 길 안내예요. 실제 심장 속 방들의 위치·크기는 다릅니다(예: 우심실이 가장 앞쪽). ' + heartText.disclaimer)];
+}
+
+type BodyOrgan = { id: string; name: string; x: number; y: number; rx: number; ry: number; state: string; rooms: string[]; note?: string };
+function bodyAtlas(): HTMLElement[] {
+  const here = world!.roomId;
+  const cv = el('canvas'); cv.className = 'heartmap'; cv.width = 600; cv.height = 860;
+  const g = cv.getContext('2d')!;
+  g.fillStyle = '#1a1424'; g.fillRect(0, 0, 600, 860);
+  // Front-view silhouette (the screen's left is the body's right).
+  g.fillStyle = '#2c2440'; g.strokeStyle = 'rgba(241,207,139,0.45)'; g.lineWidth = 3;
+  const shape = (f: () => void) => { g.beginPath(); f(); g.fill(); g.stroke(); };
+  shape(() => g.ellipse(300, 92, 64, 74, 0, 0, Math.PI * 2));
+  shape(() => g.roundRect(272, 150, 56, 44, 14));
+  shape(() => g.roundRect(170, 184, 260, 540, [70, 70, 46, 46]));
+  shape(() => { g.moveTo(176, 210); g.lineTo(108, 470); g.lineTo(140, 480); g.lineTo(200, 290); g.closePath(); });
+  shape(() => { g.moveTo(424, 210); g.lineTo(492, 470); g.lineTo(460, 480); g.lineTo(400, 290); g.closePath(); });
+  shape(() => g.roundRect(196, 700, 92, 150, 30));
+  shape(() => g.roundRect(312, 700, 92, 150, 30));
+  const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 300);
+  for (const o of bodyMap.organs as BodyOrgan[]) {
+    const open = o.state === 'open', part = o.state === 'partial', isHere = o.rooms.includes(here);
+    const fill = o.id === 'heart' ? '#d8435a' : o.id.startsWith('lung') ? '#e48a9c' : '#4a4058';
+    g.globalAlpha = open ? 1 : part ? 0.75 : 0.9;
+    g.fillStyle = open || part ? fill : '#4a4058';
+    g.beginPath(); g.ellipse(o.x, o.y, o.rx, o.ry, 0, 0, Math.PI * 2); g.fill();
+    g.globalAlpha = 1;
+    g.setLineDash(part ? [8, 6] : []); g.lineWidth = isHere ? 5 : 2; g.strokeStyle = isHere ? '#fff3c4' : open ? '#ffb3bf' : 'rgba(255,255,255,0.25)';
+    g.beginPath(); g.ellipse(o.x, o.y, o.rx + (isHere ? 4 + pulse * 3 : 0), o.ry + (isHere ? 4 + pulse * 3 : 0), 0, 0, Math.PI * 2); g.stroke(); g.setLineDash([]);
+    label(g, o.name, o.x, o.y + (o.id === 'heart' ? 0 : -6), open ? '#ffffff' : part ? '#ffe3e8' : '#9d93ad', 19);
+    if (!open && !part) label(g, '준비 중', o.x, o.y + 16, '#7d7390', 14);
+  }
+  label(g, '오른쪽', 120, 820, '#b8afc6', 16); label(g, '왼쪽', 480, 820, '#b8afc6', 16);
+  const openNames = (bodyMap.organs as BodyOrgan[]).filter(o => o.state !== 'locked').map(o => o.name + (o.state === 'partial' ? '(일부)' : ''));
+  return [cv, el('p', '', '지금 탐험할 수 있는 곳: ' + openNames.join(' · ') + '. 다른 기관은 취재가 열리면 하나씩 이어져요.'),
+    el('p', 'muted', bodyMap.note + ' ' + bodyMap.disclaimer)];
 }
 
 function openMenu() {
@@ -458,7 +581,8 @@ function openMenu() {
     help.append(el('p', '', 'PC: 방향키/WASD 이동 · E/Space 대화·살펴보기 · J 수첩 · M 지도 · Esc 메뉴'));
     help.append(el('p', '', '마우스·터치: 화면을 누르면 그곳으로 걷고, 사람이나 물건을 누르면 다가가서 말을 걸어요. 꾹 누른 채 움직이면 손가락 쪽으로 계속 걸어요. 대화창·창은 아무 곳이나 누르면 넘어가거나 닫혀요.'));
     help.append(el('p', '', '큰길 횡단보도는 보행 신호가 초록불일 때만 건널 수 있어요. 깜빡이기 시작하면 새로 건너지 않아요.'));
-    help.append(el('p', '', '심장 속: 판막은 열려 있을 때, 피가 흐르는 방향으로만 지나갈 수 있어요. 오른쪽 위 심장 주기 창을 누르면 길 안내가 열려요.'));
+    help.append(el('p', '', '휴대폰·태블릿: 왼쪽 아래 조작볼을 엄지로 밀면 그 방향으로 걸어요. 사람·물건은 화면에서 눌러요.'));
+    help.append(el('p', '', '심장 속: 판막은 열려 있을 때, 피가 흐르는 방향으로만 지나갈 수 있어요. 오른쪽 위 작은 지도나 심장 주기 창을 누르면 이 방·심장·인체 지도가 열려요.'));
     c.append(help);
     const reset = el('div', 'list'); reset.append(button('row danger', '처음부터 다시 시작', () => { if (confirm('지금 기록을 백업하고 새 기자로 시작할까요? 파일로 내보내 두는 것도 권해요.')) { try { game.restart(); close(); location.reload(); } catch (e) { hud.toast('새로 시작하지 못했어요: ' + (e instanceof Error ? e.message : '저장 오류'), true); } } }));
     c.append(reset);
