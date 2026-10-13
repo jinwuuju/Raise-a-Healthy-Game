@@ -1,0 +1,17 @@
+{
+  "id":"disease.arrhythmia","status":"draft_unreviewed","review":null,"publicAtlas":false,
+  "questSlot":"Q005","prerequisiteQuest":"Q004",
+  "sources":[
+    {"id":"nhlbi-af","title":"NHLBI · What Is Atrial Fibrillation?","url":"https://www.nhlbi.nih.gov/health/atrial-fibrillation","updated":"2022-11-30","checked":"2026-10-13","section":"What Is Atrial Fibrillation?"},
+    {"id":"nhlbi-beats","title":"NHLBI · How the Heart Beats","url":"https://www.nhlbi.nih.gov/health/heart/heart-beats","updated":"2025-06-25","checked":"2026-10-13","section":"Electrical activity"}
+  ],
+  "summary":"부정맥은 불규칙한 심장 리듬이에요. 첫 모듈은 흔한 유형인 심방세동에서 심방의 불규칙한 신호와 심방·심실의 박자 어긋남을 정상 전도 순서와 비교해요.",
+  "misconception":{"claim":"맥박이 불규칙하게 느껴지면 곧 심방세동이다.","correction":"부정맥에는 여러 종류가 있고 심방세동은 그중 흔한 하나예요. 증상 없이 생기기도 해 심전도 등 검사와 의료진의 판단으로 확인해요.","src":["nhlbi-af","nhlbi-beats"]},
+  "layerPlan":{"space":"기존 우심방(동방결절·방실결절) 같은 좌표, 새 맵 없음","normalFirst":"Q005 정상 전도 관찰 다섯 곳 뒤에 신호 관찰기 개방","change":"심방 전체에 흩어진 불규칙 신호와 고르지 않은 방실결절 도달, 심방 벽의 고른 수축 표시 생략. 정성적 표시만.","movement":"판막 통과·충돌·심장 주기 창은 정상 주기를 유지한다. 레이어는 렌더링 전용이며 진행/보상을 바꾸지 않는다.","implemented":true},
+  "reportingSteps":["Q005 정상 전도 다섯 곳 직접 관찰","같은 우심방에서 고른 박자와 심방세동 비교","조직·신호 변화와 위험 요인 맥락 자료","가상 심전도 모형 A/B로 검사 자료의 의미와 한계","혈전 예방·심박수 조절·리듬 조절의 원리 수준 녹취","불규칙한 맥박=심방세동이라는 오해를 바로잡는 기사"],
+  "articleSlot":{"quest":"Q005","type":"팩트체크","question":"불규칙한 맥박은 모두 심방세동일까?"},
+  "deferral":"D076 박동 신호 제보(EVT)·미스터리는 별도 후속. 다른 부정맥 유형(심실성·전도 차단 등)은 이 모듈에 포함하지 않는다.",
+  "disclaimer":"검수 전 모형 · 의학 전문가 검수 전 초안",
+  "simplification":["빛의 개수·위치·속도는 실제 신호 측정값이 아니다.","개인 진단·위험 계산·약 이름/용량·응급 행동 안내는 다루지 않는다.","뇌졸중·심부전 등 합병증 기관은 준비 중 연결로 둔다."],
+  "runtimeQuest":"Q005"
+}

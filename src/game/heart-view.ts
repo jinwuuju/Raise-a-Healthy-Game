@@ -5,6 +5,17 @@ import type { Band, Lane, Organ, Valve } from '../world/organ-types';
 import type { Room } from '../world/rooms';
 import type { Point } from '../world/types';
 import { comparisonOpening, hasBackflow, type ValveMode } from '../domain/valve-model';
+import type { RhythmMode } from '../domain/rhythm-model';
+
+/** Small integer hash for repeatable, seed-fixed patterns (no Math.random in rendering). */
+function hash(n: number): number {
+  let x = Math.imul(n | 0, 2654435761) >>> 0;
+  x ^= x >>> 15; x = Math.imul(x, 2246822519) >>> 0; x ^= x >>> 13;
+  return x >>> 0;
+}
+/** Game-second gaps between irregular arrivals at the AV node in the AF layer (qualitative, not measured). */
+const AF_ARRIVALS = [1.9, 3.1, 1.4, 2.6, 1.7, 3.4, 2.2];
+const AF_CYCLE = AF_ARRIVALS.reduce((a, b) => a + b, 0);
 
 /*
  * Live layer of an organ room: blood cells streaming along lanes and piling up at closed valves, leaflets and
@@ -57,6 +68,8 @@ export function fillPoly(g: Ctx, pts: Point[], color: string): void {
 
 export class HeartView {
   comparison: ValveMode = 'normal';
+  /** D077 signal observer: 'af' swaps the atrial conduction drawing only. Valves, blood lanes and passage stay normal. */
+  rhythm: RhythmMode = 'normal';
   readonly organ: Organ;
   private tracks: Track[];
   private motes: { x: number; y: number; r: number; v: number }[] = [];
@@ -111,7 +124,7 @@ export class HeartView {
     const o = this.organ, a = art(this.room);
     g.drawImage(a.ground, -cx, -cy);
     if (o.squeeze !== 'none') {
-      const s = squeeze(o.squeeze, real);
+      const s = this.squeezeAt(real);
       if (s > 0.01) { g.globalAlpha = Math.min(1, s * 0.85); g.drawImage(a.edge, -cx, -cy); g.globalAlpha = 1; }
     }
     this.drawSignals(g, cx, cy, real);
@@ -151,7 +164,7 @@ export class HeartView {
       g.fillStyle = o.kind === 'lung' ? 'rgba(255,240,245,0.10)' : 'rgba(255,180,190,0.08)';
       g.fillRect(Math.round(x), Math.round(y), m.r + 1, m.r + 1);
     }
-    const sq = o.squeeze === 'none' ? 0 : squeeze(o.squeeze, real);
+    const sq = this.squeezeAt(real);
     const grd = g.createRadialGradient(vw / 2, vh / 2, Math.min(vw, vh) * 0.35, vw / 2, vh / 2, Math.max(vw, vh) * 0.75);
     grd.addColorStop(0, 'rgba(40,0,10,0)');
     grd.addColorStop(1, o.kind === 'lung' ? 'rgba(60,10,30,0.28)' : `rgba(30,0,8,${(0.42 + sq * 0.16).toFixed(3)})`);
@@ -200,7 +213,44 @@ export class HeartView {
     }
   }
 
+  private fibrillating(): boolean { return this.rhythm === 'af' && (this.organ.kind === 'ra' || this.organ.kind === 'la'); }
+
+  /** Wall thickening; in the AF layer the atria only quiver instead of squeezing together. */
+  private squeezeAt(real: number): number {
+    const o = this.organ;
+    if (o.squeeze === 'none') return 0;
+    if (o.squeeze === 'atria' && this.fibrillating()) return 0.1 + 0.08 * Math.abs(Math.sin(this.time * 23) * Math.sin(this.time * 7.3));
+    return squeeze(o.squeeze, real);
+  }
+
+  /** Scattered, broken wavelets over the atrial floor and irregular arrivals at the AV node. */
+  private drawFibrillation(g: Ctx, cx: number, cy: number): void {
+    const o = this.organ, w = this.room.cols * 16, h = this.room.rows * 16, t = this.time;
+    for (let i = 0; i < 22; i++) {
+      const life = 0.42 + (i % 5) * 0.09, k = (t + i * 0.37) / life, n = Math.floor(k), p = k - n, hv = hash(i * 131 + n * 977 + 7);
+      const x = (hv % 1000) / 1000 * w, y = ((hv >>> 10) % 1000) / 1000 * h;
+      if (o.floor(x, y) > -4 || o.holes(x, y) < 2) continue;
+      const r = 3 + p * 20, m = Math.max(8, Math.round(r * 0.9)), a0 = (hv % 628) / 100;
+      g.fillStyle = `rgba(255,236,170,${(0.6 * (1 - p)).toFixed(3)})`;
+      for (let j = 0; j < m; j++) {
+        const ang = a0 + (j / m) * Math.PI * 1.2, px = x + Math.cos(ang) * r, py = y + Math.sin(ang) * r;
+        if (o.floor(px, py) < 0) g.fillRect(Math.round(px - cx), Math.round(py - cy), 2, 1);
+      }
+    }
+    const av = o.kind === 'ra' ? [...o.signals].reverse().find(s => s.kind === 'glow') : undefined;
+    if (!av) return;
+    let pos = (t + 0.4) % AF_CYCLE, start = 0;
+    for (const gap of AF_ARRIVALS) { if (pos < start + gap) break; start += gap; }
+    const pr = (pos - start) / 0.9;
+    if (pr < 0 || pr >= 1) return;
+    const p0 = av.pts[0]!, a = Math.sin(pr * Math.PI);
+    const grd = g.createRadialGradient(p0.x - cx, p0.y - cy, 0, p0.x - cx, p0.y - cy, av.r * 1.6);
+    grd.addColorStop(0, `rgba(255,246,190,${(0.9 * a).toFixed(3)})`); grd.addColorStop(1, 'rgba(255,220,140,0)');
+    g.fillStyle = grd; g.fillRect(p0.x - cx - av.r * 2, p0.y - cy - av.r * 2, av.r * 4, av.r * 4);
+  }
+
   private drawSignals(g: Ctx, cx: number, cy: number, real: number): void {
+    if (this.fibrillating()) { this.drawFibrillation(g, cx, cy); return; }
     for (const s of this.organ.signals) {
       const pr = travel(real, s.from, s.to);
       if (pr < 0) continue;

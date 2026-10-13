@@ -2,14 +2,15 @@ import { publishArticle } from './article';
 import { publishQ2 } from './q002';
 import { publishQ3 } from './q003';
 import { publishQ4 } from './q004';
-import { bandFor, reactionBalance as b, reactionText as text, type Reaction } from './reaction-state';
+import { publishQ5 } from './q005';
+import { bandFor, reactionBalance as b, reactionText as text, type QuestId, type Reaction } from './reaction-state';
 import type { GameState } from './state';
 
 type Random = () => number;
 export function randomReactionValue(): number {
   return typeof globalThis.crypto?.getRandomValues === 'function' ? crypto.getRandomValues(new Uint32Array(1))[0]! / 4294967296 : Math.random();
 }
-function appendReaction(before: GameState, next: GameState, first: boolean, random: Random, now: string, questId: 'Q001' | 'Q002' | 'Q003' | 'Q004' = 'Q001'): GameState {
+function appendReaction(before: GameState, next: GameState, first: boolean, random: Random, now: string, questId: QuestId = 'Q001'): GameState {
   if (!Number.isFinite(Date.parse(now))) throw new Error('발행 시각이 잘못되었습니다.');
   const sample = () => { const n = random(); if (!Number.isFinite(n) || n < 0 || n >= 1) throw new Error('반응을 만들지 못했어요.'); return n; };
   const pick = (n: number) => Math.floor(sample() * n);
@@ -37,14 +38,19 @@ export function publishQ3WithReaction(s: GameState, random: Random = randomReact
 export function publishQ4WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
   const next = publishQ4(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q004');
 }
+export function publishQ5WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
+  const next = publishQ5(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q005');
+}
+
 /** Explicit new editions can earn more gold, while stale double clicks and history reads cannot. */
-export function reprintArticle(s: GameState, expectedCount: number, random: Random = randomReactionValue, now = new Date().toISOString(), questId: 'Q001' | 'Q002' | 'Q003' | 'Q004' = 'Q001'): GameState {
+export function reprintArticle(s: GameState, expectedCount: number, random: Random = randomReactionValue, now = new Date().toISOString(), questId: QuestId = 'Q001'): GameState {
   if (expectedCount !== s.reactions.count) return s;
   if (s.at.room !== 'newsroom') throw new Error('다시 발행은 편집국에서 할 수 있어요.');
   if (!s.article.publishedAt || !s.ledger.includes('quest.Q001.first')) throw new Error('첫 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q002' && (!s.q002.publishedAt || !s.ledger.includes('quest.Q002.first'))) throw new Error('Q002 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q003' && (!s.q003.publishedAt || !s.ledger.includes('quest.Q003.first'))) throw new Error('Q003 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q004' && (!s.q004.publishedAt || !s.ledger.includes('quest.Q004.first'))) throw new Error('Q004 기사 발행을 먼저 마쳐 주세요.');
+  if (questId === 'Q005' && (!s.q005.publishedAt || !s.ledger.includes('quest.Q005.first'))) throw new Error('Q005 기사 발행을 먼저 마쳐 주세요.');
   return appendReaction(s, s, false, random, now, questId);
 }
 export function seeReaction(s: GameState, round: number): GameState {

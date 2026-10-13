@@ -1,0 +1,5 @@
+{
+  "id":"Q005","publication":{"key":"quest.Q005.first","xp":300,"gold":200},
+  "repeatXp":0,"repeatBaseGold":0,"reactionBalanceRef":"article-reactions.v0.1.json",
+  "note":"early-quests.v0.1.json의 기존 Q005 기본 보상 그대로. 관찰·신호 관찰기 비교·자료 취재·순서 도해에는 보상을 추가하지 않는다. 명시적 재발행의 추가 골드만 D066 적용."
+}

@@ -117,12 +117,18 @@ for disease in diseases['entries']:
         draft = load(disease['contentRef'])
         require(draft['id'] == disease['id'] and draft['status'] == 'draft_unreviewed' and draft['review'] is None and not draft['publicAtlas'], 'Disease draft must not masquerade as approved/public content')
         require(len(draft['reportingSteps']) == 6, 'Disease reporting plan needs six stages')
-        if draft['id'] == 'disease.valve':
-            require(draft['layerPlan']['implemented'] and draft['runtimeQuest'] == 'Q003', 'Valve module implementation boundary mismatch')
+        implemented = {'disease.valve': 'Q003', 'disease.arrhythmia': 'Q005'}
+        if draft['id'] in implemented:
+            require(draft['layerPlan']['implemented'] and draft['runtimeQuest'] == implemented[draft['id']] == disease['questSlot'], 'Implemented disease module boundary mismatch')
         else:
             require(not draft['layerPlan']['implemented'] and draft['deferral'], 'Planned disease needs explicit deferral without implementation claim')
         require(all(s['url'].startswith('https://') and s['section'] and s['checked'] for s in draft['sources']), 'Missing disease source evidence')
 q3 = load('data/content/q003.v0.1.json')
+q5 = load('data/content/q005.v0.1.json')
+require(q5['status'] == 'draft_unreviewed' and q5['review'] is None and len(q5['notes']) == 5 and len(q5['materials']) == 3, 'Q005 content boundary or evidence mismatch')
+require(all(id in {s['id'] for s in q5['sources']} for n in q5['notes'] + q5['materials'] for id in n['src']), 'Q005 missing source reference')
+require(sorted(n['stage'] for n in q5['notes']) == [1, 2, 3, 4, 4] and all(str(s['stage']) in q5['board']['hints'] for s in q5['board']['stages']), 'Q005 signal stages mismatch')
+require('가상 심전도' in json.dumps(q5, ensure_ascii=False) and '검수 전 모형' in q5['disclaimer'], 'Q005 fictional ECG/disclaimer label missing')
 q4 = load('data/content/q004.v0.1.json')
 require(q4['status'] == 'draft_unreviewed' and q4['review'] is None and len(q4['notes']) == 6, 'Q004 content boundary or evidence mismatch')
 require(all(id in {s['id'] for s in q4['sources']} for n in q4['notes'] for id in n['src']), 'Q004 missing source reference')

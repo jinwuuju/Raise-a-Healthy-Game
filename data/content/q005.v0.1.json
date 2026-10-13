@@ -1,0 +1,51 @@
+{
+  "id":"content.Q005","status":"draft_unreviewed","review":null,"updatedAt":"2026-10-13",
+  "title":"박자를 전하는 길",
+  "question":"심장은 신호가 먼저 출발할까요, 움직임이 먼저일까요?",
+  "offer":["이번에는 박동을 이끄는 전기 신호를 취재해 주세요.","신호가 지나는 다섯 곳을 직접 보고, 우심방 동방결절 앞의 신호 관찰기로 고른 박자와 심방세동의 흐트러진 박자를 비교해요. 그다음 내 자리에서 자료를 취재해 기사로 이어가요."],
+  "disclaimer":"검수 전 모형 · 의학 전문가 검수 전 박동 신호 취재 연습이에요. 실제 환자의 검사나 진단이 아닙니다.",
+  "sources":[
+    {"id":"nhlbi-beats","title":"NHLBI · How the Heart Beats","url":"https://www.nhlbi.nih.gov/health/heart/heart-beats","updated":"2025-06-25","checked":"2026-10-13","section":"Electrical activity"},
+    {"id":"openstax-conduction","title":"Rice University OpenStax · 19.2 Cardiac Muscle and Electrical Activity","url":"https://openstax.org/books/anatomy-and-physiology-2e/pages/19-2-cardiac-muscle-and-electrical-activity","checked":"2026-10-13","section":"Conduction System of the Heart / Electrocardiogram / ECG Abnormalities"},
+    {"id":"nhlbi-af","title":"NHLBI · What Is Atrial Fibrillation?","url":"https://www.nhlbi.nih.gov/health/atrial-fibrillation","updated":"2022-11-30","checked":"2026-10-13","section":"What Is Atrial Fibrillation?"},
+    {"id":"nhlbi-af-causes","title":"NHLBI · Atrial Fibrillation · Causes and Risk Factors","url":"https://www.nhlbi.nih.gov/health/atrial-fibrillation/causes","updated":"2022-11-30","checked":"2026-10-13","section":"What causes atrial fibrillation? / What raises the risk of atrial fibrillation?"},
+    {"id":"nhlbi-af-diagnosis","title":"NHLBI · Atrial Fibrillation · Diagnosis","url":"https://www.nhlbi.nih.gov/health/atrial-fibrillation/diagnosis","updated":"2022-11-30","checked":"2026-10-13","section":"Diagnostic tests / Other tests"},
+    {"id":"nhlbi-af-treatment","title":"NHLBI · Atrial Fibrillation · Treatment","url":"https://www.nhlbi.nih.gov/health/atrial-fibrillation/treatment","updated":"2022-11-30","checked":"2026-10-13","section":"Medicines / Procedures or surgery"}
+  ],
+  "notes":[
+    {"id":"sa","room":"heart","target":"hx-sa","stage":1,"name":"신호의 출발점 · 동방결절","card":"동방결절에서 출발","motion":"이어서 심방이 조일 준비","text":"박동 신호는 상대정맥 입구 가까이, 우심방 위쪽 벽의 동방결절에서 시작해요. 이곳의 박동조율 세포가 가장 먼저 신호를 만들어요. 빛이 번진 뒤에 심방이 조이는 순서를 보세요.","src":["nhlbi-beats","openstax-conduction"]},
+    {"id":"av","room":"heart","target":"hx-avnode","stage":3,"name":"잠깐 늦추는 곳 · 방실결절","card":"방실결절에서 잠깐 늦춤","motion":"그동안 심실이 피를 마저 채움","text":"심방과 심실 사이는 보통 신호가 지나가지 못하는 섬유 조직으로 나뉘어 있어, 신호는 방실결절을 거쳐 심실로 가요. 이곳에서 신호가 잠깐 느려지는 동안 심실이 피를 마저 채워요.","src":["nhlbi-beats","openstax-conduction"]},
+    {"id":"right-branch","room":"rv","target":"hx-moderator","stage":4,"name":"오른쪽 갈래 · 조절띠","card":"오른쪽 다발갈래","motion":"이어서 심실이 조임","text":"방실결절을 지난 신호는 히스다발을 거쳐 오른쪽·왼쪽 다발갈래로 나뉘어요. 오른다발갈래의 일부는 조절띠를 타고 앞유두근에 닿아요. 신호가 퍼진 뒤에 심실이 조여요.","src":["openstax-conduction"]},
+    {"id":"atria","room":"la","target":"hx-bachmann","stage":2,"name":"양쪽 심방으로 · 바흐만다발","card":"양쪽 심방으로 퍼짐","motion":"이어서 양쪽 심방이 조임","text":"출발한 신호는 심방 벽을 따라 퍼지고, 바흐만다발 같은 통로로 좌심방에도 빠르게 닿아요. 신호가 지나간 뒤 양쪽 심방이 조여 피를 심실로 밀어 넣어요.","src":["nhlbi-beats","openstax-conduction"]},
+    {"id":"left-branch","room":"lv","target":"hx-lbb","stage":4,"name":"왼쪽 갈래 · 왼다발갈래","card":"왼쪽 다발갈래","motion":"이어서 심실이 조임","text":"왼다발갈래는 심실중격 왼쪽 면을 따라 부채처럼 퍼지고, 푸르키네 섬유가 신호를 심실 근육 곳곳에 빠르게 전해요. 신호가 먼저 퍼지고 심실은 그 뒤에 조여요.","src":["nhlbi-beats","openstax-conduction"]}
+  ],
+  "board":{
+    "title":"신호 도착 순서",
+    "stages":[{"stage":1,"label":"출발"},{"stage":2,"label":"심방에 퍼짐"},{"stage":3,"label":"잠깐 늦춤"},{"stage":4,"label":"심실에 퍼짐"}],
+    "hints":{
+      "1":"신호는 우심방 위쪽의 동방결절에서 출발해요. 출발점을 먼저 놓아 주세요.",
+      "2":"출발한 신호는 먼저 양쪽 심방 벽으로 퍼지고, 그 뒤에 심방이 조여요.",
+      "3":"심실로 가기 전에 방실결절에서 신호가 잠깐 느려져요.",
+      "4":"마지막은 심실 벽을 따라 퍼지는 오른쪽·왼쪽 다발갈래예요. 두 갈래는 거의 같은 때에 퍼져요."
+    },
+    "mismatch":"신호와 움직임의 순서가 어긋났어요 · ",
+    "motionNote":"카드마다 신호 뒤에 이어지는 움직임을 함께 적었어요. 신호가 먼저, 움직임은 그다음이에요."
+  },
+  "comparison":{
+    "normal":{"label":"고른 박자","text":"동방결절에서 출발한 신호가 같은 순서로 심방에 퍼지고 방실결절로 모여요. 이 순서가 박동마다 되풀이돼요."},
+    "af":{"label":"심방세동","text":"심방에서 불규칙한 전기 신호가 여기저기 생겨, 심방이 고르게 조이지 못하고 떨리듯 움직여요. 불규칙한 신호가 방실결절에 닿으면서 심실의 박자도 불규칙해지고 때로 빨라질 수 있어요."}
+  },
+  "layerLimit":"신호 관찰기 · 빛의 위치·개수·속도는 측정값이 아니에요. 실제 전기 신호는 눈에 보이지 않아요. 기자가 걷는 판막 통과와 심장 주기 창은 정상 주기를 그대로 따라요.",
+  "materials":[
+    {"id":"causes","title":"3 · 원인과 맥락 취재","text":"기관 자료에 따르면 심방세동은 대부분 심장 조직이나 박동 신호 체계의 변화와 관련돼요. 나이가 들수록 흔해지고, 가족력·고혈압·판막질환·수면무호흡 같은 다른 건강 상태, 음주·흡연 같은 생활 요인이 위험을 높일 수 있어요. 뚜렷한 이유 없이 생기기도 해서 개인의 잘못으로 단정하지 않아요.","cards":[{"title":"조직의 변화","text":"나이, 심장병, 염증 등으로 심장 조직이 바뀌면 심방이 박자에 맞춰 조이기 어려워질 수 있어요."},{"title":"신호의 변화","text":"계기가 되는 박동이나 비정상적으로 맴도는 신호가 심방을 빠르고 불규칙하게 자극할 수 있어요."}],"src":["nhlbi-af-causes"]},
+    {"id":"tests","title":"4 · 검사 자료의 의미","text":"심전도는 심장의 전기 활동을 기록해요. 의료진은 병력·진찰·심전도와 필요한 다른 검사를 함께 보고 판단해요. 일상에서 기록하는 휴대용 심전도 기록기도 쓰여요.","cards":[{"title":"가상 심전도 모형 A · 고른 박자","text":"작은 P파 뒤에 QRS가 일정한 간격으로 이어지는 교육용 그림이에요. 실제 환자의 기록이 아니에요."},{"title":"가상 심전도 모형 B · 흐트러진 박자","text":"뚜렷한 P파 대신 잔물결 같은 선이 보이고 QRS 간격이 들쭉날쭉한 교육용 그림이에요. 이 그림이나 한 번의 기록만으로 개인 진단을 할 수 없어요."}],"src":["nhlbi-af-diagnosis","openstax-conduction"]},
+    {"id":"care","title":"5 · 치료·관리 원리 취재","text":"기관 자료를 요약한 가상 취재 녹취예요. 치료의 목표는 혈전과 뇌졸중을 예방하고, 심박수를 늦추거나 정상 리듬을 되찾는 것이에요. 생활습관과 원인이 되는 다른 질환의 관리도 함께 다뤄요. 개인 치료 선택을 추천하지 않습니다.","cards":[{"title":"혈전 예방","text":"심방세동에서는 피가 심장 안에 고여 혈전이 생길 위험이 커질 수 있어요. 혈전을 막는 약 계열은 뇌졸중 위험을 낮추는 데 쓰이지만 출혈 위험도 있어 의료진이 판단해요. 제품·용량은 다루지 않아요."},{"title":"심박수 조절","text":"심실이 뛰는 속도를 늦춰 피를 채울 시간을 주는 원리예요. 불규칙한 리듬이 이어져도 증상을 줄일 수 있어요."},{"title":"리듬 조절","text":"약, 전기적 심율동전환, 문제 신호를 만드는 조직을 다루는 시술(도자 절제술) 등으로 정상 리듬을 되찾으려는 원리예요. 실제 방법은 개인 상태를 종합해 의료진이 정해요."}],"src":["nhlbi-af-treatment"]}
+  ],
+  "article":{
+    "leads":[{"id":"signal","label":"신호가 먼저라는 사실로 시작","title":"박동은 신호가 먼저 출발한다","text":"심장이 조이기 전에 전기 신호가 먼저 지나가요. 신호가 지나는 다섯 곳을 직접 따라가며 순서를 확인했어요."},{"id":"rhythm","label":"흐트러진 박자 비교로 시작","title":"박자가 흐트러지면 무엇이 달라질까","text":"같은 우심방에서 고른 박자와 심방세동의 신호를 비교했어요. 신호의 순서가 왜 중요한지부터 살펴요."}],
+    "limitations":[{"id":"model","label":"모형의 한계로 마무리","text":"교육용 신호 모형으로 개인 진단·위험·치료 선택을 정할 수 없어요. 개인의 상태는 의료진이 검사와 함께 판단해요."},{"id":"display","label":"표시 방식의 한계로 마무리","text":"게임 속 빛은 순서를 보여 주기 위한 표시예요. 실제 신호는 눈에 보이지 않고, 여기서는 박동을 7배 느리게 보여 줘요."}],
+    "factcheck":"불규칙한 맥박이 모두 심방세동은 아니에요. 부정맥에는 여러 종류가 있고 심방세동은 그중 흔한 하나예요. 증상 없이 생기기도 해서 심전도 등 검사와 의료진의 판단으로 확인해요.",
+    "reply":"심장은 신호가 먼저 지나가고 그다음에 조인다는 걸 알았어요. 박자가 흐트러지면 왜 검사가 필요한지도요!"
+  },
+  "simplification":["정상 성인의 기본 전도 순서를 단순화한 모형입니다. 결절 사이 통로의 세부·개인차·다른 부정맥 종류는 다루지 않습니다.","다섯 관찰 지점은 실제 전도계 위치의 근사이며 히스다발·푸르키네 섬유는 별도 구조로 그리지 않았습니다.","심방세동 레이어는 대표적 변화를 정성적으로 보여 주며 빈도·중증도·유형을 재현하지 않습니다.","가상 심전도와 취재 녹취는 교육용 가상 자료이며 진단·치료 선택에 쓰지 않습니다.","뇌졸중·심부전 등 합병증 연결 기관은 준비 중입니다."]
+}

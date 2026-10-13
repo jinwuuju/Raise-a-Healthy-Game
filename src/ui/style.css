@@ -478,3 +478,19 @@ a.row { color: var(--text); text-decoration: none; }
 .route-bridge.joined { border-left-style: solid; color: var(--mint); }
 .route-card button, .q4-body button { min-height: 48px; white-space: normal; }
 .route-card button { width: 100%; }
+
+/* D077: signal arrival-order board, fictional ECG strips and the signal observer. */
+.q5-body button { min-height: 48px; white-space: normal; }
+.signal-board { display: grid; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: #181326; min-width: 0; }
+.signal-board h3 { margin: 0; font-size: 1rem; color: var(--gold); }
+.signal-stages { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 8px; }
+.signal-stage { padding: 10px; border: 1px dashed var(--line-strong); border-radius: 12px; min-width: 0; display: grid; gap: 6px; align-content: start; }
+.signal-stage.filled { border-style: solid; background: rgba(127,220,202,.06); }
+.signal-stage h4 { margin: 0; font-size: .875rem; color: var(--mint); }
+.signal-stage p { margin: 0; }
+.signal-card { display: grid; gap: 2px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.03); overflow-wrap: anywhere; }
+.signal-card span { font-size: .8125rem; color: var(--muted); }
+.signal-pool { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 8px; }
+.signal-pool .sub { color: var(--muted); font-size: .8125rem; }
+.ecg-strip { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
+.rhythm-paired { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }

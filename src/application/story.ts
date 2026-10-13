@@ -9,11 +9,13 @@ import { canOfferQ3, q3NormalDone, q3CompareDone, q3Ready } from '../domain/q003
 import { q3Text } from '../domain/q003-state';
 import { canOfferQ4,q4Ready } from '../domain/q004';
 import { q4Text } from '../domain/q004-state';
+import { canOfferQ5, q5CompareDone, q5NormalDone, q5Ready } from '../domain/q005';
+import { q5Normal, q5Text } from '../domain/q005-state';
 import type { GameState } from '../domain/state';
 import { isHeartRoom, type RoomId } from '../world/types';
 
 export type Line = { who: string; text: string; npc: string | null };
-export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' };
+export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' | 'offer-q5' };
 export const q1Text = q1;
 export const heartText = heart;
 
@@ -28,6 +30,22 @@ export function objective(s: GameState, room: RoomId): string {
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
+  if (canOfferQ5(s)) return '편집장에게 박동 신호 취재 ‘박자를 전하는 길’ 받기';
+  if (s.q005.accepted) {
+    if (s.q005.publishedAt) return '박동 신호 기사 발행 완료! 수첩에서 기사·반응 읽기 · 다음 심근 공급 취재는 준비 중';
+    if (!q5NormalDone(s)) {
+      const note = q5Text.notes.find(n => !s.q005.notes.includes(n.id as typeof q5Normal[number]))!;
+      const count = q5Normal.filter(id => s.q005.notes.includes(id)).length + '/5';
+      if (!isHeartRoom(room)) return '바디스코프로 박동 신호가 지나는 곳 찾아가기 (' + count + ')';
+      return (room === note.room ? note.name + ' 살펴보기' : '피를 따라 ' + toward(roomNames[note.room]!) + ' · ' + note.name) + ' (' + count + ')';
+    }
+    if (!q5CompareDone(s)) {
+      if (room === 'heart') return '동방결절 앞 신호 관찰기로 고른 박자와 심방세동 비교하기';
+      return isHeartRoom(room) ? '피를 따라 한 바퀴 돌거나 귀환 후 다시 들어와 우심방 동방결절 앞에서 신호 비교하기' : '바디스코프로 우심방에 들어가 동방결절 앞에서 신호 비교하기';
+    }
+    if (!q5Ready(s)) return '편집국 내 자리에서 원인 자료→검사 해석→관리 원리 취재 이어가기';
+    return '내 자리에서 신호 도착 순서 도해와 팩트체크 기사 쓰기';
+  }
   if (canOfferQ4(s)) return '편집장에게 두 순환 취재 ‘두 갈래 배송 노선’ 받기';
   if (s.q004.accepted) {
     if(s.q004.publishedAt)return '두 순환 기사 발행 완료! 수첩에서 노선과 독자 반응 읽기 · 다음 박동 신호 취재는 준비 중';
@@ -36,7 +54,7 @@ export function objective(s: GameState, room: RoomId): string {
     const count=s.q004.notes.length+'/6';
     if(note.id==='systemic-return'&&!s.q004.crossedBody)return '대동맥 위쪽 온몸 출구로 · 온몸 구간을 축약해 우심방으로 ('+count+')';
     if(!isHeartRoom(room))return '바디스코프로 두 순환의 취재 지점 찾아가기 ('+count+')';
-    return (room===note.room?note.name+' 살펴보기':'피를 따라 '+roomsForQ4[note.room]+'으로 · '+note.name)+' ('+count+')';
+    return (room===note.room?note.name+' 살펴보기':'피를 따라 '+toward(roomNames[note.room]!)+' · '+note.name)+' ('+count+')';
   }
   if (canOfferQ3(s)) return '편집장에게 판막 취재 ‘거꾸로 열리는 문’ 받기';
   if (s.q003.accepted) {
@@ -82,13 +100,20 @@ export function objective(s: GameState, room: RoomId): string {
 }
 
 const say = (who: string, npc: string | null, ...texts: string[]): Line[] => texts.map(text => ({ who, text, npc }));
-const roomsForQ4:Record<string,string>={rv:'우심실',lung:'폐 모세혈관',la:'좌심방',lv:'좌심실',aorta:'대동맥',heart:'우심방'};
+const roomNames: Record<string, string> = { rv: '우심실', lung: '폐 모세혈관', la: '좌심방', lv: '좌심실', aorta: '대동맥', heart: '우심방' };
+/** Korean direction particle: ‘으로’ after a final consonant except ㄹ, otherwise ‘로’. */
+export function toward(name: string): string {
+  const code = name.charCodeAt(name.length - 1) - 0xac00, jong = code >= 0 && code < 11172 ? code % 28 : 0;
+  return name + (jong && jong !== 8 ? '으로' : '로');
+}
 
 export function talk(id: string, s: GameState): Talk {
   const name = s.avatar.name;
   const has = (f: string) => s.flags.includes(f);
   switch (id) {
     case 'editor':
+      if (canOfferQ5(s)) return { flag: null, action: 'offer-q5', lines: say('편집장', 'editor', ...q5Text.offer) };
+      if (s.q005.accepted) return { flag: null, lines: say('편집장', 'editor', objective(s, s.at.room)) };
       if(canOfferQ4(s))return {flag:null,action:'offer-q4',lines:say('편집장','editor',...q4Text.offer)};
       if(s.q004.accepted)return {flag:null,lines:say('편집장','editor',objective(s,s.at.room))};
       if (canOfferQ3(s)) return { flag: null, action: 'offer-q3', lines: say('편집장', 'editor', ...q3Text.offer) };

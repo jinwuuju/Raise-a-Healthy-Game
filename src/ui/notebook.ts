@@ -7,6 +7,8 @@ import { q2Text } from '../domain/q002-state';
 import { q3Text } from '../domain/q003-state';
 import { q3Ready } from '../domain/q003';
 import { q4Text } from '../domain/q004-state';
+import { q5Normal, q5Text, type Q5Evidence } from '../domain/q005-state';
+import { q5Ready } from '../domain/q005';
 import { latestReaction, type Reaction } from '../domain/reaction-state';
 import { heartRoute } from '../world/heart-rooms';
 import { rooms } from '../world/rooms';
@@ -17,7 +19,7 @@ import { openSheet } from './sheet';
 const tabs = ['지금 할 일', '취재 파일', '발행 기사', '인체 탐험', '동네·생활'] as const;
 let selectedTab = 0;
 const expanded = new Map<string, boolean>();
-type Actions = { article: () => void; q002: () => void; q003: () => void; q004: () => void; reaction: (r: Reaction) => void; map: () => void };
+type Actions = { article: () => void; q002: () => void; q003: () => void; q004: () => void; q005: () => void; reaction: (r: Reaction) => void; map: () => void };
 
 export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
   openSheet('취재 수첩', (c, close) => {
@@ -56,13 +58,14 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
     const current = panels[0]!;
     current.append(el('h3', '', '지금 할 일'), el('p', 'notebook-goal', objective(s, room)));
     const overview = el('div', 'notebook-overview');
-    overview.append(el('span', '', '취재 근거 ' + records.evidence.length + '/2' + (s.q002.accepted ? ' · Q002 ' + records.q2Evidence.length + '/4' : '') + (s.q004.accepted ? ' · Q004 '+s.q004.notes.length+'/6' : '')), el('span', '', '탐험 구조 ' + Object.values(records.anatomy).flat().length + '/' + discoveryIds.length), el('span', '', '발행 기사 ' + (Number(!!s.article.publishedAt) + Number(!!s.q002.publishedAt) + Number(!!s.q003.publishedAt) + Number(!!s.q004.publishedAt)) + '편'));
+    overview.append(el('span', '', '취재 근거 ' + records.evidence.length + '/2' + (s.q002.accepted ? ' · Q002 ' + records.q2Evidence.length + '/4' : '') + (s.q004.accepted ? ' · Q004 '+s.q004.notes.length+'/6' : '') + (s.q005.accepted ? ' · Q005 ' + q5Normal.filter(id => s.q005.notes.includes(id)).length + '/5' : '')), el('span', '', '탐험 구조 ' + Object.values(records.anatomy).flat().length + '/' + discoveryIds.length), el('span', '', '발행 기사 ' + (Number(!!s.article.publishedAt) + Number(!!s.q002.publishedAt) + Number(!!s.q003.publishedAt) + Number(!!s.q004.publishedAt) + Number(!!s.q005.publishedAt)) + '편'));
     current.append(overview);
     if (s.flags.includes(Q1.briefed)) current.append(action(s.article.publishedAt ? '첫 기사와 독자 답장 읽기' : '첫 기사 쓰기 · 초안 이어서', actions.article));
     else current.append(button('row notebook-link', '취재 파일 확인하기', () => choose(1)));
     if (s.q002.reported) current.append(action(s.q002.publishedAt ? '네 방의 도해 기사 읽기' : '네 방의 도해 기사 쓰기 · 초안 이어서', actions.q002));
     if (s.q003.accepted) current.append(action(s.q003.publishedAt ? '판막 팩트체크 기사 읽기' : '판막 취재 자료와 기사 이어서', actions.q003));
     if(s.q004.accepted)current.append(action(s.q004.publishedAt?'두 순환 노선 기사 읽기':'두 순환 노선 기사 이어서',actions.q004));
+    if (s.q005.accepted) current.append(action(s.q005.publishedAt ? '박동 신호 기사 읽기' : '박동 신호 자료와 기사 이어서', actions.q005));
     const latest = latestReaction(s);
     if (latest) current.append(action('최근 독자 반응 · ' + latest.score + '점', () => actions.reaction(latest)));
     if (room === 'street' || isHeartRoom(room)) current.append(action('현재 장소 지도 보기', actions.map));
@@ -110,6 +113,15 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
       }
       body.append(action(s.q004.publishedAt?'노선 기사 읽기':'노선 기사 이어서',actions.q004),el('p','muted',q4Text.disclaimer));
     });
+    if (s.q005.accepted) fold(file, 'q005', 'Q005 · ' + q5Text.title + (s.q005.publishedAt ? ' · 발행 완료' : ' · 취재 중'), body => {
+      body.append(el('p', 'notebook-question', q5Text.question), el('p', '', '신호 관찰 ' + q5Normal.filter(id => s.q005.notes.includes(id)).length + '/5 · 심방세동 비교 ' + (s.q005.notes.includes('af') ? '기록 있음' : '아직')));
+      for (const note of q5Text.notes) {
+        if (!s.q005.notes.includes(note.id as Q5Evidence)) { body.append(el('p', 'muted', note.name + ' · 아직')); continue; }
+        fold(body, 'q005-' + note.id, note.name, detail => { detail.append(el('p', '', note.text), el('p', 'muted', '이어지는 움직임 · ' + note.motion)); sources(detail, note.src, q5Text.sources); });
+      }
+      for (const m of q5Text.materials.filter(m => s.q005.notes.includes(m.id as Q5Evidence))) fold(body, 'q005-' + m.id, m.title, detail => { detail.append(el('p', '', m.text)); m.cards.forEach(card => detail.append(el('h4', '', card.title), el('p', '', card.text))); sources(detail, m.src, q5Text.sources); });
+      body.append(button('row notebook-link', '심방세동 비교 기록은 인체 탐험에서 보기', () => choose(3)), action(s.q005.publishedAt ? '박동 신호 기사 읽기' : '자료 취재·기사 이어서', actions.q005), el('p', 'muted', q5Text.disclaimer));
+    });
     const archive = panels[2]!; archive.append(el('h3', '', '발행 기사와 독자 반응'));
     if (!s.article.publishedAt) archive.append(el('p', 'muted', '첫 기사를 발행하면 기사와 발행별 독자 반응이 이곳에 보관돼요.'));
     else {
@@ -117,6 +129,7 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
       if (s.q002.publishedAt) archive.append(el('p', '', 'Q002 · ' + q2Text.title), action('네 방의 도해 기사와 독자 답장 읽기', actions.q002));
       if (s.q003.publishedAt) archive.append(el('p', '', 'Q003 · ' + q3Text.title), action('판막 팩트체크 기사와 독자 답장 읽기', actions.q003));
       if(s.q004.publishedAt)archive.append(el('p','','Q004 · '+q4Text.title),action('두 순환 노선 기사와 독자 답장 읽기',actions.q004));
+      if (s.q005.publishedAt) archive.append(el('p', '', 'Q005 · ' + q5Text.title), action('박동 신호 기사와 독자 답장 읽기', actions.q005));
       archive.append(el('p', 'muted', '독자 반응은 당시 기록이에요. 다시 보기로 새 점수나 보상이 생기지 않아요.'));
       if (!latest) archive.append(el('p', 'muted', '이전 발행 · 독자 반응 점수 기록 없음. 기사와 기존 진척은 보존했어요.'));
       const renderResult = (parent: HTMLElement, r: Reaction) => parent.append(action(`${r.questId ?? 'Q001'} · ${r.round}번째 발행 · ${r.score}점 · 응원금 ${r.bonusGold}G`, () => actions.reaction(r)));
@@ -149,6 +162,10 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
       });
     }
 
+    if (s.q005.notes.includes('af')) fold(atlas, 'heart-rhythm-compare', '심장 · 박자 비교 (Q005 취재 초안)', body => {
+      fold(body, 'compare-af', q5Text.comparison.af.label, detail => { detail.append(el('p', '', q5Text.comparison.af.text), el('p', 'muted', q5Text.layerLimit)); sources(detail, ['nhlbi-af', 'nhlbi-af-causes'], q5Text.sources); });
+      body.append(el('p', 'muted', q5Text.disclaimer), el('p', 'muted', '합병증 연결 기관(뇌졸중·심부전) · 준비 중'), button('row notebook-link', q5Ready(s) ? '취재 파일의 근거 확인하기' : '자료 취재 위치 확인하기', () => choose(1)));
+    });
     const life = panels[4]!; life.append(el('h3', '', '동네·생활 기록'));
     const placeNames = { office: '편집국', neighborhood: '동네와 로비', cafe: '비투비씨 카페' };
     for (const [id, label] of Object.entries(placeNames) as [keyof typeof placeNames, string][]) fold(life, 'place-' + id, label + ' · 장소 기록 ' + records.local[id].length + '건', body => {

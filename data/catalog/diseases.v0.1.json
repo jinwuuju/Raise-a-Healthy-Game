@@ -5,7 +5,7 @@
   "coverageHubs": [
     "circulation"
   ],
-  "note": "D073/Q002 작업 단위의 순환 허브 장부 시작. 다른 허브는 아직 미배정이며 전체 질환 장부 완료가 아님.",
+  "note": "D073/Q002 작업 단위의 순환 허브 장부 시작. 다른 허브는 아직 미배정이며 전체 질환 장부 완료가 아님. D077/Q005: 부정맥(심방세동) 기초 모듈 추가.",
   "entries": [
     {
       "id": "disease.valve",
@@ -33,6 +33,34 @@
       "review": null,
       "contentRef": "data/content/diseases/valve.v0.1.json",
       "questSlot": "Q003"
+    },
+    {
+      "id": "disease.arrhythmia",
+      "name": "부정맥 기초 (심방세동)",
+      "english": "Arrhythmia · atrial fibrillation",
+      "tags": [
+        "퇴행"
+      ],
+      "primaryHubId": "circulation",
+      "anatomyIds": [
+        "anatomy.circulation.07"
+      ],
+      "relatedSystemIds": [
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "Q004.normal-circulation",
+        "Q005.normal-conduction"
+      ],
+      "depth": "intro",
+      "levelRange": [
+        5,
+        6
+      ],
+      "status": "planned",
+      "review": null,
+      "contentRef": "data/content/diseases/arrhythmia.v0.1.json",
+      "questSlot": "Q005"
     },
     {
       "id": "disease.hypertension",
