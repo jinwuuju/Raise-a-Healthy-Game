@@ -19,7 +19,7 @@ async function patchAndReload(page: Page, patch: (s: State) => State) {
   await page.waitForFunction(() => !!(window as unknown as { __mq?: { world?: unknown } }).__mq?.world);
 }
 
-test('10:00 당김 → 후보 4장 → 과장 신고 → 요령 → 확정 → 식탁 → 카드, 보상 변화 없음', async ({ page }) => {
+test('10:00 당김 → 후보 4장 → 과장 신고 → 요령 → 확정 → 식탁 → 카드, 고르기 +10G·새 도감 +5G', async ({ page }) => {
   test.setTimeout(90000);
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await start(page, at('10:00:00'));
@@ -55,7 +55,8 @@ test('10:00 당김 → 후보 4장 → 과장 신고 → 요령 → 확정 → �
   const after = await state(page), d = after.lunch.days[0]!;
   expect([d.outcome, d.menu, d.seen, after.lunch.dex]).toEqual(['ordered', day.cards[0]!.menu, true, [day.cards[0]!.menu]]);
   expect(d.report!.hit).toBe(false);
-  expect([after.totalXp, after.gold]).toEqual([before.totalXp, before.gold]);
+  expect([after.totalXp, after.gold]).toEqual([before.totalXp, before.gold + 15]);
+  await expect(sheet.locator('.lunch-result')).toContainText('+15G');
   await sheet.getByRole('button', { name: '월드로 돌아가기' }).click();
   await expect(lunchLine(page)).toContainText('오늘 점심: ' + d.menuName);
   // 새로고침해도 같은 결과, 연출을 다시 지급하지 않는다
@@ -64,10 +65,26 @@ test('10:00 당김 → 후보 4장 → 과장 신고 → 요령 → 확정 → �
   await expect(page.locator('.lunch-result')).toBeVisible();
   await expect(page.getByRole('button', { name: '결과 바로 보기' })).toHaveCount(0);
   expect((await state(page)).lunch).toEqual(after.lunch);
+  expect((await state(page)).gold).toBe(after.gold);
   await page.getByRole('button', { name: '수첩에서 기록 보기' }).click();
   await expect(page.getByRole('tab', { name: '동네·생활' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('.notebook-sheet')).toContainText('오늘의 점심 · 기록 1일 · 도감 1종');
   expect(errors).toEqual([]);
+});
+
+test('과장 문구를 맞히면 +20G, 다시 열거나 새로고침해도 더 주지 않는다', async ({ page }) => {
+  await start(page, at('10:00:00'));
+  await page.getByRole('button', { name: '오늘의 점심 열기' }).click();
+  await page.getByRole('button', { name: '고기 당기는 거' }).click();
+  const before = await state(page), hypeIndex = before.lunch.days[0]!.cards.findIndex(c => c.hype);
+  await page.locator('.lunch-card').nth(hypeIndex).getByRole('button', { name: '과장 신고' }).click();
+  await expect(page.locator('.lunch-report')).toContainText('신고 적중');
+  await expect(page.locator('.lunch-report')).toContainText('+20G');
+  expect((await state(page)).gold).toBe(before.gold + 20);
+  await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: { world?: unknown } }).__mq?.world);
+  await page.getByRole('button', { name: '오늘의 점심 열기' }).click();
+  await expect(page.locator('.lunch-report')).toContainText('신고 적중');
+  expect((await state(page)).gold).toBe(before.gold + 20);
 });
 
 test('11:30:00을 넘기면 주문이 막히고 그날은 자동 굶음', async ({ page }) => {

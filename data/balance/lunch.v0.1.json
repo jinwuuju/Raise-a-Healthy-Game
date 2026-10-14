@@ -61,7 +61,15 @@
   "sodium": 2000
  },
  "rewards": {
-  "status": "미정",
+  "status": "확정(D086, 2026-10-14 사용자 승인)",
+  "xp": 0,
+  "orderGold": 10,
+  "reportHitGold": 20,
+  "reportMissGold": 0,
+  "newDexGold": 5,
+  "skipGold": 0,
+  "keys": { "order": "lunch.order.<날짜>", "report": "lunch.report.<날짜>", "dex": "lunch.dex.<메뉴 id>" },
+  "note": "키마다 한 번만 지급한다. 굶은 날은 0이며 벌칙도 없다. 연출·카드 다시 보기·새로고침은 추가 지급하지 않는다.",
   "basis": "참여·팩트체크·도감 수집에만 연동. 메뉴 건강도와 무관."
  },
  "animation": {

@@ -545,6 +545,7 @@ a.row { color: var(--text); text-decoration: none; }
 .lunch-table-caption { margin: 0; text-align: center; }
 .lunch-result { display: grid; gap: 8px; }
 .lunch-tips-done { margin: 0; padding-left: 18px; }
+.lunch-gold { margin: 0; font-weight: 800; color: var(--gold); }
 .lunch-more summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 700; }
 .lunch-dex { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
 .lunch-dex figure { margin: 0; display: grid; justify-items: center; gap: 2px; font-size: 12px; text-align: center; }

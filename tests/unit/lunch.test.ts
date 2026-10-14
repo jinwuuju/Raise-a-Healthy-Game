@@ -49,18 +49,22 @@ describe('오늘의 점심 상태(D085)', () => {
     expect(roundTrip(a).lunch).toEqual(a.lunch);
   });
 
-  it('과장 신고는 하루 한 번, 맞히면 hit, 틀려도 감점·보상 변화 없음', () => {
+  it('과장 신고는 하루 한 번, 적중 +20G·XP 없음, 빗나가도 감점 없음(D086)', () => {
     const a = drawLunch(started(), T, 'spicy', pool, rng(5)), d = lunchToday(a, T)!;
     const hype = d.cards.find(c => c.hype)!, fair = d.cards.find(c => !c.hype)!;
     const hit = reportLunch(a, T, hype.menu, 'senior', 0), miss = reportLunch(a, T, fair.menu, 'editor', 0);
     expect(lunchToday(hit, T)!.report!.hit).toBe(true);
     expect(lunchToday(miss, T)!.report!.hit).toBe(false);
     expect(reportLunch(miss, T, hype.menu, 'senior', 0)).toBe(miss);
-    for (const s of [hit, miss]) expect([s.totalXp, s.gold]).toEqual([50, 30]);
+    expect([hit.totalXp, hit.gold, lunchToday(hit, T)!.gold]).toEqual([50, 50, 20]);
+    expect(hit.ledger).toContain('lunch.report.2026-10-14');
+    expect([miss.totalXp, miss.gold, lunchToday(miss, T)!.gold]).toEqual([50, 30, 0]);
+    expect(reportLunch(hit, T, fair.menu, 'senior', 0)).toBe(hit);
+    expect(roundTrip(hit).lunch).toEqual(hit.lunch);
     expect(() => reportLunch(a, T, 'not-a-card', 'editor', 0)).toThrow();
   });
 
-  it('주문: 후보 안의 메뉴와 그 메뉴에 맞는 요령만, 도감에 한 번 등록, 보상 없음', () => {
+  it('주문: 후보 안의 메뉴와 그 메뉴에 맞는 요령만, 고르기 +10G·새 도감 +5G(키마다 한 번)', () => {
     const a = drawLunch(started(), T, 'hot', pool, rng(8)), menu = lunchToday(a, T)!.cards[0]!.menu, m = menusData.menus.find(x => x.id === menu)!;
     const applicable = tipsFor(m).map(t => t.id);
     expect(() => orderLunch(a, T, menu, m.name, ['not-a-tip'], applicable, 'editor', 0)).toThrow();
@@ -69,8 +73,16 @@ describe('오늘의 점심 상태(D085)', () => {
     const d = lunchToday(b, T)!;
     expect([d.outcome, d.menu, d.menuName, d.tips, d.seen]).toEqual(['ordered', menu, m.name, applicable.slice(0, 1), false]);
     expect(b.lunch.dex).toEqual([menu]);
-    expect([b.totalXp, b.gold]).toEqual([50, 30]);
+    expect([b.totalXp, b.gold, d.gold]).toEqual([50, 45, 15]);
+    expect(b.ledger).toEqual(expect.arrayContaining(['lunch.order.2026-10-14', 'lunch.dex.' + menu]));
     expect(() => orderLunch(b, T, menu, m.name, [], applicable, 'editor', 0)).toThrow('이미');
+    // 다음 날 같은 메뉴: 고르기 +10G만(도감은 이미 있음)
+    const T2 = T + 86_400_000, c = { ...b, lunch: { ...b.lunch, days: [...b.lunch.days, { ...b.lunch.days[0]!, date: '2026-10-15', outcome: null, menu: null, menuName: null, tips: [], decidedAt: null, who: null, line: null, seen: false, gold: 0, report: null }] } };
+    const e = orderLunch(c, T2, menu, m.name, [], applicable, 'editor', 0);
+    expect([e.gold, lunchToday(e, T2)!.gold, e.lunch.dex]).toEqual([55, 10, [menu]]);
+    // 이미 받은 키가 원장에 있으면 다시 주지 않는다
+    const paidBefore = { ...a, ledger: ['lunch.order.2026-10-14', 'lunch.dex.' + menu] };
+    expect(orderLunch(paidBefore, T, menu, m.name, [], applicable, 'editor', 0).gold).toBe(30);
     expect(() => skipLunch(b, T, 'editor', 0)).toThrow('이미');
     expect(roundTrip(b).lunch).toEqual(b.lunch);
   });

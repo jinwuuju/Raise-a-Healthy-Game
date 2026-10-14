@@ -6,7 +6,8 @@ import { seoulTime } from './clock';
  * 메뉴 목록·문구 id는 호출하는 쪽(application)이 넘긴다(LunchPool). 화면·연출은 저장된 결과를 읽기만 한다.
  * - 시계: 기기 시계를 Asia/Seoul로 읽는다(clock.ts). 00:00부터 11:30:00 전까지 주문·굶기 확정.
  * - 굶음: 직접 고르거나, 그날 게임을 연 상태에서 11:30을 넘기면 자동. 보상 0·벌칙 0·상태 변화 없음. 열지 않은 날은 만들지 않는다.
- * - 보상: 종류·크기가 미정(⑦)이라 이 단계는 XP·골드를 주지 않는다.
+ * - 보상(D086, 사용자 승인): 점심 고르기 +10G, 과장 신고 적중 +20G, 새 도감 메뉴 +5G. XP 없음. 굶은 날·신고 빗나감 0.
+ *   메뉴 건강도·열량과 무관하며 원장 키(lunch.order.<날짜>·lunch.report.<날짜>·lunch.dex.<id>)로 한 번만 준다.
  */
 
 export const CRAVES = ['cool', 'spicy', 'hot', 'crispy', 'meat', 'foreign', 'light', 'quick', 'hearty'] as const;
@@ -36,12 +37,21 @@ export type LunchDay = {
   who: string | null;
   line: number | null;
   seen: boolean;
+  /** 그날 받은 골드 합계(표시용, D086). D085 기록은 0. */
+  gold: number;
 };
 export type LunchState = { days: LunchDay[]; dex: string[] };
 /** 메뉴 데이터에서 뽑아 넘기는 후보 풀. */
 export type LunchPool = { menus: { id: string; crave: Crave; name: string }[]; hype: string[]; fair: string[] };
 export type Random = () => number;
-type HasLunch = { started: boolean; lunch: LunchState };
+type HasLunch = { started: boolean; lunch: LunchState; gold: number; ledger: string[] };
+export const LUNCH_REWARDS = { order: balance.rewards.orderGold, reportHit: balance.rewards.reportHitGold, newDex: balance.rewards.newDexGold, xp: balance.rewards.xp };
+/** 원장 키 하나에 한 번만 골드를 준다. 받은 양을 함께 돌려준다. */
+function grant<S extends HasLunch>(s: S, key: string, gold: number): [S, number] {
+  if (gold <= 0 || s.ledger.includes(key)) return [s, 0];
+  if (!Number.isSafeInteger(s.gold + gold)) throw new Error('보상 합계가 저장 가능한 범위를 넘었어요.');
+  return [{ ...s, gold: s.gold + gold, ledger: [...s.ledger, key] }, gold];
+}
 
 export const emptyLunch = (): LunchState => ({ days: [], dex: [] });
 export const lunchDate = (now: number): string => seoulTime(now).dateKey;
@@ -59,7 +69,7 @@ export function lunchHudText(s: HasLunch, now: number): string | null {
 /** 남은 시간(초). 마감 뒤에는 0. */
 export const lunchSecondsLeft = (now: number): number => Math.max(0, LUNCH_CLOSE_SEC - seoulTime(now).secondOfDay);
 
-const blank = (date: string): LunchDay => ({ date, crave: null, cards: [], report: null, outcome: null, menu: null, menuName: null, tips: [], skip: null, decidedAt: null, who: null, line: null, seen: false });
+const blank = (date: string): LunchDay => ({ date, crave: null, cards: [], report: null, outcome: null, menu: null, menuName: null, tips: [], skip: null, decidedAt: null, who: null, line: null, seen: false, gold: 0 });
 function put<S extends HasLunch>(s: S, day: LunchDay, dex = s.lunch.dex): S {
   const days = [...s.lunch.days.filter(d => d.date !== day.date), day].sort((a, b) => a.date.localeCompare(b.date)).slice(-DAY_LIMIT);
   return { ...s, lunch: { days, dex } };
@@ -118,7 +128,8 @@ export function reportLunch<S extends HasLunch>(s: S, now: number, menu: string,
   if (d.report) return s;
   const card = d.cards.find(c => c.menu === menu);
   if (!card) throw new Error('후보에 없는 메뉴예요.');
-  return put(s, { ...d, report: { menu, hit: card.hype, who, line } });
+  const [paid, gold] = card.hype ? grant(s, 'lunch.report.' + d.date, LUNCH_REWARDS.reportHit) : [s, 0];
+  return put(paid, { ...d, report: { menu, hit: card.hype, who, line }, gold: d.gold + gold });
 }
 
 /** 주문 확정. tips는 이 메뉴에 맞는 요령(applicable) 안에서만. */
@@ -126,8 +137,10 @@ export function orderLunch<S extends HasLunch>(s: S, now: number, menu: string, 
   const d = openDay(s, now);
   if (!d.cards.some(c => c.menu === menu)) throw new Error('후보에 없는 메뉴예요.');
   if (new Set(tips).size !== tips.length || tips.some(t => !applicable.includes(t))) throw new Error('이 메뉴에 맞지 않는 주문 요령이에요.');
-  const dex = s.lunch.dex.includes(menu) ? s.lunch.dex : [...s.lunch.dex, menu].slice(-DEX_LIMIT);
-  return put(s, { ...d, outcome: 'ordered', menu, menuName, tips: [...tips], skip: null, decidedAt: new Date(now).toISOString(), who, line, seen: false }, dex);
+  const fresh = !s.lunch.dex.includes(menu), dex = fresh ? [...s.lunch.dex, menu].slice(-DEX_LIMIT) : s.lunch.dex;
+  const [a, g1] = grant(s, 'lunch.order.' + d.date, LUNCH_REWARDS.order);
+  const [b, g2] = fresh ? grant(a, 'lunch.dex.' + menu, LUNCH_REWARDS.newDex) : [a, 0];
+  return put(b, { ...d, outcome: 'ordered', menu, menuName, tips: [...tips], skip: null, decidedAt: new Date(now).toISOString(), who, line, seen: false, gold: d.gold + g1 + g2 }, dex);
 }
 
 /** 직접 굶기(후보를 뽑기 전이나 뒤 모두 가능). */
@@ -173,7 +186,9 @@ export function validateLunch(raw: unknown): LunchState {
     if (skipped && x.skip !== 'manual' && x.skip !== 'auto') throw bad();
     if (!skipped && x.skip !== null) throw bad();
     if (x.outcome === null && (x.decidedAt !== null || x.seen)) throw bad();
-    days.push({ date: x.date, crave: x.crave as CraveChoice | null, cards, report: rp ? { menu: rp.menu as string, hit: rp.hit as boolean, who: rp.who as string, line: rp.line as number } : null, outcome: x.outcome as LunchDay['outcome'], menu: (x.menu as string | null), menuName: (x.menuName as string | null), tips: [...x.tips as string[]], skip: x.skip as LunchDay['skip'], decidedAt: x.decidedAt as string | null, who: x.who as string | null, line: x.line as number | null, seen: x.seen });
+    const gold = x.gold === undefined ? 0 : x.gold; // D085 기록에는 없다
+    if (typeof gold !== 'number' || !Number.isSafeInteger(gold) || gold < 0 || gold > 1000) throw bad();
+    days.push({ date: x.date, crave: x.crave as CraveChoice | null, cards, report: rp ? { menu: rp.menu as string, hit: rp.hit as boolean, who: rp.who as string, line: rp.line as number } : null, outcome: x.outcome as LunchDay['outcome'], menu: (x.menu as string | null), menuName: (x.menuName as string | null), tips: [...x.tips as string[]], skip: x.skip as LunchDay['skip'], decidedAt: x.decidedAt as string | null, who: x.who as string | null, line: x.line as number | null, seen: x.seen, gold });
   }
   if (new Set(days.map(d => d.date)).size !== days.length) throw new Error('점심 기록 날짜가 겹쳐요.');
   days.sort((a, b) => a.date.localeCompare(b.date));

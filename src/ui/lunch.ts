@@ -8,7 +8,7 @@ import menusData from '../../data/content/lunch-menus.v0.1.json';
 import type { Game } from '../application/game';
 import { FOOD_ART, FOOD_H, FOOD_W, type FoodGrid } from '../art/food';
 import { lunchExtras as extras, fillMenu, tipText, tipsFor, type LunchTip } from '../domain/lunch-content';
-import { CRAVES, CRAVE_NAMES, lunchDay, lunchOpen, lunchSecondsLeft, lunchToday, type Crave, type CraveChoice, type LunchDay, type LunchPool } from '../domain/lunch';
+import { CRAVES, CRAVE_NAMES, LUNCH_REWARDS, lunchDay, lunchOpen, lunchSecondsLeft, lunchToday, type Crave, type CraveChoice, type LunchDay, type LunchPool } from '../domain/lunch';
 import type { GameState } from '../domain/state';
 import { button, el } from './dom';
 import { openSheet } from './sheet';
@@ -122,12 +122,14 @@ function resultCard(day: LunchDay): HTMLElement {
   head.append(words); card.append(head);
   const voice = colleagueLine(day.who, day.line, day.outcome === 'skipped' ? 'skip' : day.crave === 'any' ? 'any' : 'pick', day.menuName ?? ''); if (voice) card.append(voice);
   if (day.report) { const hype = day.cards.find(c => c.hype); card.append(el('p', 'lunch-note', (day.report.hit ? '과장 신고 적중 · ' : '과장 신고 · 가게 소개였어요 · ') + (hype ? '과장 문구 유형: ' + (TYPES[HYPE.get(hype.claim)?.type ?? '']?.label ?? '') : ''))); }
+  card.append(el('p', 'lunch-gold', day.gold > 0 ? '오늘 점심으로 받은 골드 +' + day.gold + 'G' : day.outcome === 'skipped' ? '건너뛴 날 · 보상 0, 불이익 없음' : '받은 골드 없음'));
   if (day.tips.length) { const list = el('ul', 'lunch-tips-done'); for (const id of day.tips) { const t = extras.tips.find(x => x.id === id); if (t) list.append(el('li', '', t.label)); } card.append(el('p', 'lunch-note', '똑똑하게 시키기'), list); }
   const menu = day.menu ? BY_ID.get(day.menu) : undefined;
   if (menu) { const d = el('details', 'lunch-more'); d.append(el('summary', '', '영양 정보 · 출처'), nutritionPanel(menu)); card.append(d); }
   return card;
 }
 
+const rewardText = '점심을 고르면 +' + LUNCH_REWARDS.order + 'G · 과장 신고 적중 +' + LUNCH_REWARDS.reportHit + 'G · 처음 먹는 메뉴(도감) +' + LUNCH_REWARDS.newDex + 'G · 메뉴의 건강도와는 상관없어요';
 function deadlineText(now: number): string {
   const left = lunchSecondsLeft(now), h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60);
   return '11:30까지 주문 · 남은 시간 ' + (h ? h + '시간 ' : '') + (h || m ? m + '분' : '1분 미만');
@@ -175,11 +177,11 @@ export function openLunch(game: Game, opts: Opts): void {
       c.append(el('h3', '', '오늘 당기는 느낌은?'));
       const grid = el('div', 'lunch-chips');
       for (const id of [...CRAVES, 'any'] as CraveChoice[]) grid.append(button('lunch-chip', CRAVE_LABEL[id], () => act(() => game.drawLunch(id, lunchPool()))));
-      c.append(grid, skipButton());
+      c.append(grid, el('p', 'muted', rewardText), skipButton());
     }
     function skipButton(): HTMLElement {
       const b = button('secondary lunch-skip', '오늘은 굶기', () => act(() => game.skipLunch(voices('skip'))));
-      const wrap = el('div', 'lunch-skip-row'); wrap.append(b, el('span', 'muted', '건너뛰어도 보상·불이익 없음')); return wrap;
+      const wrap = el('div', 'lunch-skip-row'); wrap.append(b, el('span', 'muted', '건너뛰면 보상 0 · 불이익 없음')); return wrap;
     }
 
     function showCards(day: LunchDay): void {
@@ -209,6 +211,7 @@ export function openLunch(game: Game, opts: Opts): void {
       box.append(el('h4', '', day.report!.hit ? '신고 적중! 과장 문구였어요' : '이 문구는 가게 소개였어요'));
       if (!day.report!.hit) box.append(el('p', '', (reported?.name ?? '') + ' · ' + extras.fairWhy));
       if (h && menu) { box.append(el('p', '', '과장 문구: “' + fillMenu(h.text, menu) + '”'), el('p', '', h.why), el('p', 'muted', '유형 · ' + (TYPES[h.type]?.label ?? '') + ' · 식품표시광고법 ' + (TYPES[h.type]?.law ?? ''))); }
+      if (day.report!.hit) box.append(el('p', 'lunch-gold', '팩트체크 보상 +' + LUNCH_REWARDS.reportHit + 'G'));
       const v = colleagueLine(day.report!.who, day.report!.line, day.report!.hit ? 'reportHit' : 'reportMiss'); if (v) box.append(v);
       box.append(el('p', 'muted', extras.disclaimer));
       return box;
