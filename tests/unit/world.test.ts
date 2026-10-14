@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { canStand, doorAt, moveWithCollision } from '../../src/world/collision';
 import { clearLine, findPath } from '../../src/world/path';
 import { rooms } from '../../src/world/rooms';
-import { inRect, roomIds } from '../../src/world/types';
+import { inRect, overlap, roomIds } from '../../src/world/types';
+import { inspectLabels, lookText } from '../../src/application/story';
 
 describe('map integrity', () => {
   for (const id of roomIds) {
@@ -70,5 +71,41 @@ describe('street rules', () => {
     const r = moveWithCollision('newsroom', { x: 212, y: 52 }, 6, -4);
     expect(r.x).toBeGreaterThan(212);
     expect(r.y).toBeGreaterThanOrEqual(51);
+  });
+});
+
+describe('street around Euro Plaza from the user photos (D088)', () => {
+  const street = rooms.street;
+  const lane = { x: 0, y: 256, w: 384, h: 32 };
+  const byId = (id: string) => street.buildings.find(b => b.id === id)!;
+  it('the pocket park, fountain and benches across the lane are gone', () => {
+    expect(street.props.some(p => p.kind === 'fountain' || p.kind === 'parktree' || p.kind === 'bench' || p.kind === 'flowerbed')).toBe(false);
+    const ids = street.targets.map(t => t.id);
+    expect(ids).not.toContain('fountain');
+    expect(ids).not.toContain('park-bench');
+  });
+  it('Jin-U and the granite block stand right across the lane, opposite Euro Plaza, with 151-gil between them', () => {
+    const euro = byId('europlaza'), jinu = byId('jinu'), granite = byId('granite');
+    for (const b of [jinu, granite]) {
+      expect(b.block).toBe(true);
+      expect(b.y - b.h).toBeGreaterThanOrEqual(lane.y + lane.h);
+      expect(b.y - b.h).toBeLessThanOrEqual(lane.y + lane.h + 24);
+      expect(b.x < euro.x + euro.w && b.x + b.w > euro.x).toBe(true);
+    }
+    expect(granite.x - (jinu.x + jinu.w)).toBe(32);
+    expect(canStand('street', { x: 240, y: 340 })).toBe(true);
+    expect(canStand('street', { x: 184, y: 340 })).toBe(false);
+    expect(canStand('street', { x: 300, y: 340 })).toBe(false);
+  });
+  it('no building picture covers the narrow lane in front of Euro Plaza', () => {
+    for (const b of street.buildings) expect(overlap({ x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, lane), b.id).toBe(false);
+  });
+  it('151-gil leads from the lane down to Dosan-daero, and the side street runs north along the tower', () => {
+    expect(findPath('street', { x: 240, y: 272 }, { x: 240, y: 420 }).length).toBeGreaterThan(0);
+    expect(findPath('street', street.spawn, { x: 176, y: 40 }).length).toBeGreaterThan(0);
+    expect(canStand('street', { x: 176, y: 120 })).toBe(true);
+  });
+  it('every street target has text and a notebook label', () => {
+    for (const t of street.targets) { expect(lookText[t.id], t.id).toBeTruthy(); expect(inspectLabels[t.id], t.id).toBeTruthy(); }
   });
 });

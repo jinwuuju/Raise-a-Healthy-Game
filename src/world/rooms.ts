@@ -7,7 +7,10 @@ import type { Organ } from './organ-types';
  * Map geometry only (no rendering). Distances are game pixels, 1 tile = 16px.
  * The street keeps the observed relationships of the first prototype: Euro Plaza on the
  * narrow Nonhyeon-ro 159-gil, the wide Nonhyeon-ro beside it, the intersection with
- * crosswalks, the cafe across the narrow road and the Apgujeong-station direction north.
+ * crosswalks and the Apgujeong-station direction north. Since the user's street photos (2026-10-14,
+ * D088) the lane is lined on its south side by buildings that face Euro Plaza (the fictional Jin-U
+ * convenience store block and a granite office) with Nonhyeon-ro 151-gil between them leading to
+ * Dosan-daero, and a side street runs north along Euro Plaza's tower end.
  * It is a compressed game map, not a survey.
  */
 
@@ -18,21 +21,23 @@ export const T = {
 const BLOCKED = new Set<number>([T.VOID, T.ROAD, T.WALL]);
 export function walkableTile(t: number): boolean { return !BLOCKED.has(t); }
 
-export type BuildingKind = 'europlaza' | 'b2bc' | 'shop' | 'office' | 'hotel' | 'hospital';
-export type Building = { id: string; kind: BuildingKind; x: number; y: number; w: number; d: number; h: number; v: number };
+export type BuildingKind = 'europlaza' | 'b2bc' | 'shop' | 'office' | 'hotel' | 'hospital' | 'jinu' | 'granite' | 'brickcorner';
+/** `block`: the whole drawn mass (roof + front, y - h .. y + d) is solid ground, used across narrow lanes so a tall front never hides the lane. */
+export type Building = { id: string; kind: BuildingKind; x: number; y: number; w: number; d: number; h: number; v: number; block?: boolean };
 
 export type PropKind =
   | 'ginkgo' | 'parktree' | 'lamp' | 'bench' | 'planter' | 'bollard' | 'signal' | 'kiosk' | 'signpost' | 'hydrant'
   | 'scooter' | 'bikes' | 'vending' | 'bin' | 'flowerbed' | 'fountain' | 'parkedcar' | 'booth'
   | 'desk' | 'editordesk' | 'chair' | 'bookshelf' | 'bodyscope' | 'sofa' | 'lowtable' | 'printer' | 'water' | 'plant'
   | 'reception' | 'counter' | 'roundtable' | 'cafechair' | 'bar' | 'stool' | 'loungechair'
-  | 'pedsignal' | 'robot' | 'pad' | 'papillary';
+  | 'pedsignal' | 'robot' | 'pad' | 'papillary'
+  | 'cypress' | 'crates' | 'goods' | 'aboard' | 'streetsign' | 'repairbooth';
 export type Prop = { kind: PropKind; x: number; y: number; v: number; solid: Rect | null };
 
 export type NpcSpec = { id: string; name: string; x: number; y: number; facing: Dir; look: Look; route: Point[] | null; speed: number };
 export type Target = { id: string; label: string; verb: string; x: number; y: number; r: number; npc: string | null };
 export type Door = { id: string; zone: Rect; to: RoomId; arrive: Point; facing: Dir; label: string; card?: string | null };
-export type Marking = { kind: 'crossV' | 'crossH' | 'dashV' | 'dashH' | 'centerV' | 'centerH' | 'stop' | 'slow30' | 'stall'; x: number; y: number; w: number; h: number };
+export type Marking = { kind: 'crossV' | 'crossH' | 'dashV' | 'dashH' | 'centerV' | 'centerH' | 'stop' | 'slow30' | 'stall' | 'edgeH' | 'edgeV'; x: number; y: number; w: number; h: number };
 export type WallDecor = { kind: 'window' | 'whiteboard' | 'clock' | 'elevator' | 'sign' | 'notice' | 'menu' | 'shelf' | 'poster' | 'mailbox' | 'neon'; x: number; w: number; text: string };
 export type Interior = { wall: 'office' | 'lobby' | 'cafe'; decor: WallDecor[]; bottom: 'wall' | 'glass'; door: [number, number]; pendants: Point[]; rugs: Rect[] };
 
@@ -88,6 +93,12 @@ function solidFor(kind: PropKind, x: number, y: number): Rect | null {
     case 'loungechair': return r(20, 8);
     case 'pedsignal': return r(3, 3);
     case 'robot': return r(12, 5);
+    case 'cypress': return r(6, 3);
+    case 'crates': return r(14, 4);
+    case 'goods': return r(18, 5);
+    case 'aboard': return r(10, 3);
+    case 'streetsign': return r(3, 3);
+    case 'repairbooth': return r(22, 10);
     default: return null;
   }
 }
@@ -103,7 +114,10 @@ type RoomSpec = Omit<Room, 'solids' | 'crossings' | 'organ'> & Partial<Pick<Room
 function finish(spec: RoomSpec): Room {
   const room = { crossings: [], organ: null, ...spec };
   const solids: Rect[] = [];
-  for (const b of room.buildings) if (b.y + b.d <= room.rows * TILE) solids.push({ x: b.x, y: b.y, w: b.w, h: b.d });
+  for (const b of room.buildings) {
+    if (b.block) solids.push({ x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h });
+    else if (b.y + b.d <= room.rows * TILE) solids.push({ x: b.x, y: b.y, w: b.w, h: b.d });
+  }
   for (const p of room.props) if (p.solid) solids.push(p.solid);
   for (const n of room.npcs) if (!n.route) solids.push({ x: n.x - 5, y: n.y - 4, w: 10, h: 5 });
   return { ...room, solids };
@@ -124,26 +138,30 @@ function street(): Room {
   fill(24, 0, 29, 39, T.ROAD);            // Nonhyeon-ro (wide, north-south)
   fill(0, 28, 39, 33, T.ROAD);            // Dosan-daero (wide, east-west)
   fill(0, 16, 23, 17, T.LANE);            // Nonhyeon-ro 159-gil (narrow, in front of Euro Plaza)
+  fill(10, 0, 11, 15, T.LANE);            // side street along Euro Plaza's tower (west) side, user photo 5
+  fill(14, 18, 15, 25, T.LANE);           // Nonhyeon-ro 151-gil between Jin-U and the granite block, down to Dosan-daero
   fill(24, 26, 29, 27, T.CROSS); fill(24, 34, 29, 35, T.CROSS); fill(21, 28, 22, 33, T.CROSS); fill(31, 28, 32, 33, T.CROSS);
   fill(23, 26, 23, 27, T.TACTILE); fill(30, 26, 30, 27, T.TACTILE); fill(23, 34, 23, 35, T.TACTILE); fill(30, 34, 30, 35, T.TACTILE);
   fill(21, 27, 22, 27, T.TACTILE); fill(21, 34, 22, 34, T.TACTILE); fill(31, 27, 32, 27, T.TACTILE); fill(31, 34, 32, 34, T.TACTILE);
   fill(12, 15, 19, 15, T.PLAZA);          // Euro Plaza front
   fill(20, 10, 20, 15, T.DRIVE);          // parking ramp beside Euro Plaza
-  fill(9, 19, 18, 23, T.GRASS);           // pocket park
-  fill(9, 21, 18, 21, T.GRAVEL); fill(13, 19, 14, 23, T.GRAVEL);
   fill(3, 25, 6, 25, T.TURF);             // artificial turf strip at the cafe
   fill(33, 10, 39, 14, T.PARKING);
   fill(33, 15, 39, 20, T.GRASS);
   fill(0, 37, 20, 39, T.VOID); fill(33, 37, 39, 39, T.VOID);
-
   const buildings: Building[] = [
-    B('europlaza', 'europlaza', 12, 10, 8, 5, 88),
+    B('europlaza', 'europlaza', 12, 10, 8, 5, 112),
     B('b2bc', 'b2bc', 3, 22, 5, 3, 58),
-    B('clinic', 'shop', 2, 10, 5, 5, 64, 3),
-    B('mart', 'shop', 11, 3, 5, 5, 60, 0),
+    // Directly across the lane, facing Euro Plaza (user photos 2-4, 6): the Jin-U brick block and the granite office,
+    // with Nonhyeon-ro 151-gil between them. Whole blocks are solid so their fronts never hide the lane.
+    { id: 'jinu', kind: 'jinu', x: 144, y: 380, w: 80, d: 20, h: 68, v: 0, block: true },
+    { id: 'granite', kind: 'granite', x: 256, y: 380, w: 96, d: 20, h: 76, v: 0, block: true },
+    B('corner', 'brickcorner', 5, 10, 5, 5, 72),
+    B('clinic', 'shop', 0, 10, 5, 5, 64, 3),
+    B('mart', 'shop', 12, 3, 4, 5, 60, 5),
     B('tower', 'office', 16, 2, 5, 6, 92),
-    B('bakery', 'shop', 1, 3, 5, 5, 52, 1),
-    B('flower', 'shop', 6, 3, 4, 5, 70, 2),
+    B('bakery', 'shop', 1, 3, 4, 5, 52, 1),
+    B('flower', 'shop', 5, 3, 4, 5, 70, 2),
     B('books', 'shop', 0, 22, 3, 3, 44, 4),
     B('hotel', 'hotel', 34, 3, 6, 6, 110),
     B('hospital', 'hospital', 33, 21, 7, 4, 96),
@@ -152,18 +170,18 @@ function street(): Room {
     { id: 'south-b', kind: 'shop', x: 160, y: 652, w: 176, d: 48, h: 60, v: 4 },
     { id: 'south-c', kind: 'shop', x: 528, y: 652, w: 112, d: 48, h: 60, v: 0 },
   ];
-
   const props: Prop[] = [];
-  for (const y of [40, 120, 200, 312, 392]) props.push(P('ginkgo', 356, y, y % 3));
+  for (const y of [40, 120, 200]) props.push(P('ginkgo', 356, y, y % 3));
+  for (const y of [312, 392]) props.push(P('ginkgo', 368, y, y % 3));
   for (const y of [40, 120, 200, 280, 360]) props.push(P('ginkgo', 508, y, (y / 40) % 3));
   for (const x of [24, 184, 264, 552, 616]) props.push(P('ginkgo', x, 424, x % 3));
   for (const x of [40, 120, 200, 280, 552, 616]) props.push(P('ginkgo', x, 586, (x / 8) % 3));
-  props.push(P('parktree', 160, 316), P('parktree', 296, 316, 1), P('parktree', 160, 376, 1), P('parktree', 296, 376), P('parktree', 128, 186, 1));
-  props.push(P('lamp', 356, 160), P('lamp', 356, 360), P('lamp', 508, 160), P('lamp', 508, 320), P('lamp', 72, 412), P('lamp', 312, 412), P('lamp', 584, 412), P('lamp', 72, 586), P('lamp', 312, 586));
-  props.push(P('planter', 204, 252), P('planter', 236, 252), P('planter', 152, 236), P('planter', 90, 412));
-  props.push(P('bench', 186, 318), P('bench', 262, 318), P('bench', 184, 252));
-  props.push(P('fountain', 224, 350));
-  props.push(P('flowerbed', 264, 364), P('flowerbed', 184, 364, 1), P('flowerbed', 176, 302, 2), P('flowerbed', 272, 302));
+  props.push(P('lamp', 356, 160), P('lamp', 368, 360), P('lamp', 508, 160), P('lamp', 508, 320), P('lamp', 72, 412), P('lamp', 312, 412), P('lamp', 584, 412), P('lamp', 72, 586), P('lamp', 312, 586));
+  props.push(P('planter', 204, 252), P('planter', 236, 252), P('planter', 90, 412));
+  props.push(P('cypress', 308, 251), P('cypress', 318, 251, 1));
+  // Jin-U storefront on the lane side: crate stacks, packs on a rack, an A-frame sign and the 151-gil road-name sign.
+  props.push(P('crates', 152, 307), P('crates', 166, 307, 1), P('goods', 184, 308), P('aboard', 208, 307), P('streetsign', 222, 309));
+  props.push(P('repairbooth', 282, 302));
   props.push(P('signal', 378, 444), P('signal', 490, 444, 1), P('signal', 378, 554, 1), P('signal', 490, 554));
   // Pedestrian lights at both ends of every crosswalk (v: 0 = crossing Nonhyeon-ro, 1 = crossing Dosan-daero).
   props.push(P('pedsignal', 372, 414), P('pedsignal', 492, 414), P('pedsignal', 372, 588), P('pedsignal', 492, 588));
@@ -173,10 +191,10 @@ function street(): Room {
   props.push(P('parkedcar', 552, 234, 1), P('parkedcar', 584, 234, 4), P('parkedcar', 616, 234, 2));
   for (let y = 8; y < 400; y += 24) props.push(P('bollard', 432, y));
   for (let y = 600; y < 640; y += 24) props.push(P('bollard', 432, y));
-
   const markings: Marking[] = [
     { kind: 'crossV', x: 384, y: 416, w: 96, h: 32 }, { kind: 'crossV', x: 384, y: 544, w: 96, h: 32 },
     { kind: 'crossH', x: 336, y: 448, w: 32, h: 96 }, { kind: 'crossH', x: 496, y: 448, w: 32, h: 96 },
+    { kind: 'crossV', x: 160, y: 232, w: 32, h: 16 }, { kind: 'crossV', x: 224, y: 288, w: 32, h: 16 },
     { kind: 'centerV', x: 430, y: 0, w: 5, h: 412 }, { kind: 'centerV', x: 430, y: 580, w: 5, h: 60 },
     { kind: 'centerH', x: 0, y: 494, w: 332, h: 5 }, { kind: 'centerH', x: 534, y: 494, w: 106, h: 5 },
     { kind: 'dashV', x: 407, y: 0, w: 2, h: 412 }, { kind: 'dashV', x: 455, y: 0, w: 2, h: 412 },
@@ -185,19 +203,22 @@ function street(): Room {
     { kind: 'dashH', x: 534, y: 471, w: 106, h: 2 }, { kind: 'dashH', x: 534, y: 519, w: 106, h: 2 },
     { kind: 'stop', x: 384, y: 411, w: 46, h: 2 }, { kind: 'stop', x: 434, y: 579, w: 46, h: 2 },
     { kind: 'stop', x: 331, y: 497, w: 2, h: 47 }, { kind: 'stop', x: 531, y: 448, w: 2, h: 46 },
-    { kind: 'slow30', x: 120, y: 272, w: 0, h: 0 }, { kind: 'slow30', x: 300, y: 272, w: 0, h: 0 },
+    { kind: 'slow30', x: 120, y: 272, w: 0, h: 0 }, { kind: 'slow30', x: 300, y: 272, w: 0, h: 0 }, { kind: 'slow30', x: 240, y: 352, w: 0, h: 0 },
+    // Yellow edge lines along the narrow streets (no stopping), broken where side streets join.
+    { kind: 'edgeH', x: 0, y: 258, w: 160, h: 1 }, { kind: 'edgeH', x: 192, y: 258, w: 192, h: 1 },
+    { kind: 'edgeH', x: 0, y: 285, w: 224, h: 1 }, { kind: 'edgeH', x: 256, y: 285, w: 128, h: 1 },
+    { kind: 'edgeV', x: 162, y: 0, w: 1, h: 230 }, { kind: 'edgeV', x: 189, y: 0, w: 1, h: 230 },
+    { kind: 'edgeV', x: 226, y: 304, w: 1, h: 112 }, { kind: 'edgeV', x: 253, y: 304, w: 1, h: 112 },
     { kind: 'stall', x: 536, y: 168, w: 32, h: 72 }, { kind: 'stall', x: 568, y: 168, w: 32, h: 72 }, { kind: 'stall', x: 600, y: 168, w: 32, h: 72 },
   ];
-
   const npcs: NpcSpec[] = [
     npc('w1', '', 372, 16, 'down', walkerLooks[0]!, [{ x: 372, y: 16 }, { x: 372, y: 396 }], 26),
     npc('w2', '', 16, 440, 'right', walkerLooks[1]!, [{ x: 16, y: 440 }, { x: 624, y: 440 }], 22),
     npc('w3', '', 498, 300, 'up', walkerLooks[2]!, [{ x: 498, y: 380 }, { x: 498, y: 16 }], 24),
     npc('w4', '', 600, 566, 'left', walkerLooks[3]!, [{ x: 624, y: 566 }, { x: 16, y: 566 }], 28),
-    npc('w5', '', 150, 344, 'right', walkerLooks[4]!, [{ x: 150, y: 344 }, { x: 196, y: 344 }, { x: 196, y: 362 }, { x: 252, y: 362 }, { x: 252, y: 344 }, { x: 300, y: 344 }], 18),
+    npc('w5', '', 240, 296, 'down', walkerLooks[4]!, [{ x: 240, y: 296 }, { x: 240, y: 420 }], 18),
     npc('w6', '', 40, 268, 'right', walkerLooks[5]!, [{ x: 24, y: 268 }, { x: 360, y: 268 }], 25),
   ];
-
   return finish({
     id: 'street', title: '논현로 · 을지병원 사거리', cols, rows, tiles, buildings, props, npcs, markings, interior: null,
     crossings: [
@@ -208,8 +229,9 @@ function street(): Room {
     targets: [
       target('street-notice', '거리 안내판', '보기', 344, 242, 18),
       target('station', '압구정역 방향', '보기', 376, 34, 18),
-      target('park-bench', '쉼터 벤치', '쉬기', 186, 326, 16),
-      target('fountain', '작은 분수', '보기', 224, 358, 20),
+      target('jinu-store', '진U 편의점', '보기', 188, 294, 18),
+      target('alley-151', '논현로151길', '보기', 226, 296, 16),
+      target('shoe-repair', '구두 수선대', '보기', 282, 290, 16),
     ],
     doors: [
       { id: 'euro-door', zone: { x: 284, y: 240, w: 17, h: 7 }, to: 'lobby', arrive: { x: 160, y: 168 }, facing: 'up', label: '유로프라자 로비' },

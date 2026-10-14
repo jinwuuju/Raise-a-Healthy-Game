@@ -1,6 +1,6 @@
 import type { PropKind } from '../world/rooms';
 import { carSprite } from './vehicles';
-import { ellipse, hash2, makeCanvas, outline, px, rect, rng, shade, sprite, type Ctx, type Sprite } from './pixel';
+import { ellipse, hash2, jinU, makeCanvas, outline, pixelText, px, rect, rng, shade, sprite, type Ctx, type Sprite } from './pixel';
 
 const INK = '#2d2734';
 const GINKGO = [['#fff3a6', '#f4d75c', '#dbb036', '#a9822b'], ['#e7ee90', '#c1d55c', '#94af40', '#6a8631'], ['#fde68c', '#ebc44c', '#cb972f', '#95692a']];
@@ -118,6 +118,49 @@ function pad(frame: number): Sprite {
 
 const builders: Record<string, (v: number, frame: number) => Sprite> = {
   ginkgo: v => tree('ginkgo', v),
+  // Narrow cypress in a stone planter (in front of Euro Plaza's awnings, user photo 1).
+  cypress: v => sprite(12, 30, 6, 29, g => {
+    rect(g, 2, 22, 8, 7, '#c9c3b6'); rect(g, 2, 22, 8, 1, '#e3ded3'); rect(g, 9, 22, 1, 7, '#a59f92'); rect(g, 3, 23, 6, 1, '#5b4433');
+    for (let y = 2; y < 23; y++) {
+      const half = Math.max(1, Math.round((y - 1) * 0.19 + 0.5));
+      for (let x = 6 - half; x <= 5 + half; x++) px(g, x, y, x < 5 ? '#5f9a52' : x < 7 ? '#3f7a3c' : '#2e5e30');
+    }
+    px(g, 5, 1, '#5f9a52'); if (v % 2) px(g, 4, 9, '#7fb86a');
+  }, '#22402a'),
+  // Stacked plastic delivery crates outside the convenience store.
+  crates: v => sprite(18, 20, 9, 19, g => {
+    const c = v % 2 ? ['#3e4045', '#2a2c30', '#5a5d64'] : ['#3d9a52', '#2c7a3e', '#5bb86c'];
+    for (let i = 0; i < 4; i++) { const y = 15 - i * 4; rect(g, 1, y, 16, 4, c[0]!); rect(g, 1, y, 16, 1, c[2]!); for (let x = 3; x < 16; x += 3) rect(g, x, y + 1, 1, 2, c[1]!); }
+  }, INK),
+  // Low rack with tissue packs and bottled-water bundles (no labels).
+  goods: () => sprite(24, 20, 12, 19, g => {
+    rect(g, 1, 16, 22, 2, '#7d8088'); rect(g, 1, 16, 22, 1, '#9da0a8');
+    for (let i = 0; i < 3; i++) { const x = 2 + i * 7; rect(g, x, 9, 6, 7, '#f3f6f8'); rect(g, x, 9, 6, 1, '#ffffff'); rect(g, x + 1, 11, 4, 3, '#8cc6e6'); rect(g, x + 5, 9, 1, 7, '#cdd4da'); }
+    for (let i = 0; i < 2; i++) { const x = 5 + i * 7; rect(g, x, 3, 6, 6, '#bfe0f0'); rect(g, x, 3, 6, 1, '#e6f4fb'); for (let k = 0; k < 3; k++) px(g, x + 1 + k * 2, 2, '#2f6db0'); }
+  }, INK),
+  // A-frame sign of the fictional Jin-U store.
+  aboard: () => sprite(18, 20, 9, 19, g => {
+    rect(g, 3, 17, 2, 2, '#3a3d44'); rect(g, 13, 17, 2, 2, '#3a3d44');
+    rect(g, 1, 2, 16, 15, '#17837c'); rect(g, 1, 2, 16, 1, '#40b3a8'); rect(g, 1, 14, 16, 3, '#ff7b5f');
+    jinU(g, 3, 4, '#ffffff');
+  }, INK),
+  // Blue road-name plate on a pole (Nonhyeon-ro 151-gil; the name itself is shown by the label, not drawn).
+  streetsign: () => sprite(32, 40, 16, 39, g => {
+    rect(g, 15, 10, 2, 28, '#8a9099'); rect(g, 15, 10, 1, 28, '#b4bac2'); rect(g, 14, 37, 4, 2, '#5d6168');
+    rect(g, 1, 1, 30, 10, '#1f4fa0'); rect(g, 1, 1, 30, 1, '#e8eef8'); rect(g, 1, 10, 30, 1, '#e8eef8'); rect(g, 1, 1, 1, 10, '#e8eef8'); rect(g, 30, 1, 1, 10, '#e8eef8');
+    pixelText(g, '5', 3, 3, '#ffffff'); pixelText(g, '9', 26, 3, '#ffffff');
+    for (let x = 9; x < 23; x += 3) rect(g, x, 3, 2, 3, '#ffffff');
+    rect(g, 8, 8, 16, 1, '#c8d6ee');
+  }, INK),
+  // Shoe-repair booth on the pavement in front of the granite block (user photo 3).
+  repairbooth: () => sprite(28, 36, 14, 35, g => {
+    rect(g, 2, 4, 24, 30, '#e9e6de'); rect(g, 2, 4, 24, 1, '#ffffff'); rect(g, 24, 4, 2, 30, '#c9c5bb');
+    rect(g, 1, 1, 26, 4, '#6b7078'); rect(g, 1, 1, 26, 1, '#8d939c');
+    rect(g, 4, 7, 20, 4, '#2e5aa8'); for (let x = 6; x < 22; x += 3) rect(g, x, 8, 2, 2, '#ffffff');
+    rect(g, 5, 13, 8, 13, '#9cc3d6'); rect(g, 15, 13, 8, 13, '#9cc3d6'); px(g, 6, 14, '#e6f3fa'); px(g, 16, 14, '#e6f3fa');
+    rect(g, 6, 17, 6, 2, '#2e5aa8'); rect(g, 16, 17, 6, 2, '#2e5aa8'); rect(g, 6, 21, 6, 2, '#2e5aa8'); rect(g, 16, 21, 6, 2, '#2e5aa8');
+    rect(g, 4, 28, 6, 5, '#b9473c'); rect(g, 2, 33, 24, 1, '#8a867d');
+  }, INK),
   parktree: v => tree('parktree', v),
   lamp: () => sprite(12, 46, 6, 45, g => {
     rect(g, 5, 9, 2, 34, '#4b505b'); rect(g, 5, 9, 1, 34, '#6c7280'); rect(g, 4, 41, 4, 3, '#383c46');

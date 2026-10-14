@@ -6,7 +6,7 @@ import type { RoomId } from '../world/types';
 
 const places: Record<string, 'office' | 'neighborhood' | 'cafe'> = {
   'my-desk': 'office', device: 'office', shelf: 'office', notice: 'neighborhood', 'street-notice': 'neighborhood',
-  station: 'neighborhood', 'park-bench': 'neighborhood', fountain: 'neighborhood', 'window-seat': 'cafe',
+  station: 'neighborhood', 'jinu-store': 'neighborhood', 'alley-151': 'neighborhood', 'shoe-repair': 'neighborhood', 'park-bench': 'neighborhood', fountain: 'neighborhood', 'window-seat': 'cafe',
 };
 /** Each persistent observation has exactly one home. Overviews and actions only link to that home. */
 export function notebookRecords(s: GameState) {

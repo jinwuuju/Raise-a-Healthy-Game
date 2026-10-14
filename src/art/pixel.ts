@@ -95,12 +95,23 @@ const GLYPHS: Record<string, string> = {
   '9': '111101111001110', ' ': '000000000000000', '+': '000010111010000', '.': '000000000000010', '-': '000000111000000',
 };
 export function textWidth(text: string): number { return Math.max(0, text.length * 4 - 1); }
-export function pixelText(g: Ctx, text: string, x: number, y: number, color: string): void {
+export function pixelText(g: Ctx, text: string, x: number, y: number, color: string, scale = 1): void {
   g.fillStyle = color;
   let cx = Math.round(x);
   for (const ch of text.toUpperCase()) {
     const glyph = GLYPHS[ch] ?? GLYPHS[' ']!;
-    for (let i = 0; i < 15; i++) if (glyph[i] === '1') g.fillRect(cx + (i % 3), Math.round(y) + Math.floor(i / 3), 1, 1);
-    cx += 4;
+    for (let i = 0; i < 15; i++) if (glyph[i] === '1') g.fillRect(cx + (i % 3) * scale, Math.round(y) + Math.floor(i / 3) * scale, scale, scale);
+    cx += 4 * scale;
   }
+}
+
+// Wordmark of the fictional Jin-U convenience store (game-original lettering): Hangul 진 + U, 13x8 px.
+const JIN = ['1111101', '0010001', '0101001', '1000101', '0000001', '0100000', '0100000', '0111110'];
+const BIG_U = ['1001', '1001', '1001', '1001', '1001', '1001', '1001', '0110'];
+export const JINU_WIDTH = 13;
+export function jinU(g: Ctx, x: number, y: number, color: string): void {
+  g.fillStyle = color;
+  const X = Math.round(x), Y = Math.round(y);
+  JIN.forEach((row, j) => { for (let i = 0; i < row.length; i++) if (row[i] === '1') g.fillRect(X + i, Y + j, 1, 1); });
+  BIG_U.forEach((row, j) => { for (let i = 0; i < row.length; i++) if (row[i] === '1') g.fillRect(X + 9 + i, Y + j, 1, 1); });
 }

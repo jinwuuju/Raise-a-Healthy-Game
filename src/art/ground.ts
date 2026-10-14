@@ -151,6 +151,8 @@ function outdoor(g: Ctx, room: Room) {
     else if (m.kind === 'dashV') for (let y = m.y; y < m.y + m.h; y += 16) rect(g, m.x, y + 4, m.w, Math.min(8, m.y + m.h - y - 4), '#e6e6de');
     else if (m.kind === 'dashH') for (let x = m.x; x < m.x + m.w; x += 16) rect(g, x + 4, m.y, Math.min(8, m.x + m.w - x - 4), m.h, '#e6e6de');
     else if (m.kind === 'stop') rect(g, m.x, m.y, m.w, m.h, '#eeeee6');
+    else if (m.kind === 'edgeH') rect(g, m.x, m.y, m.w, 1, '#e3b437');
+    else if (m.kind === 'edgeV') rect(g, m.x, m.y, 1, m.h, '#e3b437');
     else if (m.kind === 'stall') { rect(g, m.x, m.y, 1, m.h, '#e6e6de'); rect(g, m.x + m.w, m.y, 1, m.h, '#e6e6de'); }
     else if (m.kind === 'slow30') { ellipse(g, m.x, m.y, 9, 7, '#d6493e'); ellipse(g, m.x, m.y, 7, 5, '#5d606a'); pixelText(g, '30', m.x - 3, m.y - 2, '#f2f2ea'); }
   }
@@ -158,8 +160,8 @@ function outdoor(g: Ctx, room: Room) {
   for (let y = 4; y < 640; y += 48) { if (y > 380 && y < 600) continue; drain(g, 386, y); drain(g, 474, y); }
   g.save(); g.fillStyle = 'rgba(32,26,64,0.22)';
   for (const b of room.buildings) {
-    const s = Math.min(26, Math.round(b.h * 0.28));
-    g.beginPath(); g.moveTo(b.x + b.w, b.y); g.lineTo(b.x + b.w + s, b.y + s * 0.5); g.lineTo(b.x + b.w + s, b.y + b.d + 4); g.lineTo(b.x + b.w, b.y + b.d); g.closePath(); g.fill();
+    const s = Math.min(26, Math.round(b.h * 0.28)), top = b.block ? b.y - b.h : b.y;
+    g.beginPath(); g.moveTo(b.x + b.w, top); g.lineTo(b.x + b.w + s, top + s * 0.5); g.lineTo(b.x + b.w + s, b.y + b.d + 4); g.lineTo(b.x + b.w, b.y + b.d); g.closePath(); g.fill();
     g.fillRect(b.x + 4, b.y + b.d, b.w, 3);
   }
   for (const p of room.props) {

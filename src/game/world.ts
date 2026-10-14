@@ -593,8 +593,9 @@ export class World {
     const col: Record<number, string> = { [T.ROAD]: '#4b505b', [T.CROSS]: '#d8d8d0', [T.LANE]: '#666a74', [T.GRASS]: '#6faa4c', [T.GRAVEL]: '#c9b78f', [T.PARKING]: '#5a5e67', [T.VOID]: '#3a3e48', [T.TACTILE]: '#d8b440', [T.TURF]: '#5eae4d' };
     for (let y = 0; y < room.rows; y++) for (let x = 0; x < room.cols; x++) { g.fillStyle = col[tileAt(room, x, y)] ?? '#bdb5a5'; g.fillRect(x * s, y * s, s, s); }
     for (const b of room.buildings) {
-      g.fillStyle = b.id === 'europlaza' ? '#e8c88a' : b.id === 'b2bc' ? '#f08a6a' : '#8b8f9c';
-      g.fillRect(Math.floor(b.x / 8), Math.floor(b.y / 8), Math.ceil(b.w / 8), Math.ceil(b.d / 8));
+      const top = b.block ? b.y - b.h : b.y, depth = b.block ? b.d + b.h : b.d;
+      g.fillStyle = b.id === 'europlaza' ? '#e8c88a' : b.id === 'b2bc' ? '#f08a6a' : b.id === 'jinu' ? '#2fa59a' : '#8b8f9c';
+      g.fillRect(Math.floor(b.x / 8), Math.floor(top / 8), Math.ceil(b.w / 8), Math.ceil(depth / 8));
     }
     return c;
   }
