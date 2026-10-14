@@ -9,9 +9,6 @@ import { canStand } from '../world/collision';
 import { rooms } from '../world/rooms';
 import { isHeartRoom, roomIds, type Dir, type RoomId } from '../world/types';
 
-export type TimeMode = 'day' | 'dusk' | 'night' | 'auto';
-export const timeModes: Record<TimeMode, string> = { day: '낮', dusk: '노을', night: '밤', auto: '실제 시간' };
-
 export type GameState = {
   schemaVersion: 4; contentVersion: 'redesign-1'; balanceVersion: 'cafe-0.1';
   saveId: string; revision: number; createdAt: string; updatedAt: string; started: boolean;
@@ -26,7 +23,7 @@ export type GameState = {
   q005: Q5State;
   reactions: Reactions;
   cafe: { welcomeUsed: boolean; orderCount: number; lastOrder: { itemId: string; price: number; orderedAt: string } | null; restedAt: string | null };
-  settings: { time: TimeMode };
+  // No `settings`: the in-game time-of-day setting was removed (D068, lunch step 5). The game follows the device clock in Asia/Seoul (domain/clock).
 };
 
 export function newState(): GameState {
@@ -46,7 +43,6 @@ export function newState(): GameState {
     q005: emptyQ5(),
     reactions: emptyReactions(),
     cafe: { welcomeUsed: false, orderCount: 0, lastOrder: null, restedAt: null },
-    settings: { time: 'day' },
   };
 }
 
@@ -66,7 +62,6 @@ export function validateState(value: unknown): GameState {
   const a = s.avatar as Record<string, unknown> | undefined;
   const at = s.at as Record<string, unknown> | undefined;
   const cafe = s.cafe as Record<string, unknown> | undefined;
-  const settings = s.settings as Record<string, unknown> | undefined;
   if (typeof s.saveId !== 'string' || !s.saveId || s.saveId.length > 100 || !integer(s.revision) || typeof s.started !== 'boolean' || !date(s.createdAt) || !date(s.updatedAt)) throw new Error('저장 기본 정보가 잘못되었습니다.');
   if (!a || !presets.includes(a.preset as Preset) || typeof a.name !== 'string' || !a.name.trim() || a.name.length > 12) throw new Error('기자 정보가 잘못되었습니다.');
   const preset = a.preset as Preset;
@@ -107,7 +102,7 @@ export function validateState(value: unknown): GameState {
   if (!cafe || typeof cafe.welcomeUsed !== 'boolean' || !integer(cafe.orderCount) || (cafe.restedAt !== null && !date(cafe.restedAt))) throw new Error('카페 기록이 잘못되었습니다.');
   const lo = cafe.lastOrder as Record<string, unknown> | null;
   if (lo !== null && (!lo || typeof lo.itemId !== 'string' || !integer(lo.price) || !date(lo.orderedAt))) throw new Error('카페 주문 기록이 잘못되었습니다.');
-  const time = settings && typeof settings.time === 'string' && ['day', 'dusk', 'night', 'auto'].includes(settings.time) ? settings.time as TimeMode : 'day';
+  // Older schema4 saves carry `settings.time` (낮/노을/밤/실제 시간). It is read and ignored, whatever its value, and is not written back.
   return {
     schemaVersion: 4, contentVersion: 'redesign-1', balanceVersion: 'cafe-0.1', saveId: s.saveId, revision: s.revision,
     createdAt: s.createdAt, updatedAt: s.updatedAt, started: s.started,
@@ -121,7 +116,6 @@ export function validateState(value: unknown): GameState {
     q005,
     reactions,
     cafe: { welcomeUsed: cafe.welcomeUsed, orderCount: cafe.orderCount, restedAt: (cafe.restedAt as string | null), lastOrder: lo ? { itemId: lo.itemId as string, price: lo.price as number, orderedAt: lo.orderedAt as string } : null },
-    settings: { time },
   };
 }
 

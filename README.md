@@ -45,7 +45,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 ## 작업을 이어갈 때
 
-[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 맨 앞 ‘현재 상태와 다음 작업’을 따른다(점심 그림 확인 → 실시간 시계 → 점심 화면 → 검증, 그다음 Q006). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
+[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 맨 앞 ‘현재 상태와 다음 작업’을 따른다(점심 그림 확인 대기 · 실시간 시계 완료(D083) → 점심 화면 → 검증, 그다음 Q006). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
 
 - 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 이 Mac의 셸에 Node가 없으면 `bash tools/npm-local.sh run dev`.
 - 검증: `npm run typecheck`, `npm test`, `npm run test:e2e`, `npm run build`. 최신 실행 결과는 [현재 상태](docs/production/STATUS.md)와 [첫 기사 기록](docs/production/Q001-ARTICLE.md)에 남긴다. [기존 오류 점검](docs/production/CODE-AUDIT-2026-10-11.md) · [뒷모습·모바일 생성 화면](docs/production/MOBILE-CREATOR-AND-REAR-WALK.md).

@@ -6,7 +6,7 @@ import { discovered, discoveries, discoveryIds } from './domain/heart';
 import { outfits, presetNames, type Look } from './domain/appearance';
 import { cafeMenu, canOrder } from './domain/cafe';
 import { Q1, Q1_OBSERVATIONS, Q1_ROOM, canEnterHeart, levelOf, obsKey, q1CanOffer } from './domain/quest';
-import { timeModes, type TimeMode } from './domain/state';
+import { DAY_FROM_HOUR, DUSK_FROM_HOUR, NIGHT_FROM_HOUR } from './domain/clock';
 import { SaveStore } from './infrastructure/save';
 import { World } from './game/world';
 import { Dialog } from './ui/dialog';
@@ -244,7 +244,7 @@ function refresh() {
   const s = game.state;
   hud.update(s);
   if (!world) return;
-  world.player.look = s.avatar.look; world.player.name = s.avatar.name; world.timeMode = s.settings.time;
+  world.player.look = s.avatar.look; world.player.name = s.avatar.name;
   const layer = world.roomId !== 'heart' ? '' : s.q003.mode !== 'normal' ? q3Text.comparison[s.q003.mode].label : s.q005.mode !== 'normal' ? q5Text.comparison[s.q005.mode].label : '';
   hud.setObjective((layer ? '검수 전 모형 · ' + layer + ' 비교 · ' : '') + objective(s, world.roomId));
   if (world.heart) { world.heart.comparison = world.roomId === 'heart' ? s.q003.mode : 'normal'; world.heart.rhythm = world.roomId === 'heart' ? s.q005.mode : 'normal'; }
@@ -524,16 +524,10 @@ function openMenu() {
     list.append(button('row', '기록 파일 불러오기', () => importSave(close)));
     list.append(button('row', '최근 백업에서 복구', () => { close(); openBackups(); }));
     saveSec.append(list); c.append(saveSec);
-    const view = el('div'); view.append(el('h3', '', '화면 · 시간대'));
-    const seg = el('div', 'seg');
-    for (const [id, label] of Object.entries(timeModes) as [TimeMode, string][]) {
-      const b = button('', label, () => { game.setTime(id); seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
-      b.setAttribute('aria-pressed', String(game.state.settings.time === id)); seg.append(b);
-    }
-    view.append(seg); c.append(view);
     const help = el('div'); help.append(el('h3', '', '조작 안내'));
     help.append(el('p', '', 'PC: 방향키/WASD 이동 · E/Space 대화·살펴보기 · J 수첩 · M 지도 · Esc 메뉴'));
     help.append(el('p', '', '마우스·터치: 화면을 누르면 그곳으로 걷고, 사람이나 물건을 누르면 다가가서 말을 걸어요. 꾹 누른 채 움직이면 손가락 쪽으로 계속 걸어요. 대화창·창은 아무 곳이나 누르면 넘어가거나 닫혀요.'));
+    help.append(el('p', '', `시간: 게임은 기기 시계의 한국 시간(서울)을 따라가요. 거리는 오전 ${DAY_FROM_HOUR}시부터 낮, 오후 ${DUSK_FROM_HOUR - 12}시부터 노을, 오후 ${NIGHT_FROM_HOUR - 12}시부터 밤이에요. 따로 시간대를 고르는 설정은 없어요.`));
     help.append(el('p', '', '큰길 횡단보도는 보행 신호가 초록불일 때만 건널 수 있어요. 깜빡이기 시작하면 새로 건너지 않아요.'));
     help.append(el('p', '', '휴대폰·태블릿: 왼쪽 아래 조작볼로 걷고 오른쪽 확인 버튼으로 가까운 사람·구조를 살펴봐요. 확인은 대화도 넘겨요. 선택지는 직접 눌러 주세요.'));
     help.append(el('p', '', '심장 속: 판막은 열려 있을 때, 피가 흐르는 방향으로만 지나갈 수 있어요. 오른쪽 위 심장 주기는 접고 펼칠 수 있어요. 작은 지도나 펼친 주기의 심장 길 안내를 누르면 이 방·심장·인체 지도가 열려요.'));

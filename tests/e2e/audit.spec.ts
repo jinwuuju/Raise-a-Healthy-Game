@@ -89,9 +89,13 @@ test('second tab cannot overwrite the writer and can export its in-memory record
   await start(page);
   const other = await page.context().newPage();
   await other.goto('/');
+  // The time-of-day setting is gone (D068); a progress change in the second tab is the write attempt instead.
+  await other.evaluate(() => (window as unknown as { __mq: { game: { flag(f: string): void } } }).__mq.game.flag('second-tab-probe'));
   await other.getByRole('button', { name: '메뉴', exact: true }).click();
-  await other.getByRole('button', { name: '밤', exact: true }).click();
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('medical-quest.v4.current')!).settings.time)).toBe('day');
+  await other.getByRole('button', { name: '지금 저장하기' }).click();
+  await expect(other.locator('.toast')).toContainText('저장 실패');
+  expect(await other.evaluate(() => (window as unknown as { __mq: { game: { state: { flags: string[] } } } }).__mq.game.state.flags)).toContain('second-tab-probe');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('medical-quest.v4.current')!).flags)).not.toContain('second-tab-probe');
   const download = other.waitForEvent('download');
   await other.getByRole('button', { name: '기록 파일로 내보내기' }).click();
   expect((await download).suggestedFilename()).toContain('medical-quest');
@@ -117,9 +121,12 @@ test('full storage still loads the existing reporter and reports write failure i
   await page.addInitScript(() => { Storage.prototype.setItem = () => { throw new Error('quota exceeded'); }; });
   await page.reload();
   await expect(page.locator('.chip .name')).toHaveText('보존테스트');
+  // A progress change is the write attempt (the former time-of-day button was removed, D068).
+  await page.evaluate(() => (window as unknown as { __mq: { game: { flag(f: string): void } } }).__mq.game.flag('full-storage-probe'));
   await page.getByRole('button', { name: '메뉴', exact: true }).click();
-  await page.getByRole('button', { name: '밤', exact: true }).click();
   await expect(page.locator('.sheet .save-message')).toContainText('quota exceeded');
+  await page.getByRole('button', { name: '지금 저장하기' }).click();
+  await expect(page.locator('.toast')).toContainText('저장 실패');
   expect(await page.evaluate(() => localStorage.getItem('medical-quest.v4.current'))).toBe(original);
 });
 

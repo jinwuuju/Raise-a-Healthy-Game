@@ -16,7 +16,7 @@ import type { ChamberId } from '../domain/q002-state';
 import type { ArticleSlot } from '../domain/article-state';
 import { discover } from '../domain/heart';
 import { Q1, acceptQ1, briefQ1, canEnterHeart, observeQ1 } from '../domain/quest';
-import { newState, validateState, type GameState, type TimeMode } from '../domain/state';
+import { newState, validateState, type GameState } from '../domain/state';
 import type { SaveStore } from '../infrastructure/save';
 import { canStand } from '../world/collision';
 import { rooms } from '../world/rooms';
@@ -182,7 +182,6 @@ export class Game {
 
   rest(): void { this.commit({ ...this.state, cafe: { ...this.state.cafe, restedAt: new Date().toISOString() } }); }
 
-  setTime(time: TimeMode): void { this.commit({ ...this.state, settings: { ...this.state.settings, time } }); }
 
   importState(raw: unknown): void {
     const s = validateState(raw);

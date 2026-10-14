@@ -6,7 +6,7 @@ import { organMinimap, type MiniMap } from '../art/organ';
 import { ellipse, makeCanvas, pixelText, type Sprite } from '../art/pixel';
 import { propSprite } from '../art/props';
 import type { Look } from '../domain/appearance';
-import type { TimeMode } from '../domain/state';
+import { timeOfDayAt, type TimeOfDay } from '../domain/clock';
 import { passable, realTime, secondsUntilOpen, soundBetween } from '../domain/cardiac';
 import { canStand, crossingAt, doorAt, footRect, moveWithCollision, nearestTarget } from '../world/collision';
 import type { Valve } from '../world/organ-types';
@@ -36,7 +36,8 @@ export class World {
   /** Touch screens say ‘누르기’, keyboards say ‘E’. */
   touchHint = false;
   locked = false;
-  timeMode: TimeMode = 'day';
+  /** Device clock (epoch ms). Street lighting reads it in Asia/Seoul; there is no in-game time setting (D068). */
+  now: () => number = () => Date.now();
   questNpc: string | null = null;
   /** Non-person targets that carry a quest marker (e.g. the Bodyscope, observation points). */
   questTargets: string[] = [];
@@ -289,10 +290,9 @@ export class World {
     this.leaves = this.leaves.filter(l => l.life > 0);
   }
 
-  private resolvedTime(): 'day' | 'dusk' | 'night' {
-    if (this.timeMode !== 'auto') return this.timeMode;
-    const h = new Date().getHours();
-    return h >= 7 && h < 17 ? 'day' : h >= 17 && h < 19 ? 'dusk' : 'night';
+  /** Outdoor lighting from the real Seoul clock, whatever the device time zone is. */
+  get timeOfDay(): TimeOfDay {
+    try { return timeOfDayAt(this.now()); } catch { return 'day'; }
   }
 
   ground(id: RoomId): HTMLCanvasElement {
@@ -327,7 +327,7 @@ export class World {
     g.fillStyle = room.organ ? '#170a12' : room.interior ? '#17141f' : '#2a2e3a'; g.fillRect(0, 0, vw, vh);
     if (this.heart) this.heart.drawFloor(g, cx, cy, vw, vh, this.real);
     else g.drawImage(this.ground(this.roomId), -cx, -cy);
-    const tod = room.interior ? 'day' : this.resolvedTime();
+    const tod = room.interior ? 'day' : this.timeOfDay;
 
     if (this.marker) {
       const age = this.time - this.marker.t, r = 3 + (age * 10) % 5;
