@@ -85,7 +85,7 @@
    ],
    "art": {
     "id": "food-mul-naengmyeon",
-    "status": "미제작"
+    "status": "승인(D078)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -142,7 +142,7 @@
    ],
    "art": {
     "id": "food-bibim-naengmyeon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -190,7 +190,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-hoe-naengmyeon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -238,7 +238,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-yeolmu-naengmyeon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -295,7 +295,7 @@
    ],
    "art": {
     "id": "food-makguksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -343,7 +343,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jaengban-makguksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -400,7 +400,7 @@
    ],
    "art": {
     "id": "food-kongguksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -448,7 +448,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jjolmyeon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -496,7 +496,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-bibim-guksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -544,7 +544,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-kimchi-mari-guksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -592,7 +592,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-yeolmu-guksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -640,7 +640,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-mulhoe",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -688,7 +688,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-ojingeo-mulhoe",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -736,7 +736,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-hoe-deopbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -793,7 +793,7 @@
    ],
    "art": {
     "id": "food-sushi-moodeum",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -841,7 +841,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sushi-gwangeo",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -889,7 +889,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-california-roll",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -937,7 +937,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-salmon-roll",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -985,7 +985,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-tteokbokki",
-    "status": "미제작"
+    "status": "승인(D078)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1033,7 +1033,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-rabokki",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1081,7 +1081,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jjamppong",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1129,7 +1129,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-samseon-jjamppong",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1177,7 +1177,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gul-jjamppong",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1225,7 +1225,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jjamppong-bap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1276,7 +1276,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-malatang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1324,7 +1324,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jeyuk-deopbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1372,7 +1372,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jeyuk-bokkeum",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1420,7 +1420,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-nakji-bokkeum",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1468,7 +1468,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-nakji-deopbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1516,7 +1516,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-ojingeo-deopbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1564,7 +1564,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jukkumi-bokkeum",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1612,7 +1612,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dakbal",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1669,7 +1669,7 @@
    ],
    "art": {
     "id": "food-dakgalbi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1717,7 +1717,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-yukgaejang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1774,7 +1774,7 @@
    ],
    "art": {
     "id": "food-daegu-maeuntang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1822,7 +1822,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dakbokkeumtang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1879,7 +1879,7 @@
    ],
    "art": {
     "id": "food-agujjim",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1927,7 +1927,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-haemuljjim",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -1975,7 +1975,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sundae-bokkeum",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2023,7 +2023,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-mapa-tofu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2071,7 +2071,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gopchang-bokkeum",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2119,7 +2119,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sundae-gukbap",
-    "status": "미제작"
+    "status": "승인(D078)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2167,7 +2167,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dwaeji-gukbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2215,7 +2215,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-kongnamul-gukbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2263,7 +2263,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sogogi-gukbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2311,7 +2311,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gul-gukbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2368,7 +2368,7 @@
    ],
    "art": {
     "id": "food-ppyeo-haejangguk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2425,7 +2425,7 @@
    ],
    "art": {
     "id": "food-seonji-haejangguk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2473,7 +2473,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-ugeoji-haejangguk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2521,7 +2521,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-hwangtae-haejangguk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2569,7 +2569,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-kimchi-jjigae",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2617,7 +2617,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-chamchi-kimchi-jjigae",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2665,7 +2665,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-doenjang-jjigae",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2713,7 +2713,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sundubu-jjigae",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2770,7 +2770,7 @@
    ],
    "art": {
     "id": "food-budae-jjigae",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2818,7 +2818,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gamjatang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2866,7 +2866,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-galbitang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2914,7 +2914,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-seolleongtang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -2971,7 +2971,7 @@
    ],
    "art": {
     "id": "food-gomtang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3019,7 +3019,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-samgyetang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3067,7 +3067,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dakgomtang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3115,7 +3115,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-kalguksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3163,7 +3163,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-bajirak-kalguksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3211,7 +3211,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-haemul-kalguksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3259,7 +3259,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-ssalguksu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3316,7 +3316,7 @@
    ],
    "art": {
     "id": "food-udon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3364,7 +3364,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sujebi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3421,7 +3421,7 @@
    ],
    "art": {
     "id": "food-tteok-manduguk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3478,7 +3478,7 @@
    ],
    "art": {
     "id": "food-chueotang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3526,7 +3526,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-altang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3574,7 +3574,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dongtae-jjigae",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3631,7 +3631,7 @@
    ],
    "art": {
     "id": "food-sogogi-shabu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3682,7 +3682,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-tonkotsu-ramen",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3730,7 +3730,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-fried-chicken",
-    "status": "미제작"
+    "status": "승인(D078)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3778,7 +3778,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-yangnyeom-chicken",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3826,7 +3826,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-ganjang-chicken",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3874,7 +3874,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-chicken-wing",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3922,7 +3922,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-deungsim-katsu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -3970,7 +3970,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-ansim-katsu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4018,7 +4018,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-cheese-katsu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4066,7 +4066,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-chicken-katsu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4114,7 +4114,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-fish-katsu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4162,7 +4162,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-saeu-tangsuyuk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4210,7 +4210,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-lajogi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4258,7 +4258,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-nanjawanseu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4306,7 +4306,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-tteok-gangjeong",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4363,7 +4363,7 @@
    ],
    "art": {
     "id": "food-jokbal",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4411,7 +4411,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-samgyeopsal",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4459,7 +4459,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gochujang-samgyeopsal",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4516,7 +4516,7 @@
    ],
    "art": {
     "id": "food-so-bulgogi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4564,7 +4564,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-so-galbi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4612,7 +4612,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-tteokgalbi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4660,7 +4660,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-ori-bulgogi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4717,7 +4717,7 @@
    ],
    "art": {
     "id": "food-hunje-ori",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4765,7 +4765,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-deungsim-steak",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4822,7 +4822,7 @@
    ],
    "art": {
     "id": "food-hambak-steak",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4879,7 +4879,7 @@
    ],
    "art": {
     "id": "food-so-galbijjim",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4927,7 +4927,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dwaeji-galbijjim",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -4975,7 +4975,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-deunggalbijjim",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5023,7 +5023,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-so-suyuk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5071,7 +5071,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-so-gopchang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5119,7 +5119,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-chicken-teriyaki",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5167,7 +5167,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jjimdak",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5215,7 +5215,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-curry-rice",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5263,7 +5263,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-hayashi-rice",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5314,7 +5314,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pad-thai",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5365,7 +5365,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-bun-cha",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5413,7 +5413,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-wolnamssam",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5461,7 +5461,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-pepperoni",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5509,7 +5509,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-cheese",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5557,7 +5557,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-combination",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5605,7 +5605,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-bulgogi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5653,7 +5653,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-potato",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5701,7 +5701,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-tomato",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5749,7 +5749,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-cream",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5797,7 +5797,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-oil",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5845,7 +5845,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-seafood-tomato",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5893,7 +5893,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-meatball",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5941,7 +5941,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-salad-chicken",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -5989,7 +5989,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-salad-tuna",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6037,7 +6037,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-salad-pumpkin",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6085,7 +6085,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-salad-vegetable",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6133,7 +6133,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jeonbok-juk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6181,7 +6181,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-hobak-juk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6238,7 +6238,7 @@
    ],
    "art": {
     "id": "food-chaeso-juk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6286,7 +6286,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dak-juk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6334,7 +6334,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sogogi-beoseot-juk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6382,7 +6382,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-pat-juk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6430,7 +6430,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-heugimja-juk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6478,7 +6478,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gesal-juk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6526,7 +6526,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gimbap",
-    "status": "미제작"
+    "status": "승인(D078)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6583,7 +6583,7 @@
    ],
    "art": {
     "id": "food-chamchi-gimbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6631,7 +6631,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-cheese-gimbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6688,7 +6688,7 @@
    ],
    "art": {
     "id": "food-sogogi-gimbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6736,7 +6736,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-donkatsu-gimbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6784,7 +6784,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-kimchi-gimbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6832,7 +6832,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-salad-gimbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6880,7 +6880,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-chungmu-gimbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6928,7 +6928,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sogogi-jumeokbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -6985,7 +6985,7 @@
    ],
    "art": {
     "id": "food-yubu-chobap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7033,7 +7033,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-bulgogi-burger",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7090,7 +7090,7 @@
    ],
    "art": {
     "id": "food-hamburger",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7138,7 +7138,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sandwich-chicken",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7195,7 +7195,7 @@
    ],
    "art": {
     "id": "food-sandwich-tuna",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7243,7 +7243,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sandwich-ham-egg",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7291,7 +7291,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sandwich-vegetable",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7339,7 +7339,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gun-mandu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7396,7 +7396,7 @@
    ],
    "art": {
     "id": "food-gogi-mandu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7453,7 +7453,7 @@
    ],
    "art": {
     "id": "food-kimchi-mandu",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7510,7 +7510,7 @@
    ],
    "art": {
     "id": "food-bibimbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7558,7 +7558,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dolsot-bibimbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7606,7 +7606,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-bulgogi-deopbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7654,7 +7654,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dak-deopbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7702,7 +7702,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-haemul-deopbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7750,7 +7750,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-jangeo-deopbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7807,7 +7807,7 @@
    ],
    "art": {
     "id": "food-kimchi-bokkeumbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7855,7 +7855,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-saeu-bokkeumbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7903,7 +7903,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-haemul-bokkeumbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -7960,7 +7960,7 @@
    ],
    "art": {
     "id": "food-jajangmyeon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8017,7 +8017,7 @@
    ],
    "art": {
     "id": "food-gan-jajang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8065,7 +8065,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-samseon-jajang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8122,7 +8122,7 @@
    ],
    "art": {
     "id": "food-jajangbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8170,7 +8170,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-japchaebap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8218,7 +8218,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-japtangbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8266,7 +8266,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-yusanseul-deopbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8314,7 +8314,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-omurice",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8362,7 +8362,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-kongnamulbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8410,7 +8410,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gondeure-bap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8458,7 +8458,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-albap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8506,7 +8506,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-yeongyang-dolsotbap",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8554,7 +8554,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-tangsuyuk",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8602,7 +8602,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-kkanpunggi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8650,7 +8650,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dakgangjeong",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8698,7 +8698,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-boneless-chicken",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8746,7 +8746,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-guobaorou",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8785,7 +8785,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-hotdog",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8807,7 +8807,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-katsudon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8829,7 +8829,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-tendon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8851,7 +8851,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-mala-xiangguo",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8899,7 +8899,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-bossam",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8938,7 +8938,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-beef-makchang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -8977,7 +8977,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-dak-kkochi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9025,7 +9025,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-ganjang-gejang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9073,7 +9073,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-yangnyeom-gejang",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9121,7 +9121,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-poke",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9169,7 +9169,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-sakedon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9226,7 +9226,7 @@
    ],
    "art": {
     "id": "food-sundae",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9248,7 +9248,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-taco",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9270,7 +9270,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-burrito",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9292,7 +9292,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-kebab",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9314,7 +9314,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-banh-mi",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],
@@ -9362,7 +9362,7 @@
    "otherAnalyses": [],
    "art": {
     "id": "food-gyudon",
-    "status": "미제작"
+    "status": "초안(D082, 사용자 확인 전)"
    },
    "adClaim": null,
    "orderTips": [],

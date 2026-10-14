@@ -5,87 +5,9 @@
  * 왼쪽 위 광원, 그릇마다 다른 질감, 음식 전체에 색 외곽선 1px, 바닥 그림자, 김/냉기 효과는 외곽선 없이.
  * 상표·실제 가게 포장은 그리지 않는다.
  */
-export const FOOD_W = 32, FOOD_H = 32, FOOD_AX = 16, FOOD_AY = 30;
-export type FoodGrid = (string | null)[];
-
-const SHADOW = '#2d273433';
-
-function h2(x: number, y: number, s = 0): number {
-  let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(s | 0, 1442695041)) | 0;
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-}
-
-type Shade = (x: number, y: number, u: number, v: number) => string | null;
-
-class Layer {
-  readonly d: FoodGrid = new Array<string | null>(FOOD_W * FOOD_H).fill(null);
-  p(x: number, y: number, c: string | null): void {
-    const X = Math.round(x), Y = Math.round(y);
-    if (X < 0 || Y < 0 || X >= FOOD_W || Y >= FOOD_H) return;
-    this.d[Y * FOOD_W + X] = c;
-  }
-  at(x: number, y: number): string | null {
-    return x < 0 || y < 0 || x >= FOOD_W || y >= FOOD_H ? null : this.d[y * FOOD_W + x] ?? null;
-  }
-  r(x: number, y: number, w: number, h: number, c: string): void {
-    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) this.p(x + i, y + j, c);
-  }
-  /** pixel.ts의 ellipse와 같은 행 계산. 색 대신 함수를 주면 (u, v)는 -1..1 정규화 좌표. */
-  e(cx: number, cy: number, rx: number, ry: number, c: string | Shade): void {
-    for (let y = -ry; y <= ry; y++) {
-      const t = 1 - ((y + (y < 0 ? 0.5 : -0.5)) ** 2) / (ry * ry);
-      const w = Math.max(0, Math.round(rx * Math.sqrt(Math.max(0, t))));
-      if (!(w > 0 || Math.abs(y) < ry)) continue;
-      for (let x = -w; x <= w; x++) {
-        const col = typeof c === 'string' ? c : c(cx + x, cy + y, x / Math.max(1, rx), y / Math.max(1, ry));
-        if (col) this.p(cx + x, cy + y, col);
-      }
-    }
-  }
-  /** 4방향 이웃 기준 1px 외곽선(빈 칸에만). */
-  outline(c: string): void {
-    const marks: number[] = [];
-    for (let y = 0; y < FOOD_H; y++) for (let x = 0; x < FOOD_W; x++) {
-      if (this.at(x, y)) continue;
-      if (this.at(x - 1, y) || this.at(x + 1, y) || this.at(x, y - 1) || this.at(x, y + 1)) marks.push(y * FOOD_W + x);
-    }
-    for (const i of marks) this.d[i] = c;
-  }
-  put(o: Layer): void { o.d.forEach((c, i) => { if (c) this.d[i] = c; }); }
-}
-
-function stack(...ls: Layer[]): FoodGrid {
-  const out = new Layer();
-  for (const l of ls) out.put(l);
-  return out.d;
-}
-
-/** 위가 넓고 아래로 둥글게 좁아지는 그릇 몸통. 왼쪽이 밝다. */
-function body(l: Layer, cx: number, top: number, bottom: number, wTop: number, wBot: number, ramp: string[]): void {
-  for (let y = top; y <= bottom; y++) {
-    const t = (y - top) / Math.max(1, bottom - top);
-    const hw = Math.round(wTop + (wBot - wTop) * t * t);
-    for (let x = -hw; x <= hw; x++) {
-      const u = x / Math.max(1, hw);
-      let i = u < -0.6 ? 0 : u < 0.05 ? 1 : u < 0.65 ? 2 : 3;
-      if (t > 0.8 && i < 3) i++;
-      l.p(cx + x, y, ramp[i]!);
-    }
-  }
-}
-
-function steam(l: Layer, x: number, y0: number, len: number, phase: number): void {
-  for (let i = 0; i < len; i++) {
-    const dx = Math.round(Math.sin((i + phase) * 0.9));
-    l.p(x + dx, y0 - i, i % 3 === 2 ? '#ffffff55' : '#ffffffaa');
-  }
-}
-
-function sparkle(l: Layer, x: number, y: number): void {
-  l.p(x, y, '#ffffff');
-  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) l.p(x + dx, y + dy, '#a9def5');
-}
+import { FOOD_W, FOOD_H, SHADOW, h2, Layer, stack, body, steam, sparkle, type FoodGrid, type Shade } from './food-kit.ts';
+export { FOOD_W, FOOD_H, FOOD_AX, FOOD_AY, type FoodGrid } from './food-kit.ts';
+import { MENU_ART } from './food-menus.ts';
 
 /* 1. 물냉면 — 스테인리스 그릇, 맑은 육수, 메밀면 똬리, 달걀 반쪽·오이·배·편육, 얼음. 냉기 반짝. */
 function mulNaengmyeon(): FoodGrid {
@@ -243,6 +165,7 @@ export const FOOD_ART: Record<string, () => FoodGrid> = {
   'sundae-gukbap': sundaeGukbap,
   'fried-chicken': friedChicken,
   gimbap,
+  ...MENU_ART,
 };
 
 /* ---- 고유성 검사(D069): 같은 그림·색만 바꾼 복제·거의 같은 그림을 막는다. ---- */
