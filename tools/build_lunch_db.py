@@ -43,6 +43,15 @@ def grams(s):
     return float(s[:-1]) if s.endswith('g') and not s.endswith('mg') else None
 
 
+def amount(s):
+    # '343ml' -> (343.0, 'ml'), '200g' -> (200.0, 'g'); mg 등은 1인분 양이 아니다.
+    s = (s or '').strip()
+    for u in ('ml', 'g'):
+        if s.endswith(u) and not s.endswith('mg'):
+            try: return float(s[:-len(u)]), u
+            except ValueError: return None, None
+    return None, None
+
 def num(s):
     try:
         return float(s)
@@ -57,15 +66,18 @@ def main():
     def g(r, k): return r[ix[k]]
     used = []
     generic = [r for r in rows if g(r, '업체명') == '해당없음' and g(r, '데이터생성방법명') == '분석']
+    calc = [r for r in rows if g(r, '업체명') == '해당없음' and g(r, '데이터생성방법명') == '산출']
 
-    def pick_row(name):
+    def pick_row(name, allow_calc=False):
         c = [r for r in generic if g(r, '식품명') == name]
+        if not c and allow_calc:
+            # D080: 분석 행이 없을 때만 같은 DB의 비브랜드 산출 행(레시피 계산값)을 쓴다.
+            c = [r for r in calc if g(r, '식품명') == name]
         if not c:
-            raise SystemExit('DB에 분석값 없음: ' + name)
-        # 실제 1인분 중량(100g 기준값이 아닌 것)을 먼저, 그다음 최신 생성일자
-        c.sort(key=lambda r: ((grams(g(r, '식품중량')) or 0) > 100, grams(g(r, '식품중량')) is not None, g(r, '데이터생성일자')), reverse=True)
+            raise SystemExit('DB에 비브랜드 분석/산출 값 없음: ' + name)
+        # 실제 1인분 양(기준량 100이 아닌 것)을 먼저, 그다음 최신 생성일자
+        c.sort(key=lambda r: ((amount(g(r, '식품중량'))[0] or 0) > 100, amount(g(r, '식품중량'))[0] is not None, g(r, '데이터생성일자')), reverse=True)
         return c[0]
-
     def others(name, chosen, w):
         # 같은 음식명의 다른 분석 행: 가게·조사마다 값이 다르다는 것을 함께 보여 준다.
         res = []
@@ -73,6 +85,7 @@ def main():
             if g(o, '식품명') != name or o is chosen: continue
             ow = grams(g(o, '식품중량'))
             sw = ow if ow and ow > 100 else w
+            if not sw: continue
             k, na = num(g(o, '에너지(kcal)')), num(g(o, '나트륨(mg)'))
             res.append({'foodCode': g(o, '식품코드'), 'servingG': sw,
                         'servingBasis': 'DB 1인분 중량' if sw == ow else '대표 행의 1인분 중량 적용',
@@ -81,15 +94,26 @@ def main():
                         'createdAt': g(o, '데이터생성일자')})
             used.append(o)
         return res
-
     picks = json.load(open(PICKS, encoding='utf-8'))['picks']
     menus = []
     for p in picks:
-        r = pick_row(p['dbName'])
-        if g(r, '영양성분함량기준량') != '100g':
-            raise SystemExit('기준량이 100g이 아님: ' + p['id'])
-        w = grams(g(r, '식품중량'))
-        basis = 'DB 1인분 중량'
+        base = {'id': p['id'], 'name': p['name'], 'crave': p['crave'], 'tags': []}
+        tail = {'art': {'id': 'food-' + p['id'], 'status': '미제작'}, 'adClaim': None, 'orderTips': [], 'review': 'draft_unreviewed'}
+        if p.get('noData'):
+            # D080: 같은 DB에 비브랜드 값도, 비슷한 음식도 없으면 숫자를 만들지 않는다.
+            menus.append({**base, 'servingG': None, 'servingUnit': None, 'servingBasis': '값 없음: ' + p['noData'], 'servingRef': None,
+                          'perServing': None, 'per100g': None, 'source': None, 'nutritionStatus': 'none', 'otherAnalyses': [], **tail})
+            continue
+        borrow = p.get('borrow')
+        r = pick_row(borrow['dbName'] if borrow else p['dbName'], allow_calc=bool(p.get('allowCalc') or (borrow and borrow.get('allowCalc'))))
+        unit = '100ml' if g(r, '영양성분함량기준량') == '100ml' else g(r, '영양성분함량기준량')
+        if unit not in ('100g', '100ml'):
+            raise SystemExit('기준량이 100g/100ml이 아님: ' + p['id'])
+        if unit == '100ml' and g(r, '데이터생성방법명') != '산출':
+            raise SystemExit('100ml 기준은 산출 행만 허용: ' + p['id'])
+        w, wu = amount(g(r, '식품중량'))
+        if wu and wu != unit[3:]: w = None
+        basis = 'DB 1인분 중량' if unit == '100g' else 'DB 1회 분량(산출, ml)'
         ref = None
         if p['id'] in ASSUMED:
             refName, why = ASSUMED[p['id']]
@@ -99,29 +123,27 @@ def main():
             ref = {'foodCode': g(rr, '식품코드'), 'foodName': refName}
             used.append(rr)
         if not w or w <= 100 and p['id'] not in ASSUMED:
-            # 100g은 기준량과 구분되지 않으므로 1인분으로 쓰지 않는다
-            raise SystemExit('1인분 중량 없음 또는 100g 이하: ' + p['id'])
+            # 100은 기준량과 구분되지 않으므로 1인분으로 쓰지 않는다(D080: 100단위 값만 표시)
+            w, basis = None, '1인분 양 미상: 기준량(' + unit + ')당 값만 표시'
+        if borrow:
+            basis = '대체: ' + borrow['why'] + ' · ' + basis
         per100 = {k: num(g(r, v)) for k, v in COLS.items()}
         def scale(k, v):
-            if v is None: return None
+            if v is None or w is None: return None
             x = v * w / 100
             return round(x) if k in ('kcal', 'sodium') else round(x, 1)
-        menus.append({
-            'id': p['id'], 'name': p['name'], 'crave': p['crave'], 'tags': [],
-            'servingG': w, 'servingBasis': basis, 'servingRef': ref,
-            'perServing': {k: scale(k, v) for k, v in per100.items()},
+        menus.append({**base,
+            'servingG': w, 'servingUnit': unit[3:], 'servingBasis': basis, 'servingRef': ref,
+            'perServing': None if w is None else {k: scale(k, v) for k, v in per100.items()},
             'per100g': per100,
             'source': {'db': '식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)',
                        'foodCode': g(r, '식품코드'), 'foodName': g(r, '식품명'), 'method': g(r, '데이터생성방법명'),
-                       'createdAt': g(r, '데이터생성일자')},
-            'otherAnalyses': others(p['dbName'], r, w),
-            'art': {'id': 'food-' + p['id'], 'status': '미제작'},
-            'adClaim': None, 'orderTips': [], 'review': 'draft_unreviewed',
-        })
+                       'createdAt': g(r, '데이터생성일자'), 'basis': unit, 'borrowedFor': p['name'] if borrow else None},
+            'nutritionStatus': 'borrowed' if borrow else 'calculated' if g(r, '데이터생성방법명') == '산출' else 'analyzed',
+            'otherAnalyses': [] if borrow else others(p['dbName'], r, w), **tail})
         used.append(r)
-
     # 무결성 검사
-    ids = [m['id'] for m in menus]; names = [m['name'] for m in menus]; codes = [m['source']['foodCode'] for m in menus]
+    ids = [m['id'] for m in menus]; names = [m['name'] for m in menus]; codes = [m['source']['foodCode'] for m in menus if m['source'] and not m['source']['borrowedFor']]
     for label, xs in (('id', ids), ('이름', names), ('식품코드', codes), ('그림 id', [m['art']['id'] for m in menus])):
         dup = {x for x in xs if xs.count(x) > 1}
         if dup: raise SystemExit(label + ' 중복: ' + ', '.join(sorted(dup)))

@@ -1,6 +1,6 @@
 {
- "version": "0.1.1",
- "note": "메뉴 선정표. 영양 수치는 tools/build_lunch_db.py가 식약처 음식DB 원본에서 채운다. 2026-10-14(D079): 사용자 결정으로 배달이 드물 것으로 판단한 37개를 제외하고 흔한 배달 메뉴 133개만 남김. delivery.basis: web-store=배민·쿠팡이츠 앱 연결 주소가 있는 매장 페이지의 메뉴판에서 확인(match: exact 같은 이름, alias 같은 메뉴의 다른 표기, variant 변형 이름), common-unverified=흔한 배달 메뉴로 분류했으나 메뉴별 앱 확인은 하지 않음. 매장 정보는 확인 당시 웹 기준이며 앱의 실시간 판매·지역별 가용성을 보장하지 않는다.",
+ "version": "0.2",
+ "note": "메뉴 선정표. 영양 수치는 tools/build_lunch_db.py가 식약처 음식DB 원본에서 채운다. 2026-10-14 D080(사용자 결정: 가상 게임이므로 모두 포함): D079에서 뺀 37개를 다시 넣고(delivery.basis rare-included) 빠진 인기 배달 메뉴 22개를 추가(popular-added). delivery.basis: web-store=배민·쿠팡이츠 앱 연결 주소가 있는 매장 페이지 메뉴판에서 확인(evidence.match: exact/alias/variant), common-unverified=흔한 배달 메뉴로 분류·앱 미확인, rare-included=배달이 드물 수 있으나 포함, popular-added=인기 배달 메뉴로 추가·앱 미확인. 영양 근거: 분석 행 우선, 없으면 allowCalc로 비브랜드 산출 행(100ml 기준), 없으면 borrow로 같은 DB 유사 음식 값(대체 표시), 그것도 없으면 noData(숫자 없음). 브랜드(수집) 행은 쓰지 않는다. 매장 정보는 확인 당시 웹 기준이며 앱의 실시간 판매·지역 가용성을 보장하지 않는다.",
  "picks": [
   {
    "id": "mul-naengmyeon",
@@ -23,6 +23,26 @@
    }
   },
   {
+   "id": "hoe-naengmyeon",
+   "name": "회냉면",
+   "crave": "cool",
+   "dbName": "냉면_회냉면_홍어",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "yeolmu-naengmyeon",
+   "name": "열무냉면",
+   "crave": "cool",
+   "dbName": "냉면_열무냉면",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "makguksu",
    "name": "막국수",
    "crave": "cool",
@@ -30,6 +50,16 @@
    "delivery": {
     "checked": "2026-10-14",
     "basis": "common-unverified"
+   }
+  },
+  {
+   "id": "jaengban-makguksu",
+   "name": "쟁반막국수",
+   "crave": "cool",
+   "dbName": "국수_쟁반막국수",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -63,6 +93,26 @@
    }
   },
   {
+   "id": "kimchi-mari-guksu",
+   "name": "김치말이국수",
+   "crave": "cool",
+   "dbName": "국수_김치말이국수",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "yeolmu-guksu",
+   "name": "열무국수",
+   "crave": "cool",
+   "dbName": "국수_열무김치",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "mulhoe",
    "name": "물회",
    "crave": "cool",
@@ -70,6 +120,16 @@
    "delivery": {
     "checked": "2026-10-14",
     "basis": "common-unverified"
+   }
+  },
+  {
+   "id": "ojingeo-mulhoe",
+   "name": "오징어물회",
+   "crave": "cool",
+   "dbName": "물회_오징어",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -180,6 +240,16 @@
      "item": "삼선짬뽕",
      "match": "exact"
     }
+   }
+  },
+  {
+   "id": "gul-jjamppong",
+   "name": "굴짬뽕",
+   "crave": "spicy",
+   "dbName": "짬뽕_굴",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -303,6 +373,16 @@
    }
   },
   {
+   "id": "daegu-maeuntang",
+   "name": "대구매운탕",
+   "crave": "spicy",
+   "dbName": "매운탕_대구",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "dakbokkeumtang",
    "name": "닭볶음탕",
    "crave": "spicy",
@@ -403,6 +483,16 @@
    }
   },
   {
+   "id": "gul-gukbap",
+   "name": "굴국밥",
+   "crave": "hot",
+   "dbName": "국밥_굴",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "ppyeo-haejangguk",
    "name": "뼈해장국",
    "crave": "hot",
@@ -413,6 +503,16 @@
    }
   },
   {
+   "id": "seonji-haejangguk",
+   "name": "선지해장국",
+   "crave": "hot",
+   "dbName": "해장국_선지",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "ugeoji-haejangguk",
    "name": "우거지해장국",
    "crave": "hot",
@@ -420,6 +520,16 @@
    "delivery": {
     "checked": "2026-10-14",
     "basis": "common-unverified"
+   }
+  },
+  {
+   "id": "hwangtae-haejangguk",
+   "name": "황태해장국",
+   "crave": "hot",
+   "dbName": "황태해장국",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -523,6 +633,16 @@
    }
   },
   {
+   "id": "dakgomtang",
+   "name": "닭곰탕",
+   "crave": "hot",
+   "dbName": "닭곰탕",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "kalguksu",
    "name": "칼국수",
    "crave": "hot",
@@ -590,6 +710,46 @@
    "delivery": {
     "checked": "2026-10-14",
     "basis": "common-unverified"
+   }
+  },
+  {
+   "id": "chueotang",
+   "name": "추어탕",
+   "crave": "hot",
+   "dbName": "추어탕",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "altang",
+   "name": "알탕",
+   "crave": "hot",
+   "dbName": "알탕",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "dongtae-jjigae",
+   "name": "동태찌개",
+   "crave": "hot",
+   "dbName": "동태찌개",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "sogogi-shabu",
+   "name": "소고기샤브샤브",
+   "crave": "hot",
+   "dbName": "샤브샤브_소고기",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -693,6 +853,16 @@
    }
   },
   {
+   "id": "saeu-tangsuyuk",
+   "name": "새우탕수육",
+   "crave": "crispy",
+   "dbName": "탕수육_새우",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "lajogi",
    "name": "라조기",
    "crave": "crispy",
@@ -710,6 +880,26 @@
      "item": "라조기",
      "match": "exact"
     }
+   }
+  },
+  {
+   "id": "nanjawanseu",
+   "name": "난자완스",
+   "crave": "crispy",
+   "dbName": "난자완스",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "tteok-gangjeong",
+   "name": "떡강정",
+   "crave": "crispy",
+   "dbName": "떡강정",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -753,6 +943,16 @@
    }
   },
   {
+   "id": "so-galbi",
+   "name": "양념소갈비구이",
+   "crave": "meat",
+   "dbName": "갈비구이_소고기_양념",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "tteokgalbi",
    "name": "떡갈비",
    "crave": "meat",
@@ -760,6 +960,36 @@
    "delivery": {
     "checked": "2026-10-14",
     "basis": "common-unverified"
+   }
+  },
+  {
+   "id": "ori-bulgogi",
+   "name": "오리불고기",
+   "crave": "meat",
+   "dbName": "오리불고기",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "hunje-ori",
+   "name": "훈제오리",
+   "crave": "meat",
+   "dbName": "훈제오리",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "deungsim-steak",
+   "name": "소등심스테이크",
+   "crave": "meat",
+   "dbName": "스테이크_소등심",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -803,6 +1033,26 @@
    }
   },
   {
+   "id": "so-suyuk",
+   "name": "소고기수육",
+   "crave": "meat",
+   "dbName": "수육_소고기",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "so-gopchang",
+   "name": "소곱창구이",
+   "crave": "meat",
+   "dbName": "곱창구이_소고기",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "chicken-teriyaki",
    "name": "치킨데리야끼",
    "crave": "meat",
@@ -833,6 +1083,16 @@
    }
   },
   {
+   "id": "hayashi-rice",
+   "name": "하이라이스",
+   "crave": "foreign",
+   "dbName": "하이라이스",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "pad-thai",
    "name": "팟타이",
    "crave": "foreign",
@@ -850,6 +1110,16 @@
    "delivery": {
     "checked": "2026-10-14",
     "basis": "common-unverified"
+   }
+  },
+  {
+   "id": "wolnamssam",
+   "name": "월남쌈",
+   "crave": "foreign",
+   "dbName": "월남쌈",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -970,6 +1240,16 @@
    "delivery": {
     "checked": "2026-10-14",
     "basis": "common-unverified"
+   }
+  },
+  {
+   "id": "salad-pumpkin",
+   "name": "단호박샐러드",
+   "crave": "light",
+   "dbName": "샐러드_단호박",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -1123,6 +1403,16 @@
    }
   },
   {
+   "id": "gesal-juk",
+   "name": "게살죽",
+   "crave": "light",
+   "dbName": "게살죽",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "gimbap",
    "name": "김밥",
    "crave": "quick",
@@ -1193,6 +1483,26 @@
    }
   },
   {
+   "id": "chungmu-gimbap",
+   "name": "충무김밥",
+   "crave": "quick",
+   "dbName": "충무김밥",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "sogogi-jumeokbap",
+   "name": "소고기주먹밥",
+   "crave": "quick",
+   "dbName": "주먹밥_소고기",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "yubu-chobap",
    "name": "유부초밥",
    "crave": "quick",
@@ -1240,6 +1550,26 @@
    "delivery": {
     "checked": "2026-10-14",
     "basis": "common-unverified"
+   }
+  },
+  {
+   "id": "sandwich-ham-egg",
+   "name": "햄달걀샌드위치",
+   "crave": "quick",
+   "dbName": "샌드위치_햄_달걀",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "sandwich-vegetable",
+   "name": "채소샌드위치",
+   "crave": "quick",
+   "dbName": "샌드위치_채소",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -1320,6 +1650,16 @@
    "delivery": {
     "checked": "2026-10-14",
     "basis": "common-unverified"
+   }
+  },
+  {
+   "id": "jangeo-deopbap",
+   "name": "장어덮밥",
+   "crave": "hearty",
+   "dbName": "덮밥_장어",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
    }
   },
   {
@@ -1533,6 +1873,26 @@
    }
   },
   {
+   "id": "kongnamulbap",
+   "name": "콩나물밥",
+   "crave": "hearty",
+   "dbName": "콩나물밥",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "gondeure-bap",
+   "name": "곤드레나물밥",
+   "crave": "hearty",
+   "dbName": "곤드레나물밥",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
    "id": "albap",
    "name": "알밥",
    "crave": "hearty",
@@ -1541,50 +1901,262 @@
     "checked": "2026-10-14",
     "basis": "common-unverified"
    }
+  },
+  {
+   "id": "yeongyang-dolsotbap",
+   "name": "영양돌솥밥",
+   "crave": "hearty",
+   "dbName": "영양돌솥밥",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "rare-included"
+   }
+  },
+  {
+   "id": "tangsuyuk",
+   "name": "탕수육",
+   "crave": "crispy",
+   "dbName": "탕수육",
+   "allowCalc": true,
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "kkanpunggi",
+   "name": "깐풍기",
+   "crave": "crispy",
+   "dbName": "깐풍기",
+   "allowCalc": true,
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "dakgangjeong",
+   "name": "닭강정",
+   "crave": "crispy",
+   "dbName": "닭강정",
+   "allowCalc": true,
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "boneless-chicken",
+   "name": "순살치킨",
+   "crave": "crispy",
+   "dbName": "닭튀김",
+   "borrow": {
+    "dbName": "닭튀김",
+    "why": "같은 DB에 비브랜드 순살치킨 값이 없어 후라이드치킨(닭튀김) 분석값을 표시"
+   },
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "guobaorou",
+   "name": "꿔바로우",
+   "crave": "crispy",
+   "dbName": "탕수육",
+   "borrow": {
+    "dbName": "탕수육",
+    "allowCalc": true,
+    "why": "같은 DB에 비브랜드 꿔바로우 값이 없어 탕수육 산출값을 표시"
+   },
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "hotdog",
+   "name": "핫도그",
+   "crave": "crispy",
+   "dbName": "핫도그",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "katsudon",
+   "name": "카츠동",
+   "crave": "crispy",
+   "noData": "식약처 음식 DB에 비브랜드 카츠동 값이 없음",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "tendon",
+   "name": "텐동",
+   "crave": "crispy",
+   "noData": "식약처 음식 DB에 비브랜드 텐동 값이 없음",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "mala-xiangguo",
+   "name": "마라샹궈",
+   "crave": "spicy",
+   "noData": "식약처 음식 DB에 마라샹궈 값이 없음",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "bossam",
+   "name": "보쌈",
+   "crave": "meat",
+   "dbName": "제육(돼지고기 수육)",
+   "allowCalc": true,
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "beef-makchang",
+   "name": "소막창구이",
+   "crave": "meat",
+   "dbName": "막창구이_소고기",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "dak-kkochi",
+   "name": "닭꼬치",
+   "crave": "meat",
+   "dbName": "닭꼬치구이",
+   "allowCalc": true,
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "ganjang-gejang",
+   "name": "간장게장",
+   "crave": "cool",
+   "dbName": "꽃게장_간장",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "yangnyeom-gejang",
+   "name": "양념게장",
+   "crave": "cool",
+   "dbName": "꽃게장_양념",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "poke",
+   "name": "포케",
+   "crave": "cool",
+   "dbName": "회덮밥",
+   "borrow": {
+    "dbName": "회덮밥",
+    "why": "같은 DB에 비브랜드 포케 값이 없어 회덮밥 분석값을 표시"
+   },
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "sakedon",
+   "name": "사케동",
+   "crave": "cool",
+   "dbName": "회덮밥",
+   "borrow": {
+    "dbName": "회덮밥",
+    "why": "같은 DB에 비브랜드 사케동 값이 없어 회덮밥 분석값을 표시"
+   },
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "sundae",
+   "name": "순대",
+   "crave": "quick",
+   "dbName": "순대",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "taco",
+   "name": "타코",
+   "crave": "foreign",
+   "noData": "식약처 음식 DB에 비브랜드 타코 값이 없음",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "burrito",
+   "name": "부리또",
+   "crave": "foreign",
+   "noData": "식약처 음식 DB에 비브랜드 부리또 값이 없음",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "kebab",
+   "name": "케밥",
+   "crave": "foreign",
+   "noData": "식약처 음식 DB에 케밥 값이 없음",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "banh-mi",
+   "name": "반미",
+   "crave": "foreign",
+   "noData": "식약처 음식 DB에 비브랜드 반미 값이 없음",
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
+  },
+  {
+   "id": "gyudon",
+   "name": "규동",
+   "crave": "hearty",
+   "dbName": "덮밥_불고기",
+   "borrow": {
+    "dbName": "덮밥_불고기",
+    "why": "같은 DB에 규동 값이 없어 불고기덮밥 분석값을 표시"
+   },
+   "delivery": {
+    "checked": "2026-10-14",
+    "basis": "popular-added"
+   }
   }
- ],
- "droppedRare": {
-  "decidedAt": "2026-10-14",
-  "decision": "D079",
-  "basis": "배달이 드물 것으로 판단(판단 근거는 메뉴별 확인이 아닌 분류). 다시 넣으려면 메뉴별 배달 판매 근거를 기록한다.",
-  "names": [
-   "게살죽",
-   "곤드레나물밥",
-   "굴국밥",
-   "굴짬뽕",
-   "김치말이국수",
-   "난자완스",
-   "단호박샐러드",
-   "닭곰탕",
-   "대구매운탕",
-   "동태찌개",
-   "떡강정",
-   "새우탕수육",
-   "선지해장국",
-   "소고기샤브샤브",
-   "소고기수육",
-   "소고기주먹밥",
-   "소곱창구이",
-   "소등심스테이크",
-   "알탕",
-   "양념소갈비구이",
-   "열무국수",
-   "열무냉면",
-   "영양돌솥밥",
-   "오리불고기",
-   "오징어물회",
-   "월남쌈",
-   "장어덮밥",
-   "쟁반막국수",
-   "채소샌드위치",
-   "추어탕",
-   "충무김밥",
-   "콩나물밥",
-   "하이라이스",
-   "햄달걀샌드위치",
-   "황태해장국",
-   "회냉면",
-   "훈제오리"
-  ]
- }
+ ]
 }

@@ -14,7 +14,7 @@
   "quick",
   "hearty"
  ],
- "count": 133,
+ "count": 192,
  "menus": [
   {
    "id": "mul-naengmyeon",
@@ -22,6 +22,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 700.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -49,8 +50,11 @@
     "foodCode": "D103-144180000-0001",
     "foodName": "냉면_물냉면",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-144180000-0001",
@@ -75,6 +79,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -102,8 +107,11 @@
     "foodCode": "D103-144280000-0001",
     "foodName": "냉면_비빔냉면",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-144280000-0001",
@@ -123,11 +131,108 @@
    "review": "draft_unreviewed"
   },
   {
+   "id": "hoe-naengmyeon",
+   "name": "회냉면",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 500.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 740,
+    "protein": 29.1,
+    "fat": 20.1,
+    "saturatedFat": 1.4,
+    "carb": 111.0,
+    "sugar": 14.2,
+    "fiber": 13.0,
+    "sodium": 495
+   },
+   "per100g": {
+    "kcal": 148.0,
+    "protein": 5.81,
+    "fat": 4.02,
+    "saturatedFat": 0.27,
+    "carb": 22.21,
+    "sugar": 2.84,
+    "fiber": 2.6,
+    "sodium": 99.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D103-144515500-0001",
+    "foodName": "냉면_회냉면_홍어",
+    "method": "분석",
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-hoe-naengmyeon",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "yeolmu-naengmyeon",
+   "name": "열무냉면",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 800.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 528,
+    "protein": 20.9,
+    "fat": 5.8,
+    "saturatedFat": 1.4,
+    "carb": 97.5,
+    "sugar": 27.1,
+    "fiber": 40.8,
+    "sodium": 3152
+   },
+   "per100g": {
+    "kcal": 66.0,
+    "protein": 2.61,
+    "fat": 0.72,
+    "saturatedFat": 0.17,
+    "carb": 12.19,
+    "sugar": 3.39,
+    "fiber": 5.1,
+    "sodium": 394.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D303-144360000-0001",
+    "foodName": "냉면_열무냉면",
+    "method": "분석",
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-yeolmu-naengmyeon",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
    "id": "makguksu",
    "name": "막국수",
    "crave": "cool",
    "tags": [],
    "servingG": 600.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -155,8 +260,11 @@
     "foodCode": "D103-142160000-0001",
     "foodName": "국수_막국수",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-142160000-0001",
@@ -176,11 +284,60 @@
    "review": "draft_unreviewed"
   },
   {
+   "id": "jaengban-makguksu",
+   "name": "쟁반막국수",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 450.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 536,
+    "protein": 30.1,
+    "fat": 20.5,
+    "saturatedFat": 4.0,
+    "carb": 57.6,
+    "sugar": 36.5,
+    "fiber": 20.2,
+    "sodium": 2308
+   },
+   "per100g": {
+    "kcal": 119.0,
+    "protein": 6.68,
+    "fat": 4.56,
+    "saturatedFat": 0.88,
+    "carb": 12.81,
+    "sugar": 8.12,
+    "fiber": 4.5,
+    "sodium": 513.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D103-142420000-0001",
+    "foodName": "국수_쟁반막국수",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-jaengban-makguksu",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
    "id": "kongguksu",
    "name": "콩국수",
    "crave": "cool",
    "tags": [],
    "servingG": 800.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -208,8 +365,11 @@
     "foodCode": "D103-175000000-0001",
     "foodName": "콩국수",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-175000000-0001",
@@ -234,6 +394,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 550.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -261,8 +422,11 @@
     "foodCode": "D103-173000000-0001",
     "foodName": "쫄면",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-jjolmyeon",
@@ -278,6 +442,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -305,11 +470,110 @@
     "foodCode": "D103-142270000-0001",
     "foodName": "국수_비빔국수",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-bibim-guksu",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "kimchi-mari-guksu",
+   "name": "김치말이국수",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 600.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 300,
+    "protein": 12.9,
+    "fat": 4.8,
+    "saturatedFat": 1.1,
+    "carb": 52.0,
+    "sugar": 8.3,
+    "fiber": 4.8,
+    "sodium": 2124
+   },
+   "per100g": {
+    "kcal": 50.0,
+    "protein": 2.15,
+    "fat": 0.8,
+    "saturatedFat": 0.18,
+    "carb": 8.67,
+    "sugar": 1.38,
+    "fiber": 0.8,
+    "sodium": 354.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D303-142070000-0001",
+    "foodName": "국수_김치말이국수",
+    "method": "분석",
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-kimchi-mari-guksu",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "yeolmu-guksu",
+   "name": "열무국수",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 800.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 432,
+    "protein": 15.0,
+    "fat": 10.2,
+    "saturatedFat": 0.6,
+    "carb": 69.6,
+    "sugar": 18.6,
+    "fiber": 9.6,
+    "sodium": 3008
+   },
+   "per100g": {
+    "kcal": 54.0,
+    "protein": 1.88,
+    "fat": 1.28,
+    "saturatedFat": 0.08,
+    "carb": 8.7,
+    "sugar": 2.33,
+    "fiber": 1.2,
+    "sodium": 376.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D303-142350000-0001",
+    "foodName": "국수_열무김치",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-yeolmu-guksu",
     "status": "미제작"
    },
    "adClaim": null,
@@ -322,6 +586,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 700.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -349,11 +614,62 @@
     "foodCode": "D314-630000000-0001",
     "foodName": "물회",
     "method": "분석",
-    "createdAt": "2016-10-31"
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-mulhoe",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "ojingeo-mulhoe",
+   "name": "오징어물회",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 700.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 343,
+    "protein": 43.3,
+    "fat": 8.4,
+    "saturatedFat": 1.3,
+    "carb": 22.8,
+    "sugar": 14.7,
+    "fiber": 10.5,
+    "sodium": 2548
+   },
+   "per100g": {
+    "kcal": 49.0,
+    "protein": 6.19,
+    "fat": 1.2,
+    "saturatedFat": 0.19,
+    "carb": 3.26,
+    "sugar": 2.1,
+    "fiber": 1.5,
+    "sodium": 364.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D114-630280000-0001",
+    "foodName": "물회_오징어",
+    "method": "분석",
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-ojingeo-mulhoe",
     "status": "미제작"
    },
    "adClaim": null,
@@ -366,6 +682,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -393,8 +710,11 @@
     "foodCode": "D301-051000000-0001",
     "foodName": "회덮밥",
     "method": "분석",
-    "createdAt": "2012-02-28"
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-hoe-deopbap",
@@ -410,6 +730,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 380.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -437,8 +758,11 @@
     "foodCode": "D101-042200000-0001",
     "foodName": "초밥_모듬",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D301-042200000-0001",
@@ -463,6 +787,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -490,8 +815,11 @@
     "foodCode": "D301-042050000-0001",
     "foodName": "초밥_광어",
     "method": "분석",
-    "createdAt": "2012-02-28"
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-sushi-gwangeo",
@@ -507,6 +835,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -534,8 +863,11 @@
     "foodCode": "D301-045000000-0001",
     "foodName": "캘리포니아롤",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-california-roll",
@@ -551,6 +883,7 @@
    "crave": "cool",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -578,8 +911,11 @@
     "foodCode": "D301-024000000-0001",
     "foodName": "연어롤",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-salmon-roll",
@@ -595,6 +931,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 180.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -622,8 +959,11 @@
     "foodCode": "D110-467000000-0001",
     "foodName": "떡볶이",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-tteokbokki",
@@ -639,6 +979,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -666,8 +1007,11 @@
     "foodCode": "D110-468000000-0001",
     "foodName": "라볶이",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-rabokki",
@@ -683,6 +1027,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 800.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -710,8 +1055,11 @@
     "foodCode": "D103-172000000-0001",
     "foodName": "짬뽕",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-jjamppong",
@@ -727,6 +1075,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 900.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -754,11 +1103,62 @@
     "foodCode": "D303-172310000-0001",
     "foodName": "짬뽕_삼선",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-samseon-jjamppong",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "gul-jjamppong",
+   "name": "굴짬뽕",
+   "crave": "spicy",
+   "tags": [],
+   "servingG": 900.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 684,
+    "protein": 32.9,
+    "fat": 9.6,
+    "saturatedFat": 1.4,
+    "carb": 115.7,
+    "sugar": 1.7,
+    "fiber": 9.0,
+    "sodium": 2664
+   },
+   "per100g": {
+    "kcal": 76.0,
+    "protein": 3.65,
+    "fat": 1.07,
+    "saturatedFat": 0.16,
+    "carb": 12.85,
+    "sugar": 0.19,
+    "fiber": 1.0,
+    "sodium": 296.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D303-172040000-0001",
+    "foodName": "짬뽕_굴",
+    "method": "분석",
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-gul-jjamppong",
     "status": "미제작"
    },
    "adClaim": null,
@@ -771,6 +1171,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 900.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -798,8 +1199,11 @@
     "foodCode": "D101-037000000-0001",
     "foodName": "짬뽕밥",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-jjamppong-bap",
@@ -815,6 +1219,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 600.0,
+   "servingUnit": "g",
    "servingBasis": "추정: 국물 면 요리로 같은 DB 쌀국수 분석 1인분 중량을 적용",
    "servingRef": {
     "foodCode": "D303-162000000-0001",
@@ -845,8 +1250,11 @@
     "foodCode": "D306-278000000-0002",
     "foodName": "마라탕",
     "method": "분석",
-    "createdAt": "2022-06-30"
+    "createdAt": "2022-06-30",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-malatang",
@@ -862,6 +1270,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 470.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -889,8 +1298,11 @@
     "foodCode": "D101-010150000-0001",
     "foodName": "덮밥_돼지고기(제육)",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-jeyuk-deopbap",
@@ -906,6 +1318,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 250.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -933,8 +1346,11 @@
     "foodCode": "D110-465000000-0001",
     "foodName": "돼지고기볶음(제육볶음)",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-jeyuk-bokkeum",
@@ -950,6 +1366,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -977,8 +1394,11 @@
     "foodCode": "D110-457000000-0001",
     "foodName": "낙지볶음",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-nakji-bokkeum",
@@ -994,6 +1414,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 350.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1021,8 +1442,11 @@
     "foodCode": "D101-010080000-0001",
     "foodName": "덮밥_낙지",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-nakji-deopbap",
@@ -1038,6 +1462,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 360.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1065,8 +1490,11 @@
     "foodCode": "D101-010390000-0001",
     "foodName": "덮밥_오징어",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-ojingeo-deopbap",
@@ -1082,6 +1510,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1109,8 +1538,11 @@
     "foodCode": "D310-493000000-0001",
     "foodName": "주꾸미볶음",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-jukkumi-bokkeum",
@@ -1126,6 +1558,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1153,8 +1586,11 @@
     "foodCode": "D110-461000000-0001",
     "foodName": "닭발볶음",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-dakbal",
@@ -1170,6 +1606,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1197,8 +1634,11 @@
     "foodCode": "D110-462000000-0001",
     "foodName": "닭볶음(닭갈비)",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D310-462000000-0004",
@@ -1223,6 +1663,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 440.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1250,11 +1691,71 @@
     "foodCode": "D105-245000000-0001",
     "foodName": "육개장",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-yukgaejang",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "daegu-maeuntang",
+   "name": "대구매운탕",
+   "crave": "spicy",
+   "tags": [],
+   "servingG": 600.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 132,
+    "protein": 26.9,
+    "fat": 2.4,
+    "saturatedFat": 0.9,
+    "carb": 1.1,
+    "sugar": 0.0,
+    "fiber": 5.4,
+    "sodium": 1500
+   },
+   "per100g": {
+    "kcal": 22.0,
+    "protein": 4.49,
+    "fat": 0.4,
+    "saturatedFat": 0.15,
+    "carb": 0.19,
+    "sugar": 0.0,
+    "fiber": 0.9,
+    "sodium": 250.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D106-280080000-0001",
+    "foodName": "매운탕_대구",
+    "method": "분석",
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [
+    {
+     "foodCode": "D306-280080000-0001",
+     "servingG": 600.0,
+     "servingBasis": "DB 1인분 중량",
+     "kcal": 360,
+     "sodium": 1986,
+     "createdAt": "2013-03-31"
+    }
+   ],
+   "art": {
+    "id": "food-daegu-maeuntang",
     "status": "미제작"
    },
    "adClaim": null,
@@ -1267,6 +1768,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1294,8 +1796,11 @@
     "foodCode": "D111-514000000-0001",
     "foodName": "닭볶음탕",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-dakbokkeumtang",
@@ -1311,6 +1816,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1338,8 +1844,11 @@
     "foodCode": "D107-338000000-0001",
     "foodName": "아귀찜",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D307-338000000-0002",
@@ -1364,6 +1873,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1391,8 +1901,11 @@
     "foodCode": "D307-348000000-0003",
     "foodName": "해물찜",
     "method": "분석",
-    "createdAt": "2016-10-31"
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-haemuljjim",
@@ -1408,6 +1921,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1435,8 +1949,11 @@
     "foodCode": "D310-483000000-0004",
     "foodName": "순대볶음",
     "method": "분석",
-    "createdAt": "2015-06-30"
+    "createdAt": "2015-06-30",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-sundae-bokkeum",
@@ -1452,6 +1969,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 160.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1479,8 +1997,11 @@
     "foodCode": "D110-470000000-0001",
     "foodName": "마파두부",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-mapa-tofu",
@@ -1496,6 +2017,7 @@
    "crave": "spicy",
    "tags": [],
    "servingG": 230.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1523,8 +2045,11 @@
     "foodCode": "D110-455160000-0001",
     "foodName": "곱창볶음_돼지고기",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-gopchang-bokkeum",
@@ -1540,6 +2065,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 900.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1567,8 +2093,11 @@
     "foodCode": "D101-004310000-0001",
     "foodName": "국밥_순대국밥",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-sundae-gukbap",
@@ -1584,6 +2113,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 1200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1611,8 +2141,11 @@
     "foodCode": "D301-004140000-0001",
     "foodName": "국밥_돼지고기",
     "method": "분석",
-    "createdAt": "2016-10-31"
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-dwaeji-gukbap",
@@ -1628,6 +2161,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 780.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1655,8 +2189,11 @@
     "foodCode": "D101-004500000-0001",
     "foodName": "국밥_콩나물",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-kongnamul-gukbap",
@@ -1672,6 +2209,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 700.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1699,11 +2237,62 @@
     "foodCode": "D301-004280000-0001",
     "foodName": "국밥_소고기",
     "method": "분석",
-    "createdAt": "2016-10-31"
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-sogogi-gukbap",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "gul-gukbap",
+   "name": "굴국밥",
+   "crave": "hot",
+   "tags": [],
+   "servingG": 650.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 682,
+    "protein": 42.4,
+    "fat": 17.8,
+    "saturatedFat": 3.9,
+    "carb": 88.4,
+    "sugar": 0.3,
+    "fiber": 5.8,
+    "sodium": 1638
+   },
+   "per100g": {
+    "kcal": 105.0,
+    "protein": 6.52,
+    "fat": 2.74,
+    "saturatedFat": 0.6,
+    "carb": 13.6,
+    "sugar": 0.05,
+    "fiber": 0.9,
+    "sodium": 252.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D301-004060000-0001",
+    "foodName": "국밥_굴",
+    "method": "분석",
+    "createdAt": "2015-06-30",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-gul-gukbap",
     "status": "미제작"
    },
    "adClaim": null,
@@ -1716,6 +2305,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 800.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1743,8 +2333,11 @@
     "foodCode": "D105-256210000-0001",
     "foodName": "해장국_뼈다귀",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D305-256210000-0001",
@@ -1764,11 +2357,69 @@
    "review": "draft_unreviewed"
   },
   {
+   "id": "seonji-haejangguk",
+   "name": "선지해장국",
+   "crave": "hot",
+   "tags": [],
+   "servingG": 600.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 174,
+    "protein": 23.2,
+    "fat": 5.8,
+    "saturatedFat": 0.8,
+    "carb": 7.4,
+    "sugar": 0.0,
+    "fiber": 2.4,
+    "sodium": 1872
+   },
+   "per100g": {
+    "kcal": 29.0,
+    "protein": 3.86,
+    "fat": 0.96,
+    "saturatedFat": 0.13,
+    "carb": 1.23,
+    "sugar": 0.0,
+    "fiber": 0.4,
+    "sodium": 312.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D105-256230000-0001",
+    "foodName": "해장국_선지",
+    "method": "분석",
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [
+    {
+     "foodCode": "D305-256230000-0001",
+     "servingG": 1000.0,
+     "servingBasis": "DB 1인분 중량",
+     "kcal": 310,
+     "sodium": 3070,
+     "createdAt": "2017-12-31"
+    }
+   ],
+   "art": {
+    "id": "food-seonji-haejangguk",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
    "id": "ugeoji-haejangguk",
    "name": "우거지해장국",
    "crave": "hot",
    "tags": [],
    "servingG": 600.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1796,11 +2447,62 @@
     "foodCode": "D305-256330000-0001",
     "foodName": "해장국_우거지",
     "method": "분석",
-    "createdAt": "2016-10-31"
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-ugeoji-haejangguk",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "hwangtae-haejangguk",
+   "name": "황태해장국",
+   "crave": "hot",
+   "tags": [],
+   "servingG": 600.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 180,
+    "protein": 24.5,
+    "fat": 6.8,
+    "saturatedFat": 1.1,
+    "carb": 5.7,
+    "sugar": 1.5,
+    "fiber": 5.4,
+    "sodium": 1536
+   },
+   "per100g": {
+    "kcal": 30.0,
+    "protein": 4.08,
+    "fat": 1.13,
+    "saturatedFat": 0.18,
+    "carb": 0.95,
+    "sugar": 0.25,
+    "fiber": 0.9,
+    "sodium": 256.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D305-258000000-0001",
+    "foodName": "황태해장국",
+    "method": "분석",
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-hwangtae-haejangguk",
     "status": "미제작"
    },
    "adClaim": null,
@@ -1813,6 +2515,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1840,8 +2543,11 @@
     "foodCode": "D306-266000000-0001",
     "foodName": "김치찌개",
     "method": "분석",
-    "createdAt": "2012-02-28"
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-kimchi-jjigae",
@@ -1857,6 +2563,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1884,8 +2591,11 @@
     "foodCode": "D106-266250000-0001",
     "foodName": "김치찌개_참치",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-chamchi-kimchi-jjigae",
@@ -1901,6 +2611,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 270.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1928,8 +2639,11 @@
     "foodCode": "D106-275110000-0001",
     "foodName": "된장찌개_두부",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-doenjang-jjigae",
@@ -1945,6 +2659,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -1972,8 +2687,11 @@
     "foodCode": "D106-291030000-0001",
     "foodName": "순두부찌개_김치",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-sundubu-jjigae",
@@ -1989,6 +2707,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 600.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2016,8 +2735,11 @@
     "foodCode": "D106-284000000-0001",
     "foodName": "부대찌개",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D306-284000000-0004",
@@ -2042,6 +2764,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 530.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2069,8 +2792,11 @@
     "foodCode": "D106-260000000-0001",
     "foodName": "감자탕",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-gamjatang",
@@ -2086,6 +2812,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 670.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2113,8 +2840,11 @@
     "foodCode": "D105-199000000-0001",
     "foodName": "갈비탕",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-galbitang",
@@ -2130,6 +2860,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2157,8 +2888,11 @@
     "foodCode": "D105-231000000-0001",
     "foodName": "설렁탕",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-seolleongtang",
@@ -2174,6 +2908,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 600.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2201,8 +2936,11 @@
     "foodCode": "D105-203000000-0001",
     "foodName": "곰탕",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D305-203000000-0001",
@@ -2227,6 +2965,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 900.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2254,11 +2993,62 @@
     "foodCode": "D105-228000000-0001",
     "foodName": "삼계탕",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-samgyetang",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "dakgomtang",
+   "name": "닭곰탕",
+   "crave": "hot",
+   "tags": [],
+   "servingG": 650.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 332,
+    "protein": 48.8,
+    "fat": 9.2,
+    "saturatedFat": 1.9,
+    "carb": 13.0,
+    "sugar": 1.9,
+    "fiber": 4.5,
+    "sodium": 1105
+   },
+   "per100g": {
+    "kcal": 51.0,
+    "protein": 7.51,
+    "fat": 1.42,
+    "saturatedFat": 0.3,
+    "carb": 2.0,
+    "sugar": 0.3,
+    "fiber": 0.7,
+    "sodium": 170.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D105-213000000-0001",
+    "foodName": "닭곰탕",
+    "method": "분석",
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-dakgomtang",
     "status": "미제작"
    },
    "adClaim": null,
@@ -2271,6 +3061,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 700.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2298,8 +3089,11 @@
     "foodCode": "D103-174000000-0001",
     "foodName": "칼국수",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-kalguksu",
@@ -2315,6 +3109,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 700.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2342,8 +3137,11 @@
     "foodCode": "D103-174240000-0001",
     "foodName": "칼국수_바지락",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-bajirak-kalguksu",
@@ -2359,6 +3157,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 900.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2386,8 +3185,11 @@
     "foodCode": "D303-174500000-0001",
     "foodName": "칼국수_해물",
     "method": "분석",
-    "createdAt": "2012-02-28"
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-haemul-kalguksu",
@@ -2403,6 +3205,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 600.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2430,8 +3233,11 @@
     "foodCode": "D303-162000000-0001",
     "foodName": "쌀국수",
     "method": "분석",
-    "createdAt": "2016-10-31"
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-ssalguksu",
@@ -2447,6 +3253,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 800.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2474,8 +3281,11 @@
     "foodCode": "D103-164400000-0001",
     "foodName": "우동_일식",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-164400000-0001",
@@ -2500,6 +3310,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 650.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2527,8 +3338,11 @@
     "foodCode": "D103-160000000-0001",
     "foodName": "수제비",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-sujebi",
@@ -2544,6 +3358,7 @@
    "crave": "hot",
    "tags": [],
    "servingG": 600.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2571,8 +3386,11 @@
     "foodCode": "D103-146000000-0001",
     "foodName": "떡만두국",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-146000000-0001",
@@ -2592,11 +3410,222 @@
    "review": "draft_unreviewed"
   },
   {
+   "id": "chueotang",
+   "name": "추어탕",
+   "crave": "hot",
+   "tags": [],
+   "servingG": 350.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 189,
+    "protein": 11.3,
+    "fat": 11.1,
+    "saturatedFat": 1.1,
+    "carb": 10.7,
+    "sugar": 0.0,
+    "fiber": 7.7,
+    "sodium": 861
+   },
+   "per100g": {
+    "kcal": 54.0,
+    "protein": 3.24,
+    "fat": 3.18,
+    "saturatedFat": 0.31,
+    "carb": 3.07,
+    "sugar": 0.0,
+    "fiber": 2.2,
+    "sodium": 246.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D106-298000000-0001",
+    "foodName": "추어탕",
+    "method": "분석",
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [
+    {
+     "foodCode": "D306-298000000-0001",
+     "servingG": 1000.0,
+     "servingBasis": "DB 1인분 중량",
+     "kcal": 320,
+     "sodium": 2640,
+     "createdAt": "2016-10-31"
+    }
+   ],
+   "art": {
+    "id": "food-chueotang",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "altang",
+   "name": "알탕",
+   "crave": "hot",
+   "tags": [],
+   "servingG": 520.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 203,
+    "protein": 33.1,
+    "fat": 3.8,
+    "saturatedFat": 0.8,
+    "carb": 9.0,
+    "sugar": 0.0,
+    "fiber": 8.3,
+    "sodium": 1300
+   },
+   "per100g": {
+    "kcal": 39.0,
+    "protein": 6.37,
+    "fat": 0.74,
+    "saturatedFat": 0.16,
+    "carb": 1.74,
+    "sugar": 0.0,
+    "fiber": 1.6,
+    "sodium": 250.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D106-293000000-0001",
+    "foodName": "알탕",
+    "method": "분석",
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-altang",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "dongtae-jjigae",
+   "name": "동태찌개",
+   "crave": "hot",
+   "tags": [],
+   "servingG": 200.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 88,
+    "protein": 12.2,
+    "fat": 2.7,
+    "saturatedFat": 0.4,
+    "carb": 3.4,
+    "sugar": 0.3,
+    "fiber": 3.6,
+    "sodium": 546
+   },
+   "per100g": {
+    "kcal": 44.0,
+    "protein": 6.11,
+    "fat": 1.37,
+    "saturatedFat": 0.2,
+    "carb": 1.72,
+    "sugar": 0.13,
+    "fiber": 1.8,
+    "sodium": 273.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D106-273000000-0001",
+    "foodName": "동태찌개",
+    "method": "분석",
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-dongtae-jjigae",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "sogogi-shabu",
+   "name": "소고기샤브샤브",
+   "crave": "hot",
+   "tags": [],
+   "servingG": 600.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 258,
+    "protein": 32.3,
+    "fat": 9.7,
+    "saturatedFat": 1.1,
+    "carb": 10.8,
+    "sugar": 8.9,
+    "fiber": 7.2,
+    "sodium": 576
+   },
+   "per100g": {
+    "kcal": 43.0,
+    "protein": 5.38,
+    "fat": 1.62,
+    "saturatedFat": 0.18,
+    "carb": 1.8,
+    "sugar": 1.49,
+    "fiber": 1.2,
+    "sodium": 96.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D106-287180000-0001",
+    "foodName": "샤브샤브_소고기",
+    "method": "분석",
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [
+    {
+     "foodCode": "D306-287180000-0001",
+     "servingG": 600.0,
+     "servingBasis": "DB 1인분 중량",
+     "kcal": 264,
+     "sodium": 1122,
+     "createdAt": "2016-10-31"
+    }
+   ],
+   "art": {
+    "id": "food-sogogi-shabu",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
    "id": "tonkotsu-ramen",
    "name": "돈코츠라멘",
    "crave": "hot",
    "tags": [],
    "servingG": 800.0,
+   "servingUnit": "g",
    "servingBasis": "추정: 국물 면 요리로 같은 DB 일식 우동 분석 1인분 중량을 적용",
    "servingRef": {
     "foodCode": "D103-164400000-0001",
@@ -2627,8 +3656,11 @@
     "foodCode": "D303-147110000-0001",
     "foodName": "라멘_돈코츠라멘",
     "method": "분석",
-    "createdAt": "2022-06-30"
+    "createdAt": "2022-06-30",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-tonkotsu-ramen",
@@ -2644,6 +3676,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2671,8 +3704,11 @@
     "foodCode": "D312-549000000-0001",
     "foodName": "닭튀김",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-fried-chicken",
@@ -2688,6 +3724,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2715,8 +3752,11 @@
     "foodCode": "D312-549160000-0001",
     "foodName": "닭튀김_양념",
     "method": "분석",
-    "createdAt": "2015-06-30"
+    "createdAt": "2015-06-30",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-yangnyeom-chicken",
@@ -2732,6 +3772,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2759,8 +3800,11 @@
     "foodCode": "D112-547010000-0001",
     "foodName": "닭다리튀김_간장",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-ganjang-chicken",
@@ -2776,6 +3820,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2803,8 +3848,11 @@
     "foodCode": "D112-549040000-0001",
     "foodName": "닭튀김_날개",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-chicken-wing",
@@ -2820,6 +3868,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2847,8 +3896,11 @@
     "foodCode": "D312-550080000-0001",
     "foodName": "돈가스_돼지등심",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-deungsim-katsu",
@@ -2864,6 +3916,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2891,8 +3944,11 @@
     "foodCode": "D312-550090000-0001",
     "foodName": "돈가스_돼지안심",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-ansim-katsu",
@@ -2908,6 +3964,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 250.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2935,8 +3992,11 @@
     "foodCode": "D312-550140000-0001",
     "foodName": "돈가스_치즈",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-cheese-katsu",
@@ -2952,6 +4012,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -2979,8 +4040,11 @@
     "foodCode": "D312-565000000-0001",
     "foodName": "치킨가스",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-chicken-katsu",
@@ -2996,6 +4060,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3023,11 +4088,62 @@
     "foodCode": "D312-559000000-0001",
     "foodName": "생선까스",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-fish-katsu",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "saeu-tangsuyuk",
+   "name": "새우탕수육",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": 200.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 232,
+    "protein": 13.3,
+    "fat": 8.4,
+    "saturatedFat": 1.4,
+    "carb": 26.0,
+    "sugar": 12.9,
+    "fiber": 4.2,
+    "sodium": 984
+   },
+   "per100g": {
+    "kcal": 116.0,
+    "protein": 6.65,
+    "fat": 4.2,
+    "saturatedFat": 0.71,
+    "carb": 13.02,
+    "sugar": 6.44,
+    "fiber": 2.1,
+    "sodium": 492.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D112-566120000-0001",
+    "foodName": "탕수육_새우",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-saeu-tangsuyuk",
     "status": "미제작"
    },
    "adClaim": null,
@@ -3040,6 +4156,7 @@
    "crave": "crispy",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3067,11 +4184,110 @@
     "foodCode": "D312-553000000-0001",
     "foodName": "라조기",
     "method": "분석",
-    "createdAt": "2012-02-28"
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-lajogi",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "nanjawanseu",
+   "name": "난자완스",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": 200.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 346,
+    "protein": 21.6,
+    "fat": 20.3,
+    "saturatedFat": 4.6,
+    "carb": 19.1,
+    "sugar": 0.5,
+    "fiber": 3.4,
+    "sodium": 704
+   },
+   "per100g": {
+    "kcal": 173.0,
+    "protein": 10.81,
+    "fat": 10.17,
+    "saturatedFat": 2.3,
+    "carb": 9.57,
+    "sugar": 0.25,
+    "fiber": 1.7,
+    "sodium": 352.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D312-584000000-0001",
+    "foodName": "난자완스",
+    "method": "분석",
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-nanjawanseu",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "tteok-gangjeong",
+   "name": "떡강정",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": 200.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 498,
+    "protein": 7.6,
+    "fat": 9.4,
+    "saturatedFat": 1.9,
+    "carb": 95.8,
+    "sugar": 10.7,
+    "fiber": 2.6,
+    "sodium": 892
+   },
+   "per100g": {
+    "kcal": 249.0,
+    "protein": 3.79,
+    "fat": 4.72,
+    "saturatedFat": 0.96,
+    "carb": 47.89,
+    "sugar": 5.34,
+    "fiber": 1.3,
+    "sodium": 446.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D112-552000000-0001",
+    "foodName": "떡강정",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-tteok-gangjeong",
     "status": "미제작"
    },
    "adClaim": null,
@@ -3084,6 +4300,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 250.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3111,8 +4328,11 @@
     "foodCode": "D107-344000000-0001",
     "foodName": "족발",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D307-344000000-0001",
@@ -3137,6 +4357,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3164,8 +4385,11 @@
     "foodCode": "D108-382000000-0001",
     "foodName": "삼겹살구이",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-samgyeopsal",
@@ -3181,6 +4405,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3208,8 +4433,11 @@
     "foodCode": "D108-382020000-0001",
     "foodName": "삼겹살구이_고추장",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-gochujang-samgyeopsal",
@@ -3225,6 +4453,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3252,8 +4481,11 @@
     "foodCode": "D108-386000000-0001",
     "foodName": "소불고기",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D308-386000000-0001",
@@ -3273,11 +4505,60 @@
    "review": "draft_unreviewed"
   },
   {
+   "id": "so-galbi",
+   "name": "양념소갈비구이",
+   "crave": "meat",
+   "tags": [],
+   "servingG": 300.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 990,
+    "protein": 60.1,
+    "fat": 71.6,
+    "saturatedFat": 27.2,
+    "carb": 26.2,
+    "sugar": 13.9,
+    "fiber": 7.5,
+    "sodium": 1377
+   },
+   "per100g": {
+    "kcal": 330.0,
+    "protein": 20.03,
+    "fat": 23.87,
+    "saturatedFat": 9.07,
+    "carb": 8.73,
+    "sugar": 4.63,
+    "fiber": 2.5,
+    "sodium": 459.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D308-354123400-0001",
+    "foodName": "갈비구이_소고기_양념",
+    "method": "분석",
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-so-galbi",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
    "id": "tteokgalbi",
    "name": "떡갈비",
    "crave": "meat",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3305,11 +4586,167 @@
     "foodCode": "D108-376000000-0001",
     "foodName": "떡갈비",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-tteokgalbi",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "ori-bulgogi",
+   "name": "오리불고기",
+   "crave": "meat",
+   "tags": [],
+   "servingG": 250.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 362,
+    "protein": 16.9,
+    "fat": 22.6,
+    "saturatedFat": 5.1,
+    "carb": 22.6,
+    "sugar": 15.7,
+    "fiber": 9.0,
+    "sodium": 1168
+   },
+   "per100g": {
+    "kcal": 145.0,
+    "protein": 6.75,
+    "fat": 9.05,
+    "saturatedFat": 2.04,
+    "carb": 9.05,
+    "sugar": 6.29,
+    "fiber": 3.6,
+    "sodium": 467.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D108-392000000-0001",
+    "foodName": "오리불고기",
+    "method": "분석",
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-ori-bulgogi",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "hunje-ori",
+   "name": "훈제오리",
+   "crave": "meat",
+   "tags": [],
+   "servingG": 250.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 798,
+    "protein": 43.0,
+    "fat": 64.1,
+    "saturatedFat": 16.0,
+    "carb": 12.1,
+    "sugar": 0.3,
+    "fiber": 1.2,
+    "sodium": 1220
+   },
+   "per100g": {
+    "kcal": 319.0,
+    "protein": 17.22,
+    "fat": 25.63,
+    "saturatedFat": 6.39,
+    "carb": 4.83,
+    "sugar": 0.11,
+    "fiber": 0.5,
+    "sodium": 488.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D308-406000000-0001",
+    "foodName": "훈제오리",
+    "method": "분석",
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [
+    {
+     "foodCode": "D308-406000000-0002",
+     "servingG": 250.0,
+     "servingBasis": "대표 행의 1인분 중량 적용",
+     "kcal": 648,
+     "sodium": 2220,
+     "createdAt": "2023-04-27"
+    }
+   ],
+   "art": {
+    "id": "food-hunje-ori",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "deungsim-steak",
+   "name": "소등심스테이크",
+   "crave": "meat",
+   "tags": [],
+   "servingG": 200.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 388,
+    "protein": 60.4,
+    "fat": 16.1,
+    "saturatedFat": 7.7,
+    "carb": 0.3,
+    "sugar": 0.0,
+    "fiber": 2.4,
+    "sodium": 268
+   },
+   "per100g": {
+    "kcal": 194.0,
+    "protein": 30.22,
+    "fat": 8.07,
+    "saturatedFat": 3.85,
+    "carb": 0.14,
+    "sugar": 0.0,
+    "fiber": 1.2,
+    "sodium": 134.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D108-387140000-0001",
+    "foodName": "스테이크_소등심",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-deungsim-steak",
     "status": "미제작"
    },
    "adClaim": null,
@@ -3322,6 +4759,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3349,8 +4787,11 @@
     "foodCode": "D108-404000000-0001",
     "foodName": "함박스테이크",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D308-404000000-0002",
@@ -3375,6 +4816,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3402,8 +4844,11 @@
     "foodCode": "D107-306130000-0001",
     "foodName": "갈비찜_소고기",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D307-306130000-0001",
@@ -3428,6 +4873,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3455,8 +4901,11 @@
     "foodCode": "D107-324000000-0001",
     "foodName": "돼지갈비찜",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-dwaeji-galbijjim",
@@ -3472,6 +4921,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 450.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3499,11 +4949,110 @@
     "foodCode": "D307-327000000-0001",
     "foodName": "돼지등갈비찜",
     "method": "분석",
-    "createdAt": "2016-10-31"
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-deunggalbijjim",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "so-suyuk",
+   "name": "소고기수육",
+   "crave": "meat",
+   "tags": [],
+   "servingG": 300.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 498,
+    "protein": 85.3,
+    "fat": 14.8,
+    "saturatedFat": 5.7,
+    "carb": 6.1,
+    "sugar": 0.3,
+    "fiber": 14.1,
+    "sodium": 93
+   },
+   "per100g": {
+    "kcal": 166.0,
+    "protein": 28.43,
+    "fat": 4.94,
+    "saturatedFat": 1.89,
+    "carb": 2.04,
+    "sugar": 0.11,
+    "fiber": 4.7,
+    "sodium": 31.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D107-335130000-0001",
+    "foodName": "수육_소고기",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-so-suyuk",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "so-gopchang",
+   "name": "소곱창구이",
+   "crave": "meat",
+   "tags": [],
+   "servingG": 150.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 276,
+    "protein": 22.3,
+    "fat": 17.6,
+    "saturatedFat": 6.2,
+    "carb": 7.1,
+    "sugar": 1.7,
+    "fiber": 3.1,
+    "sodium": 1972
+   },
+   "per100g": {
+    "kcal": 184.0,
+    "protein": 14.89,
+    "fat": 11.73,
+    "saturatedFat": 4.11,
+    "carb": 4.71,
+    "sugar": 1.11,
+    "fiber": 2.1,
+    "sodium": 1315.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D108-359120000-0001",
+    "foodName": "곱창구이_소고기",
+    "method": "분석",
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-so-gopchang",
     "status": "미제작"
    },
    "adClaim": null,
@@ -3516,6 +5065,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 340.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3543,8 +5093,11 @@
     "foodCode": "D108-402000000-0001",
     "foodName": "치킨데리야끼",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-chicken-teriyaki",
@@ -3560,6 +5113,7 @@
    "crave": "meat",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3587,8 +5141,11 @@
     "foodCode": "D107-318000000-0001",
     "foodName": "닭찜",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-jjimdak",
@@ -3604,6 +5161,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 480.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3631,11 +5189,62 @@
     "foodCode": "D101-044000000-0001",
     "foodName": "카레라이스",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-curry-rice",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "hayashi-rice",
+   "name": "하이라이스",
+   "crave": "foreign",
+   "tags": [],
+   "servingG": 360.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 403,
+    "protein": 14.5,
+    "fat": 4.1,
+    "saturatedFat": 0.5,
+    "carb": 76.8,
+    "sugar": 0.0,
+    "fiber": 3.2,
+    "sodium": 886
+   },
+   "per100g": {
+    "kcal": 112.0,
+    "protein": 4.02,
+    "fat": 1.13,
+    "saturatedFat": 0.13,
+    "carb": 21.34,
+    "sugar": 0.0,
+    "fiber": 0.9,
+    "sodium": 246.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D101-049000000-0001",
+    "foodName": "하이라이스",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-hayashi-rice",
     "status": "미제작"
    },
    "adClaim": null,
@@ -3648,6 +5257,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 300.0,
+   "servingUnit": "g",
    "servingBasis": "추정: 볶음 면 요리로 같은 DB 우동볶음 분석 1인분 중량을 적용",
    "servingRef": {
     "foodCode": "D103-165000000-0001",
@@ -3678,8 +5288,11 @@
     "foodCode": "D303-177000000-0002",
     "foodName": "팟타이",
     "method": "분석",
-    "createdAt": "2022-06-30"
+    "createdAt": "2022-06-30",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pad-thai",
@@ -3695,6 +5308,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "추정: 찬 면 요리로 같은 DB 비빔국수 분석 1인분 중량을 적용",
    "servingRef": {
     "foodCode": "D103-142270000-0001",
@@ -3725,11 +5339,62 @@
     "foodCode": "D303-156000000-0001",
     "foodName": "분짜",
     "method": "분석",
-    "createdAt": "2022-06-30"
+    "createdAt": "2022-06-30",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-bun-cha",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "wolnamssam",
+   "name": "월남쌈",
+   "crave": "foreign",
+   "tags": [],
+   "servingG": 250.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 295,
+    "protein": 14.8,
+    "fat": 12.4,
+    "saturatedFat": 5.3,
+    "carb": 30.6,
+    "sugar": 13.8,
+    "fiber": 4.5,
+    "sodium": 575
+   },
+   "per100g": {
+    "kcal": 118.0,
+    "protein": 5.94,
+    "fat": 4.97,
+    "saturatedFat": 2.13,
+    "carb": 12.25,
+    "sugar": 5.5,
+    "fiber": 1.8,
+    "sodium": 230.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D103-167000000-0001",
+    "foodName": "월남쌈",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-wolnamssam",
     "status": "미제작"
    },
    "adClaim": null,
@@ -3742,6 +5407,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3769,8 +5435,11 @@
     "foodCode": "D302-120410000-0001",
     "foodName": "피자_페퍼로니피자",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-pepperoni",
@@ -3786,6 +5455,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3813,8 +5483,11 @@
     "foodCode": "D302-120340000-0001",
     "foodName": "피자_치즈피자",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-cheese",
@@ -3830,6 +5503,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3857,8 +5531,11 @@
     "foodCode": "D102-120350000-0001",
     "foodName": "피자_콤비네이션피자",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-combination",
@@ -3874,6 +5551,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3901,8 +5579,11 @@
     "foodCode": "D302-120180000-0001",
     "foodName": "피자_불고기피자",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-bulgogi",
@@ -3918,6 +5599,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 250.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3945,8 +5627,11 @@
     "foodCode": "D302-120420000-0001",
     "foodName": "피자_포테이토피자",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pizza-potato",
@@ -3962,6 +5647,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -3989,8 +5675,11 @@
     "foodCode": "D303-161490000-0001",
     "foodName": "스파게티_토마토소스",
     "method": "분석",
-    "createdAt": "2012-02-28"
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-tomato",
@@ -4006,6 +5695,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4033,8 +5723,11 @@
     "foodCode": "D303-161480000-0001",
     "foodName": "스파게티_크림소스",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-cream",
@@ -4050,6 +5743,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4077,8 +5771,11 @@
     "foodCode": "D303-161370000-0001",
     "foodName": "스파게티_오일소스",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-oil",
@@ -4094,6 +5791,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4121,8 +5819,11 @@
     "foodCode": "D303-161505000-0001",
     "foodName": "스파게티_해물_토마토소스",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-seafood-tomato",
@@ -4138,6 +5839,7 @@
    "crave": "foreign",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4165,8 +5867,11 @@
     "foodCode": "D103-161220000-0001",
     "foodName": "스파게티_미트볼",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pasta-meatball",
@@ -4182,6 +5887,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 150.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4209,8 +5915,11 @@
     "foodCode": "D114-640080000-0001",
     "foodName": "샐러드_닭가슴살",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-salad-chicken",
@@ -4226,6 +5935,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 150.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4253,11 +5963,62 @@
     "foodCode": "D114-640310000-0001",
     "foodName": "샐러드_참치",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-salad-tuna",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "salad-pumpkin",
+   "name": "단호박샐러드",
+   "crave": "light",
+   "tags": [],
+   "servingG": 150.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 243,
+    "protein": 2.2,
+    "fat": 13.5,
+    "saturatedFat": 2.0,
+    "carb": 28.2,
+    "sugar": 21.4,
+    "fiber": 3.0,
+    "sodium": 105
+   },
+   "per100g": {
+    "kcal": 162.0,
+    "protein": 1.48,
+    "fat": 8.97,
+    "saturatedFat": 1.35,
+    "carb": 18.77,
+    "sugar": 14.3,
+    "fiber": 2.0,
+    "sodium": 70.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D114-640070000-0001",
+    "foodName": "샐러드_단호박",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-salad-pumpkin",
     "status": "미제작"
    },
    "adClaim": null,
@@ -4270,6 +6031,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 160.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4297,8 +6059,11 @@
     "foodCode": "D114-640320000-0001",
     "foodName": "샐러드_채소",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-salad-vegetable",
@@ -4314,6 +6079,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4341,8 +6107,11 @@
     "foodCode": "D104-191000000-0001",
     "foodName": "전복죽",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-jeonbok-juk",
@@ -4358,6 +6127,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4385,8 +6155,11 @@
     "foodCode": "D104-197000000-0001",
     "foodName": "호박죽",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-hobak-juk",
@@ -4402,6 +6175,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4429,8 +6203,11 @@
     "foodCode": "D104-194000000-0001",
     "foodName": "채소죽",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D304-194000000-0001",
@@ -4455,6 +6232,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4482,8 +6260,11 @@
     "foodCode": "D104-181000000-0001",
     "foodName": "닭죽",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-dak-juk",
@@ -4499,6 +6280,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 800.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4526,8 +6308,11 @@
     "foodCode": "D304-184000000-0001",
     "foodName": "소고기버섯죽",
     "method": "분석",
-    "createdAt": "2012-02-28"
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-sogogi-beoseot-juk",
@@ -4543,6 +6328,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4570,8 +6356,11 @@
     "foodCode": "D104-195000000-0001",
     "foodName": "팥죽",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-pat-juk",
@@ -4587,6 +6376,7 @@
    "crave": "light",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4614,11 +6404,62 @@
     "foodCode": "D104-198000000-0001",
     "foodName": "흑임자죽",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-heugimja-juk",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "gesal-juk",
+   "name": "게살죽",
+   "crave": "light",
+   "tags": [],
+   "servingG": 800.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 568,
+    "protein": 17.9,
+    "fat": 7.1,
+    "saturatedFat": 2.1,
+    "carb": 107.4,
+    "sugar": 0.2,
+    "fiber": 5.6,
+    "sodium": 1456
+   },
+   "per100g": {
+    "kcal": 71.0,
+    "protein": 2.24,
+    "fat": 0.89,
+    "saturatedFat": 0.26,
+    "carb": 13.42,
+    "sugar": 0.02,
+    "fiber": 0.7,
+    "sodium": 182.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D304-179000000-0001",
+    "foodName": "게살죽",
+    "method": "분석",
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-gesal-juk",
     "status": "미제작"
    },
    "adClaim": null,
@@ -4631,6 +6472,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 230.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4658,8 +6500,11 @@
     "foodCode": "D101-007000000-0001",
     "foodName": "김밥",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-gimbap",
@@ -4675,6 +6520,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 250.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4702,8 +6548,11 @@
     "foodCode": "D101-007450000-0001",
     "foodName": "김밥_참치",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D301-007450000-0002",
@@ -4728,6 +6577,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 270.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4755,8 +6605,11 @@
     "foodCode": "D101-007490000-0001",
     "foodName": "김밥_치즈",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-cheese-gimbap",
@@ -4772,6 +6625,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 250.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4799,8 +6653,11 @@
     "foodCode": "D101-007280000-0001",
     "foodName": "김밥_소고기",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D301-007280000-0001",
@@ -4825,6 +6682,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 320.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4852,8 +6710,11 @@
     "foodCode": "D101-007120000-0001",
     "foodName": "김밥_돈가스",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-donkatsu-gimbap",
@@ -4869,6 +6730,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 270.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4896,8 +6758,11 @@
     "foodCode": "D101-007070000-0001",
     "foodName": "김밥_김치",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-kimchi-gimbap",
@@ -4913,6 +6778,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 250.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4940,11 +6806,110 @@
     "foodCode": "D301-007270000-0001",
     "foodName": "김밥_샐러드",
     "method": "분석",
-    "createdAt": "2012-02-28"
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-salad-gimbap",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "chungmu-gimbap",
+   "name": "충무김밥",
+   "crave": "quick",
+   "tags": [],
+   "servingG": 400.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 584,
+    "protein": 23.4,
+    "fat": 6.0,
+    "saturatedFat": 1.1,
+    "carb": 109.2,
+    "sugar": 17.2,
+    "fiber": 8.4,
+    "sodium": 1296
+   },
+   "per100g": {
+    "kcal": 146.0,
+    "protein": 5.86,
+    "fat": 1.49,
+    "saturatedFat": 0.27,
+    "carb": 27.29,
+    "sugar": 4.3,
+    "fiber": 2.1,
+    "sodium": 324.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D301-043000000-0001",
+    "foodName": "충무김밥",
+    "method": "분석",
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-chungmu-gimbap",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "sogogi-jumeokbap",
+   "name": "소고기주먹밥",
+   "crave": "quick",
+   "tags": [],
+   "servingG": 200.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 356,
+    "protein": 9.5,
+    "fat": 4.4,
+    "saturatedFat": 1.3,
+    "carb": 69.5,
+    "sugar": 0.5,
+    "fiber": 3.0,
+    "sodium": 714
+   },
+   "per100g": {
+    "kcal": 178.0,
+    "protein": 4.76,
+    "fat": 2.18,
+    "saturatedFat": 0.65,
+    "carb": 34.73,
+    "sugar": 0.23,
+    "fiber": 1.5,
+    "sodium": 357.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D101-035280000-0001",
+    "foodName": "주먹밥_소고기",
+    "method": "분석",
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-sogogi-jumeokbap",
     "status": "미제작"
    },
    "adClaim": null,
@@ -4957,6 +6922,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -4984,8 +6950,11 @@
     "foodCode": "D101-042410000-0001",
     "foodName": "초밥_유부초밥",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D301-042410000-0001",
@@ -5010,6 +6979,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5037,8 +7007,11 @@
     "foodCode": "D102-123170000-0001",
     "foodName": "햄버거_불고기버거",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-bulgogi-burger",
@@ -5054,6 +7027,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 200.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5081,8 +7055,11 @@
     "foodCode": "D102-123000000-0001",
     "foodName": "햄버거",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D302-123000000-0001",
@@ -5107,6 +7084,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 230.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5134,8 +7112,11 @@
     "foodCode": "D102-096060000-0001",
     "foodName": "샌드위치_닭가슴살",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-sandwich-chicken",
@@ -5151,6 +7132,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 250.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5178,8 +7160,11 @@
     "foodCode": "D102-096280000-0001",
     "foodName": "샌드위치_참치",
     "method": "분석",
-    "createdAt": "2019-12-31"
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D302-096280000-0001",
@@ -5199,11 +7184,108 @@
    "review": "draft_unreviewed"
   },
   {
+   "id": "sandwich-ham-egg",
+   "name": "햄달걀샌드위치",
+   "crave": "quick",
+   "tags": [],
+   "servingG": 200.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 440,
+    "protein": 24.9,
+    "fat": 23.8,
+    "saturatedFat": 6.9,
+    "carb": 31.3,
+    "sugar": 3.8,
+    "fiber": 3.4,
+    "sodium": 1398
+   },
+   "per100g": {
+    "kcal": 220.0,
+    "protein": 12.44,
+    "fat": 11.92,
+    "saturatedFat": 3.45,
+    "carb": 15.64,
+    "sugar": 1.9,
+    "fiber": 1.7,
+    "sodium": 699.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D102-096431100-0001",
+    "foodName": "샌드위치_햄_달걀",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-sandwich-ham-egg",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "sandwich-vegetable",
+   "name": "채소샌드위치",
+   "crave": "quick",
+   "tags": [],
+   "servingG": 180.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 439,
+    "protein": 7.3,
+    "fat": 26.6,
+    "saturatedFat": 5.2,
+    "carb": 42.9,
+    "sugar": 25.7,
+    "fiber": 4.5,
+    "sodium": 767
+   },
+   "per100g": {
+    "kcal": 244.0,
+    "protein": 4.08,
+    "fat": 14.75,
+    "saturatedFat": 2.88,
+    "carb": 23.82,
+    "sugar": 14.26,
+    "fiber": 2.5,
+    "sodium": 426.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D102-096300000-0001",
+    "foodName": "샌드위치_채소",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-sandwich-vegetable",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
    "id": "gun-mandu",
    "name": "군만두",
    "crave": "quick",
    "tags": [],
    "servingG": 220.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5231,8 +7313,11 @@
     "foodCode": "D103-150030000-0001",
     "foodName": "만두_군만두",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-gun-mandu",
@@ -5248,6 +7333,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 220.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5275,8 +7361,11 @@
     "foodCode": "D103-150010000-0001",
     "foodName": "만두_고기만두",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-150010000-0001",
@@ -5301,6 +7390,7 @@
    "crave": "quick",
    "tags": [],
    "servingG": 220.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5328,8 +7418,11 @@
     "foodCode": "D103-150060000-0001",
     "foodName": "만두_김치만두",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-150060000-0001",
@@ -5354,6 +7447,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 450.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5381,8 +7475,11 @@
     "foodCode": "D101-018000000-0001",
     "foodName": "비빔밥",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D301-018000000-0002",
@@ -5407,6 +7504,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 380.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5434,8 +7532,11 @@
     "foodCode": "D101-018130000-0001",
     "foodName": "비빔밥_돌솥",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-dolsot-bibimbap",
@@ -5451,6 +7552,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5478,8 +7580,11 @@
     "foodCode": "D101-010240000-0001",
     "foodName": "덮밥_불고기",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-bulgogi-deopbap",
@@ -5495,6 +7600,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 410.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5522,8 +7628,11 @@
     "foodCode": "D101-010110000-0001",
     "foodName": "덮밥_닭고기",
     "method": "분석",
-    "createdAt": "2017-12-31"
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-dak-deopbap",
@@ -5539,6 +7648,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 700.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5566,11 +7676,62 @@
     "foodCode": "D301-010550000-0001",
     "foodName": "덮밥_해물",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-haemul-deopbap",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "jangeo-deopbap",
+   "name": "장어덮밥",
+   "crave": "hearty",
+   "tags": [],
+   "servingG": 400.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 716,
+    "protein": 30.1,
+    "fat": 23.0,
+    "saturatedFat": 5.2,
+    "carb": 97.4,
+    "sugar": 5.6,
+    "fiber": 10.4,
+    "sodium": 920
+   },
+   "per100g": {
+    "kcal": 179.0,
+    "protein": 7.52,
+    "fat": 5.74,
+    "saturatedFat": 1.29,
+    "carb": 24.34,
+    "sugar": 1.4,
+    "fiber": 2.6,
+    "sodium": 230.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D301-010440000-0001",
+    "foodName": "덮밥_장어",
+    "method": "분석",
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-jangeo-deopbap",
     "status": "미제작"
    },
    "adClaim": null,
@@ -5583,6 +7744,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 330.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5610,8 +7772,11 @@
     "foodCode": "D101-017070000-0001",
     "foodName": "볶음밥_김치",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D301-017070000-0002",
@@ -5636,6 +7801,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 370.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5663,8 +7829,11 @@
     "foodCode": "D101-017260000-0001",
     "foodName": "볶음밥_새우",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-saeu-bokkeumbap",
@@ -5680,6 +7849,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5707,8 +7877,11 @@
     "foodCode": "D301-017550000-0001",
     "foodName": "볶음밥_해물",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-haemul-bokkeumbap",
@@ -5724,6 +7897,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 600.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5751,8 +7925,11 @@
     "foodCode": "D103-168000000-0001",
     "foodName": "자장면",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-168000000-0001",
@@ -5777,6 +7954,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 500.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5804,8 +7982,11 @@
     "foodCode": "D103-141000000-0001",
     "foodName": "간자장",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D303-141000000-0001",
@@ -5830,6 +8011,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 700.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5857,8 +8039,11 @@
     "foodCode": "D303-168310000-0001",
     "foodName": "자장면_삼선",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-samseon-jajang",
@@ -5874,6 +8059,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 470.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5901,8 +8087,11 @@
     "foodCode": "D101-031000000-0001",
     "foodName": "자장밥",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [
     {
      "foodCode": "D301-031000000-0001",
@@ -5927,6 +8116,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 550.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5954,8 +8144,11 @@
     "foodCode": "D101-033000000-0001",
     "foodName": "잡채밥",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-japchaebap",
@@ -5971,6 +8164,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 750.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -5998,8 +8192,11 @@
     "foodCode": "D301-034000000-0001",
     "foodName": "잡탕밥",
     "method": "분석",
-    "createdAt": "2012-02-28"
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-japtangbap",
@@ -6015,6 +8212,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 550.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -6042,8 +8240,11 @@
     "foodCode": "D301-010420000-0001",
     "foodName": "덮밥_유산슬",
     "method": "분석",
-    "createdAt": "2013-03-31"
+    "createdAt": "2013-03-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-yusanseul-deopbap",
@@ -6059,6 +8260,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 400.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -6086,11 +8288,110 @@
     "foodCode": "D101-028000000-0001",
     "foodName": "오므라이스",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-omurice",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "kongnamulbap",
+   "name": "콩나물밥",
+   "crave": "hearty",
+   "tags": [],
+   "servingG": 320.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 394,
+    "protein": 15.0,
+    "fat": 5.1,
+    "saturatedFat": 1.3,
+    "carb": 71.6,
+    "sugar": 0.1,
+    "fiber": 6.1,
+    "sodium": 870
+   },
+   "per100g": {
+    "kcal": 123.0,
+    "protein": 4.68,
+    "fat": 1.58,
+    "saturatedFat": 0.42,
+    "carb": 22.39,
+    "sugar": 0.04,
+    "fiber": 1.9,
+    "sodium": 272.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D101-047000000-0001",
+    "foodName": "콩나물밥",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-kongnamulbap",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "gondeure-bap",
+   "name": "곤드레나물밥",
+   "crave": "hearty",
+   "tags": [],
+   "servingG": 350.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 522,
+    "protein": 10.3,
+    "fat": 9.5,
+    "saturatedFat": 0.9,
+    "carb": 98.9,
+    "sugar": 0.0,
+    "fiber": 10.2,
+    "sodium": 91
+   },
+   "per100g": {
+    "kcal": 149.0,
+    "protein": 2.94,
+    "fat": 2.71,
+    "saturatedFat": 0.26,
+    "carb": 28.26,
+    "sugar": 0.0,
+    "fiber": 2.9,
+    "sodium": 26.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D301-002000000-0001",
+    "foodName": "곤드레나물밥",
+    "method": "분석",
+    "createdAt": "2016-10-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-gondeure-bap",
     "status": "미제작"
    },
    "adClaim": null,
@@ -6103,6 +8404,7 @@
    "crave": "hearty",
    "tags": [],
    "servingG": 330.0,
+   "servingUnit": "g",
    "servingBasis": "DB 1인분 중량",
    "servingRef": null,
    "perServing": {
@@ -6130,11 +8432,918 @@
     "foodCode": "D101-023000000-0001",
     "foodName": "알밥",
     "method": "분석",
-    "createdAt": "2018-12-31"
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
    },
+   "nutritionStatus": "analyzed",
    "otherAnalyses": [],
    "art": {
     "id": "food-albap",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "yeongyang-dolsotbap",
+   "name": "영양돌솥밥",
+   "crave": "hearty",
+   "tags": [],
+   "servingG": 350.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 644,
+    "protein": 12.0,
+    "fat": 10.0,
+    "saturatedFat": 2.1,
+    "carb": 126.2,
+    "sugar": 2.2,
+    "fiber": 7.3,
+    "sodium": 21
+   },
+   "per100g": {
+    "kcal": 184.0,
+    "protein": 3.43,
+    "fat": 2.87,
+    "saturatedFat": 0.61,
+    "carb": 36.06,
+    "sugar": 0.63,
+    "fiber": 2.1,
+    "sodium": 6.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D101-026000000-0001",
+    "foodName": "영양돌솥밥",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-yeongyang-dolsotbap",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "tangsuyuk",
+   "name": "탕수육",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": 343.0,
+   "servingUnit": "ml",
+   "servingBasis": "DB 1회 분량(산출, ml)",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 388,
+    "protein": 23.0,
+    "fat": 15.1,
+    "saturatedFat": 3.4,
+    "carb": 38.5,
+    "sugar": 11.4,
+    "fiber": 1.7,
+    "sodium": 501
+   },
+   "per100g": {
+    "kcal": 113.0,
+    "protein": 6.7,
+    "fat": 4.4,
+    "saturatedFat": 0.98,
+    "carb": 11.21,
+    "sugar": 3.33,
+    "fiber": 0.5,
+    "sodium": 146.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D412-566000000-0001",
+    "foodName": "탕수육",
+    "method": "산출",
+    "createdAt": "2024-01-31",
+    "basis": "100ml",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "calculated",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-tangsuyuk",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "kkanpunggi",
+   "name": "깐풍기",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": 164.2,
+   "servingUnit": "ml",
+   "servingBasis": "DB 1회 분량(산출, ml)",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 256,
+    "protein": 26.4,
+    "fat": 10.2,
+    "saturatedFat": 1.7,
+    "carb": 11.4,
+    "sugar": 0.4,
+    "fiber": 0.7,
+    "sodium": 1080
+   },
+   "per100g": {
+    "kcal": 156.0,
+    "protein": 16.1,
+    "fat": 6.23,
+    "saturatedFat": 1.01,
+    "carb": 6.93,
+    "sugar": 0.23,
+    "fiber": 0.4,
+    "sodium": 658.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D712-581000000-0001",
+    "foodName": "깐풍기",
+    "method": "산출",
+    "createdAt": "2024-01-31",
+    "basis": "100ml",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "calculated",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-kkanpunggi",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "dakgangjeong",
+   "name": "닭강정",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": 183.9,
+   "servingUnit": "ml",
+   "servingBasis": "DB 1회 분량(산출, ml)",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 403,
+    "protein": 32.9,
+    "fat": 11.4,
+    "saturatedFat": 1.9,
+    "carb": 39.4,
+    "sugar": 8.5,
+    "fiber": 0.4,
+    "sodium": 320
+   },
+   "per100g": {
+    "kcal": 219.0,
+    "protein": 17.9,
+    "fat": 6.21,
+    "saturatedFat": 1.01,
+    "carb": 21.41,
+    "sugar": 4.63,
+    "fiber": 0.2,
+    "sodium": 174.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D712-587000000-0001",
+    "foodName": "닭강정",
+    "method": "산출",
+    "createdAt": "2024-01-31",
+    "basis": "100ml",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "calculated",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-dakgangjeong",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "boneless-chicken",
+   "name": "순살치킨",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": 300.0,
+   "servingUnit": "g",
+   "servingBasis": "대체: 같은 DB에 비브랜드 순살치킨 값이 없어 후라이드치킨(닭튀김) 분석값을 표시 · DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 903,
+    "protein": 65.2,
+    "fat": 49.7,
+    "saturatedFat": 13.0,
+    "carb": 48.8,
+    "sugar": 1.5,
+    "fiber": 4.5,
+    "sodium": 1245
+   },
+   "per100g": {
+    "kcal": 301.0,
+    "protein": 21.73,
+    "fat": 16.57,
+    "saturatedFat": 4.33,
+    "carb": 16.27,
+    "sugar": 0.5,
+    "fiber": 1.5,
+    "sodium": 415.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D312-549000000-0001",
+    "foodName": "닭튀김",
+    "method": "분석",
+    "createdAt": "2017-12-31",
+    "basis": "100g",
+    "borrowedFor": "순살치킨"
+   },
+   "nutritionStatus": "borrowed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-boneless-chicken",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "guobaorou",
+   "name": "꿔바로우",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": 343.0,
+   "servingUnit": "ml",
+   "servingBasis": "대체: 같은 DB에 비브랜드 꿔바로우 값이 없어 탕수육 산출값을 표시 · DB 1회 분량(산출, ml)",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 388,
+    "protein": 23.0,
+    "fat": 15.1,
+    "saturatedFat": 3.4,
+    "carb": 38.5,
+    "sugar": 11.4,
+    "fiber": 1.7,
+    "sodium": 501
+   },
+   "per100g": {
+    "kcal": 113.0,
+    "protein": 6.7,
+    "fat": 4.4,
+    "saturatedFat": 0.98,
+    "carb": 11.21,
+    "sugar": 3.33,
+    "fiber": 0.5,
+    "sodium": 146.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D412-566000000-0001",
+    "foodName": "탕수육",
+    "method": "산출",
+    "createdAt": "2024-01-31",
+    "basis": "100ml",
+    "borrowedFor": "꿔바로우"
+   },
+   "nutritionStatus": "borrowed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-guobaorou",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "hotdog",
+   "name": "핫도그",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": "g",
+   "servingBasis": "1인분 양 미상: 기준량(100g)당 값만 표시",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": {
+    "kcal": 341.0,
+    "protein": 7.98,
+    "fat": 23.23,
+    "saturatedFat": 3.44,
+    "carb": 24.95,
+    "sugar": 3.95,
+    "fiber": 2.6,
+    "sodium": 398.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D302-122000000-0001",
+    "foodName": "핫도그",
+    "method": "분석",
+    "createdAt": "2022-06-30",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-hotdog",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "katsudon",
+   "name": "카츠동",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": null,
+   "servingBasis": "값 없음: 식약처 음식 DB에 비브랜드 카츠동 값이 없음",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": null,
+   "source": null,
+   "nutritionStatus": "none",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-katsudon",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "tendon",
+   "name": "텐동",
+   "crave": "crispy",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": null,
+   "servingBasis": "값 없음: 식약처 음식 DB에 비브랜드 텐동 값이 없음",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": null,
+   "source": null,
+   "nutritionStatus": "none",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-tendon",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "mala-xiangguo",
+   "name": "마라샹궈",
+   "crave": "spicy",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": null,
+   "servingBasis": "값 없음: 식약처 음식 DB에 마라샹궈 값이 없음",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": null,
+   "source": null,
+   "nutritionStatus": "none",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-mala-xiangguo",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "bossam",
+   "name": "보쌈",
+   "crave": "meat",
+   "tags": [],
+   "servingG": 103.5,
+   "servingUnit": "ml",
+   "servingBasis": "DB 1회 분량(산출, ml)",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 164,
+    "protein": 20.4,
+    "fat": 7.8,
+    "saturatedFat": 2.8,
+    "carb": 1.3,
+    "sugar": 0.2,
+    "fiber": 0.3,
+    "sodium": 346
+   },
+   "per100g": {
+    "kcal": 158.0,
+    "protein": 19.7,
+    "fat": 7.49,
+    "saturatedFat": 2.68,
+    "carb": 1.25,
+    "sugar": 0.15,
+    "fiber": 0.3,
+    "sodium": 334.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D707-373000000-0001",
+    "foodName": "제육(돼지고기 수육)",
+    "method": "산출",
+    "createdAt": "2024-01-31",
+    "basis": "100ml",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "calculated",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-bossam",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "beef-makchang",
+   "name": "소막창구이",
+   "crave": "meat",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": "g",
+   "servingBasis": "1인분 양 미상: 기준량(100g)당 값만 표시",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": {
+    "kcal": 358.0,
+    "protein": 15.34,
+    "fat": 32.73,
+    "saturatedFat": 12.11,
+    "carb": 0.4,
+    "sugar": 1.36,
+    "fiber": 0.2,
+    "sodium": 162.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D308-378120000-0001",
+    "foodName": "막창구이_소고기",
+    "method": "분석",
+    "createdAt": "2022-06-30",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-beef-makchang",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "dak-kkochi",
+   "name": "닭꼬치",
+   "crave": "meat",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": "ml",
+   "servingBasis": "1인분 양 미상: 기준량(100ml)당 값만 표시",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": {
+    "kcal": 181.0,
+    "protein": 32.1,
+    "fat": 2.58,
+    "saturatedFat": 0.41,
+    "carb": 5.55,
+    "sugar": 3.8,
+    "fiber": 0.1,
+    "sodium": 122.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D408-410000000-0001",
+    "foodName": "닭꼬치구이",
+    "method": "산출",
+    "createdAt": "2024-01-31",
+    "basis": "100ml",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "calculated",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-dak-kkochi",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "ganjang-gejang",
+   "name": "간장게장",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 250.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 155,
+    "protein": 17.6,
+    "fat": 2.8,
+    "saturatedFat": 0.4,
+    "carb": 15.1,
+    "sugar": 10.5,
+    "fiber": 2.8,
+    "sodium": 2722
+   },
+   "per100g": {
+    "kcal": 62.0,
+    "protein": 7.02,
+    "fat": 1.1,
+    "saturatedFat": 0.16,
+    "carb": 6.04,
+    "sugar": 4.21,
+    "fiber": 1.1,
+    "sodium": 1089.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D116-693010000-0001",
+    "foodName": "꽃게장_간장",
+    "method": "분석",
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-ganjang-gejang",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "yangnyeom-gejang",
+   "name": "양념게장",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 200.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 194,
+    "protein": 20.5,
+    "fat": 1.2,
+    "saturatedFat": 0.5,
+    "carb": 25.2,
+    "sugar": 17.5,
+    "fiber": 9.4,
+    "sodium": 1608
+   },
+   "per100g": {
+    "kcal": 97.0,
+    "protein": 10.23,
+    "fat": 0.61,
+    "saturatedFat": 0.24,
+    "carb": 12.61,
+    "sugar": 8.77,
+    "fiber": 4.7,
+    "sodium": 804.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D116-693020000-0001",
+    "foodName": "꽃게장_양념",
+    "method": "분석",
+    "createdAt": "2019-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-yangnyeom-gejang",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "poke",
+   "name": "포케",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 500.0,
+   "servingUnit": "g",
+   "servingBasis": "대체: 같은 DB에 비브랜드 포케 값이 없어 회덮밥 분석값을 표시 · DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 685,
+    "protein": 30.2,
+    "fat": 16.6,
+    "saturatedFat": 2.9,
+    "carb": 103.3,
+    "sugar": 10.9,
+    "fiber": 8.0,
+    "sodium": 745
+   },
+   "per100g": {
+    "kcal": 137.0,
+    "protein": 6.04,
+    "fat": 3.31,
+    "saturatedFat": 0.58,
+    "carb": 20.66,
+    "sugar": 2.19,
+    "fiber": 1.6,
+    "sodium": 149.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D301-051000000-0001",
+    "foodName": "회덮밥",
+    "method": "분석",
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": "포케"
+   },
+   "nutritionStatus": "borrowed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-poke",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "sakedon",
+   "name": "사케동",
+   "crave": "cool",
+   "tags": [],
+   "servingG": 500.0,
+   "servingUnit": "g",
+   "servingBasis": "대체: 같은 DB에 비브랜드 사케동 값이 없어 회덮밥 분석값을 표시 · DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 685,
+    "protein": 30.2,
+    "fat": 16.6,
+    "saturatedFat": 2.9,
+    "carb": 103.3,
+    "sugar": 10.9,
+    "fiber": 8.0,
+    "sodium": 745
+   },
+   "per100g": {
+    "kcal": 137.0,
+    "protein": 6.04,
+    "fat": 3.31,
+    "saturatedFat": 0.58,
+    "carb": 20.66,
+    "sugar": 2.19,
+    "fiber": 1.6,
+    "sodium": 149.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D301-051000000-0001",
+    "foodName": "회덮밥",
+    "method": "분석",
+    "createdAt": "2012-02-28",
+    "basis": "100g",
+    "borrowedFor": "사케동"
+   },
+   "nutritionStatus": "borrowed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-sakedon",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "sundae",
+   "name": "순대",
+   "crave": "quick",
+   "tags": [],
+   "servingG": 220.0,
+   "servingUnit": "g",
+   "servingBasis": "DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 411,
+    "protein": 6.0,
+    "fat": 8.0,
+    "saturatedFat": 2.5,
+    "carb": 78.6,
+    "sugar": 3.1,
+    "fiber": 4.2,
+    "sodium": 1329
+   },
+   "per100g": {
+    "kcal": 187.0,
+    "protein": 2.75,
+    "fat": 3.64,
+    "saturatedFat": 1.12,
+    "carb": 35.73,
+    "sugar": 1.39,
+    "fiber": 1.9,
+    "sodium": 604.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D107-337000000-0001",
+    "foodName": "순대",
+    "method": "분석",
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": null
+   },
+   "nutritionStatus": "analyzed",
+   "otherAnalyses": [
+    {
+     "foodCode": "D307-337000000-0001",
+     "servingG": 300.0,
+     "servingBasis": "DB 1인분 중량",
+     "kcal": 543,
+     "sodium": 1020,
+     "createdAt": "2012-02-28"
+    }
+   ],
+   "art": {
+    "id": "food-sundae",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "taco",
+   "name": "타코",
+   "crave": "foreign",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": null,
+   "servingBasis": "값 없음: 식약처 음식 DB에 비브랜드 타코 값이 없음",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": null,
+   "source": null,
+   "nutritionStatus": "none",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-taco",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "burrito",
+   "name": "부리또",
+   "crave": "foreign",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": null,
+   "servingBasis": "값 없음: 식약처 음식 DB에 비브랜드 부리또 값이 없음",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": null,
+   "source": null,
+   "nutritionStatus": "none",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-burrito",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "kebab",
+   "name": "케밥",
+   "crave": "foreign",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": null,
+   "servingBasis": "값 없음: 식약처 음식 DB에 케밥 값이 없음",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": null,
+   "source": null,
+   "nutritionStatus": "none",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-kebab",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "banh-mi",
+   "name": "반미",
+   "crave": "foreign",
+   "tags": [],
+   "servingG": null,
+   "servingUnit": null,
+   "servingBasis": "값 없음: 식약처 음식 DB에 비브랜드 반미 값이 없음",
+   "servingRef": null,
+   "perServing": null,
+   "per100g": null,
+   "source": null,
+   "nutritionStatus": "none",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-banh-mi",
+    "status": "미제작"
+   },
+   "adClaim": null,
+   "orderTips": [],
+   "review": "draft_unreviewed"
+  },
+  {
+   "id": "gyudon",
+   "name": "규동",
+   "crave": "hearty",
+   "tags": [],
+   "servingG": 400.0,
+   "servingUnit": "g",
+   "servingBasis": "대체: 같은 DB에 규동 값이 없어 불고기덮밥 분석값을 표시 · DB 1인분 중량",
+   "servingRef": null,
+   "perServing": {
+    "kcal": 728,
+    "protein": 26.4,
+    "fat": 21.2,
+    "saturatedFat": 5.6,
+    "carb": 107.8,
+    "sugar": 0.3,
+    "fiber": 11.2,
+    "sodium": 1012
+   },
+   "per100g": {
+    "kcal": 182.0,
+    "protein": 6.6,
+    "fat": 5.31,
+    "saturatedFat": 1.4,
+    "carb": 26.96,
+    "sugar": 0.07,
+    "fiber": 2.8,
+    "sodium": 253.0
+   },
+   "source": {
+    "db": "식품의약품안전처 K-FIND 식품영양성분 데이터베이스 음식 DB(2026-08-28 갱신, 19,617건)",
+    "foodCode": "D101-010240000-0001",
+    "foodName": "덮밥_불고기",
+    "method": "분석",
+    "createdAt": "2018-12-31",
+    "basis": "100g",
+    "borrowedFor": "규동"
+   },
+   "nutritionStatus": "borrowed",
+   "otherAnalyses": [],
+   "art": {
+    "id": "food-gyudon",
     "status": "미제작"
    },
    "adClaim": null,
