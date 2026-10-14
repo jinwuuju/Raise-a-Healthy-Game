@@ -22,7 +22,7 @@ ASSUMED = {
     'pad-thai': ('우동볶음', '볶음 면 요리로 같은 DB 우동볶음 분석 1인분 중량을 적용'),
     'bun-cha': ('국수_비빔국수', '찬 면 요리로 같은 DB 비빔국수 분석 1인분 중량을 적용'),
 }
-# D078 사용자 승인 기준 그림 5종. 나머지는 D082 부품 조립 초안(src/art/food-menus.ts).
+# D078 사용자 승인 기준 그림 5종. 나머지는 D082 부품 조립 초안 → D084 특징 강조 개편(src/art/food-menus.ts, food-heroes.ts).
 APPROVED_ART = {'mul-naengmyeon', 'tteokbokki', 'sundae-gukbap', 'fried-chicken', 'gimbap'}
 
 COLS = {'kcal': '에너지(kcal)', 'protein': '단백질(g)', 'fat': '지방(g)', 'saturatedFat': '포화지방산(g)',
@@ -101,7 +101,7 @@ def main():
     menus = []
     for p in picks:
         base = {'id': p['id'], 'name': p['name'], 'crave': p['crave'], 'tags': []}
-        tail = {'art': {'id': 'food-' + p['id'], 'status': '승인(D078)' if p['id'] in APPROVED_ART else '초안(D082, 사용자 확인 전)'}, 'adClaim': None, 'orderTips': [], 'review': 'draft_unreviewed'}
+        tail = {'art': {'id': 'food-' + p['id'], 'status': '승인(D078)' if p['id'] in APPROVED_ART else '초안(D084 특징 강조 개편, 사용자 확인 전)'}, 'adClaim': None, 'orderTips': [], 'review': 'draft_unreviewed'}
         if p.get('noData'):
             # D080: 같은 DB에 비브랜드 값도, 비슷한 음식도 없으면 숫자를 만들지 않는다.
             menus.append({**base, 'servingG': None, 'servingUnit': None, 'servingBasis': '값 없음: ' + p['noData'], 'servingRef': None,

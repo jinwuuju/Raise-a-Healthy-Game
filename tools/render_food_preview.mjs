@@ -1,5 +1,5 @@
 // 음식 그림 미리보기 PNG. Node 24 타입 제거 실행: node tools/render_food_preview.mjs
-// 출력: artifacts/food-v1/<당김>.png (당김 칸별 격자, 6배, 게임 바닥색 배경) + index.txt(칸 순서 → 메뉴 이름)
+// 출력: artifacts/food-v2/<당김>.png (당김 칸별 격자, 6배, 게임 바닥색 배경) + index.txt(칸 순서 → 메뉴 이름)
 //       artifacts/food-v0/preview.png (승인된 기준 5종, 이전 형식 유지)
 import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
@@ -26,13 +26,13 @@ function sheet(ids, file, scale, cols) {
   const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(W, 0); ihdr.writeUInt32BE(H, 4); ihdr[8] = 8; ihdr[9] = 6;
   writeFileSync(file, Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', deflateSync(raw)), chunk('IEND', Buffer.alloc(0))]));
 }
-mkdirSync('artifacts/food-v0', { recursive: true }); mkdirSync('artifacts/food-v1', { recursive: true });
+mkdirSync('artifacts/food-v0', { recursive: true }); mkdirSync('artifacts/food-v2', { recursive: true });
 sheet(['mul-naengmyeon', 'tteokbokki', 'sundae-gukbap', 'fried-chicken', 'gimbap'], 'artifacts/food-v0/preview.png', 8, 5);
 const lines = [];
 for (const crave of ['cool', 'spicy', 'hot', 'crispy', 'meat', 'foreign', 'light', 'quick', 'hearty']) {
   const list = menus.filter(m => m.crave === crave);
-  sheet(list.map(m => m.id), 'artifacts/food-v1/' + crave + '.png', 6, 6);
+  sheet(list.map(m => m.id), 'artifacts/food-v2/' + crave + '.png', 6, 6);
   lines.push(crave + ' (' + list.length + '): ' + list.map((m, i) => (i + 1) + '.' + m.name).join(' '));
 }
-writeFileSync('artifacts/food-v1/index.txt', lines.join('\n') + '\n');
+writeFileSync('artifacts/food-v2/index.txt', lines.join('\n') + '\n');
 console.log('preview sheets', lines.length, 'menus', menus.length);
