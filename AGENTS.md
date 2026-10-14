@@ -1,5 +1,19 @@
 # 이 프로젝트에서 작업할 때
 
+## 현재 상태와 다음 작업 (2026-10-14 기준 · 새 작업을 시작하면 이 절부터 읽는다)
+
+- **동기화:** 다른 곳에서도 작업하므로 시작할 때 `git fetch` 후 원격 main을 fast-forward로 받아 로컬과 맞춘다. 로컬 변경이 있으면 보존하고 덮어쓰지 않는다.
+- **공개된 게임:** Q001~Q005까지(D077 박동 신호 취재 + 심방세동 같은 공간 비교, 합계 1,000XP/Lv.6). 정리 문서 docs/production/Q005-SIGNAL-REPORT.md.
+- **오늘의 점심 진행:** ① 메뉴 192개(D079→D080: 가상 게임이므로 전부 포함, 배달 근거 종류와 영양 근거 단계 분석→산출→대체→값 없음) ② 기준 그림 5종 사용자 승인(D078) ③ 가상 가게 과장/정상 문구·주문 요령·동료 대사(D081, data/content/lunch-extras.v0.1.json + src/domain/lunch-content.ts) ④ 나머지 그림 187개 초안(D082, 사용자 확인 대기, 미리보기 artifacts/food-v1/). **점심은 아직 게임 화면에 연결되지 않았다.**
+- **다음 작업 순서(사용자 지정: 점심 먼저):**
+  1. ④ 그림 사용자 피드백 반영 — 레시피 src/art/food-menus.ts, 부품 src/art/food-parts.ts를 고치고 고유성·채움·색 검사와 기준 5종 픽셀 지문(tests/unit/food-art.test.ts)을 유지한다. 사용자 확인 전에는 art.status를 ‘초안’으로 둔다.
+  2. ⑤ 실시간 시계 이행 — 기기 시계 Asia/Seoul만 쓰고 게임 안 시간대 설정(settings.time, 메뉴의 ‘화면·시간대’)을 없앤다. 옛 저장의 settings.time은 읽되 무시한다(schema4 호환, 저장 실패·백업 보존).
+  3. ⑥ 점심 화면·상태 — 당김→후보·굶기→과장 신고→주문 요령→픽셀 식탁→동료 한마디→카드→도감. 주문·굶음·신고는 application에서 확정·저장하고 연출은 읽기만 한다. 대체·값 없음·1인분 미상 메뉴를 측정값처럼 보이지 않게 표시한다(LUNCH-QUEST 4절). 수첩 동네·생활 탭에 기록.
+  4. ⑦ 검증·검수 — 단위·브라우저·모바일 가로/세로·동작 줄이기, 보상 종류·크기 확정, 영양·법률 표현 검수 게이트.
+  5. 그다음 메인 Q006 ‘펌프도 배달이 필요해’(관상 공급, 협심증·죽상동맥경화 동반 범위 먼저 검토), 이어서 D076 EVT-01(현재 분야 게이트 사양).
+- **작업 습관:** push 전 typecheck·test·build와 check_design·build_site·check_site를 통과시킨다. 브라우저 전체 검사(`npm run test:e2e`)는 약 8.5분이 걸린다. 점심 수치는 손으로 고치지 않고 선정표를 고친 뒤 `python3 tools/build_lunch_db.py`(원본 엑셀이 없으면 `--from-extract`)로 재생성한다. 음식 그림 파일끼리는 Node 직접 실행 미리보기(`node tools/render_food_preview.mjs`)를 위해 `.ts` 확장자로 import한다.
+
+
 - 현재 게임은 redesign-1 + 심장 속 탐사(D037~D057)이다. 심장은 실제 혈류 순서로 이어진 걸어 다니는 공간이며 docs/production/HEART-INTERIOR.md의 정확성 계약(혈류 순서·판막 일방향·심장 주기·출처)을 지킨다. 심장 공간을 ‘바깥에서 보는 모형’으로 되돌리지 않는다. 그래픽은 src/art/에서 코드로 그리는 픽셀 아트이며 Phaser는 쓰지 않는다. 새 그래픽도 같은 16px 격자·윤곽선·정수 배율 규칙을 따른다. 인물 픽셀 배치는 src/art/avatar.ts(DOM 없음, 머리 템플릿)에서 바꾸고 문자 격자로 미리 확인한다. 인물은 docs/production/CHARACTER-STYLE.md의 v3 얼굴 원리(낮고 넓은 눈·볼터치·색 외곽선)와 v4 비율(바람의나라식 약 2.4등신)을 지킨다. 이전 단계 구분: P1 기반 구현. P0 사용자/의학 검토와 P2 아트 게이트는 별도로 남아 있다. 먼저 README.md, docs/production/STATUS.md, docs/decisions/DECISIONS.md, docs/production/BACKLOG.md를 읽는다.
 - 사용자가 지정한 단계의 범위를 우선한다. 지금 없는 게임·검수·테스트를 완료했다고 기록하지 않는다.
 - 기존 사용자 파일과 로컬 변경을 보존한다. 사용자 요청(D038)에 따라 main push가 GitHub Pages에 게임을 배포하므로, push 전에 typecheck·test·build를 통과시킨다.
