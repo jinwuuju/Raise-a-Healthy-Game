@@ -3,8 +3,7 @@ import type { Rect } from '../world/types';
 import { ellipse, jinU, makeCanvas, pixelText, px, rect, rng, shade, textWidth, type Ctx } from './pixel';
 
 type Ramp = [string, string, string, string]; // light, base, shade, dark
-/** `frontDay`/`frontNight`: the separate north front of a building that faces the lane (street-front rule), else null. */
-export type BuildingArt = { day: HTMLCanvasElement; night: HTMLCanvasElement; lights: Rect[]; billboard: Rect | null; frontDay: HTMLCanvasElement | null; frontNight: HTMLCanvasElement | null };
+export type BuildingArt = { day: HTMLCanvasElement; night: HTMLCanvasElement; lights: Rect[]; billboard: Rect | null };
 
 const ROOF: Ramp = ['#bdbbb5', '#a9a7a1', '#93918b', '#73716c'];
 const GLASS: [string, string, string] = ['#b9d6ec', '#6f97bb', '#4d7194'];
@@ -250,82 +249,68 @@ function bricks(g: Ctx, W: number, y0: number, y1: number, ramp: Ramp) {
   for (let y = y0; y < y1; y += 3) for (let x = (Math.floor(y / 3) % 2) * 3; x < W - 2; x += 6) { rect(g, x, y + 2, 6, 1, ramp[2]); px(g, x, y, ramp[2]); }
 }
 
-/*
- * Street-front rule (D090): the B2BC cafe, the Jin-U block and the granite office stand on the south side of the
- * narrow lane and face Euro Plaza (north), as in the user's photos. The 3/4 camera only sees south-facing walls, so
- * each of them is painted in two layers: the north front (sign, shop glass, entrance) on its own canvas, drawn behind
- * the people walking in front of it, and the body (roof + plain back wall toward Dosan-daero), which the world draws
- * see-through while the reporter is on the north side.
- */
-export const facesNorth = (b: Building): boolean => b.kind === 'b2bc' || b.kind === 'jinu' || b.kind === 'granite';
-
-function backWall(p: Painter, W: number, top: number, bottom: number, ramp: Ramp, brick: boolean) {
-  const { g } = p;
-  rect(g, 0, top, W, bottom - top, ramp[2]);
-  rect(g, 0, top, W, 1, ramp[1]); rect(g, 0, bottom - 1, W, 1, ramp[3]); rect(g, W - 2, top, 2, bottom - top, ramp[3]);
-  if (brick) for (let y = top + 2; y < bottom - 2; y += 3) for (let x = (Math.floor(y / 3) % 2) * 3; x < W - 2; x += 6) { rect(g, x, y + 2, 6, 1, ramp[3]); px(g, x, y, ramp[3]); }
-  for (let y = top + 5; y + 7 < bottom - 15; y += 15) for (let x = 6; x + 7 < W - 4; x += 14) windowAt(p, x, y, 7, 7, ramp[3], GLASS, 0.3);
-  rect(g, W - 16, bottom - 12, 10, 11, '#5b5f68'); rect(g, W - 15, bottom - 11, 8, 10, '#70757f'); px(g, W - 9, bottom - 6, '#d8dbe0');
-  rect(g, 4, bottom - 9, 10, 7, '#e3e6ea'); rect(g, 4, bottom - 9, 10, 1, '#f6f7f8'); for (let x = 5; x < 13; x += 2) rect(g, x, bottom - 7, 1, 4, '#a9afb8');
-}
-
-function body(p: Painter, b: Building, roofRamp: Ramp, wall: Ramp, brick: boolean) {
-  roof(p, b.w, b.d, roofRamp, 1);
-  backWall(p, b.w, b.d, b.d + b.h, wall, brick);
-}
-
-function wallBox(g: Ctx, W: number, H: number, ramp: Ramp) {
-  rect(g, 0, 0, W, H, ramp[1]); rect(g, 0, 0, W, 1, ramp[0]); rect(g, 0, 1, W, 1, ramp[2]);
-  rect(g, 0, 0, 1, H, ramp[0]); rect(g, W - 2, 0, 2, H, ramp[2]); rect(g, 0, H - 1, W, 1, ramp[3]);
-}
-
-/** Jin-U block front toward Euro Plaza (user photos 2, 4, 6): brick floors, sign, shop glass and the entrance. */
-function frontJinU(p: Painter, b: Building) {
+/** Red-brick block across the lane from Euro Plaza with the Jin-U store on the ground floor (user photos 2, 4, 6). */
+function paintJinU(p: Painter, b: Building) {
   const { g, night, r } = p;
-  const W = b.w, H = b.h, gTop = H - 24;
-  wallBox(g, W, H, BRICK);
-  bricks(g, W, 2, gTop - 1, BRICK);
+  const W = b.w, D = b.d, H = b.h, base = D + H, gTop = base - 24;
+  roof(p, W, D, ROOF, 1);
+  // Canopy and fascia on the lane side (north), seen from above: the face that looks at Euro Plaza.
+  rect(g, 0, 0, W, 10, JINU.teal); rect(g, 0, 0, W, 1, JINU.hi); rect(g, 0, 9, W, 1, JINU.coral); rect(g, 0, 10, W, 1, 'rgba(0,0,0,0.25)');
+  jinU(g, 5, 1, '#ffffff');
+  ellipse(g, W - 9, 5, 3, 3, JINU.coral); px(g, W - 10, 4, '#ffd0c4');
+  if (night) p.lights.push({ x: 0, y: 0, w: W, h: 10 });
+  facade(g, W, D, H, BRICK);
+  bricks(g, W, D + 2, gTop - 1, BRICK);
   for (let f = 0; f < 3; f++) {
-    const fy = 4 + f * 15;
+    const fy = D + 4 + f * 14;
     for (const x of [5, 20, 35, 50]) {
       rect(g, x - 1, fy - 1, 10, 1, '#f1ece2'); rect(g, x + 3, fy - 2, 2, 1, '#f1ece2');
-      windowAt(p, x, fy + 1, 8, 9, '#ece6da'); rect(g, x + 4, fy + 1, 1, 9, '#ece6da');
+      windowAt(p, x, fy + 1, 8, 9, '#ece6da');
+      rect(g, x + 4, fy + 1, 1, 9, '#ece6da');
       rect(g, x - 1, fy + 10, 10, 1, '#f1ece2'); rect(g, x - 1, fy + 11, 10, 1, BRICK[3]);
     }
   }
-  windowAt(p, 66, 3, 7, gTop - 6, '#5a4038', ['#a4bccb', '#4f6676', '#364754'], 0.5);
-  for (let y = 9; y < gTop - 4; y += 7) rect(g, 66, y, 7, 1, '#5a4038');
+  windowAt(p, 66, D + 3, 7, gTop - D - 6, '#5a4038', ['#a4bccb', '#4f6676', '#364754'], 0.5);
+  for (let y = D + 9; y < gTop - 4; y += 7) rect(g, 66, y, 7, 1, '#5a4038');
+  // Ground floor shop front toward Dosan-daero.
   rect(g, 0, gTop, W, 10, JINU.teal); rect(g, 0, gTop, W, 1, JINU.hi); rect(g, 0, gTop + 9, W, 1, JINU.dk);
-  rect(g, 0, gTop + 10, W, 1, JINU.coral); rect(g, 0, gTop + 11, W, 1, JINU.coralDk);
+  rect(g, 0, gTop + 10, W, 2, JINU.coral); rect(g, 0, gTop + 11, W, 1, JINU.coralDk);
   jinU(g, 5, gTop + 1, night ? '#fffbe8' : '#ffffff');
-  ellipse(g, 24, gTop + 4, 2, 2, JINU.coral);
-  pixelText(g, '24', W - 12, gTop + 2, night ? '#fffbe8' : '#ffffff');
+  ellipse(g, 60, gTop + 5, 3, 3, JINU.coral); px(g, 59, gTop + 4, '#ffd0c4');
   if (night) p.lights.push({ x: 0, y: gTop, w: W, h: 12 });
-  storefront(p, 2, gTop + 12, 28, 12, '#eef4f2', '#2b3a3a');
-  storefront(p, 48, gTop + 12, 30, 12, '#eef4f2', '#2b3a3a');
-  for (const [x0, x1] of [[4, 28], [50, 76]] as [number, number][]) {
-    for (let x = x0; x < x1; x += 2) { px(g, x, gTop + 15, ['#e85d5d', '#f2c14e', '#5aa0e0', '#7cc36a', '#f4f4f4'][Math.floor(r() * 5)]!); px(g, x, gTop + 19, ['#5aa0e0', '#f2c14e', '#e88aa8', '#f4f4f4'][Math.floor(r() * 4)]!); }
-    rect(g, x0 - 1, gTop + 16, x1 - x0 + 1, 1, '#9aa4a8'); rect(g, x0 - 1, gTop + 20, x1 - x0 + 1, 1, '#9aa4a8');
+  storefront(p, 2, gTop + 12, 50, 11, '#eef4f2', '#2b3a3a');
+  for (let x = 4; x < 50; x += 2) {
+    px(g, x, gTop + 15, ['#e85d5d', '#f2c14e', '#5aa0e0', '#7cc36a', '#f4f4f4'][Math.floor(r() * 5)]!);
+    px(g, x, gTop + 19, ['#5aa0e0', '#f2c14e', '#e88aa8', '#f4f4f4'][Math.floor(r() * 4)]!);
   }
-  rect(g, 30, gTop + 12, 18, 12, '#2b3a3a'); door(g, 32, gTop + 12, 14, 12, night);
+  rect(g, 3, gTop + 16, 48, 1, '#9aa4a8'); rect(g, 3, gTop + 20, 48, 1, '#9aa4a8');
+  door(g, 55, gTop + 12, 14, 12, night);
+  rect(g, 0, base - 1, W, 1, BRICK[3]);
 }
 
-/** Granite office front: slit windows, recessed balconies, entrance canopy facing the Euro Plaza lobby (photo 3). */
-function frontGranite(p: Painter, b: Building) {
+/** Granite office block directly opposite Euro Plaza (user photo 3): slit windows, recessed balconies, stone base. */
+function paintGranite(p: Painter, b: Building) {
   const { g, night, r } = p;
-  const W = b.w, H = b.h, gTop = H - 24;
+  const W = b.w, D = b.d, H = b.h, base = D + H, gTop = base - 24;
   const ramp: Ramp = ['#ded8d4', '#ccc5c0', '#b2aaa5', '#857d78'];
-  wallBox(g, W, H, ramp);
-  for (let i = 0; i < (W * H) / 9; i++) px(g, Math.floor(r() * W), 2 + Math.floor(r() * (H - 3)), r() < 0.5 ? shade(ramp[1], 0.06) : shade(ramp[1], -0.07));
-  for (let y = 6; y < gTop; y += 6) rect(g, 1, y, 61, 1, shade(ramp[1], -0.08));
-  for (let x = 8; x < 62; x += 8) rect(g, x, 2, 1, gTop - 2, shade(ramp[1], -0.05));
+  roof(p, W, D, ['#bdbab6', '#aaa7a3', '#94918d', '#75726e'], 1);
+  rect(g, 1, 1, W - 2, 1, '#7f858e'); for (let x = 2; x < W - 2; x += 4) rect(g, x, 2, 1, 2, '#6f757e');
+  rect(g, W - 14, 4, 2, 9, '#7a808a'); rect(g, W - 17, 4, 8, 1, '#7a808a');
+  facade(g, W, D, H, ramp);
+  for (let i = 0; i < (W * H) / 9; i++) px(g, Math.floor(r() * W), D + 2 + Math.floor(r() * (H - 3)), r() < 0.5 ? shade(ramp[1], 0.06) : shade(ramp[1], -0.07));
+  for (let y = D + 6; y < gTop; y += 6) rect(g, 1, y, W - 3, 1, shade(ramp[1], -0.08));
+  for (let x = 8; x < 62; x += 8) rect(g, x, D + 2, 1, gTop - D - 2, shade(ramp[1], -0.05));
   for (let f = 0; f < 5; f++) {
-    const fy = 3 + f * 10;
-    for (let k = 0; k < 7; k++) { const x = 4 + k * 8 + (k % 2); windowAt(p, x, fy, 3, 7, '#4f5660', GLASS, 0.4); if ((k + f) % 4 === 1) rect(g, x, fy, 3, 2, '#3b4148'); }
+    const fy = D + 3 + f * 10;
+    for (let k = 0; k < 7; k++) {
+      const x = 4 + k * 8 + (k % 2);
+      windowAt(p, x, fy, 3, 7, '#4f5660', GLASS, 0.4);
+      if ((k + f) % 4 === 1) rect(g, x, fy, 3, 2, '#3b4148');
+    }
   }
-  rect(g, 62, 1, 2, gTop - 1, ramp[0]);
+  rect(g, 62, D + 1, 2, gTop - D - 1, ramp[0]);
   for (let f = 0; f < 5; f++) {
-    const fy = 2 + f * 10;
+    const fy = D + 2 + f * 10;
     rect(g, 64, fy, W - 66, 8, night ? '#2f3740' : '#5b656e'); rect(g, 64, fy, W - 66, 1, '#3f474f');
     if (night && r() < 0.5) { rect(g, 66, fy + 2, W - 70, 4, WARM); p.lights.push({ x: 66, y: fy + 2, w: W - 70, h: 4 }); }
     px(g, 72, fy + 1, '#f2efe6'); px(g, 84, fy + 1, '#f2efe6');
@@ -334,44 +319,12 @@ function frontGranite(p: Painter, b: Building) {
     rect(g, 64, fy + 8, W - 66, 2, ramp[0]);
   }
   rect(g, 0, gTop, W, 2, ramp[0]); rect(g, 0, gTop + 2, W, 1, ramp[3]);
-  for (const x of [4, 14, 60, 72, 84]) windowAt(p, x, gTop + 5, 7, 12, '#3f4650', GLASS, 0.6);
-  for (let y = gTop + 18; y < H - 1; y += 2) for (let x = -(y % 5); x < W; x += 7) { if (x > 22 && x < 54) continue; rect(g, x, y, 6, 1, ['#8d8278', '#a39686', '#7a7068', '#b0a493'][Math.floor(r() * 4)]!); }
-  rect(g, 24, gTop + 3, 34, 3, '#2f7f74'); rect(g, 24, gTop + 3, 34, 1, '#58a596'); rect(g, 24, gTop + 6, 34, 1, 'rgba(0,0,0,0.25)');
-  windowAt(p, 26, gTop + 8, 3, 15, '#3f4650', GLASS, 0.6); windowAt(p, 49, gTop + 8, 3, 15, '#3f4650', GLASS, 0.6);
-  door(g, 31, gTop + 7, 16, 17, night);
-}
-
-/** B2BC cafe front: white upper floors, long black awning with the name, glass front and entrance (D090). */
-function frontB2BC(p: Painter, b: Building) {
-  const { g, night } = p;
-  const W = b.w, H = b.h, gTop = H - 26;
-  const ramp: Ramp = ['#f1f2f4', '#e0e3e6', '#c6cacf', '#9da2a9'];
-  wallBox(g, W, H, ramp);
-  for (let y = 9; y < gTop; y += 8) rect(g, 1, y, W - 3, 1, '#d3d6da');
-  for (let x = 10; x < W - 2; x += 10) rect(g, x, 2, 1, gTop - 2, '#d6d9dd');
-  for (let f = 0; f < 3; f++) {
-    const fy = 3 + f * 15;
-    [6, 32, 58].forEach((x, i) => {
-      rect(g, x - 2, fy, 20, 12, ramp[0]); rect(g, x - 2, fy + 11, 20, 1, ramp[2]);
-      windowAt(p, x, fy + 2, 16, 8, '#3a3f48', ['#cfe2f0', '#86aed0', '#5c84a8']);
-      rect(g, x + 8, fy + 2, 1, 8, '#3a3f48');
-      if ((f + i) % 2 === 1 && !night) for (let k = 0; k < 4; k += 2) rect(g, x, fy + 2 + k, 16, 1, '#f2f2ee');
-    });
-  }
-  rect(g, 0, gTop, W, 7, '#2d2f34'); rect(g, 0, gTop, W, 1, '#4a4d55'); rect(g, 0, gTop + 7, W, 1, 'rgba(0,0,0,0.3)');
-  const label = 'B2BC COFFEE'; pixelText(g, label, Math.round((W - textWidth(label)) / 2), gTop + 1, night ? '#ffe7b8' : '#f4e6c8');
-  if (night) p.lights.push({ x: 4, y: gTop + 1, w: W - 8, h: 5 });
-  storefront(p, 2, gTop + 8, 56, 18, '#ecd29d', '#2a2c30');
-  rect(g, 8, gTop + 19, 30, 5, night ? '#b07a44' : '#a8784e'); rect(g, 8, gTop + 19, 30, 1, '#d8b080');
-  ellipse(g, 50, gTop + 18, 3, 3, '#5f9c45'); px(g, 49, gTop + 16, '#8cc65c');
-  for (const x of [12, 24, 36]) { rect(g, x, gTop + 8, 1, 3, '#2a2c30'); rect(g, x - 1, gTop + 11, 3, 2, '#fff1c0'); }
-  rect(g, 58, gTop + 8, 3, 18, '#2a2c30'); door(g, 61, gTop + 8, 15, 18, night); rect(g, 76, gTop + 8, 2, 18, '#2a2c30');
-}
-
-function paintFacingNorth(p: Painter, fp: Painter, b: Building) {
-  if (b.kind === 'jinu') { frontJinU(fp, b); body(p, b, ROOF, BRICK, true); }
-  else if (b.kind === 'granite') { frontGranite(fp, b); body(p, b, ['#bdbab6', '#aaa7a3', '#94918d', '#75726e'], ['#ded8d4', '#ccc5c0', '#b2aaa5', '#857d78'], false); }
-  else { frontB2BC(fp, b); body(p, b, ['#b6b8bb', '#a3a5a8', '#8e9093', '#707276'], ['#f1f2f4', '#e0e3e6', '#c6cacf', '#9da2a9'], false); }
+  for (const x of [6, 16, 66, 78]) windowAt(p, x, gTop + 5, 6, 12, '#3f4650', GLASS, 0.6);
+  rect(g, 28, gTop + 3, 30, 3, '#2f7f74'); rect(g, 28, gTop + 3, 30, 1, '#58a596'); rect(g, 28, gTop + 6, 30, 1, 'rgba(0,0,0,0.25)');
+  door(g, 36, gTop + 7, 14, 11, night);
+  for (let y = gTop + 18; y < base - 1; y += 2) for (let x = -(y % 5); x < W; x += 7) rect(g, x, y, 6, 1, ['#8d8278', '#a39686', '#7a7068', '#b0a493'][Math.floor(r() * 4)]!);
+  rect(g, 33, gTop + 18, 20, 5, '#c9c5be'); rect(g, 33, gTop + 18, 20, 1, '#e4e0d8'); rect(g, 33, gTop + 21, 20, 1, '#aaa59c');
+  rect(g, 0, base - 1, W, 1, ramp[3]);
 }
 
 /** Red-brick block with a rounded corner where the side street meets the lane (user photo 5; no shop names). */
@@ -408,6 +361,34 @@ function paintBrickCorner(p: Painter, b: Building) {
   g.putImageData(img, 0, 0);
 }
 
+function paintB2BC(p: Painter, b: Building) {
+  const { g, night } = p;
+  const W = b.w, D = b.d, H = b.h;
+  const ramp: Ramp = ['#f1f2f4', '#e0e3e6', '#c6cacf', '#9da2a9'];
+  roof(p, W, D, ['#b6b8bb', '#a3a5a8', '#8e9093', '#707276'], 2);
+  facade(g, W, D, H, ramp);
+  for (let y = D + 9; y < D + H - 26; y += 8) rect(g, 1, y, W - 3, 1, '#d3d6da');
+  for (let x = 10; x < W - 2; x += 10) rect(g, x, D + 2, 1, H - 28, '#d6d9dd');
+  for (let f = 0; f < 2; f++) {
+    const fy = D + 3 + f * 15;
+    [6, 32, 58].forEach((x, i) => {
+      rect(g, x - 2, fy, 20, 12, ramp[0]); rect(g, x - 2, fy + 11, 20, 1, ramp[2]);
+      windowAt(p, x, fy + 2, 16, 8, '#3a3f48', ['#cfe2f0', '#86aed0', '#5c84a8']);
+      rect(g, x + 8, fy + 2, 1, 8, '#3a3f48');
+      if ((f + i) % 2 === 1 && !night) for (let k = 0; k < 4; k += 2) rect(g, x, fy + 2 + k, 16, 1, '#f2f2ee');
+    });
+  }
+  const gTop = D + H - 26;
+  rect(g, 0, gTop, W, 7, '#2d2f34'); rect(g, 0, gTop, W, 1, '#4a4d55'); rect(g, 0, gTop + 7, W, 1, 'rgba(0,0,0,0.3)');
+  const label = 'B2BC COFFEE'; pixelText(g, label, Math.round((W - textWidth(label)) / 2), gTop + 1, night ? '#ffe7b8' : '#f4e6c8');
+  if (night) p.lights.push({ x: 4, y: gTop + 1, w: W - 8, h: 5 });
+  storefront(p, 2, gTop + 8, 58, 18, '#ecd29d', '#2a2c30');
+  rect(g, 8, gTop + 19, 30, 5, night ? '#b07a44' : '#a8784e'); rect(g, 8, gTop + 19, 30, 1, '#d8b080');
+  ellipse(g, 50, gTop + 18, 3, 3, '#5f9c45'); px(g, 49, gTop + 16, '#8cc65c');
+  for (const x of [12, 24, 36]) { rect(g, x, gTop + 8, 1, 3, '#2a2c30'); rect(g, x - 1, gTop + 11, 3, 2, '#fff1c0'); }
+  door(g, 62, gTop + 8, 14, 18, night);
+}
+
 const cache = new Map<string, BuildingArt>();
 export function buildingArt(b: Building): BuildingArt {
   const hit = cache.get(b.id);
@@ -415,23 +396,22 @@ export function buildingArt(b: Building): BuildingArt {
   const make = (night: boolean) => {
     const { c, g } = makeCanvas(b.w, b.d + b.h);
     const p: Painter = { g, night, r: rng(b.x * 7 + b.y * 13 + b.w), lights: [] };
-    let billboard: Rect | null = null, front: HTMLCanvasElement | null = null;
-    if (facesNorth(b)) {
-      const f = makeCanvas(b.w, b.h);
-      paintFacingNorth(p, { g: f.g, night, r: rng(b.x * 7 + b.y * 13 + b.w + 1), lights: p.lights }, b);
-      front = f.c;
-    } else switch (b.kind) {
+    let billboard: Rect | null = null;
+    switch (b.kind) {
       case 'europlaza': billboard = paintEuroPlaza(p, b); break;
+      case 'b2bc': paintB2BC(p, b); break;
+      case 'jinu': paintJinU(p, b); break;
+      case 'granite': paintGranite(p, b); break;
       case 'brickcorner': paintBrickCorner(p, b); break;
       case 'office': paintOffice(p, b); break;
       case 'hotel': paintHotel(p, b); break;
       case 'hospital': paintHospital(p, b); break;
       default: paintShop(p, b);
     }
-    return { c, lights: p.lights, billboard, front };
+    return { c, lights: p.lights, billboard };
   };
   const day = make(false), night = make(true);
-  const art: BuildingArt = { day: day.c, night: night.c, lights: night.lights, billboard: day.billboard, frontDay: day.front, frontNight: night.front };
+  const art: BuildingArt = { day: day.c, night: night.c, lights: night.lights, billboard: day.billboard };
   cache.set(b.id, art);
   return art;
 }

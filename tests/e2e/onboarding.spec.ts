@@ -27,7 +27,7 @@ test('first day route: editor → lobby → street → cafe order', async ({ pag
   await tap(page, 160, 188);
   await expect.poll(() => hook(page), { timeout: 10000 }).toBe('street');
   await page.waitForTimeout(400);
-  await tap(page, 116, 377);
+  await tap(page, 116, 403);
   await expect.poll(() => hook(page), { timeout: 20000 }).toBe('cafe');
   await page.waitForTimeout(400);
 

@@ -74,7 +74,7 @@ export function validateState(value: unknown): GameState {
   if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir)) throw new Error('저장된 위치가 올바르지 않습니다.');
   let place = { room: at.room as RoomId, x: at.x, y: at.y, facing: at.facing as Dir };
   if (!canStand(place.room, place)) {
-    // The heart was rebuilt (D056) and the street across from Euro Plaza was built up (D088~D089): a position saved
+    // The heart was rebuilt (D056) and the street across from Euro Plaza was built up (D088): a position saved
     // where there is now a wall moves to that room's safe entry point. Roads and other impossible spots stay invalid.
     const builtOver = place.room === 'street' && rooms.street.buildings.some(b => overlap(footRect(place), { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }));
     if (!isHeartRoom(place.room) && !builtOver) throw new Error('저장된 위치가 올바르지 않습니다.');
