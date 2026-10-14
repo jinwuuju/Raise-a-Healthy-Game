@@ -160,7 +160,7 @@ function outdoor(g: Ctx, room: Room) {
   for (let y = 4; y < 640; y += 48) { if (y > 380 && y < 600) continue; drain(g, 386, y); drain(g, 474, y); }
   g.save(); g.fillStyle = 'rgba(32,26,64,0.22)';
   for (const b of room.buildings) {
-    const s = Math.min(26, Math.round(b.h * 0.28)), top = b.block ? b.y - b.h : b.y;
+    const s = Math.min(26, Math.round(b.h * 0.28)), top = b.y;
     g.beginPath(); g.moveTo(b.x + b.w, top); g.lineTo(b.x + b.w + s, top + s * 0.5); g.lineTo(b.x + b.w + s, b.y + b.d + 4); g.lineTo(b.x + b.w, b.y + b.d); g.closePath(); g.fill();
     g.fillRect(b.x + 4, b.y + b.d, b.w, 3);
   }

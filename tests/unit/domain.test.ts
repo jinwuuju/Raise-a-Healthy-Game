@@ -24,11 +24,12 @@ describe('state', () => {
     expect(() => validateState({ ...newState(), schemaVersion: 3 })).toThrow();
     expect(() => validateState({ ...newState(), at: { room: 'street', x: 432, y: 300, facing: 'down' } })).toThrow();
   });
-  it('moves a street position saved where buildings now stand (old pocket park, behind the old cafe) to the street spawn', () => {
-    for (const at of [{ x: 224, y: 350 }, { x: 186, y: 326 }, { x: 90, y: 320 }, { x: 300, y: 360 }]) {
+  it('moves a street position saved where buildings now stand to the street spawn; the old park pavement stays', () => {
+    for (const at of [{ x: 184, y: 392 }, { x: 300, y: 390 }, { x: 90, y: 392 }]) {
       const v = validateState({ ...newState(), at: { room: 'street', ...at, facing: 'down' } });
       expect(v.at).toEqual({ room: 'street', x: rooms.street.spawn.x, y: rooms.street.spawn.y, facing: rooms.street.spawnFacing });
     }
+    expect(validateState({ ...newState(), at: { room: 'street', x: 224, y: 350, facing: 'down' } }).at).toEqual({ room: 'street', x: 224, y: 350, facing: 'down' });
   });
   it('drops unknown imported fields', () => {
     const v = validateState({ ...newState(), injected: 'x' }) as unknown as Record<string, unknown>;

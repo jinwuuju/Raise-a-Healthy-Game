@@ -4,6 +4,7 @@ import { clearLine, findPath } from '../../src/world/path';
 import { rooms } from '../../src/world/rooms';
 import { inRect, overlap, roomIds } from '../../src/world/types';
 import { inspectLabels, lookText } from '../../src/application/story';
+import { facesNorth } from '../../src/art/buildings';
 
 describe('map integrity', () => {
   for (const id of roomIds) {
@@ -64,7 +65,7 @@ describe('street rules', () => {
     expect(canStand('street', { x: 200, y: 270 })).toBe(true);
   });
   it('walks from Euro Plaza to the cafe door', () => {
-    const path = findPath('street', { x: 292, y: 254 }, { x: 116, y: 301 });
+    const path = findPath('street', { x: 292, y: 254 }, { x: 116, y: 377 });
     expect(path.length).toBeGreaterThan(0);
   });
   it('collision slides along walls instead of stopping', () => {
@@ -87,21 +88,22 @@ describe('street around Euro Plaza from the user photos (D088)', () => {
   it('Jin-U and the granite block stand right across the lane, opposite Euro Plaza, with 151-gil between them', () => {
     const euro = byId('europlaza'), jinu = byId('jinu'), granite = byId('granite');
     for (const b of [byId('b2bc'), jinu, granite]) {
-      expect(b.block).toBe(true);
+      expect(facesNorth(b)).toBe(true);
       expect(b.y - b.h).toBeGreaterThanOrEqual(lane.y + lane.h);
       expect(b.y - b.h).toBeLessThanOrEqual(lane.y + lane.h + 24);
+      expect(canStand('street', { x: b.x + b.w / 2, y: b.y - 4 })).toBe(true);
+      expect(canStand('street', { x: b.x + b.w / 2, y: b.y + b.d / 2 })).toBe(false);
     }
     for (const b of [jinu, granite]) expect(b.x < euro.x + euro.w && b.x + b.w > euro.x).toBe(true);
     expect(granite.x - (jinu.x + jinu.w)).toBe(32);
-    expect(canStand('street', { x: 240, y: 340 })).toBe(true);
-    expect(canStand('street', { x: 184, y: 340 })).toBe(false);
-    expect(canStand('street', { x: 300, y: 340 })).toBe(false);
+    expect(canStand('street', { x: 240, y: 390 })).toBe(true);
   });
-  it('B2BC and Jin-U open toward Euro Plaza: the cafe door and the store target sit on the lane-side pavement (D089)', () => {
+  it('B2BC and Jin-U open toward Euro Plaza: the cafe door and the store target sit at their north fronts (D090)', () => {
     const cafe = byId('b2bc'), door = street.doors.find(d => d.id === 'cafe-door')!, store = street.targets.find(t => t.id === 'jinu-store')!;
-    expect(door.zone.y + door.zone.h).toBeLessThanOrEqual(cafe.y - cafe.h);
-    expect(door.zone.y).toBeGreaterThanOrEqual(lane.y + lane.h);
-    expect(store.y).toBeLessThan(byId('jinu').y - byId('jinu').h);
+    expect(door.zone.y + door.zone.h).toBeLessThanOrEqual(cafe.y);
+    expect(door.zone.y + door.zone.h).toBeGreaterThan(cafe.y - 10);
+    expect(store.y).toBeLessThan(byId('jinu').y);
+    expect(store.y).toBeGreaterThan(byId('jinu').y - 20);
     expect(rooms.cafe.doors[0]!.arrive.y).toBeLessThan(door.zone.y);
   });
   it('no building picture covers the narrow lane in front of Euro Plaza', () => {

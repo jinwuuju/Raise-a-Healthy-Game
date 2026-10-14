@@ -1,5 +1,8 @@
 import motion from '../../data/balance/movement.v0.2.json';
-import { buildingArt } from '../art/buildings';
+import { buildingArt, facesNorth } from '../art/buildings';
+
+/** Body opacity of a lane-facing building while the reporter is on its north (front) side. */
+const SEE_THROUGH = 0.32;
 import { AX, AY, FIGURE_TOP, WALK_CYCLE, characterFrame, idleFrame } from '../art/character';
 import { bakeGround } from '../art/ground';
 import { organMinimap, type MiniMap } from '../art/organ';
@@ -67,6 +70,7 @@ export class World {
   private light = makeCanvas(2, 2);
   private cam = { x: 0, y: 0, ready: false };
   private leaves: { x: number; y: number; vx: number; vy: number; c: string; life: number }[] = [];
+  private fades = new Map<string, number>();
   view = { x: 0, y: 0, w: 1, h: 1, zoom: 1 };
 
   constructor(roomId: RoomId, x: number, y: number, facing: Dir, look: Look, name: string) {
@@ -219,6 +223,11 @@ export class World {
 
     this.updateNpcs(dt);
     if (this.roomId === 'street') { this.traffic.update(dt, [p, ...this.npcs]); this.updateLeaves(dt); }
+    for (const b of this.room.buildings) if (facesNorth(b)) {
+      // Street-front rule: north of the building, its body turns see-through so its front and the reporter show.
+      const target = p.y < b.y ? SEE_THROUGH : 1, now = this.fades.get(b.id);
+      this.fades.set(b.id, now === undefined ? target : now + (target - now) * Math.min(1, dt * 6));
+    }
   }
 
   /** A person may step onto a crosswalk only on a green pedestrian light; once on it they may finish crossing. */
@@ -339,6 +348,14 @@ export class World {
     const inView = (x: number, y: number, w: number, h: number) => x + w > cx - 8 && x < cx + vw + 8 && y + h > cy - 8 && y < cy + vh + 8;
     for (const b of room.buildings) {
       if (!inView(b.x, b.y - b.h, b.w, b.d + b.h)) continue;
+      const art = buildingArt(b), front = tod === 'night' ? art.frontNight : art.frontDay;
+      if (front) {
+        // Front behind the people standing at it; body over them, see-through while the reporter is on the north side.
+        const fade = this.fades.get(b.id) ?? (this.player.y < b.y ? SEE_THROUGH : 1);
+        items.push({ y: b.y - b.h, x: b.x, occluder: null, draw: () => g.drawImage(front, b.x - cx, b.y - b.h - cy) });
+        items.push({ y: b.y + b.d, x: b.x, occluder: fade > 0.8 ? { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h } : null, draw: () => { g.globalAlpha = fade; this.drawBuilding(g, b, cx, cy, tod === 'night'); g.globalAlpha = 1; } });
+        continue;
+      }
       items.push({ y: b.y + b.d, x: b.x, occluder: { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, draw: () => this.drawBuilding(g, b, cx, cy, tod === 'night') });
     }
     const frame4 = Math.floor(this.time * 6) % 4;
@@ -593,7 +610,7 @@ export class World {
     const col: Record<number, string> = { [T.ROAD]: '#4b505b', [T.CROSS]: '#d8d8d0', [T.LANE]: '#666a74', [T.GRASS]: '#6faa4c', [T.GRAVEL]: '#c9b78f', [T.PARKING]: '#5a5e67', [T.VOID]: '#3a3e48', [T.TACTILE]: '#d8b440', [T.TURF]: '#5eae4d' };
     for (let y = 0; y < room.rows; y++) for (let x = 0; x < room.cols; x++) { g.fillStyle = col[tileAt(room, x, y)] ?? '#bdb5a5'; g.fillRect(x * s, y * s, s, s); }
     for (const b of room.buildings) {
-      const top = b.block ? b.y - b.h : b.y, depth = b.block ? b.d + b.h : b.d;
+      const top = b.y, depth = b.d;
       g.fillStyle = b.id === 'europlaza' ? '#e8c88a' : b.id === 'b2bc' ? '#f08a6a' : b.id === 'jinu' ? '#2fa59a' : '#8b8f9c';
       g.fillRect(Math.floor(b.x / 8), Math.floor(top / 8), Math.ceil(b.w / 8), Math.ceil(depth / 8));
     }
