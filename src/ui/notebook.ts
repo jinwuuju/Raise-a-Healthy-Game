@@ -10,7 +10,7 @@ import { q4Text } from '../domain/q004-state';
 import { q5Normal, q5Text, type Q5Evidence } from '../domain/q005-state';
 import { q5Ready } from '../domain/q005';
 import { latestReaction, type Reaction } from '../domain/reaction-state';
-import { CRAVE_NAMES, lunchHudText } from '../domain/lunch';
+import { CRAVE_NAMES, lunchDate, lunchHudText } from '../domain/lunch';
 import { heartRoute } from '../world/heart-rooms';
 import { rooms } from '../world/rooms';
 import { isHeartRoom, type RoomId } from '../world/types';
@@ -181,6 +181,11 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
     const lunchDays = [...s.lunch.days].reverse().filter(d => d.outcome);
     fold(life, 'lunch', '오늘의 점심 · 기록 ' + lunchDays.length + '일 · 도감 ' + s.lunch.dex.length + '종', body => {
       if (!lunchDays.length) body.append(el('p', 'muted', '아직 점심 기록이 없어요. 매일 11:30 전에 고를 수 있어요.'));
+      const plan = s.lunch.plan;
+      if (plan && plan.date >= lunchDate(Date.now())) {
+        const [, pm, pd] = plan.date.split('-').map(Number);
+        body.append(el('p', 'notebook-goal', pm + '월 ' + pd + '일 점심 고민 · ‘' + CRAVE_NAMES[plan.crave] + '’' + (plan.menu ? ' · 메뉴도 생각해 둠' : '') + ' (주문은 그날 11:30 전)'));
+      }
       for (const d of lunchDays.slice(0, 30)) {
         const [, mo, da] = d.date.split('-').map(Number);
         const title = mo + '월 ' + da + '일 · ' + (d.outcome === 'ordered' ? d.menuName : d.skip === 'auto' ? '건너뜀(11:30 지남)' : '건너뜀') + (d.report ? (d.report.hit ? ' · 과장 신고 적중' : ' · 과장 신고') : '');

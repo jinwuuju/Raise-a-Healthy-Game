@@ -8,7 +8,7 @@ import menusData from '../../data/content/lunch-menus.v0.1.json';
 import type { Game } from '../application/game';
 import { FOOD_ART, FOOD_H, FOOD_W, type FoodGrid } from '../art/food';
 import { lunchExtras as extras, fillMenu, tipText, tipsFor, type LunchTip } from '../domain/lunch-content';
-import { CRAVES, CRAVE_NAMES, LUNCH_REWARDS, lunchDay, lunchOpen, lunchSecondsLeft, lunchToday, type Crave, type CraveChoice, type LunchDay, type LunchPool } from '../domain/lunch';
+import { CRAVES, CRAVE_NAMES, LUNCH_REWARDS, lunchPlanFor, lunchTomorrow, lunchDay, lunchOpen, lunchSecondsLeft, lunchToday, type Crave, type CraveChoice, type LunchDay, type LunchPool } from '../domain/lunch';
 import type { GameState } from '../domain/state';
 import { button, el } from './dom';
 import { openSheet } from './sheet';
@@ -145,6 +145,8 @@ export function openLunch(game: Game, opts: Opts): void {
     const sheet = c.parentElement!; sheet.classList.add('lunch-sheet'); c.classList.add('keep-open');
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let selected: string | null = null, chosenTips: string[] = [], message = '', replayTable = false;
+    // 내일 뭐 먹지(D087): 'pick'=당김 고르기, Crave=그 칸 메뉴 둘러보기, planMenu=메뉴 자세히. 주문 단추는 없다.
+    let planning: 'pick' | Crave | null = null, planMenu: string | null = null;
     const status = el('p', 'lunch-message'); status.setAttribute('role', 'status');
     const act = (fn: () => void) => { message = ''; try { game.settleLunch(); fn(); } catch (e) { message = e instanceof Error ? e.message : '처리하지 못했어요.'; game.settleLunch(); } render(); };
     const saveWarn = () => game.lastError ? el('p', 'lunch-message', '기록 저장 주의 · ' + game.lastError) : null;
@@ -159,7 +161,7 @@ export function openLunch(game: Game, opts: Opts): void {
       c.append(el('p', 'muted lunch-disclaimer', '검수 전 모형 · 편집국 식대로 먹어요(골드 차감 없음) · 시계는 한국 시간'));
       if (message) { status.textContent = message; c.append(status); }
       const warn = saveWarn(); if (warn) c.append(warn);
-      if (day?.outcome) { if (!day.seen || replayTable) return showTable(day); return showResult(day); }
+      if (day?.outcome) { if (!day.seen || replayTable) return showTable(day); if (planning) { showPlan(); keepFocus(); return; } return showResult(day); }
       if (!lunchOpen(now)) { act(() => {}); return; }
       c.append(el('p', 'lunch-deadline', deadlineText(now)));
       if (!day || !day.cards.length) showChips();
@@ -176,8 +178,57 @@ export function openLunch(game: Game, opts: Opts): void {
     function showChips(): void {
       c.append(el('h3', '', '오늘 당기는 느낌은?'));
       const grid = el('div', 'lunch-chips');
-      for (const id of [...CRAVES, 'any'] as CraveChoice[]) grid.append(button('lunch-chip', CRAVE_LABEL[id], () => act(() => game.drawLunch(id, lunchPool()))));
+      const plan = lunchPlanFor(game.state, Date.now()), planned = plan?.menu ? BY_ID.get(plan.menu) : undefined;
+      if (plan) c.append(el('p', 'lunch-plan-hint', '어제 고민해 둔 점심: ' + (planned ? planned.name + ' · ‘' + CRAVE_LABEL[plan.crave] + '’나 ‘아무거나’를 고르면 후보에 꼭 들어가요' : '‘' + CRAVE_LABEL[plan.crave] + '’')));
+      for (const id of [...CRAVES, 'any'] as CraveChoice[]) {
+        const b = button('lunch-chip' + (plan && id === plan.crave ? ' planned' : ''), CRAVE_LABEL[id], () => act(() => game.drawLunch(id, lunchPool())));
+        if (plan && id === plan.crave) b.append(el('span', 'lunch-chip-note', '어제 고민한 당김'));
+        grid.append(b);
+      }
       c.append(grid, el('p', 'muted', rewardText), skipButton());
+    }
+
+    /* ---- 내일 뭐 먹지: 고민만, 주문은 내일 00:00~11:30 ---- */
+    function showPlan(): void {
+      const tomorrow = lunchTomorrow(Date.now());
+      c.append(el('h3', '', '내일 뭐 먹지? · ' + dateLabel(tomorrow)), el('p', 'muted', '오늘은 고민만 해요. 주문은 내일 00:00부터 11:30 전까지 할 수 있어요. 고민해 둔 메뉴는 내일 그 당김을 고르면 후보에 꼭 들어가요. 보상은 없어요.'));
+      if (planning === 'pick') {
+        const grid = el('div', 'lunch-chips');
+        for (const id of CRAVES) grid.append(button('lunch-chip', CRAVE_LABEL[id], () => { planning = id; planMenu = null; render(); }));
+        c.append(grid, button('secondary', '오늘 카드로 돌아가기', () => { planning = null; render(); }));
+        return;
+      }
+      const crave = planning as Crave;
+      if (planMenu) {
+        const m = BY_ID.get(planMenu)!, head = el('div', 'lunch-order-head'), words = el('div');
+        words.append(el('h3', '', m.name), el('span', 'lunch-crave', CRAVE_LABEL[m.crave])); head.append(foodCanvas(m.id, 4), words);
+        const row = el('div', 'lunch-order-actions');
+        row.append(button('primary', '내일 이걸로 생각해 두기', () => act(() => { game.planLunch(crave, m.id, lunchPool()); planning = null; planMenu = null; })), button('secondary', '다른 메뉴 보기', () => { planMenu = null; render(); }));
+        c.append(head, row, nutritionPanel(m));
+        return;
+      }
+      c.append(el('h4', '', CRAVE_LABEL[crave] + ' · 메뉴 둘러보기'));
+      const list = el('div', 'lunch-browse');
+      for (const m of MENUS.filter(x => x.crave === crave)) {
+        const b = button('lunch-browse-item', '', () => { planMenu = m.id; render(); }, m.name + ' 자세히 보기');
+        const words = el('span'); words.append(el('b', '', m.name), el('small', '', kcalShort(m)));
+        b.append(foodCanvas(m.id, 2), words); list.append(b);
+      }
+      const row = el('div', 'lunch-order-actions');
+      row.append(button('secondary', '메뉴 없이 당김만 정해 두기', () => act(() => { game.planLunch(crave, null, lunchPool()); planning = null; })), button('secondary', '다른 당김 보기', () => { planning = 'pick'; render(); }));
+      c.append(row, list);
+    }
+    function planSummary(): HTMLElement {
+      const box = el('section', 'lunch-plan'), tomorrow = lunchTomorrow(Date.now()), plan = game.state.lunch.plan?.date === tomorrow ? game.state.lunch.plan : null;
+      box.append(el('h4', '', '내일 뭐 먹지?'));
+      if (plan) {
+        const m = plan.menu ? BY_ID.get(plan.menu) : undefined;
+        const line = el('div', 'lunch-plan-line'); if (m) line.append(foodCanvas(m.id, 2));
+        line.append(el('p', '', dateLabel(tomorrow) + ' 점심으로 ' + (m ? m.name + '(' + CRAVE_LABEL[plan.crave] + ')' : '‘' + CRAVE_LABEL[plan.crave] + '’') + '을(를) 생각해 뒀어요. 주문은 내일 11:30 전에.'));
+        box.append(line);
+        const row = el('div', 'lunch-order-actions'); row.append(button('secondary', '다시 고민하기', () => { planning = 'pick'; planMenu = null; render(); }), button('secondary', '고민 지우기', () => act(() => game.clearLunchPlan()))); box.append(row);
+      } else box.append(el('p', 'muted', '점심시간이 지나도 내일 메뉴는 미리 고민할 수 있어요(주문은 내일).'), button('primary', '내일 점심 고민해 보기', () => { planning = 'pick'; planMenu = null; render(); }));
+      return box;
     }
     function skipButton(): HTMLElement {
       const b = button('secondary lunch-skip', '오늘은 굶기', () => act(() => game.skipLunch(voices('skip'))));
@@ -196,6 +247,7 @@ export function openLunch(game: Game, opts: Opts): void {
         const claim = card.hype ? HYPE.get(card.claim)?.text : FAIR.get(card.claim)?.text;
         body.append(el('q', 'lunch-claim', fillMenu(claim ?? '', m)), el('span', 'muted', kcalShort(m)));
         if (day.report && card.hype) body.append(el('span', 'lunch-badge', '과장 문구'));
+        if (lunchPlanFor(game.state, Date.now())?.menu === card.menu) body.append(el('span', 'lunch-badge', '어제 고민한 메뉴'));
         const row = el('div', 'lunch-card-actions');
         row.append(button('primary lunch-pick', '이걸로', () => { selected = m.id; chosenTips = []; message = ''; render(); }));
         if (!day.report) row.append(button('secondary', '과장 신고', () => act(() => game.reportLunch(m.id, voices(card.hype ? 'reportHit' : 'reportMiss')))));
@@ -253,6 +305,7 @@ export function openLunch(game: Game, opts: Opts): void {
     function showResult(day: LunchDay): void {
       const [canvas, g] = tableCanvas(); drawTable(g, day, 1); canvas.setAttribute('aria-label', tableWords(day));
       c.append(canvas, resultCard(day)); requestAnimationFrame(keepFocus);
+      c.append(planSummary());
       c.append(el('p', 'muted', '지난 점심 기록과 도감은 수첩 ‘동네·생활’에 있어요.'));
       const row = el('div', 'lunch-order-actions');
       if (day.outcome === 'ordered') row.append(button('secondary', '식탁 다시 보기', () => { replayTable = true; render(); }));

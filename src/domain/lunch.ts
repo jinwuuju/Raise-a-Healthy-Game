@@ -40,7 +40,9 @@ export type LunchDay = {
   /** 그날 받은 골드 합계(표시용, D086). D085 기록은 0. */
   gold: number;
 };
-export type LunchState = { days: LunchDay[]; dex: string[] };
+/** 내일 뭐 먹지(D087): 오늘 점심이 정해졌거나 마감된 뒤 내일 당김·메뉴를 생각해 둔다. 주문이 아니며 보상도 없다. */
+export type LunchPlan = { date: string; crave: Crave; menu: string | null; at: string };
+export type LunchState = { days: LunchDay[]; dex: string[]; plan: LunchPlan | null };
 /** 메뉴 데이터에서 뽑아 넘기는 후보 풀. */
 export type LunchPool = { menus: { id: string; crave: Crave; name: string }[]; hype: string[]; fair: string[] };
 export type Random = () => number;
@@ -53,7 +55,13 @@ function grant<S extends HasLunch>(s: S, key: string, gold: number): [S, number]
   return [{ ...s, gold: s.gold + gold, ledger: [...s.ledger, key] }, gold];
 }
 
-export const emptyLunch = (): LunchState => ({ days: [], dex: [] });
+export const emptyLunch = (): LunchState => ({ days: [], dex: [], plan: null });
+/** 서울 기준 내일 날짜 키(한국은 서머타임이 없어 24시간 뒤가 내일). */
+export const lunchTomorrow = (now: number): string => seoulTime(now + 86_400_000).dateKey;
+/** 오늘 쓸 수 있는(어제 생각해 둔) 계획. */
+export const lunchPlanFor = (s: { lunch: LunchState }, now: number): LunchPlan | null => (s.lunch.plan?.date === lunchDate(now) ? s.lunch.plan : null);
+/** 내일 계획을 세울 수 있는가: 오늘 점심이 정해졌거나 마감이 지났을 때. */
+export const canPlanLunch = (s: HasLunch, now: number): boolean => s.started && (!lunchOpen(now) || !!lunchToday(s, now)?.outcome);
 export const lunchDate = (now: number): string => seoulTime(now).dateKey;
 export const lunchOpen = (now: number): boolean => seoulTime(now).secondOfDay < LUNCH_CLOSE_SEC;
 export const lunchDay = (s: { lunch: LunchState }, date: string): LunchDay | null => s.lunch.days.find(d => d.date === date) ?? null;
@@ -72,7 +80,7 @@ export const lunchSecondsLeft = (now: number): number => Math.max(0, LUNCH_CLOSE
 const blank = (date: string): LunchDay => ({ date, crave: null, cards: [], report: null, outcome: null, menu: null, menuName: null, tips: [], skip: null, decidedAt: null, who: null, line: null, seen: false, gold: 0 });
 function put<S extends HasLunch>(s: S, day: LunchDay, dex = s.lunch.dex): S {
   const days = [...s.lunch.days.filter(d => d.date !== day.date), day].sort((a, b) => a.date.localeCompare(b.date)).slice(-DAY_LIMIT);
-  return { ...s, lunch: { days, dex } };
+  return { ...s, lunch: { ...s.lunch, days, dex } };
 }
 const pick = <T>(list: readonly T[], random: Random): T => { if (!list.length) throw new Error('후보가 없어요.'); return list[Math.min(list.length - 1, Math.floor(random() * list.length))]!; };
 function take<T>(list: readonly T[], n: number, random: Random): T[] {
@@ -92,8 +100,22 @@ export function settleLunch<S extends HasLunch>(s: S, now: number): S {
     const d = lunchDay(next, today);
     if (!d || d.outcome === null) next = put(next, { ...(d ?? blank(today)), outcome: 'skipped', skip: 'auto' });
   }
+  // 지난 날짜의 계획은 쓸 일이 없으니 지운다(오늘·내일 계획은 남긴다).
+  if (next.lunch.plan && next.lunch.plan.date < today) next = { ...next, lunch: { ...next.lunch, plan: null } };
   return next;
 }
+
+/** 내일 뭐 먹지: 당김과 (선택) 메뉴를 생각해 둔다. 주문·보상 없음. 다시 고르면 바뀐다. */
+export function planLunch<S extends HasLunch>(s: S, now: number, crave: Crave, menu: string | null, pool: LunchPool): S {
+  if (!canPlanLunch(s, now)) throw new Error('오늘 점심을 정한 뒤나 11:30이 지난 뒤에 내일 점심을 고민할 수 있어요.');
+  if (!CRAVES.includes(crave)) throw new Error('없는 당김이에요.');
+  if (menu !== null && pool.menus.find(m => m.id === menu)?.crave !== crave) throw new Error('그 당김에 없는 메뉴예요.');
+  const plan: LunchPlan = { date: lunchTomorrow(now), crave, menu, at: new Date(now).toISOString() };
+  const old = s.lunch.plan;
+  if (old && old.date === plan.date && old.crave === crave && old.menu === menu) return s;
+  return { ...s, lunch: { ...s.lunch, plan } };
+}
+export function clearLunchPlan<S extends HasLunch>(s: S): S { return s.lunch.plan ? { ...s, lunch: { ...s.lunch, plan: null } } : s; }
 
 function openDay<S extends HasLunch>(s: S, now: number): LunchDay {
   if (!s.started) throw new Error('먼저 기자를 만들어 주세요.');
@@ -110,9 +132,14 @@ export function drawLunch<S extends HasLunch>(s: S, now: number, crave: CraveCho
   if (crave !== 'any' && !CRAVES.includes(crave)) throw new Error('없는 당김이에요.');
   const by = (c: Crave) => pool.menus.filter(m => m.crave === c);
   let menus: string[];
-  if (crave === 'any') menus = take(CRAVES, CANDIDATE_RULE.anyCraveDistinct, random).map(c => pick(by(c), random).id);
-  else {
-    const same = take(by(crave), CANDIDATE_RULE.sameCrave, random).map(m => m.id);
+  // 어제 생각해 둔 메뉴는 그 당김(또는 아무거나)을 고르면 후보에 꼭 들어간다(D087). 규칙(3+1, 서로 다른 칸 4)은 그대로.
+  const plan = lunchPlanFor(s, now), planned = plan?.menu && pool.menus.some(m => m.id === plan.menu && m.crave === plan.crave) ? plan.menu : null;
+  if (crave === 'any') {
+    const craves = planned ? [plan!.crave, ...take(CRAVES.filter(c => c !== plan!.crave), CANDIDATE_RULE.anyCraveDistinct - 1, random)] : take(CRAVES, CANDIDATE_RULE.anyCraveDistinct, random);
+    menus = take(craves.map(c => (planned && c === plan!.crave ? planned : pick(by(c), random).id)), craves.length, random);
+  } else {
+    const keep = planned && plan!.crave === crave ? [planned] : [];
+    const same = [...keep, ...take(by(crave).filter(m => !keep.includes(m.id)), CANDIDATE_RULE.sameCrave - keep.length, random).map(m => m.id)];
     const other = pick(CRAVES.filter(c => c !== crave), random);
     menus = take([...same, pick(by(other), random).id], same.length + CANDIDATE_RULE.otherCrave, random);
   }
@@ -162,6 +189,12 @@ const isIndex = (v: unknown) => typeof v === 'number' && Number.isSafeInteger(v)
 
 export function validateLunch(raw: unknown): LunchState {
   if (raw === undefined || raw === null) return emptyLunch(); // schema4 saves before D085
+  const p = (raw as Record<string, unknown>).plan as Record<string, unknown> | null | undefined;
+  let plan: LunchPlan | null = null;
+  if (p !== undefined && p !== null) {
+    if (typeof p !== 'object' || typeof p.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(p.date) || !CRAVES.includes(p.crave as Crave) || (p.menu !== null && !isId(p.menu)) || typeof p.at !== 'string' || !Number.isFinite(Date.parse(p.at))) throw new Error('내일 점심 계획 기록이 잘못되었습니다.');
+    plan = { date: p.date, crave: p.crave as Crave, menu: p.menu as string | null, at: p.at };
+  }
   const r = raw as Record<string, unknown>;
   if (typeof r !== 'object' || !Array.isArray(r.days) || !Array.isArray(r.dex) || r.days.length > DAY_LIMIT || r.dex.length > DEX_LIMIT) throw new Error('점심 기록이 잘못되었습니다.');
   if (!r.dex.every(isId) || new Set(r.dex).size !== r.dex.length) throw new Error('점심 도감 기록이 잘못되었습니다.');
@@ -192,5 +225,5 @@ export function validateLunch(raw: unknown): LunchState {
   }
   if (new Set(days.map(d => d.date)).size !== days.length) throw new Error('점심 기록 날짜가 겹쳐요.');
   days.sort((a, b) => a.date.localeCompare(b.date));
-  return { days, dex: [...r.dex as string[]] };
+  return { days, dex: [...r.dex as string[]], plan };
 }

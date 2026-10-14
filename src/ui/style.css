@@ -546,6 +546,17 @@ a.row { color: var(--text); text-decoration: none; }
 .lunch-result { display: grid; gap: 8px; }
 .lunch-tips-done { margin: 0; padding-left: 18px; }
 .lunch-gold { margin: 0; font-weight: 800; color: var(--gold); }
+.lunch-chip.planned { border-color: var(--gold); }
+.lunch-chip-note { display: block; font-size: 11px; font-weight: 700; color: var(--gold); }
+.lunch-plan-hint { margin: 0; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--gold); }
+.lunch-plan { display: grid; gap: 8px; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,0.04); }
+.lunch-plan h4, .lunch-plan p { margin: 0; }
+.lunch-plan-line { display: flex; gap: 10px; align-items: center; }
+.lunch-browse { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.lunch-browse-item { display: flex; gap: 8px; align-items: center; min-height: 72px; padding: 6px 8px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,0.04); color: var(--text); text-align: left; cursor: pointer; }
+.lunch-browse-item:hover, .lunch-browse-item:focus-visible { border-color: var(--gold); outline: none; }
+.lunch-browse-item span { display: grid; gap: 2px; min-width: 0; }
+.lunch-browse-item small { color: var(--muted); font-size: 12px; }
 .lunch-more summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 700; }
 .lunch-dex { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
 .lunch-dex figure { margin: 0; display: grid; justify-items: center; gap: 2px; font-size: 12px; text-align: center; }

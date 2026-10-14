@@ -17,7 +17,7 @@ import type { ArticleSlot } from '../domain/article-state';
 import { discover } from '../domain/heart';
 import { Q1, acceptQ1, briefQ1, canEnterHeart, observeQ1 } from '../domain/quest';
 import { newState, validateState, type GameState } from '../domain/state';
-import { drawLunch, orderLunch, reportLunch, seeLunch, settleLunch, skipLunch, type CraveChoice, type LunchPool } from '../domain/lunch';
+import { clearLunchPlan, drawLunch, orderLunch, planLunch, reportLunch, seeLunch, settleLunch, skipLunch, type Crave, type CraveChoice, type LunchPool } from '../domain/lunch';
 import type { SaveStore } from '../infrastructure/save';
 import { canStand } from '../world/collision';
 import { rooms } from '../world/rooms';
@@ -197,6 +197,9 @@ export class Game {
   orderLunch(menu: string, menuName: string, tips: string[], applicable: string[], voices: Voice[], now = Date.now()): void { const [who, line] = voiceOf(voices); this.commit(orderLunch(this.state, now, menu, menuName, tips, applicable, who, line)); }
   skipLunch(voices: Voice[], now = Date.now()): void { const [who, line] = voiceOf(voices); this.commit(skipLunch(this.state, now, who, line)); }
   seeLunch(date: string): void { const next = seeLunch(this.state, date); if (next !== this.state) this.commit(next); }
+  /** 내일 뭐 먹지(D087): 생각해 두기만, 주문·보상 없음. */
+  planLunch(crave: Crave, menu: string | null, pool: LunchPool, now = Date.now()): void { const next = planLunch(this.state, now, crave, menu, pool); if (next !== this.state) this.commit(next); }
+  clearLunchPlan(): void { const next = clearLunchPlan(this.state); if (next !== this.state) this.commit(next); }
 
   rest(): void { this.commit({ ...this.state, cafe: { ...this.state.cafe, restedAt: new Date().toISOString() } }); }
 

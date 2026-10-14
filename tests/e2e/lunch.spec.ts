@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 // 오늘의 점심 ⑥(D085): 서울 시계 기준 흐름·마감·자동 굶음·표시 단계·모바일. 시각은 page.clock으로 고정한다.
 type Day = { date: string; crave: string | null; cards: { menu: string; claim: string; hype: boolean }[]; report: { hit: boolean } | null; outcome: string | null; menu: string | null; menuName: string | null; tips: string[]; skip: string | null; seen: boolean };
-type State = { totalXp: number; gold: number; lunch: { days: Day[]; dex: string[] } } & Record<string, unknown>;
+type State = { totalXp: number; gold: number; lunch: { days: Day[]; dex: string[]; plan: { date: string; crave: string; menu: string | null } | null } } & Record<string, unknown>;
 type Hook = { game: { state: State; importState(s: unknown): void } };
 const at = (hms: string, date = '2026-10-14') => new Date(date + 'T' + hms + '+09:00');
 const state = (page: Page) => page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.game.state);
@@ -87,6 +87,41 @@ test('과장 문구를 맞히면 +20G, 다시 열거나 새로고침해도 더 �
   expect((await state(page)).gold).toBe(before.gold + 20);
 });
 
+test('점심시간이 지나도 내일 뭐 먹을지 고민할 수 있고(주문 없음), 다음 날 그 메뉴가 후보에 들어온다(D087)', async ({ page }) => {
+  test.setTimeout(60000);
+  const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
+  await start(page, at('13:20:00'));
+  const before = await state(page);
+  await page.getByRole('button', { name: '오늘의 점심 열기' }).click();
+  await page.getByRole('button', { name: '카드 보기' }).click();
+  await page.getByRole('button', { name: '내일 점심 고민해 보기' }).click();
+  const sheet = page.locator('.lunch-sheet');
+  await expect(sheet).toContainText('주문은 내일 00:00부터 11:30 전까지');
+  await expect(sheet.locator('.lunch-chip')).toHaveCount(9);
+  await sheet.getByRole('button', { name: '뜨끈한 거' }).click();
+  await expect(sheet.locator('.lunch-browse-item')).toHaveCount(32);
+  await sheet.getByRole('button', { name: '칼국수 자세히 보기', exact: true }).click();
+  await expect(sheet.locator('.lunch-nutrition')).toBeVisible();
+  await expect(sheet.getByRole('button', { name: /주문/ })).toHaveCount(0);
+  await sheet.getByRole('button', { name: '내일 이걸로 생각해 두기' }).click();
+  await expect(sheet.locator('.lunch-plan')).toContainText('칼국수');
+  const planned = await state(page);
+  expect(planned.lunch.plan).toMatchObject({ date: '2026-10-15', crave: 'hot', menu: 'kalguksu' });
+  expect(planned.lunch.days.filter(d => d.outcome === 'ordered')).toEqual([]);
+  expect([planned.gold, planned.totalXp]).toEqual([before.gold, before.totalXp]);
+  // 다음 날 10:00
+  await page.keyboard.press('Escape');
+  await page.clock.setFixedTime(at('10:00:00', '2026-10-15'));
+  await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: { world?: unknown } }).__mq?.world);
+  await expect(lunchLine(page)).toContainText('오늘 점심 고르기');
+  await page.getByRole('button', { name: '오늘의 점심 열기' }).click();
+  await expect(sheet.locator('.lunch-plan-hint')).toContainText('칼국수');
+  await expect(sheet.locator('.lunch-chip.planned')).toContainText('뜨끈한 거');
+  await sheet.locator('.lunch-chip.planned').click();
+  await expect(sheet.locator('.lunch-card').filter({ has: page.locator('b', { hasText: /^칼국수$/ }) })).toContainText('어제 고민한 메뉴');
+  expect(errors).toEqual([]);
+});
+
 test('11:30:00을 넘기면 주문이 막히고 그날은 자동 굶음', async ({ page }) => {
   await start(page, at('11:29:50'));
   await page.getByRole('button', { name: '오늘의 점심 열기' }).click();
@@ -133,7 +168,7 @@ test.describe('동작 줄이기', () => {
 
 test('값 없음·대체 값·1인분 미상은 측정값처럼 보이지 않는다', async ({ page }) => {
   await start(page, at('10:00:00'));
-  await patchAndReload(page, s => ({ ...s, lunch: { dex: [], days: [{ date: '2026-10-14', crave: 'foreign', cards: [{ menu: 'taco', claim: 'cold-shield', hype: true }, { menu: 'boneless-chicken', claim: 'cooked-to-order', hype: false }, { menu: 'hotdog', claim: 'sauce-separate', hype: false }, { menu: 'mul-naengmyeon', claim: 'spice-levels', hype: false }], report: null, outcome: null, menu: null, menuName: null, tips: [], skip: null, decidedAt: null, who: null, line: null, seen: false }] } }));
+  await patchAndReload(page, s => ({ ...s, lunch: { dex: [], plan: null, days: [{ date: '2026-10-14', crave: 'foreign', cards: [{ menu: 'taco', claim: 'cold-shield', hype: true }, { menu: 'boneless-chicken', claim: 'cooked-to-order', hype: false }, { menu: 'hotdog', claim: 'sauce-separate', hype: false }, { menu: 'mul-naengmyeon', claim: 'spice-levels', hype: false }], report: null, outcome: null, menu: null, menuName: null, tips: [], skip: null, decidedAt: null, who: null, line: null, seen: false }] } }));
   await page.getByRole('button', { name: '오늘의 점심 열기' }).click();
   const cards = page.locator('.lunch-card');
   await expect(cards.nth(0)).toContainText('식약처 DB에 값 없음');

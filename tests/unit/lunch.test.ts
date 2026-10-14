@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import menusData from '../../data/content/lunch-menus.v0.1.json';
 import extras from '../../data/content/lunch-extras.v0.1.json';
-import { CRAVES, DAY_LIMIT, LUNCH_CLOSE_SEC, drawLunch, emptyLunch, lunchOpen, lunchToday, orderLunch, reportLunch, seeLunch, settleLunch, skipLunch, validateLunch, type Crave, type LunchPool } from '../../src/domain/lunch';
+import { CRAVES, DAY_LIMIT, LUNCH_CLOSE_SEC, canPlanLunch, clearLunchPlan, lunchPlanFor, lunchTomorrow, planLunch, drawLunch, emptyLunch, lunchOpen, lunchToday, orderLunch, reportLunch, seeLunch, settleLunch, skipLunch, validateLunch, type Crave, type LunchPool } from '../../src/domain/lunch';
 import { newState, validateState } from '../../src/domain/state';
 import { tipsFor } from '../../src/domain/lunch-content';
 
@@ -145,6 +145,48 @@ describe('오늘의 점심 상태(D085)', () => {
     for (let i = 0; i < DAY_LIMIT + 5; i++) s = skipLunch(s, T + i * 86_400_000, 'editor', 0);
     expect(s.lunch.days).toHaveLength(DAY_LIMIT);
     expect(roundTrip(s).lunch.days[0]!.date > '2026-10-14').toBe(true);
+  });
+
+  it('내일 뭐 먹지: 오늘을 정했거나 마감 뒤에만, 주문·보상 없이 내일 날짜로 생각해 둔다(D087)', () => {
+    const s = started();
+    expect(canPlanLunch(s, T)).toBe(false);
+    expect(() => planLunch(s, T, 'hot', 'kalguksu', pool)).toThrow('11:30');
+    const late = seoul('2026-10-14', '15:00:00'), closed = settleLunch(s, late);
+    expect(canPlanLunch(closed, late)).toBe(true);
+    const p = planLunch(closed, late, 'hot', 'kalguksu', pool);
+    expect(p.lunch.plan).toMatchObject({ date: '2026-10-15', crave: 'hot', menu: 'kalguksu' });
+    expect([p.gold, p.totalXp, p.ledger]).toEqual([30, 50, []]);
+    expect(p.lunch.days.filter(d => d.outcome === 'ordered')).toEqual([]);
+    expect(() => planLunch(closed, late, 'cool', 'kalguksu', pool)).toThrow('당김');
+    expect(planLunch(p, late, 'hot', 'kalguksu', pool)).toBe(p);
+    expect(planLunch(p, late, 'cool', null, pool).lunch.plan).toMatchObject({ crave: 'cool', menu: null });
+    expect(clearLunchPlan(p).lunch.plan).toBeNull();
+    expect(roundTrip(p).lunch).toEqual(p.lunch);
+    // 오늘 점심을 이미 주문했으면 마감 전에도 고민할 수 있다
+    expect(canPlanLunch(skipLunch(s, T, 'editor', 0), T)).toBe(true);
+    // 자정 직전에 세우면 내일은 바로 다음 서울 날짜
+    expect(lunchTomorrow(seoul('2026-10-14', '23:59:59'))).toBe('2026-10-15');
+    expect(lunchTomorrow(seoul('2026-12-31', '13:00:00'))).toBe('2027-01-01');
+  });
+
+  it('생각해 둔 메뉴는 다음 날 그 당김(또는 아무거나)을 고르면 후보에 꼭 들어가고, 지난 계획은 지워진다', () => {
+    const late = seoul('2026-10-14', '15:00:00'), p = planLunch(settleLunch(started(), late), late, 'hot', 'kalguksu', pool), next = seoul('2026-10-15', '10:00:00');
+    expect(lunchPlanFor(p, late)).toBeNull();
+    expect(lunchPlanFor(p, next)?.menu).toBe('kalguksu');
+    for (let seed = 1; seed <= 40; seed++) {
+      const hot = lunchToday(drawLunch(p, next, 'hot', pool, rng(seed)), next)!;
+      expect(hot.cards.map(c => c.menu)).toContain('kalguksu');
+      expect(hot.cards.filter(c => crave(c.menu) === 'hot')).toHaveLength(3);
+      const any = lunchToday(drawLunch(p, next, 'any', pool, rng(seed)), next)!;
+      expect(any.cards.map(c => c.menu)).toContain('kalguksu');
+      expect(new Set(any.cards.map(c => crave(c.menu))).size).toBe(4);
+    }
+    const other = lunchToday(drawLunch(p, next, 'cool', pool, rng(3)), next)!;
+    expect(other.cards.filter(c => crave(c.menu) === 'cool')).toHaveLength(3);
+    expect(settleLunch(p, seoul('2026-10-16', '09:00:00')).lunch.plan).toBeNull();
+    expect(settleLunch(p, next).lunch.plan?.menu).toBe('kalguksu');
+    const bad = JSON.parse(JSON.stringify(p)); bad.lunch.plan.crave = 'soup';
+    expect(() => validateState(bad)).toThrow();
   });
 
   it('실제 메뉴 데이터로 모든 당김 칸에서 후보를 뽑을 수 있다', () => {
