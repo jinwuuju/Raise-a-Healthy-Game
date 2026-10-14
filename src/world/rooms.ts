@@ -145,16 +145,18 @@ function street(): Room {
   fill(21, 27, 22, 27, T.TACTILE); fill(21, 34, 22, 34, T.TACTILE); fill(31, 27, 32, 27, T.TACTILE); fill(31, 34, 32, 34, T.TACTILE);
   fill(12, 15, 19, 15, T.PLAZA);          // Euro Plaza front
   fill(20, 10, 20, 15, T.DRIVE);          // parking ramp beside Euro Plaza
-  fill(3, 25, 6, 25, T.TURF);             // artificial turf strip at the cafe
+
   fill(33, 10, 39, 14, T.PARKING);
   fill(33, 15, 39, 20, T.GRASS);
   fill(0, 37, 20, 39, T.VOID); fill(33, 37, 39, 39, T.VOID);
   const buildings: Building[] = [
     B('europlaza', 'europlaza', 12, 10, 8, 5, 112),
-    B('b2bc', 'b2bc', 3, 22, 5, 3, 58),
-    // Directly across the lane, facing Euro Plaza (user photos 2-4, 6): the Jin-U brick block and the granite office,
-    // with Nonhyeon-ro 151-gil between them. Whole blocks are solid so their fronts never hide the lane.
-    { id: 'jinu', kind: 'jinu', x: 144, y: 380, w: 80, d: 20, h: 68, v: 0, block: true },
+    // Directly across the lane, facing Euro Plaza (user photos 2-4, 6; D089): the B2BC cafe, the Jin-U brick block and
+    // the granite office, with Nonhyeon-ro 151-gil between the last two. Their signs and entrances face the lane; the
+    // painter stands that front up along the north edge (see the street-front rule in art/buildings.ts). Whole blocks
+    // are solid so their fronts never hide the lane.
+    { id: 'b2bc', kind: 'b2bc', x: 48, y: 380, w: 80, d: 20, h: 76, v: 0, block: true },
+    { id: 'jinu', kind: 'jinu', x: 144, y: 380, w: 80, d: 20, h: 76, v: 0, block: true },
     { id: 'granite', kind: 'granite', x: 256, y: 380, w: 96, d: 20, h: 76, v: 0, block: true },
     B('corner', 'brickcorner', 5, 10, 5, 5, 72),
     B('clinic', 'shop', 0, 10, 5, 5, 64, 3),
@@ -180,13 +182,13 @@ function street(): Room {
   props.push(P('planter', 204, 252), P('planter', 236, 252), P('planter', 90, 412));
   props.push(P('cypress', 308, 251), P('cypress', 318, 251, 1));
   // Jin-U storefront on the lane side: crate stacks, packs on a rack, an A-frame sign and the 151-gil road-name sign.
-  props.push(P('crates', 152, 307), P('crates', 166, 307, 1), P('goods', 184, 308), P('aboard', 208, 307), P('streetsign', 222, 309));
-  props.push(P('repairbooth', 282, 302));
+  props.push(P('crates', 154, 303), P('aboard', 166, 303), P('goods', 206, 303), P('streetsign', 222, 303));
+  props.push(P('repairbooth', 334, 302), P('planter', 140, 302, 1));
   props.push(P('signal', 378, 444), P('signal', 490, 444, 1), P('signal', 378, 554, 1), P('signal', 490, 554));
   // Pedestrian lights at both ends of every crosswalk (v: 0 = crossing Nonhyeon-ro, 1 = crossing Dosan-daero).
   props.push(P('pedsignal', 372, 414), P('pedsignal', 492, 414), P('pedsignal', 372, 588), P('pedsignal', 492, 588));
   props.push(P('pedsignal', 330, 444, 1), P('pedsignal', 330, 558, 1), P('pedsignal', 536, 444, 1), P('pedsignal', 536, 558, 1));
-  props.push(P('kiosk', 344, 236), P('signpost', 376, 28), P('hydrant', 344, 300), P('scooter', 240, 152), P('bikes', 330, 300));
+  props.push(P('kiosk', 344, 236), P('signpost', 376, 28), P('hydrant', 349, 300), P('scooter', 240, 152), P('bikes', 270, 301));
   props.push(P('vending', 528, 156), P('bin', 40, 250), P('bin', 528, 412), P('booth', 624, 176));
   props.push(P('parkedcar', 552, 234, 1), P('parkedcar', 584, 234, 4), P('parkedcar', 616, 234, 2));
   for (let y = 8; y < 400; y += 24) props.push(P('bollard', 432, y));
@@ -229,13 +231,13 @@ function street(): Room {
     targets: [
       target('street-notice', '거리 안내판', '보기', 344, 242, 18),
       target('station', '압구정역 방향', '보기', 376, 34, 18),
-      target('jinu-store', '진U 편의점', '보기', 188, 294, 18),
+      target('jinu-store', '진U 편의점', '보기', 183, 292, 16),
       target('alley-151', '논현로151길', '보기', 226, 296, 16),
-      target('shoe-repair', '구두 수선대', '보기', 282, 290, 16),
+      target('shoe-repair', '구두 수선대', '보기', 334, 290, 16),
     ],
     doors: [
       { id: 'euro-door', zone: { x: 284, y: 240, w: 17, h: 7 }, to: 'lobby', arrive: { x: 160, y: 168 }, facing: 'up', label: '유로프라자 로비' },
-      { id: 'cafe-door', zone: { x: 108, y: 400, w: 17, h: 7 }, to: 'cafe', arrive: { x: 240, y: 168 }, facing: 'up', label: '비투비씨 카페' },
+      { id: 'cafe-door', zone: { x: 108, y: 296, w: 17, h: 7 }, to: 'cafe', arrive: { x: 240, y: 168 }, facing: 'up', label: '비투비씨 카페' },
     ],
   });
 }
@@ -333,7 +335,7 @@ function cafe(): Room {
       target('barista', '바리스타', '주문', 112, 90, 22, 'barista'),
       target('window-seat', '창가 자리', '앉기', 80, 156, 18),
     ],
-    doors: [{ id: 'exit', zone: { x: 226, y: 181, w: 28, h: 11 }, to: 'street', arrive: { x: 116, y: 414 }, facing: 'down', label: '도산대로 쪽 거리' }],
+    doors: [{ id: 'exit', zone: { x: 226, y: 181, w: 28, h: 11 }, to: 'street', arrive: { x: 116, y: 286 }, facing: 'up', label: '논현로159길' }],
     interior: {
       wall: 'cafe', bottom: 'glass', door: [224, 256], pendants: [{ x: 76, y: 30 }, { x: 148, y: 30 }, { x: 204, y: 84 }, { x: 244, y: 112 }], rugs: [],
       decor: [

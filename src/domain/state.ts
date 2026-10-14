@@ -6,9 +6,9 @@ import { emptyQ3, validateQ3, type Q3State } from './q003-state';
 import { emptyQ4, validateQ4, type Q4State } from './q004-state';
 import { emptyQ5, validateQ5, type Q5State } from './q005-state';
 import { emptyLunch, validateLunch, type LunchState } from './lunch';
-import { canStand } from '../world/collision';
+import { canStand, footRect } from '../world/collision';
 import { rooms } from '../world/rooms';
-import { isHeartRoom, roomIds, type Dir, type RoomId } from '../world/types';
+import { isHeartRoom, overlap, roomIds, type Dir, type RoomId } from '../world/types';
 
 export type GameState = {
   schemaVersion: 4; contentVersion: 'redesign-1'; balanceVersion: 'cafe-0.1';
@@ -74,8 +74,10 @@ export function validateState(value: unknown): GameState {
   if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir)) throw new Error('저장된 위치가 올바르지 않습니다.');
   let place = { room: at.room as RoomId, x: at.x, y: at.y, facing: at.facing as Dir };
   if (!canStand(place.room, place)) {
-    // The heart was rebuilt (D056): a position saved in the old heart model moves to that room's safe entry point.
-    if (!isHeartRoom(place.room)) throw new Error('저장된 위치가 올바르지 않습니다.');
+    // The heart was rebuilt (D056) and the street across from Euro Plaza was built up (D088~D089): a position saved
+    // where there is now a wall moves to that room's safe entry point. Roads and other impossible spots stay invalid.
+    const builtOver = place.room === 'street' && rooms.street.buildings.some(b => overlap(footRect(place), { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }));
+    if (!isHeartRoom(place.room) && !builtOver) throw new Error('저장된 위치가 올바르지 않습니다.');
     const r = rooms[place.room];
     place = { room: place.room, x: r.spawn.x, y: r.spawn.y, facing: r.spawnFacing };
   }

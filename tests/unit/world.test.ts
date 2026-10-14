@@ -64,7 +64,7 @@ describe('street rules', () => {
     expect(canStand('street', { x: 200, y: 270 })).toBe(true);
   });
   it('walks from Euro Plaza to the cafe door', () => {
-    const path = findPath('street', { x: 292, y: 254 }, { x: 116, y: 403 });
+    const path = findPath('street', { x: 292, y: 254 }, { x: 116, y: 301 });
     expect(path.length).toBeGreaterThan(0);
   });
   it('collision slides along walls instead of stopping', () => {
@@ -86,16 +86,23 @@ describe('street around Euro Plaza from the user photos (D088)', () => {
   });
   it('Jin-U and the granite block stand right across the lane, opposite Euro Plaza, with 151-gil between them', () => {
     const euro = byId('europlaza'), jinu = byId('jinu'), granite = byId('granite');
-    for (const b of [jinu, granite]) {
+    for (const b of [byId('b2bc'), jinu, granite]) {
       expect(b.block).toBe(true);
       expect(b.y - b.h).toBeGreaterThanOrEqual(lane.y + lane.h);
       expect(b.y - b.h).toBeLessThanOrEqual(lane.y + lane.h + 24);
-      expect(b.x < euro.x + euro.w && b.x + b.w > euro.x).toBe(true);
     }
+    for (const b of [jinu, granite]) expect(b.x < euro.x + euro.w && b.x + b.w > euro.x).toBe(true);
     expect(granite.x - (jinu.x + jinu.w)).toBe(32);
     expect(canStand('street', { x: 240, y: 340 })).toBe(true);
     expect(canStand('street', { x: 184, y: 340 })).toBe(false);
     expect(canStand('street', { x: 300, y: 340 })).toBe(false);
+  });
+  it('B2BC and Jin-U open toward Euro Plaza: the cafe door and the store target sit on the lane-side pavement (D089)', () => {
+    const cafe = byId('b2bc'), door = street.doors.find(d => d.id === 'cafe-door')!, store = street.targets.find(t => t.id === 'jinu-store')!;
+    expect(door.zone.y + door.zone.h).toBeLessThanOrEqual(cafe.y - cafe.h);
+    expect(door.zone.y).toBeGreaterThanOrEqual(lane.y + lane.h);
+    expect(store.y).toBeLessThan(byId('jinu').y - byId('jinu').h);
+    expect(rooms.cafe.doors[0]!.arrive.y).toBeLessThan(door.zone.y);
   });
   it('no building picture covers the narrow lane in front of Euro Plaza', () => {
     for (const b of street.buildings) expect(overlap({ x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, lane), b.id).toBe(false);
