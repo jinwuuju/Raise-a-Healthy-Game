@@ -17,12 +17,20 @@ import type { ArticleSlot } from '../domain/article-state';
 import { discover } from '../domain/heart';
 import { Q1, acceptQ1, briefQ1, canEnterHeart, observeQ1 } from '../domain/quest';
 import { newState, validateState, type GameState } from '../domain/state';
+import { drawLunch, orderLunch, reportLunch, seeLunch, settleLunch, skipLunch, type CraveChoice, type LunchPool } from '../domain/lunch';
 import type { SaveStore } from '../infrastructure/save';
 import { canStand } from '../world/collision';
 import { rooms } from '../world/rooms';
 import type { Dir, RoomId } from '../world/types';
 
 type Listener = (s: GameState) => void;
+type Voice = { id: string; lines: number };
+function voiceOf(voices: Voice[]): [string, number] {
+  const usable = voices.filter(v => v.lines > 0);
+  if (!usable.length) throw new Error('동료 대사가 없어요.');
+  const v = usable[Math.min(usable.length - 1, Math.floor(randomReactionValue() * usable.length))]!;
+  return [v.id, Math.min(v.lines - 1, Math.floor(randomReactionValue() * v.lines))];
+}
 
 /** The only place that changes persistent progress. Rendering and DOM read from here. */
 export class Game {
@@ -179,6 +187,16 @@ export class Game {
     this.commit(next);
     return true;
   }
+
+  /* ---- 오늘의 점심(D085): 확정·저장은 여기서만. 연출과 카드 다시 보기는 저장된 기록을 읽는다. 보상 없음(⑦에서 결정). ---- */
+  /** 지난 날 미확정·오늘 11:30 경과를 자동 굶음으로 정리한다. 바뀌었으면 true. */
+  settleLunch(now = Date.now()): boolean { const next = settleLunch(this.state, now); if (next === this.state) return false; this.commit(next); return true; }
+  drawLunch(crave: CraveChoice, pool: LunchPool, now = Date.now()): void { const next = drawLunch(this.state, now, crave, pool, randomReactionValue); if (next !== this.state) this.commit(next); }
+  /** voices: 동료 id와 해당 상황 대사 개수. 누가 말할지는 여기서 정해 저장한다. */
+  reportLunch(menu: string, voices: Voice[], now = Date.now()): void { const [who, line] = voiceOf(voices); const next = reportLunch(this.state, now, menu, who, line); if (next !== this.state) this.commit(next); }
+  orderLunch(menu: string, menuName: string, tips: string[], applicable: string[], voices: Voice[], now = Date.now()): void { const [who, line] = voiceOf(voices); this.commit(orderLunch(this.state, now, menu, menuName, tips, applicable, who, line)); }
+  skipLunch(voices: Voice[], now = Date.now()): void { const [who, line] = voiceOf(voices); this.commit(skipLunch(this.state, now, who, line)); }
+  seeLunch(date: string): void { const next = seeLunch(this.state, date); if (next !== this.state) this.commit(next); }
 
   rest(): void { this.commit({ ...this.state, cafe: { ...this.state.cafe, restedAt: new Date().toISOString() } }); }
 

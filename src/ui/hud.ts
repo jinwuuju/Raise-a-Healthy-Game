@@ -6,7 +6,7 @@ import { REAL_CYCLE, SLOW, beat, ecg, openness, phaseAt } from '../domain/cardia
 import { isHeartRoom, type RoomId } from '../world/types';
 import { ICONS, button, el } from './dom';
 
-export type HudActions = { onChip: () => void; onNote: () => void; onMenu: () => void; onMap: () => void };
+export type HudActions = { onChip: () => void; onNote: () => void; onMenu: () => void; onMap: () => void; onLunch: () => void };
 
 export class Hud {
   root = el('div', 'hud');
@@ -16,6 +16,8 @@ export class Hud {
   private goldEl = el('span', 'coin');
   private quest = el('section', 'quest glass');
   private questText = el('p');
+  private lunchBtn: HTMLButtonElement;
+  private lunchText = el('span', 'lunch-text');
   private mini = el('div', 'minimap glass');
   private miniCanvas = el('canvas');
   private banner = el('div', 'banner glass');
@@ -51,7 +53,10 @@ export class Hud {
 
     const head = button('', '', () => this.quest.classList.toggle('closed'), '현재 목표 접기/펼치기');
     head.append(el('span', 'tag', '현재 목표'), el('span', 'chev', '▾'));
-    this.quest.append(head, this.questText);
+    // 오늘의 점심(D085): 현재 목표 자리의 짧은 한 줄. 누르면 오늘 카드/고르기 창이 열린다.
+    this.lunchBtn = button('lunch-line', '', a.onLunch, '오늘의 점심 열기');
+    this.lunchBtn.append(el('span', 'tag lunch-tag', '점심'), this.lunchText); this.lunchBtn.hidden = true;
+    this.quest.append(head, this.questText, this.lunchBtn);
 
     const tr = el('div', 'topright');
     const row = el('div', 'btnrow');
@@ -122,6 +127,10 @@ export class Hud {
     }
   }
 
+  setLunch(text: string | null): void {
+    this.lunchBtn.hidden = !text;
+    if (text && this.lunchText.textContent !== text) this.lunchText.textContent = text;
+  }
   setObjective(text: string): void {
     if (this.questText.textContent === text) return;
     const changed = this.questText.textContent !== '';

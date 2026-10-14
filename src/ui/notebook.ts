@@ -10,6 +10,7 @@ import { q4Text } from '../domain/q004-state';
 import { q5Normal, q5Text, type Q5Evidence } from '../domain/q005-state';
 import { q5Ready } from '../domain/q005';
 import { latestReaction, type Reaction } from '../domain/reaction-state';
+import { CRAVE_NAMES, lunchHudText } from '../domain/lunch';
 import { heartRoute } from '../world/heart-rooms';
 import { rooms } from '../world/rooms';
 import { isHeartRoom, type RoomId } from '../world/types';
@@ -19,9 +20,10 @@ import { openSheet } from './sheet';
 const tabs = ['지금 할 일', '취재 파일', '발행 기사', '인체 탐험', '동네·생활'] as const;
 let selectedTab = 0;
 const expanded = new Map<string, boolean>();
-type Actions = { article: () => void; q002: () => void; q003: () => void; q004: () => void; q005: () => void; reaction: (r: Reaction) => void; map: () => void };
+type Actions = { article: () => void; q002: () => void; q003: () => void; q004: () => void; q005: () => void; reaction: (r: Reaction) => void; map: () => void; lunch: (date?: string) => void; lunchDex: (target: HTMLElement) => void };
 
-export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
+export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: number): void {
+  if (tab !== undefined && tab >= 0 && tab < tabs.length) selectedTab = tab;
   openSheet('취재 수첩', (c, close) => {
     const s = game.state, records = notebookRecords(s); c.classList.add('keep-open');
     const sheet = c.parentElement!; sheet.classList.add('notebook-sheet');
@@ -68,6 +70,8 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
     if (s.q005.accepted) current.append(action(s.q005.publishedAt ? '박동 신호 기사 읽기' : '박동 신호 자료와 기사 이어서', actions.q005));
     const latest = latestReaction(s);
     if (latest) current.append(action('최근 독자 반응 · ' + latest.score + '점', () => actions.reaction(latest)));
+    const lunchLine = lunchHudText(s, Date.now());
+    if (lunchLine) current.append(action(lunchLine, () => actions.lunch()));
     if (room === 'street' || isHeartRoom(room)) current.append(action('현재 장소 지도 보기', actions.map));
     current.append(el('p', 'muted', '분류를 골라 기록을 읽어요. 같은 기록은 한 곳에만 보관하고, 여기서는 필요한 곳으로 바로 이어집니다.'));
 
@@ -172,6 +176,22 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions): void {
       if (id === 'cafe') body.append(el('p', '', '첫 방문 커피 ' + (s.cafe.welcomeUsed ? '받음' : '아직') + ' · 주문 ' + s.cafe.orderCount + '회 · 창가 쉬기 ' + (s.cafe.restedAt ? '기록 있음' : '아직')));
       for (const key of records.local[id]) fold(body, 'place-note-' + key, inspectLabels[key] ?? '장소 기록', detail => detail.append(el('p', '', lookText[key] ?? '살펴본 장소입니다.')));
       if (!records.local[id].length) body.append(el('p', 'muted', '아직 살펴본 장소 기록이 없어요.'));
+    });
+    // 오늘의 점심 기록·도감(D085): 지난 기록 본문은 이 탭에만 둔다. 카드는 읽기 전용으로 다시 연다.
+    const lunchDays = [...s.lunch.days].reverse().filter(d => d.outcome);
+    fold(life, 'lunch', '오늘의 점심 · 기록 ' + lunchDays.length + '일 · 도감 ' + s.lunch.dex.length + '종', body => {
+      if (!lunchDays.length) body.append(el('p', 'muted', '아직 점심 기록이 없어요. 매일 11:30 전에 고를 수 있어요.'));
+      for (const d of lunchDays.slice(0, 30)) {
+        const [, mo, da] = d.date.split('-').map(Number);
+        const title = mo + '월 ' + da + '일 · ' + (d.outcome === 'ordered' ? d.menuName : d.skip === 'auto' ? '건너뜀(11:30 지남)' : '건너뜀') + (d.report ? (d.report.hit ? ' · 과장 신고 적중' : ' · 과장 신고') : '');
+        fold(body, 'lunch-' + d.date, title, detail => {
+          detail.append(el('p', '', (d.crave ? CRAVE_NAMES[d.crave] + ' · ' : '') + (d.outcome === 'ordered' ? '주문 요령 ' + d.tips.length + '개' : '보상·불이익 없음')));
+          detail.append(button('row notebook-link', '점심 카드 다시 보기', () => { close(); actions.lunch(d.date); }));
+        });
+      }
+      if (lunchDays.length > 30) body.append(el('p', 'muted', '최근 30일만 보여 줘요. 저장 파일에는 최근 120일이 남아요.'));
+      const dex = el('div', 'lunch-dex-box'); dex.append(button('row notebook-link', '점심 도감 그림 보기', () => { dex.replaceChildren(el('p', 'muted', '불러오는 중…')); actions.lunchDex(dex); }));
+      body.append(dex);
     });
     if (records.legacy.length) fold(life, 'legacy-notes', '이전 버전·기타 보존 기록 ' + records.legacy.length + '건', body => body.append(el('p', 'muted', '이 버전에서 상세 내용을 찾지 못한 기록도 저장 파일에는 그대로 보존돼요.')));
     choose(selectedTab);

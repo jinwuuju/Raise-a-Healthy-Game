@@ -7,6 +7,7 @@ import { outfits, presetNames, type Look } from './domain/appearance';
 import { cafeMenu, canOrder } from './domain/cafe';
 import { Q1, Q1_OBSERVATIONS, Q1_ROOM, canEnterHeart, levelOf, obsKey, q1CanOffer } from './domain/quest';
 import { DAY_FROM_HOUR, DUSK_FROM_HOUR, NIGHT_FROM_HOUR } from './domain/clock';
+import { lunchHudText } from './domain/lunch';
 import { SaveStore } from './infrastructure/save';
 import { World } from './game/world';
 import { Dialog } from './ui/dialog';
@@ -80,6 +81,7 @@ const hud = new Hud({
   onNote: () => openNotebook(),
   onMenu: () => openMenu(),
   onMap: () => openMap(),
+  onLunch: () => openLunchSheet(),
 });
 hud.setVisible(false);
 // Touch screens get a movement ball at the bottom left (D058); PC keeps keyboard/mouse only.
@@ -206,7 +208,7 @@ function resize() {
 }
 window.addEventListener('resize', resize); resize();
 
-let last = performance.now(), saveClock = 0, miniClock = 0;
+let last = performance.now(), saveClock = 0, miniClock = 0, lunchClock = 0;
 let scopePromptLatched = false, scopeStandTime = 0;
 function autoBodyscope(dt: number): void {
   if (!world) return;
@@ -229,6 +231,9 @@ function frame(now: number) {
     saveClock += dt; miniClock += dt;
     if (saveClock > 8) { saveClock = 0; if (game.needsSave) game.persist(); }
     if (miniClock > 0.12) { miniClock = 0; hud.drawMinimap(p.x, p.y, now / 1000); }
+    lunchClock += dt;
+    // 서울 시계로 점심 마감·자정을 따라간다(자동 굶음 정리는 application, HUD는 읽기만).
+    if (lunchClock > 2) { lunchClock = 0; if (!game.settleLunch()) hud.setLunch(lunchHudText(game.state, Date.now())); }
     if (world.heart) hud.drawCycle(world.real, dpr());
   } else { ctx.fillStyle = '#15111f'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
   const showConfirm = touchUI && !!world && !sheetOpen() && !document.querySelector('.creator') && (!world.locked || dialog.open) && !dialog.awaitingChoice;
@@ -243,6 +248,7 @@ window.addEventListener('pagehide', () => { if (game.needsSave) game.persist(); 
 function refresh() {
   const s = game.state;
   hud.update(s);
+  hud.setLunch(world ? lunchHudText(s, Date.now()) : null);
   if (!world) return;
   world.player.look = s.avatar.look; world.player.name = s.avatar.name;
   const layer = world.roomId !== 'heart' ? '' : s.q003.mode !== 'normal' ? q3Text.comparison[s.q003.mode].label : s.q005.mode !== 'normal' ? q5Text.comparison[s.q005.mode].label : '';
@@ -290,6 +296,7 @@ function startWorld() {
   hud.showBanner(rooms[s.at.room].title);
   canvas.focus({ preventScroll: true });
   if (game.lastError) hud.toast(game.lastError, true);
+  game.settleLunch();
   const pending = latestReaction(game.state);
   if (pending && pending.round > game.state.reactions.seen) showReaction(pending, true);
 }
@@ -462,10 +469,18 @@ function saveFeedback(c: HTMLElement): () => void {
   const update = () => { message.textContent = game.lastError ?? ''; message.classList.toggle('hidden', !game.lastError); };
   update(); return game.subscribe(update);
 }
-function openNotebook() {
+function openNotebook(tab?: number) {
   if (busy() || !world) return;
   pauseInput();
-  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, reaction: r => showReaction(r, true), map: openMap });
+  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, reaction: r => showReaction(r, true), map: openMap, lunch: date => openLunchSheet(date), lunchDex: target => { void loadLunch().then(m => { target.replaceChildren(); m.renderLunchDex(target, game.state); }).catch(() => target.replaceChildren(el('p', 'muted', '도감을 불러오지 못했어요. 네트워크를 확인해 주세요.'))); } }, tab);
+}
+/** 오늘의 점심 화면·데이터·그림은 처음 열 때 따로 내려받는다(첫 로딩 크기 보호). */
+const loadLunch = () => import('./ui/lunch');
+function openLunchSheet(readOnlyDate?: string) {
+  if (busy() || !world || !game.state.started) return;
+  pauseInput();
+  void loadLunch().then(m => { if (busy()) return; m.openLunch(game, { exportSave, readOnlyDate, onRecord: () => openNotebook(4) }); })
+    .catch(() => hud.toast('점심 화면을 불러오지 못했어요. 연결을 확인하고 다시 눌러 주세요.', true));
 }
 
 function openReporter() {

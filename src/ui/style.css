@@ -494,3 +494,61 @@ a.row { color: var(--text); text-decoration: none; }
 .signal-pool .sub { color: var(--muted); font-size: .8125rem; }
 .ecg-strip { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
 .rhythm-paired { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+
+/* ---------- 오늘의 점심 (D085) ---------- */
+.quest .lunch-line { padding: 0 12px 10px; min-height: 30px; gap: 8px; font-size: 13px; color: var(--text); }
+.quest .lunch-line[hidden], .quest.closed .lunch-line { display: none; }
+.quest .lunch-line:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; border-radius: 8px; }
+.quest .lunch-tag { background: linear-gradient(180deg, #ffe0b8, #f2a860); }
+.quest .lunch-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: underline; text-decoration-color: rgba(241,207,139,0.5); text-underline-offset: 3px; }
+.lunch-sheet { max-width: min(640px, calc(100vw - 16px)); }
+.lunch-sheet canvas { image-rendering: pixelated; }
+.lunch-disclaimer, .lunch-deadline { margin: 0; }
+.lunch-deadline { font-weight: 800; color: var(--gold); }
+.lunch-message { margin: 0; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,0.06); font-weight: 700; }
+.lunch-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.lunch-chip { min-height: 52px; padding: 8px 12px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,0.05); color: var(--text); font-size: 15px; font-weight: 800; cursor: pointer; }
+.lunch-chip:hover, .lunch-chip:focus-visible { border-color: var(--gold); outline: none; background: rgba(241,207,139,0.12); }
+.lunch-skip-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.lunch-skip-row .secondary { min-height: 48px; }
+.lunch-cards { display: grid; gap: 10px; }
+.lunch-card { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; padding: 10px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,0.04); }
+.lunch-card-body { display: grid; gap: 4px; min-width: 0; }
+.lunch-card-body b { font-size: 16px; }
+.lunch-crave { font-size: 12px; color: var(--muted); }
+.lunch-claim { font-size: 14px; line-height: 1.45; quotes: '“' '”'; }
+.lunch-badge { justify-self: start; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--gold); color: var(--gold); }
+.lunch-card-actions, .lunch-order-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.lunch-card-actions button, .lunch-order-actions button { min-height: 48px; }
+.lunch-card-actions .primary { padding: 0 20px; box-shadow: 0 4px 0 #8a6232; }
+.lunch-report { display: grid; gap: 6px; padding: 12px; border-radius: 14px; border: 1px solid var(--gold); background: rgba(241,207,139,0.08); }
+.lunch-report h4, .lunch-report p { margin: 0; }
+.lunch-voice { margin: 0; display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.06); }
+.lunch-voice b { font-size: 12px; color: var(--gold); }
+.lunch-order-head, .lunch-result-head { display: flex; gap: 14px; align-items: center; }
+.lunch-order-head h3, .lunch-result-head h3 { margin: 2px 0; }
+.lunch-tips { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; margin: 0; }
+.lunch-tips legend { font-weight: 800; padding: 0 4px; }
+.lunch-tips > p { margin: 0; }
+.lunch-tip { display: flex; gap: 10px; align-items: flex-start; min-height: 48px; padding: 6px 4px; cursor: pointer; }
+.lunch-tip input { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: #e2b257; }
+.lunch-tip span { display: grid; gap: 2px; }
+.lunch-tip small { color: var(--muted); line-height: 1.4; }
+.lunch-nutrition { display: grid; gap: 6px; }
+.lunch-nutrition p { margin: 0; font-size: 13px; line-height: 1.45; }
+.lunch-status { font-weight: 800; }
+.lunch-table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.lunch-table th, .lunch-table td { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--line); }
+.lunch-table td:nth-child(n+2), .lunch-table th:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; }
+.lunch-note { color: var(--text); }
+.lunch-table-art { width: 100%; max-width: 432px; aspect-ratio: 72 / 44; justify-self: center; border-radius: 12px; }
+.lunch-table-caption { margin: 0; text-align: center; }
+.lunch-result { display: grid; gap: 8px; }
+.lunch-tips-done { margin: 0; padding-left: 18px; }
+.lunch-more summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 700; }
+.lunch-dex { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+.lunch-dex figure { margin: 0; display: grid; justify-items: center; gap: 2px; font-size: 12px; text-align: center; }
+@media (max-width: 520px) {
+  .lunch-chips { grid-template-columns: 1fr 1fr; }
+  .lunch-card { grid-template-columns: 1fr; justify-items: start; }
+}

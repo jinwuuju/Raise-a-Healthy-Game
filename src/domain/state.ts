@@ -5,6 +5,7 @@ import { emptyQ2, validateQ2, chamberIds, type Q2State } from './q002-state';
 import { emptyQ3, validateQ3, type Q3State } from './q003-state';
 import { emptyQ4, validateQ4, type Q4State } from './q004-state';
 import { emptyQ5, validateQ5, type Q5State } from './q005-state';
+import { emptyLunch, validateLunch, type LunchState } from './lunch';
 import { canStand } from '../world/collision';
 import { rooms } from '../world/rooms';
 import { isHeartRoom, roomIds, type Dir, type RoomId } from '../world/types';
@@ -23,6 +24,8 @@ export type GameState = {
   q005: Q5State;
   reactions: Reactions;
   cafe: { welcomeUsed: boolean; orderCount: number; lastOrder: { itemId: string; price: number; orderedAt: string } | null; restedAt: string | null };
+  /** 오늘의 점심(D085). schema4 옛 저장에는 없으며 빈 기록으로 읽는다. */
+  lunch: LunchState;
   // No `settings`: the in-game time-of-day setting was removed (D068, lunch step 5). The game follows the device clock in Asia/Seoul (domain/clock).
 };
 
@@ -43,6 +46,7 @@ export function newState(): GameState {
     q005: emptyQ5(),
     reactions: emptyReactions(),
     cafe: { welcomeUsed: false, orderCount: 0, lastOrder: null, restedAt: null },
+    lunch: emptyLunch(),
   };
 }
 
@@ -116,6 +120,7 @@ export function validateState(value: unknown): GameState {
     q005,
     reactions,
     cafe: { welcomeUsed: cafe.welcomeUsed, orderCount: cafe.orderCount, restedAt: (cafe.restedAt as string | null), lastOrder: lo ? { itemId: lo.itemId as string, price: lo.price as number, orderedAt: lo.orderedAt as string } : null },
+    lunch: validateLunch(s.lunch),
   };
 }
 
