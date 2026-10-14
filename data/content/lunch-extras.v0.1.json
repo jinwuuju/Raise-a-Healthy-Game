@@ -1,0 +1,86 @@
+{
+ "id":"content.lunch.extras","status":"draft_unreviewed","review":null,"updatedAt":"2026-10-14",
+ "disclaimer":"검수 전 모형 · 게임 속 가상 가게의 가상 문구예요. 실제 가게·상품·광고가 아닙니다. 판정은 법 조항의 유형을 배우기 위한 단순화이며 실제 위반 여부는 사안마다 따로 판단돼요.",
+ "sources":[
+  {"id":"law-ad","title":"식품 등의 표시ㆍ광고에 관한 법률 제8조(부당한 표시 또는 광고행위의 금지)","url":"https://www.nepla.ai/law/식품-등의-표시ㆍ광고에-관한-법률","version":"법률 제20826호, 2025-09-19 시행본","checked":"2026-10-14","section":"제8조 제1항 각 호(질병 예방·치료 효능, 의약품 인식, 건강기능식품 오인, 거짓·과장, 소비자 기만 등)"},
+  {"id":"mfds-ad-cases","title":"푸드투데이 · 식약처, 환절기 일반식품 온라인 부당광고 165건 적발","url":"https://www.foodtoday.or.kr/news/article.html?no=205302","checked":"2026-10-14","section":"적발 유형: 감기예방 등 질병 효능, 면역력·혈당관리 등 건강기능식품 오인, 목에 좋은 차 등 거짓·과장, 체험기 이용 소비자 기만"},
+  {"id":"mfds-broth","title":"사이언스타임즈(연합뉴스) · 식약청 ‘국 없는 날’ 지정, 국물 요리가 나트륨 섭취 비중 최대","url":"https://www.sciencetimes.co.kr/news/quot%EB%82%98%ED%8A%B8%EB%A5%A8-%EA%B3%BC%EC%9E%89-%EB%AC%B8%EC%A0%9C%EB%8A%94-%EA%B5%AD%EB%AC%BC%EC%9D%B4%EC%95%BCquot/","published":"2013-03-14","checked":"2026-10-14","section":"국·찌개·면류 국물 섭취 줄이기, 건더기 위주로 먹기"},
+  {"id":"sodium-campaign","title":"푸드투데이 · [나트륨 줄이기 캠페인] 가정에서 나트륨 섭취 줄이는 방법","url":"https://www.foodtoday.or.kr/news/article.html?no=96908","checked":"2026-10-14","section":"간장·초고추장은 살짝 찍어 먹기, 외식 시 소금·양념을 덜 넣도록 요청"},
+  {"id":"mfds-db-rice","title":"식약처 K-FIND 음식 DB · 쌀밥 분석값(생성기 references.rice)","url":"https://various.foodsafetykorea.go.kr/nutrient/","checked":"2026-10-14","section":"식품코드 D301-022000000-0001, 100g당 분석값"}
+ ],
+ "claimTypes":{
+  "disease":{"label":"병을 막거나 고친다는 말","law":"제8조 제1항 · 질병의 예방·치료에 효능이 있는 것으로 인식할 우려"},
+  "drug":{"label":"약처럼 보이게 하는 말","law":"제8조 제1항 · 식품등을 의약품으로 인식할 우려"},
+  "hff":{"label":"건강기능식품처럼 보이게 하는 말","law":"제8조 제1항 · 건강기능식품이 아닌 것을 건강기능식품으로 인식할 우려"},
+  "exaggerated":{"label":"근거 없이 부풀린 말","law":"제8조 제1항 · 거짓·과장된 표시 또는 광고"},
+  "deceptive":{"label":"후기·권위로 속이는 말","law":"제8조 제1항 · 소비자를 기만하는 표시 또는 광고"}
+ },
+ "hype":[
+  {"id":"cold-shield","type":"disease","text":"감기 걱정 뚝! 먹는 순간 몸속 방패가 켜지는 {menu}","why":"감기라는 질병을 막는다고 말해요. 식품이 병을 예방한다고 인식시키는 문구예요.","src":["law-ad","mfds-ad-cases"]},
+  {"id":"pressure-miracle","type":"disease","text":"혈압이 스르륵 내려가는 기적의 {menu}","why":"고혈압을 고치는 효과가 있는 것처럼 말해요.","src":["law-ad"]},
+  {"id":"sugar-free-worry","type":"disease","text":"당뇨 걱정 없이 마음껏! 사장님 비법 {menu}","why":"당뇨라는 질병과 음식을 바로 연결해 걱정을 덜어 준다고 말해요.","src":["law-ad"]},
+  {"id":"stomach-cure","type":"disease","text":"속쓰림·위염엔 역시 우리 집 {menu}","why":"위염과 그 증상을 낫게 한다고 암시해요. 질병의 증상을 고친다는 말도 같은 유형이에요.","src":["law-ad"]},
+  {"id":"nose-clear","type":"disease","text":"한 그릇이면 비염이 싹~ 코가 뻥 뚫리는 {menu}","why":"비염 증상이 사라진다고 말해요.","src":["law-ad","mfds-ad-cases"]},
+  {"id":"better-than-pill","type":"drug","text":"하루 한 그릇 처방! 약보다 잘 듣는 {menu}","why":"‘처방’, ‘약보다 잘 듣는다’는 말로 음식을 약처럼 보이게 해요.","src":["law-ad"]},
+  {"id":"dose-three-days","type":"drug","text":"3일만 복용하면 효과 보장, {menu}","why":"음식을 ‘복용’한다는 약의 말투를 써요.","src":["law-ad"]},
+  {"id":"natural-fever","type":"drug","text":"열 내리는 천연 해열제, 뜨끈한 {menu}","why":"‘해열제’라는 약의 이름을 붙여 약처럼 보이게 해요.","src":["law-ad"]},
+  {"id":"immune-certified","type":"hff","text":"면역력 증진 기능성 인증 {menu}","why":"건강기능식품이 아닌데 기능성을 인정받은 것처럼 말해요.","src":["law-ad","mfds-ad-cases"]},
+  {"id":"blood-sugar-care","type":"hff","text":"혈당 관리에 도움을 주는 {menu}","why":"건강기능식품의 기능성 표현처럼 들려요. 일반 음식은 이런 기능성을 내세울 수 없어요.","src":["law-ad","mfds-ad-cases"]},
+  {"id":"fatigue-functional","type":"hff","text":"피로 개선 기능성 원료 듬뿍! 야근 필수 {menu}","why":"‘기능성 원료’, ‘피로 개선’으로 건강기능식품처럼 보이게 해요.","src":["law-ad","mfds-ad-cases"]},
+  {"id":"ten-years-younger","type":"exaggerated","text":"한 입 먹으면 10년 젊어지는 {menu}","why":"확인할 수 없는 몸의 변화를 부풀려 말해요.","src":["law-ad"]},
+  {"id":"melt-away","type":"exaggerated","text":"먹기만 해도 살이 쭉쭉 빠지는 {menu}","why":"음식만으로 몸무게가 빠진다고 근거 없이 부풀려요.","src":["law-ad"]},
+  {"id":"hangover-guarantee","type":"exaggerated","text":"숙취 100% 해소 보장! 해장의 끝판왕 {menu}","why":"‘100% 보장’처럼 실증하기 어려운 절대 표현으로 효과를 부풀려요.","src":["law-ad"]},
+  {"id":"throat-guardian","type":"exaggerated","text":"목이 칼칼할 땐 목 지킴이 {menu}","why":"목이라는 몸의 기능에 효과가 있는 것처럼 부풀려요. 식약처 적발 사례에도 비슷한 문구가 있었어요.","src":["law-ad","mfds-ad-cases"]},
+  {"id":"brain-double","type":"exaggerated","text":"뇌가 번쩍! 집중력 2배 {menu}","why":"근거 없는 숫자로 몸의 기능이 좋아진다고 부풀려요.","src":["law-ad"]},
+  {"id":"cured-review","type":"deceptive","text":"“이거 먹고 다 나았어요” 단골 후기가 증명하는 {menu}","why":"후기를 빌려 병이 나은 것처럼 보이게 해요. 체험기를 이용한 광고도 적발 유형이에요.","src":["law-ad","mfds-ad-cases"]},
+  {"id":"doctors-secret","type":"deceptive","text":"의사들이 몰래 먹는다는 그 {menu}","why":"확인할 수 없는 전문가의 추천을 내세워 믿게 만들어요.","src":["law-ad"]}
+ ],
+ "fair":[
+  {"id":"cooked-to-order","text":"주문이 들어오면 그때부터 조리해요."},
+  {"id":"sauce-separate","text":"소스는 따로 담아 드릴 수 있어요."},
+  {"id":"spice-levels","text":"맵기는 순한맛·보통·매운맛 중에 골라요."},
+  {"id":"single-portion","text":"1인분도 기쁘게 배달해요."},
+  {"id":"morning-broth","text":"매일 아침 육수를 새로 끓여요."},
+  {"id":"recyclable-box","text":"포장 용기는 씻어서 분리배출할 수 있어요."},
+  {"id":"generous-bowl","text":"{menu} 한 그릇, 넉넉하게 담아요."},
+  {"id":"house-sauce","text":"양념은 가게에서 직접 만들어요."},
+  {"id":"crispy-pride","text":"바삭함은 우리 가게 자존심!"},
+  {"id":"rice-amount","text":"밥 양은 메모로 조절해 드려요."},
+  {"id":"broth-choice","text":"국물 많이·적게 골라 주세요."},
+  {"id":"no-cutlery","text":"수저가 필요 없으면 빼 드려요."},
+  {"id":"allergen-note","text":"알레르기 유발 재료는 메뉴 설명에 적어 두었어요."},
+  {"id":"since-years","text":"동네에서 오래 사랑받은 {menu} 집이에요."},
+  {"id":"hot-delivery","text":"따뜻하게 도착하도록 단단히 포장해요."},
+  {"id":"veggie-extra","text":"채소 토핑을 더할 수 있어요."},
+  {"id":"friendly-owner","text":"요청 사항은 꼼꼼히 읽고 있어요."},
+  {"id":"lunch-rush","text":"점심엔 주문이 몰려요. 조금만 기다려 주세요!"}
+ ],
+ "fairWhy":"가게의 조리·포장·선택지를 소개하거나 맛을 주관적으로 자랑하는 문구예요. 병·약·기능성 효과를 말하지 않아요.",
+ "tips":[
+  {"id":"rice-half","label":"밥은 반 공기만","text":"공기밥을 반만 받아요. 밥 100g마다 약 {riceKcal}kcal, 탄수화물 {riceCarb}g이 달라져요.","effect":{"kind":"rice-per-100g"},"table":"공기밥 반 그릇","appliesTo":{"endsWith":["찌개","탕","해장국","볶음","찜","구이","갈비","불고기","보쌈","족발","수육","샤브샤브","게장"],"exclude":["탕수육","볶음밥","라볶이"]},"src":["mfds-db-rice"]},
+  {"id":"sauce-side","label":"소스는 옆자리에","text":"소스·양념을 따로 받아 찍어 먹을 만큼만 써요. 양은 직접 정해요.","effect":null,"table":"소스 종지","appliesTo":{"craves":["crispy"],"endsWith":["샐러드","초밥","롤","강정"]},"src":["sodium-campaign"]},
+  {"id":"broth-sip","label":"국물은 맛만 보기","text":"건더기 위주로 먹고 국물은 조금만 떠먹어요. 국·찌개·면 국물은 나트륨을 많이 먹게 되는 음식군으로 꼽혀요.","effect":null,"table":"국물 높이 낮춤","appliesTo":{"craves":["hot"],"endsWith":["짬뽕","육개장","마라탕","매운탕","냉면","국수","물회","짬뽕밥"]},"src":["mfds-broth"]},
+  {"id":"mild-please","label":"간은 약하게 부탁해요","text":"주문 메모에 ‘간은 약하게’를 적어요. 가게마다 들어줄 수 있는 정도가 달라요.","effect":null,"table":"봉투에 붙은 메모","appliesTo":{"all":true},"src":["sodium-campaign"]}
+ ],
+ "tipsNote":"주문 요령은 선택 사항이에요. 고르든 안 고르든 보상·점수는 같고, 숫자는 근거가 있는 밥에만 보여 줘요.",
+ "colleagues":[
+  {"id":"editor","name":"편집장","lines":{
+   "pick":["{menu}, 냄새부터 특종감이네요.","점심엔 {menu}. 오후 회의 전에 편히 먹어요."],
+   "any":["‘아무거나’라니, 운에 맡기는 기자 정신이군요. 뭐가 왔어요?"],
+   "skip":["오늘은 점심을 건너뛰었군요. 오후 브리핑은 2시예요."],
+   "reportHit":["그 문구에 빨간 펜! 음식 광고가 넘으면 안 되는 선이 있죠."],
+   "reportMiss":["그건 가게 소개였네요. 의심해 본 건 기자의 기본이에요."]}},
+  {"id":"senior","name":"선배 기자","lines":{
+   "pick":["와, {menu} 도착! 포장 매듭부터 장인의 손길이야.","{menu} 냄새 맡고 왔어. 한 입만… 은 농담!","오늘 점심 기사 제목: ‘{menu}, 편집국을 점령하다’."],
+   "any":["아무거나 골랐는데 {menu}? 오늘 운 좋은데!"],
+   "skip":["점심 건너뛴 날이구나. 오후에 같이 자료 보자."],
+   "reportHit":["찾았다! 저건 광고에서 쓰면 안 되는 말이었어. 레이더 정확한데?","그 문구, 음식이 할 수 있는 말을 넘었네."],
+   "reportMiss":["아, 그건 그냥 맛 자랑이었네. 다음 문구도 같이 보자!"]}},
+  {"id":"photo","name":"사진기자 찰칵 선배","lines":{
+   "pick":["잠깐! {menu} 김 올라올 때 한 컷만. 찰칵!","빛 좋다. 오늘의 {menu}, 표지감이야."],
+   "any":["뭐가 올지 모르는 상자! 개봉 장면 찍어도 돼?"],
+   "skip":["빈 책상도 오늘의 한 장면이지. 오후 촬영 일정 보낼게."],
+   "reportHit":["그 문구 캡처해 둘게. 팩트체크 기사 사진으로 딱이야."],
+   "reportMiss":["그 문구는 무사통과! 그래도 확대해서 다시 읽어 본 건 좋았어."]}}
+ ]
+}

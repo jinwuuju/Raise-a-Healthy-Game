@@ -152,10 +152,14 @@ def main():
         if n < MIN_PER_CRAVE: raise SystemExit(c + ' 메뉴가 ' + str(n) + '개로 부족')
     if any(m['crave'] not in CRAVES for m in menus): raise SystemExit('알 수 없는 당김')
 
+    # D081: 주문 요령 ‘밥은 반만’의 수치 근거. 손으로 적지 않고 같은 DB 쌀밥 분석 행에서 가져온다.
+    rice = pick_row('쌀밥'); used.append(rice)
+    references = {'rice': {'foodCode': g(rice, '식품코드'), 'foodName': g(rice, '식품명'), 'method': g(rice, '데이터생성방법명'),
+                           'createdAt': g(rice, '데이터생성일자'), 'per100g': {k: num(g(rice, v)) for k, v in COLS.items()}}}
     OUT.write_text(json.dumps({
         'contentId': 'content.lunch.menus', 'version': '0.1', 'review': 'draft_unreviewed',
         'disclaimer': '검수 전 모형. 수치는 식약처 음식 DB의 100g당 분석값에 1인분 중량을 곱한 값이며, 실제 가게·레시피·양에 따라 크게 다를 수 있다.',
-        'craves': CRAVES, 'count': len(menus), 'menus': menus}, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+        'craves': CRAVES, 'count': len(menus), 'references': references, 'menus': menus}, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     if not from_extract:
         seen, uniq = set(), []
         for r in used:

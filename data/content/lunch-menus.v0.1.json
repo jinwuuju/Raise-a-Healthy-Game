@@ -15,6 +15,24 @@
   "hearty"
  ],
  "count": 192,
+ "references": {
+  "rice": {
+   "foodCode": "D301-022000000-0001",
+   "foodName": "쌀밥",
+   "method": "분석",
+   "createdAt": "2022-06-30",
+   "per100g": {
+    "kcal": 166.0,
+    "protein": 3.36,
+    "fat": 0.32,
+    "saturatedFat": 0.1,
+    "carb": 37.33,
+    "sugar": 0.02,
+    "fiber": 0.1,
+    "sodium": 0.0
+   }
+  }
+ },
  "menus": [
   {
    "id": "mul-naengmyeon",
