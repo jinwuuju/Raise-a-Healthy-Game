@@ -3,6 +3,7 @@ import { publishQ2 } from './q002';
 import { publishQ3 } from './q003';
 import { publishQ4 } from './q004';
 import { publishQ5 } from './q005';
+import { publishQ6 } from './q006';
 import { bandFor, reactionBalance as b, reactionText as text, type QuestId, type Reaction } from './reaction-state';
 import type { GameState } from './state';
 
@@ -42,6 +43,10 @@ export function publishQ5WithReaction(s: GameState, random: Random = randomReact
   const next = publishQ5(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q005');
 }
 
+export function publishQ6WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
+  const next = publishQ6(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q006');
+}
+
 /** Explicit new editions can earn more gold, while stale double clicks and history reads cannot. */
 export function reprintArticle(s: GameState, expectedCount: number, random: Random = randomReactionValue, now = new Date().toISOString(), questId: QuestId = 'Q001'): GameState {
   if (expectedCount !== s.reactions.count) return s;
@@ -51,6 +56,7 @@ export function reprintArticle(s: GameState, expectedCount: number, random: Rand
   if (questId === 'Q003' && (!s.q003.publishedAt || !s.ledger.includes('quest.Q003.first'))) throw new Error('Q003 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q004' && (!s.q004.publishedAt || !s.ledger.includes('quest.Q004.first'))) throw new Error('Q004 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q005' && (!s.q005.publishedAt || !s.ledger.includes('quest.Q005.first'))) throw new Error('Q005 기사 발행을 먼저 마쳐 주세요.');
+  if (questId === 'Q006' && (!s.q006.publishedAt || !s.ledger.includes('quest.Q006.first'))) throw new Error('Q006 기사 발행을 먼저 마쳐 주세요.');
   return appendReaction(s, s, false, random, now, questId);
 }
 export function seeReaction(s: GameState, round: number): GameState {

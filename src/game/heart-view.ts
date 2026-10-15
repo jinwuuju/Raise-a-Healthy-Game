@@ -6,6 +6,7 @@ import type { Room } from '../world/rooms';
 import type { Point } from '../world/types';
 import { comparisonOpening, hasBackflow, type ValveMode } from '../domain/valve-model';
 import type { RhythmMode } from '../domain/rhythm-model';
+import type { SupplyMode } from '../domain/supply-model';
 
 /** Small integer hash for repeatable, seed-fixed patterns (no Math.random in rendering). */
 function hash(n: number): number {
@@ -70,6 +71,8 @@ export class HeartView {
   comparison: ValveMode = 'normal';
   /** D077 signal observer: 'af' swaps the atrial conduction drawing only. Valves, blood lanes and passage stay normal. */
   rhythm: RhythmMode = 'normal';
+  /** D099 supply observer: 'work' widens and speeds the coronary blood marks only. The beat, valves and passage stay normal. */
+  supply: SupplyMode = 'rest';
   readonly organ: Organ;
   private tracks: Track[];
   private motes: { x: number; y: number; r: number; v: number }[] = [];
@@ -106,7 +109,7 @@ export class HeartView {
         let f: number;
         if (L.when === 'av') f = up ? 0.55 + 0.45 * o : 0.12 + 1.1 * o;
         else if (L.when === 'sl') f = up ? 0.06 + 1.25 * o : 0.2 + 1.5 * o;
-        else if (L.when === 'coronary-left' || L.when === 'coronary-right') f = coronaryFlowFactor(L.when === 'coronary-left' ? 'left' : 'right', real);
+        else if (L.when === 'coronary-left' || L.when === 'coronary-right') f = coronaryFlowFactor(L.when === 'coronary-left' ? 'left' : 'right', real) * (this.supply === 'work' ? 1.8 : 1);
         else f = 0.8 + 0.2 * Math.sin(this.time * 1.3 + i);
         const step = L.speed * f * dt * (0.85 + 0.3 * ((i * 37) % 10) / 10);
         const hold = t.gateD - 2 - (i % 6) * 2.2;
@@ -130,6 +133,11 @@ export class HeartView {
     this.drawSignals(g, cx, cy, real);
     if (o.kind === 'lung') this.drawGas(g, cx, cy);
     for (const t of this.tracks) this.drawTrack(g, t, cx, cy, vw, vh);
+    if (this.supply === 'work' && o.kind === 'aorta') {
+      // Dotted ring around both coronary openings: the vessels downstream widen when the muscle needs more.
+      g.fillStyle = 'rgba(255,214,150,0.85)';
+      for (const f of o.features) if (f.kind === 'rim') for (let a = 0; a < Math.PI * 2; a += 0.45) g.fillRect(Math.round(f.x + Math.cos(a + this.time) * (f.r + 4) - cx), Math.round(f.y + Math.sin(a + this.time) * (f.r + 4) - cy), 1, 1);
+    }
     for (const v of o.valves) {
       const affected = this.room.id === 'heart' && v.kind === 'tricuspid';
       const normal = openness(valveSet(v), real);
@@ -196,13 +204,15 @@ export class HeartView {
   }
 
   private drawTrack(g: Ctx, t: Track, cx: number, cy: number, vw: number, vh: number): void {
-    const L = t.lane, half = L.width / 2;
-    for (let i = 0; i < L.n; i++) {
-      const p = lanePoint(t, t.d[i]!);
-      const wob = Math.sin(this.time * 2.1 + i * 1.7) * 1.5;
-      const x = Math.round(p.x + p.nx * (t.off[i]! * half + wob) - cx), y = Math.round(p.y + p.ny * (t.off[i]! * half + wob) - cy);
+    const L = t.lane, boost = this.supply === 'work' && (L.when === 'coronary-left' || L.when === 'coronary-right'), half = (L.width / 2) * (boost ? 1.7 : 1);
+    // With more demand the same lane carries a second, mirrored set of marks (qualitative, not a flow measurement).
+    for (let j = 0; j < L.n * (boost ? 2 : 1); j++) {
+      const i = j % L.n, extra = j >= L.n, d = extra ? (t.d[i]! + t.total / (2 * L.n)) % t.total : t.d[i]!, off = extra ? -t.off[i]! : t.off[i]!;
+      const p = lanePoint(t, d);
+      const wob = Math.sin(this.time * 2.1 + j * 1.7) * 1.5;
+      const x = Math.round(p.x + p.nx * (off * half + wob) - cx), y = Math.round(p.y + p.ny * (off * half + wob) - cy);
       if (x < -6 || y < -6 || x > vw + 6 || y > vh + 6) continue;
-      if (this.organ.holes(p.x, p.y) < -3 && t.d[i]! > 8 && t.d[i]! < t.total - 8) continue;
+      if (this.organ.holes(p.x, p.y) < -3 && d > 8 && d < t.total - 8) continue;
       const k = t.kind[i]!;
       if (k === 2) { cell(g, x, y, ['#ece6f4', '#d8cde8', '#8a69b3']); continue; }
       if (k === 1) { g.fillStyle = '#e9cddb'; g.fillRect(x, y, 2, 1); continue; }

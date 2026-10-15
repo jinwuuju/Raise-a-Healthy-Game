@@ -32,6 +32,10 @@ import { canOfferQ5, q5CompareDone, q5NormalDone } from './domain/q005';
 import { q5Normal, q5Text, type SignalCard } from './domain/q005-state';
 import { openQ5 } from './ui/q005';
 import { openRhythmComparison } from './ui/rhythm-comparison';
+import { canOfferQ6, q6CompareDone, q6NormalDone } from './domain/q006';
+import { q6Normal, q6Text, type SupplyCard } from './domain/q006-state';
+import { openQ6 } from './ui/q006';
+import { openSupplyComparison } from './ui/supply-comparison';
 import { openReaction } from './ui/reaction';
 import { showOrganEntry } from './ui/organ-entry';
 import { openNotebook as showNotebook } from './ui/notebook';
@@ -258,11 +262,11 @@ function refresh() {
   hud.setLunch(world ? lunchHudText(s, Date.now()) : null);
   if (!world) return;
   world.player.look = s.avatar.look; world.player.name = s.avatar.name;
-  const layer = world.roomId !== 'heart' ? '' : s.q003.mode !== 'normal' ? q3Text.comparison[s.q003.mode].label : s.q005.mode !== 'normal' ? q5Text.comparison[s.q005.mode].label : '';
+  const layer = world.roomId === 'aorta' && s.q006.mode !== 'rest' ? q6Text.comparison[s.q006.mode].label : world.roomId !== 'heart' ? '' : s.q003.mode !== 'normal' ? q3Text.comparison[s.q003.mode].label : s.q005.mode !== 'normal' ? q5Text.comparison[s.q005.mode].label : '';
   hud.setObjective((layer ? '검수 전 모형 · ' + layer + ' 비교 · ' : '') + objective(s, world.roomId));
-  if (world.heart) { world.heart.comparison = world.roomId === 'heart' ? s.q003.mode : 'normal'; world.heart.rhythm = world.roomId === 'heart' ? s.q005.mode : 'normal'; }
+  if (world.heart) { world.heart.comparison = world.roomId === 'heart' ? s.q003.mode : 'normal'; world.heart.rhythm = world.roomId === 'heart' ? s.q005.mode : 'normal'; world.heart.supply = world.roomId === 'aorta' ? s.q006.mode : 'rest'; }
   const has = (f: string) => s.flags.includes(f);
-  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed)) || canOfferQ2(s) || canOfferQ3(s) || canOfferQ4(s) || canOfferQ5(s) || (s.q002.accepted && !s.q002.reported && q2Seen(s).length === 4);
+  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed)) || canOfferQ2(s) || canOfferQ3(s) || canOfferQ4(s) || canOfferQ5(s) || canOfferQ6(s) || (s.q002.accepted && !s.q002.reported && q2Seen(s).length === 4);
   world.questNpc = world.roomId === 'newsroom' && needEditor ? 'editor' : null;
   world.questTargets = [];
   if (world.roomId === 'newsroom' && has(Q1.accepted) && !has(Q1.observed)) world.questTargets = ['device'];
@@ -271,6 +275,7 @@ function refresh() {
   if (world.roomId === 'newsroom' && s.q003.accepted && !s.q003.publishedAt) world.questTargets = q3CompareDone(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q004.accepted && !s.q004.publishedAt) world.questTargets = q4Ready(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q005.accepted && !s.q005.publishedAt) world.questTargets = q5CompareDone(s) ? ['my-desk'] : ['device'];
+  if (world.roomId === 'newsroom' && s.q006.accepted && !s.q006.publishedAt) world.questTargets = q6CompareDone(s) ? ['my-desk'] : ['device'];
   world.sparkTargets = [];
   if (isHeartRoom(world.roomId)) {
     const here = world.roomId;
@@ -279,6 +284,7 @@ function refresh() {
     if (s.q003.accepted && !s.q003.publishedAt) world.questTargets = !q3NormalDone(s) ? q3Text.normal.filter(n => n.room === here && !s.q003.notes.includes(n.id as 'tricuspid' | 'pulmonary')).map(n => n.target) : !q3CompareDone(s) && here === 'heart' ? ['hx-tricuspid'] : ['return-pad'];
     if(s.q004.accepted&&!s.q004.publishedAt)world.questTargets=q4Ready(s)?['return-pad']:q4Text.notes.filter(n=>n.room===here&&!s.q004.notes.includes(n.id as Q4Evidence)&&(n.id!=='systemic-return'||s.q004.crossedBody)).map(n=>n.target);
     if (s.q005.accepted && !s.q005.publishedAt) world.questTargets = !q5NormalDone(s) ? q5Text.notes.filter(n => n.room === here && !s.q005.notes.includes(n.id as SignalCard)).map(n => n.target) : !q5CompareDone(s) && here === 'heart' ? ['hx-sa'] : ['return-pad'];
+    if (s.q006.accepted && !s.q006.publishedAt) world.questTargets = !q6NormalDone(s) ? q6Text.notes.filter(n => n.room === here && !s.q006.notes.includes(n.id as SupplyCard)).map(n => n.target) : !q6CompareDone(s) ? (here === 'aorta' ? ['hx-sinus'] : []) : ['return-pad'];
     const found = discovered(s);
     world.sparkTargets = world.room.targets.filter(t => t.id.startsWith('hx-') && !found.includes(t.id)).map(t => t.id);
   }
@@ -360,12 +366,19 @@ async function interact(t: Target) {
   try {
     const routeNote=q4Text.notes.find(n=>n.target===t.id&&n.room===w.roomId);
     const signalNote = q5Text.notes.find(n => n.target === t.id && n.room === w.roomId);
+    const supplyNote = q6Text.notes.find(n => n.target === t.id && n.room === w.roomId);
     if (t.id === 'lift-panel' && (w.roomId === 'lift1' || w.roomId === 'lift4')) {
       const floor = await dialog.show([{ who: '엘리베이터', text: '이동할 층을 선택하세요.', npc: null }], [
         { id: 'lift1', label: '1층 · 로비', sub: '정문과 논현로', disabled: w.roomId === 'lift1' },
         { id: 'lift4', label: '4층 · 라운지와 사무실', sub: '복도 안쪽에 내 자리', disabled: w.roomId === 'lift4' },
       ]);
       if (floor === 'lift1' || floor === 'lift4') void travel({ to: floor, arrive: rooms[floor].spawn, facing: 'down', mode: 'walk', card: floor === 'lift1' ? '1층' : '4층' });
+    } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q006.accepted && q6NormalDone(game.state)) {
+      pauseInput(); openSupplyComparison(game);
+    } else if (game.state.q006.accepted && supplyNote) {
+      await say([{ who: supplyNote.name, text: supplyNote.text + '\n' + q6Text.disclaimer, npc: null }]);
+      if (game.recordQ6(supplyNote.id as SupplyCard)) hud.toast('공급 취재 기록 · ' + supplyNote.name + ' (' + q6Normal.filter(id => game.state.q006.notes.includes(id)).length + '/5)');
+      game.discover(t.id);
     } else if (t.id === 'hx-sa' && w.roomId === 'heart' && game.state.q005.accepted && q5NormalDone(game.state)) {
       pauseInput(); openRhythmComparison(game);
     } else if (game.state.q005.accepted && signalNote) {
@@ -397,13 +410,17 @@ async function interact(t: Target) {
         const choice = await dialog.show([{ who: '편집장', text: q5Text.question, npc: 'editor' }], [{ id: 'accept', label: '박동 신호 취재 맡기', sub: '신호가 지나는 곳을 보고 심방세동과 비교해요', disabled: false }]);
         if (choice === 'accept') { game.acceptQ5(); hud.toast('Q005 · 박동 신호 취재를 맡았어요 · 신호 관찰기 무료 대여'); }
       }
+      if (script.action === 'offer-q6') {
+        const choice = await dialog.show([{ who: '편집장', text: q6Text.question, npc: 'editor' }], [{ id: 'accept', label: '심장 근육 공급 취재 맡기', sub: '공급 노선을 걷고 쉴 때와 더 일할 때를 비교해요', disabled: false }]);
+        if (choice === 'accept') { game.acceptQ6(); hud.toast('Q006 · 심장 근육 공급 취재를 맡았어요 · 공급 관찰기 무료 대여'); }
+      }
       if(script.action==='offer-q4'){
         const choice=await dialog.show([{who:'편집장',text:q4Text.question,npc:'editor'}],[{id:'accept',label:'두 순환 취재 맡기',sub:'폐와 온몸 노선을 직접 따라가요',disabled:false}]);
         if(choice==='accept'){game.acceptQ4();hud.toast('Q004 · 두 순환 취재를 맡았어요');}
       }
       if (t.npc === 'barista') await cafeOrder();
     } else if (t.id === 'my-desk' && game.has(Q1.briefed)) {
-      pauseInput(); if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
+      pauseInput(); if (game.state.q006.accepted) showQ6(); else if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
         [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
@@ -477,7 +494,8 @@ function showQ2Article() { openQ2Article(game, () => { const result = latestReac
 function showQ3() { openQ3(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
 function showQ4() {openQ4(game,()=>{const result=latestReaction(game.state);if(result)showReaction(result);});}
 function showQ5() { openQ5(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
-function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q005' ? showQ5 : result.questId === 'Q004' ? showQ4 : result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
+function showQ6() { openQ6(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
+function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q006' ? showQ6 : result.questId === 'Q005' ? showQ5 : result.questId === 'Q004' ? showQ4 : result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
 function saveFeedback(c: HTMLElement): () => void {
   const message = el('p', 'save-message'); message.setAttribute('role', 'status'); c.append(message);
   const update = () => { message.textContent = game.lastError ?? ''; message.classList.toggle('hidden', !game.lastError); };
@@ -486,7 +504,7 @@ function saveFeedback(c: HTMLElement): () => void {
 function openNotebook(tab?: number) {
   if (busy() || !world) return;
   pauseInput();
-  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, reaction: r => showReaction(r, true), map: openMap, lunch: date => openLunchSheet(date), lunchDex: target => { void loadLunch().then(m => { target.replaceChildren(); m.renderLunchDex(target, game.state); }).catch(() => target.replaceChildren(el('p', 'muted', '도감을 불러오지 못했어요. 네트워크를 확인해 주세요.'))); } }, tab);
+  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, q006: showQ6, reaction: r => showReaction(r, true), map: openMap, lunch: date => openLunchSheet(date), lunchDex: target => { void loadLunch().then(m => { target.replaceChildren(); m.renderLunchDex(target, game.state); }).catch(() => target.replaceChildren(el('p', 'muted', '도감을 불러오지 못했어요. 네트워크를 확인해 주세요.'))); } }, tab);
 }
 /** 오늘의 점심 화면·데이터·그림은 처음 열 때 따로 내려받는다(첫 로딩 크기 보호). */
 const loadLunch = () => import('./ui/lunch');

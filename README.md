@@ -4,7 +4,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 > **지금 바로 플레이:** https://jinwuuju.github.io/Raise-a-Healthy-Game/ (설계실: [/design/](https://jinwuuju.github.io/Raise-a-Healthy-Game/design/))
 >
-> **현재 배포: redesign-1 + 심장 속 탐사 + 진입 연출 + Q001~Q005 취재·기사·독자 반응 / 2026-10-13.** 심장 내부를 걸으며 첫 기사·네 방의 주소·판막질환 비교·두 순환 노선·박동 신호까지 취재한다. Q005는 전도계 다섯 곳을 직접 보고 같은 우심방에서 고른 박자와 심방세동을 비교한 뒤 신호 도착 순서 도해와 팩트체크 기사를 쓴다. 온몸 맵은 아직 없어 이동 축약을 표시한다. 기본 XP 합계 1,000XP/Lv.6, 골드는 최초 보상과 발행별 추가 응원금이다. 수첩은 할 일·취재·기사·인체·생활로 분류한다. 의학 본문은 검수 전 모형이며 의학·아트·실사용자 평가는 별도다. [현재 상태](docs/production/STATUS.md) · [Q005 구현·검증](docs/production/Q005-SIGNAL-REPORT.md) · [Q004](docs/production/Q004-CIRCULATION-REPORT.md).
+> **현재 배포: redesign-1 + 심장 속 탐사 + 진입 연출 + Q001~Q006 취재·기사·독자 반응 / 2026-10-15.** 심장 내부를 걸으며 첫 기사·네 방의 주소·판막질환 비교·두 순환 노선·박동 신호·심장 근육 공급까지 취재한다. Q006은 관상동맥 입구·심장 벽·관상정맥동을 직접 보고 대동맥굴에서 쉴 때와 더 일할 때의 공급을 비교한 뒤 심장 근육 배송 노선 도해와 팩트체크 기사를 쓴다. 온몸 맵은 아직 없어 이동 축약을 표시한다. 기본 XP 합계 1,350XP/Lv.7, 골드는 최초 보상과 발행별 추가 응원금이다. 수첩은 할 일·취재·기사·인체·생활로 분류한다. 의학 본문은 검수 전 모형이며 의학·아트·실사용자 평가는 별도다. [현재 상태](docs/production/STATUS.md) · [Q006 구현·검증](docs/production/Q006-SUPPLY-REPORT.md) · [Q005](docs/production/Q005-SIGNAL-REPORT.md) · [Q004](docs/production/Q004-CIRCULATION-REPORT.md).
 
 **추가 배포(D072~D074):** 약 4.2초 심장 진입 연출과 Q002 네 방 취재, Q003 판막질환 비교·6단계 취재·팩트체크 기사. [진입/Q002 기록](docs/production/ORGAN-ENTRY-AND-Q002.md) · [판막 취재 기록](docs/production/Q003-VALVE-REPORT.md).
 
@@ -45,7 +45,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 ## 작업을 이어갈 때
 
-[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 맨 앞 ‘현재 상태와 다음 작업’을 따른다(점심 그림 확인 대기 · 실시간 시계 완료(D083) → 점심 화면 → 검증, 그다음 Q006). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
+[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 맨 앞 ‘현재 상태와 다음 작업’을 따른다(점심 그림 확인 대기 · 점심 화면·보상 완료, 메인 Q006 완료(D099) → 다음 Q007). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
 
 - 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 이 Mac의 셸에 Node가 없으면 `bash tools/npm-local.sh run dev`.
 - 검증: `npm run typecheck`, `npm test`, `npm run test:e2e`, `npm run build`. 최신 실행 결과는 [현재 상태](docs/production/STATUS.md)와 [첫 기사 기록](docs/production/Q001-ARTICLE.md)에 남긴다. [기존 오류 점검](docs/production/CODE-AUDIT-2026-10-11.md) · [뒷모습·모바일 생성 화면](docs/production/MOBILE-CREATOR-AND-REAR-WALK.md).

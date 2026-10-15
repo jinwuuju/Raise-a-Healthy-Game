@@ -1,0 +1,12 @@
+{
+ "id": "Q006",
+ "publication": {
+  "key": "quest.Q006.first",
+  "xp": 350,
+  "gold": 220
+ },
+ "repeatXp": 0,
+ "repeatBaseGold": 0,
+ "reactionBalanceRef": "article-reactions.v0.1.json",
+ "note": "early-quests.v0.1.json의 기존 Q006 기본 보상 그대로. 관찰·공급 관찰기 비교·자료 취재·배송 노선 도해에는 보상을 추가하지 않는다. 명시적 재발행의 추가 골드만 D066 적용."
+}

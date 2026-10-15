@@ -492,6 +492,11 @@ a.row { color: var(--text); text-decoration: none; }
 .signal-card span { font-size: .8125rem; color: var(--muted); }
 .signal-pool { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 8px; }
 .signal-pool .sub { color: var(--muted); font-size: .8125rem; }
+/* Q006 supply route board (D099): the main body route is shown as given; the heart-muscle branch is what the reporter builds. */
+.supply-main { margin: 0; color: var(--muted); font-size: .875rem; }
+.supply-status { margin: 0; justify-self: start; padding: 4px 10px; border-radius: 999px; border: 1px solid #c4736a; color: #ffb4a8; font-size: .8125rem; }
+.supply-status.done { border-color: var(--mint); color: var(--mint); }
+.signal-pool .supply-decoy { border-style: dashed; }
 .ecg-strip { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
 .rhythm-paired { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
 

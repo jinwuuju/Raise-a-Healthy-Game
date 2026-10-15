@@ -11,11 +11,13 @@ import { canOfferQ4,q4Ready } from '../domain/q004';
 import { q4Text } from '../domain/q004-state';
 import { canOfferQ5, q5CompareDone, q5NormalDone, q5Ready } from '../domain/q005';
 import { q5Normal, q5Text } from '../domain/q005-state';
+import { canOfferQ6, q6CompareDone, q6NormalDone, q6Ready } from '../domain/q006';
+import { q6Normal, q6Text } from '../domain/q006-state';
 import type { GameState } from '../domain/state';
 import { isHeartRoom, type RoomId } from '../world/types';
 
 export type Line = { who: string; text: string; npc: string | null };
-export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' | 'offer-q5' };
+export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' | 'offer-q5' | 'offer-q6' };
 export const q1Text = q1;
 export const heartText = heart;
 
@@ -34,6 +36,22 @@ export function objective(s: GameState, room: RoomId): string {
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
+  if (canOfferQ6(s)) return '편집장에게 심장 근육 공급 취재 ‘펌프도 배달이 필요해’ 받기';
+  if (s.q006.accepted) {
+    if (s.q006.publishedAt) return '심장 근육 공급 기사 발행 완료! 수첩에서 기사·반응 읽기 · 다음 통로 비교 취재는 준비 중';
+    if (!q6NormalDone(s)) {
+      const note = q6Text.notes.find(n => !s.q006.notes.includes(n.id as typeof q6Normal[number]))!;
+      const count = q6Normal.filter(id => s.q006.notes.includes(id)).length + '/5';
+      if (!isHeartRoom(room)) return '바디스코프로 심장 근육 공급 노선 찾아가기 (' + count + ')';
+      return (room === note.room ? note.name + ' 살펴보기' : '피를 따라 ' + toward(roomNames[note.room]!) + ' · ' + note.name) + ' (' + count + ')';
+    }
+    if (!q6CompareDone(s)) {
+      if (room === 'aorta') return '대동맥굴 앞 공급 관찰기로 쉴 때와 더 일할 때 비교하기';
+      return isHeartRoom(room) ? '피를 따라 대동맥으로 · 대동맥굴 앞 공급 관찰기에서 비교하기' : '바디스코프로 들어가 피를 따라 대동맥굴 앞에서 공급 비교하기';
+    }
+    if (!q6Ready(s)) return '편집국 내 자리에서 필요한 이유→흐르는 때→더 일할 때 자료 취재 이어가기';
+    return '내 자리에서 심장 근육 배송 노선 도해와 팩트체크 기사 쓰기';
+  }
   if (canOfferQ5(s)) return '편집장에게 박동 신호 취재 ‘박자를 전하는 길’ 받기';
   if (s.q005.accepted) {
     if (s.q005.publishedAt) return '박동 신호 기사 발행 완료! 수첩에서 기사·반응 읽기 · 다음 심근 공급 취재는 준비 중';
@@ -116,6 +134,8 @@ export function talk(id: string, s: GameState): Talk {
   const has = (f: string) => s.flags.includes(f);
   switch (id) {
     case 'editor':
+      if (canOfferQ6(s)) return { flag: null, action: 'offer-q6', lines: say('편집장', 'editor', ...q6Text.offer) };
+      if (s.q006.accepted) return { flag: null, lines: say('편집장', 'editor', objective(s, s.at.room)) };
       if (canOfferQ5(s)) return { flag: null, action: 'offer-q5', lines: say('편집장', 'editor', ...q5Text.offer) };
       if (s.q005.accepted) return { flag: null, lines: say('편집장', 'editor', objective(s, s.at.room)) };
       if(canOfferQ4(s))return {flag:null,action:'offer-q4',lines:say('편집장','editor',...q4Text.offer)};
