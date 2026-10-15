@@ -24,8 +24,8 @@ async function compose(p:Page){const file=p.getByRole('dialog',{name:'Q004 노�
 
 test('Q004: commission and six observations through both circuits, actual body exit, article and Lv.5',async({page})=>{
   test.setTimeout(180000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await seed(page);
-  await tap(page,88,80);await expect(page.locator('.dialog')).toBeVisible({timeout:10000});await choices(page);await page.getByRole('button',{name:/두 순환 취재 맡기/}).click();
-  await tap(page,308,118);await expect(page.locator('.dialog')).toBeVisible({timeout:12000});await choices(page);await page.getByRole('button',{name:/심장 속으로 들어가기/}).click();await page.getByRole('button',{name:'바로 들어가기'}).click();
+  await tap(page, 256, 80);await expect(page.locator('.dialog')).toBeVisible({timeout:10000});await choices(page);await page.getByRole('button',{name:/두 순환 취재 맡기/}).click();
+  await tap(page, 464, 118);await expect(page.locator('.dialog')).toBeVisible({timeout:12000});await choices(page);await page.getByRole('button',{name:/심장 속으로 들어가기/}).click();await page.getByRole('button',{name:'바로 들어가기'}).click();
   await expect.poll(()=>room(page)).toBe('heart');await page.waitForTimeout(200);
   await tap(page,300,412);await expect.poll(()=>room(page),{timeout:20000}).toBe('rv');await page.waitForTimeout(200);await inspect(page,388,100,'pulmonary-out');
   await tap(page,388,12);await expect.poll(()=>room(page),{timeout:20000}).toBe('lung');await page.waitForTimeout(200);await inspect(page,330,190,'gas');

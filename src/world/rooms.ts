@@ -16,7 +16,7 @@ import type { Organ } from './organ-types';
 
 export const T = {
   VOID: 0, PAVE: 1, ROAD: 2, LANE: 3, CROSS: 4, GRASS: 5, GRAVEL: 6, PARKING: 7, DRIVE: 8,
-  PLAZA: 9, TURF: 10, TACTILE: 11, WOOD: 12, MARBLE: 13, HERRING: 14, WALL: 15, FLESH: 16, VESSEL: 17, BRIDGE: 18,
+  PLAZA: 9, TURF: 10, TACTILE: 11, WOOD: 12, MARBLE: 13, HERRING: 14, WALL: 15, FLESH: 16, VESSEL: 17, BRIDGE: 18, OFFICE: 19,
 } as const;
 const BLOCKED = new Set<number>([T.VOID, T.ROAD, T.WALL]);
 export function walkableTile(t: number): boolean { return !BLOCKED.has(t); }
@@ -29,6 +29,9 @@ export type PropKind =
   | 'ginkgo' | 'parktree' | 'lamp' | 'bench' | 'planter' | 'bollard' | 'signal' | 'kiosk' | 'signpost' | 'hydrant'
   | 'scooter' | 'bikes' | 'vending' | 'bin' | 'flowerbed' | 'fountain' | 'parkedcar' | 'booth'
   | 'desk' | 'editordesk' | 'chair' | 'bookshelf' | 'bodyscope' | 'sofa' | 'lowtable' | 'printer' | 'water' | 'plant'
+  | 'benchdesk' | 'shortbench' | 'editorbench' | 'lobbytable' | 'lobbyplant' | 'lobbysofa' | 'longbench' | 'meettable' | 'meetchair' | 'sidescreen'
+  | 'windowdesk' | 'sidechair' | 'walldesk' | 'bigtable' | 'counterbar' | 'bigsofa' | 'loungetable'
+  | 'reception-side' | 'sofa-side' | 'eurodesk' | 'euroeditor' | 'cabinet' | 'greysofa' | 'whitetable' | 'longtable' | 'tallchair' | 'pantry' | 'officechair'
   | 'reception' | 'counter' | 'roundtable' | 'cafechair' | 'bar' | 'stool' | 'loungechair'
   | 'pedsignal' | 'robot' | 'pad' | 'papillary'
   | 'cypress' | 'crates' | 'goods' | 'aboard' | 'streetsign' | 'repairbooth';
@@ -39,7 +42,9 @@ export type Target = { id: string; label: string; verb: string; x: number; y: nu
 export type Door = { id: string; zone: Rect; to: RoomId; arrive: Point; facing: Dir; label: string; card?: string | null };
 export type Marking = { kind: 'crossV' | 'crossH' | 'dashV' | 'dashH' | 'centerV' | 'centerH' | 'stop' | 'slow30' | 'stall' | 'edgeH' | 'edgeV'; x: number; y: number; w: number; h: number };
 export type WallDecor = { kind: 'window' | 'whiteboard' | 'clock' | 'elevator' | 'sign' | 'notice' | 'menu' | 'shelf' | 'poster' | 'mailbox' | 'neon'; x: number; w: number; text: string };
-export type Interior = { wall: 'office' | 'lobby' | 'cafe'; decor: WallDecor[]; bottom: 'wall' | 'glass'; door: [number, number]; pendants: Point[]; rugs: Rect[] };
+export type Interior = { reference?: 'lobby' | 'lifthall' | 'floor4' | 'office' | 'lift' | 'lounge'; openings?: Rect[];
+  /** Translucent glass wall faces: drawn sorted with people at their base line (y + h), over what stands behind them. */
+  glass?: Rect[]; wall: 'office' | 'lobby' | 'cafe'; decor: WallDecor[]; bottom: 'wall' | 'glass'; door: [number, number]; pendants: Point[]; rugs: Rect[] };
 
 /** Road part of a crosswalk. People may enter it only while the pedestrian light for `road` is green. */
 export type Crossing = { id: string; rect: Rect; road: 'NS' | 'EW' };
@@ -61,7 +66,7 @@ function grid(cols: number, rows: number, base: number) {
   return { tiles, fill };
 }
 
-function solidFor(kind: PropKind, x: number, y: number): Rect | null {
+function solidFor(kind: PropKind, x: number, y: number, v = 0): Rect | null {
   const r = (w: number, h: number): Rect => ({ x: x - w / 2, y: y - h, w, h });
   switch (kind) {
     case 'ginkgo': case 'parktree': return r(6, 4);
@@ -77,17 +82,39 @@ function solidFor(kind: PropKind, x: number, y: number): Rect | null {
     case 'fountain': return r(38, 16);
     case 'parkedcar': return r(16, 26);
     case 'booth': return r(20, 10);
-    case 'desk': return r(48, 14);
-    case 'editordesk': return r(64, 16);
+    case 'eurodesk': case 'desk': return r(48, 14);
+    case 'euroeditor': case 'editordesk': return r(64, 16);
     case 'bookshelf': return r(32, 8);
     case 'bodyscope': return r(44, 18);
-    case 'sofa': return r(48, 12);
+    case 'greysofa': case 'sofa': return r(48, 12);
     case 'lowtable': return r(28, 7);
     case 'printer': return r(24, 10);
     case 'water': return r(10, 6);
     case 'plant': return r(12, 5);
     case 'reception': return r(64, 14);
     case 'counter': return r(128, 16);
+    case 'benchdesk': return r(136, 38);
+    case 'editorbench': return r(136, 30);
+    case 'shortbench': return r(72, 38);
+    case 'longbench': return r(196, 38);
+    case 'meettable': return r(108, 20);
+    case 'sidescreen': return r(10, 34);
+    case 'windowdesk': return r(28, 62);
+    case 'walldesk': return r(24, 92);
+    case 'bigtable': return r(184, 28);
+    case 'counterbar': return r(232, 16);
+    case 'bigsofa': return v === 1 ? r(96, 18) : r(28, 60);
+    case 'loungetable': return r(44, 12);
+    case 'lobbytable': return r(58, 22);
+    case 'lobbyplant': return r(24, 12);
+    case 'lobbysofa': return r(52, 14);
+    case 'reception-side': return r(24, 80);
+    case 'sofa-side': return r(18, 48);
+    case 'cabinet': return r(48, 10);
+    case 'whitetable': return r(36, 12);
+    case 'longtable': return r(88, 28);
+    case 'pantry': return r(88, 12);
+    case 'tallchair': return r(10, 5);
     case 'roundtable': return r(16, 6);
     case 'bar': return r(88, 6);
     case 'loungechair': return r(20, 8);
@@ -102,7 +129,7 @@ function solidFor(kind: PropKind, x: number, y: number): Rect | null {
     default: return null;
   }
 }
-const P = (kind: PropKind, x: number, y: number, v = 0): Prop => ({ kind, x, y, v, solid: solidFor(kind, x, y) });
+const P = (kind: PropKind, x: number, y: number, v = 0): Prop => ({ kind, x, y, v, solid: solidFor(kind, x, y, v) });
 const B = (id: string, kind: BuildingKind, tx: number, ty: number, tw: number, td: number, h: number, v = 0): Building =>
   ({ id, kind, x: tx * TILE, y: ty * TILE, w: tw * TILE, d: td * TILE, h, v });
 const npc = (id: string, name: string, x: number, y: number, facing: Dir, look: Look, route: Point[] | null = null, speed = 0): NpcSpec =>
@@ -234,7 +261,7 @@ function street(): Room {
       target('shoe-repair', '구두 수선대', '보기', 282, 290, 16),
     ],
     doors: [
-      { id: 'euro-door', zone: { x: 284, y: 240, w: 17, h: 7 }, to: 'lobby', arrive: { x: 160, y: 168 }, facing: 'up', label: '유로프라자 로비' },
+      { id: 'euro-door', zone: { x: 284, y: 240, w: 17, h: 7 }, to: 'lobby', arrive: { x: 240, y: 324 }, facing: 'up', label: '유로프라자 로비' },
       { id: 'cafe-door', zone: { x: 108, y: 400, w: 17, h: 7 }, to: 'cafe', arrive: { x: 240, y: 168 }, facing: 'up', label: '비투비씨 카페' },
     ],
   });
@@ -250,70 +277,406 @@ function interiorGrid(cols: number, rows: number, floor: number, door: [number, 
   return g;
 }
 
-export const editorLook: Look = { build: 'm', hair: 'short', face: 'calm', shape: 'oval', skin: 'honey', hairColor: 'silver', outfit: 'suit', glasses: true };
+export const ceoLook: Look = { build: 'f', hair: 'long', face: 'calm', shape: 'oval', skin: 'fair', hairColor: 'ink', outfit: 'suit' };
+export const editorLook: Look = { build: 'f', hair: 'bob', face: 'calm', shape: 'oval', skin: 'honey', hairColor: 'brown', outfit: 'suit', glasses: true };
 export const seniorLook: Look = { build: 'f', hair: 'ponytail', face: 'bright', shape: 'oval', skin: 'peach', hairColor: 'chestnut', outfit: 'reporter' };
 export const guardLook: Look = { build: 'm', hair: 'buzz', face: 'smile', shape: 'round', skin: 'tan', hairColor: 'ink', outfit: 'uniform' };
 export const baristaLook: Look = { build: 'f', hair: 'bob', face: 'doe', shape: 'round', skin: 'fair', hairColor: 'brown', outfit: 'apron' };
 
+/** D095 (user): three rows. Top: the CEO's desk at the far left, the editor-in-chief alone at the long desk in the middle,
+ * the Bodyscope at the far right end. Below: the facing desk islands, now two identical rows. Cabinets along the back. */
 function newsroom(): Room {
-  const cols = 24, rows = 15;
-  const { tiles } = interiorGrid(cols, rows, T.WOOD, [-1, -1]);
+  const cols = 32, rows = 28;
+  const { tiles } = interiorGrid(cols, rows, T.OFFICE, [20, 21]);
+  const islands = (y: number) => [
+    ...[112, 280].flatMap(x => [P('benchdesk', x, y), ...[-48, 0, 48].flatMap(dx => [P('officechair', x + dx, y - 50, 1), P('officechair', x + dx, y + 17)])]),
+    P('shortbench', 432, y), P('officechair', 416, y - 50, 1), P('officechair', 448, y - 50, 1), P('officechair', 416, y + 17), P('officechair', 448, y + 17),
+  ];
   return finish({
-    id: 'newsroom', title: '유로프라자 3층 · 메디컬 데스크 편집국', cols, rows, tiles, buildings: [], markings: [],
+    id: 'newsroom', title: '유로프라자 4층 · 안쪽 사무실 · 메디컬 데스크', cols, rows, tiles, buildings: [], markings: [],
     props: [
-      P('editordesk', 88, 104), P('bookshelf', 152, 58), P('bookshelf', 186, 58, 1),
-      P('desk', 184, 136), P('desk', 240, 136, 1), P('chair', 184, 148), P('chair', 240, 148),
-      P('bodyscope', 308, 120), P('sofa', 56, 196), P('lowtable', 56, 214), P('printer', 340, 204),
-      P('water', 360, 62), P('plant', 26, 62), P('plant', 292, 214, 1), P('plant', 124, 62, 1),
+      P('euroeditor', 88, 104), P('editorbench', 256, 120), P('bodyscope', 464, 120),
+      ...islands(230), ...islands(350),
+      ...[56, 112, 168, 224, 280, 392].map(x => P('cabinet', x, 428)), P('printer', 452, 424),
     ],
-    npcs: [npc('editor', '편집장', 88, 86, 'down', editorLook), npc('senior', '선배 기자', 262, 158, 'up', seniorLook)],
+    npcs: [npc('ceo', '대표', 88, 86, 'down', ceoLook), npc('editor', '편집장', 256, 84, 'down', editorLook), npc('senior', '선배 기자', 112, 178, 'down', seniorLook)],
     targets: [
-      target('editor', '편집장', '대화', 88, 108, 22, 'editor'),
-      target('senior', '선배 기자', '대화', 262, 160, 18, 'senior'),
-      target('my-desk', '내 자리', '살펴보기', 184, 142, 14),
-      target('device', '바디스코프', '살펴보기', 308, 126, 22),
-      target('shelf', '자료 책장', '살펴보기', 168, 64, 18),
+      target('ceo', '대표', '대화', 88, 108, 22, 'ceo'), target('editor', '편집장', '대화', 256, 128, 22, 'editor'),
+      target('senior', '선배 기자', '대화', 112, 182, 18, 'senior'),
+      target('my-desk', '내 자리', '살펴보기', 160, 176, 18), target('device', '바디스코프', '살펴보기', 464, 126, 22),
+      target('shelf', '뒤쪽 자료 캐비닛', '살펴보기', 168, 412, 18),
     ],
-    doors: [{ id: 'elevator', zone: { x: 324, y: 48, w: 24, h: 8 }, to: 'lobby', arrive: { x: 160, y: 70 }, facing: 'down', label: '엘리베이터' }],
+    doors: [{ id: 'office-exit', zone: { x: 322, y: 437, w: 28, h: 11 }, to: 'floor4', arrive: { x: 416, y: 72 }, facing: 'down', label: '4층 복도 · 엘리베이터 방향' }],
     interior: {
-      wall: 'office', bottom: 'wall', door: [-1, -1], pendants: [], rugs: [{ x: 24, y: 172, w: 72, h: 50 }, { x: 150, y: 100, w: 124, h: 64 }],
-      decor: [
-        { kind: 'window', x: 22, w: 46, text: '' }, { kind: 'window', x: 76, w: 46, text: '' },
-        { kind: 'poster', x: 214, w: 16, text: '' }, { kind: 'sign', x: 234, w: 56, text: 'MEDICAL DESK' },
-        { kind: 'whiteboard', x: 236, w: 52, text: '' }, { kind: 'clock', x: 300, w: 10, text: '' },
-        { kind: 'elevator', x: 320, w: 32, text: '3' },
-      ],
+      reference: 'office', wall: 'office', bottom: 'wall', door: [320, 352], pendants: [], rugs: [],
+      decor: [22, 76, 140, 340, 390, 440].map(x => ({ kind: 'window' as const, x, w: 46, text: '' })),
     },
     spawn: { x: 212, y: 176 }, spawnFacing: 'down',
   });
 }
 
 function lobby(): Room {
-  const cols = 20, rows = 12;
-  const { tiles } = interiorGrid(cols, rows, T.MARBLE, [9, 10]);
+  // User floor sketch, 2026-10-14 16:29 (approved look kept). D094: lift hall behind the divider (separate map).
+  // D095: one column narrower on the left (the recess was mostly empty), everything else shifted with it.
+  const cols = 23, rows = 22;
+  const g = interiorGrid(cols, rows, T.MARBLE, [14, 15]);
+  g.fill(0, 16, 7, 21, T.WALL); // Large lower-left wall, with TV/sofa on its right face.
+  g.fill(7, 3, 7, 10, T.WALL); // Divider behind the vertical reception desk; go around its bottom.
+  g.fill(2, 2, 4, 2, T.MARBLE); // Opening into the lift hall, inside the left recess.
   return finish({
-    id: 'lobby', title: '유로프라자 · 1층 로비', cols, rows, tiles, buildings: [], markings: [],
+    id: 'lobby', title: '유로프라자 · 1층 로비', cols, rows, tiles: g.tiles, buildings: [], markings: [],
     props: [
-      P('reception', 72, 104), P('loungechair', 236, 132), P('loungechair', 284, 132, 1), P('lowtable', 260, 148),
-      P('plant', 26, 62), P('plant', 294, 62, 1), P('plant', 26, 168, 1), P('plant', 294, 168),
+      P('lobbysofa', 158, 292), P('reception-side', 176, 148), P('lobbytable', 272, 176),
+      P('loungechair', 228, 224, 2), P('loungechair', 320, 218, 2), P('lobbyplant', 328, 302),
     ],
-    npcs: [npc('guard', '안내 데스크', 72, 86, 'down', guardLook)],
-    targets: [
-      target('guard', '안내 데스크', '대화', 72, 108, 22, 'guard'),
-      target('notice', '소식 게시판', '보기', 236, 56, 18),
-    ],
+    npcs: [npc('guard', '안내 데스크', 148, 110, 'right', guardLook)],
+    targets: [target('guard', '안내 데스크', '대화', 148, 132, 22, 'guard'), target('notice', '입주 안내', '보기', 152, 58, 18), target('lobby-tv', '로비 TV와 소파', '보기', 160, 278, 20)],
     doors: [
-      { id: 'elevator', zone: { x: 148, y: 48, w: 24, h: 8 }, to: 'newsroom', arrive: { x: 336, y: 68 }, facing: 'down', label: '엘리베이터' },
-      { id: 'front', zone: { x: 146, y: 181, w: 28, h: 11 }, to: 'street', arrive: { x: 292, y: 254 }, facing: 'down', label: '논현로' },
+      { id: 'elevator', zone: { x: 36, y: 32, w: 40, h: 11 }, to: 'lifthall', arrive: { x: 72, y: 166 }, facing: 'up', label: '엘리베이터 통로' },
+      { id: 'front', zone: { x: 226, y: 341, w: 28, h: 11 }, to: 'street', arrive: { x: 292, y: 254 }, facing: 'down', label: '논현로' },
     ],
     interior: {
-      wall: 'lobby', bottom: 'glass', door: [144, 176], pendants: [], rugs: [{ x: 136, y: 150, w: 48, h: 26 }],
-      decor: [
-        { kind: 'mailbox', x: 28, w: 40, text: '' }, { kind: 'sign', x: 120, w: 80, text: 'EURO PLAZA' },
-        { kind: 'elevator', x: 144, w: 32, text: '1' }, { kind: 'notice', x: 218, w: 36, text: '' }, { kind: 'poster', x: 268, w: 16, text: '' },
-      ],
+      reference: 'lobby', wall: 'lobby', bottom: 'wall', door: [224, 256], pendants: [], rugs: [],
+      decor: [{ kind: 'notice', x: 136, w: 32, text: '' }],
     },
-    spawn: { x: 160, y: 168 }, spawnFacing: 'up',
+    spawn: { x: 240, y: 324 }, spawnFacing: 'up',
+  });
+}
+
+/** D094: the passage to the lift, its own map so that the lift doors are seen head-on on the back wall. */
+function lifthall(): Room {
+  const cols = 12, rows = 12, g = grid(cols, rows, T.WALL);
+  g.fill(1, 5, 10, 10, T.MARBLE);
+  g.fill(3, 11, 5, 11, T.MARBLE); // opening back to the lobby
+  return finish({
+    id: 'lifthall', title: '유로프라자 · 1층 엘리베이터 통로', cols, rows, tiles: g.tiles, buildings: [], markings: [], npcs: [],
+    props: [],
+    targets: [target('lift-call', '엘리베이터 · 호출 버튼', '보기', 142, 92, 16)],
+    doors: [
+      { id: 'lift', zone: { x: 70, y: 80, w: 52, h: 8 }, to: 'lift1', arrive: { x: 80, y: 128 }, facing: 'up', label: '엘리베이터 타기' },
+      { id: 'lobby', zone: { x: 52, y: 181, w: 40, h: 11 }, to: 'lobby', arrive: { x: 56, y: 68 }, facing: 'down', label: '1층 로비' },
+    ],
+    interior: { reference: 'lifthall', wall: 'lobby', bottom: 'wall', door: [48, 96], pendants: [], rugs: [], decor: [] },
+    spawn: { x: 72, y: 166 }, spawnFacing: 'up',
+  });
+}
+
+/** The cabin is saved at its current floor, so reload and cancellation keep the exit unambiguous. */
+function lift(floor: 1 | 4): Room {
+  const cols = 10, rows = 10;
+  const { tiles } = interiorGrid(cols, rows, T.MARBLE, [4, 5]);
+  return finish({
+    id: floor === 1 ? 'lift1' : 'lift4', title: `유로프라자 · 엘리베이터 · ${floor}층`, cols, rows, tiles,
+    props: [], npcs: [], buildings: [], markings: [],
+    targets: [target('lift-panel', '층 선택 · 1층 / 4층', '누르기', 132, 84, 24)],
+    doors: [{ id: 'lift-exit', zone: { x: 66, y: 149, w: 28, h: 11 }, to: floor === 1 ? 'lifthall' : 'floor4',
+      arrive: floor === 1 ? { x: 96, y: 100 } : { x: 416, y: 488 }, facing: floor === 1 ? 'down' : 'up', label: floor === 1 ? '1층 엘리베이터 통로' : '4층 입구' }],
+    interior: { reference: 'lift', wall: 'lobby', bottom: 'wall', door: [64, 96], pendants: [], rugs: [], decor: [{ kind: 'sign', x: 56, w: 48, text: String(floor) + 'F' }] },
+    spawn: { x: 80, y: 112 }, spawnFacing: 'up',
+  });
+}
+
+/**
+ * D094 4th floor (one map): lift landing at the bottom, corridor up the right side to the inner office, the lounge door on
+ * the corridor's right wall near the landing, and on the left a doorless open office: two long shared desk islands
+ * (6 facing seats per side each), windows along its left wall and two glass meeting rooms along its back wall.
+ */
+export const FLOOR4 = {
+  // D095: islands moved toward the corridor; two window desks (2 seats each) face the left-wall windows.
+  islands: [280, 400] as const, islandX: 232, seatXs: [152, 184, 216, 248, 280, 312] as const,
+  windowDesks: [290, 400] as const,
+  // Meeting rooms: the display is flush on the room's left wall and the table's end touches it.
+  meeting: [{ id: 'meeting-a', x0: 16, x1: 176, door: [128, 160] as const, table: 86, screen: 22 },
+    { id: 'meeting-b', x0: 192, x1: 352, door: [304, 336] as const, table: 262, screen: 198 }] as const,
+  glassY: 160, officeRight: 384,
+};
+function floor4(): Room {
+  const cols = 30, rows = 33, g = grid(cols, rows, T.WALL);
+  g.fill(1, 11, 22, 27, T.OFFICE);    // open office
+  g.fill(23, 11, 23, 27, T.OFFICE);   // doorless edge to the corridor
+  g.fill(1, 3, 10, 9, T.OFFICE);      // meeting room A
+  g.fill(12, 3, 21, 9, T.OFFICE);     // meeting room B
+  g.fill(8, 10, 9, 10, T.OFFICE); g.fill(19, 10, 20, 10, T.OFFICE); // meeting room openings in the glass front
+  g.fill(24, 3, 28, 28, T.OFFICE);    // corridor
+  g.fill(19, 29, 28, 31, T.OFFICE);   // lift landing
+  g.fill(25, 32, 26, 32, T.OFFICE);   // lift doors
+  g.fill(29, 25, 29, 26, T.OFFICE);   // lounge doorway (threshold only)
+  const chairs = (y: number, v: number) => FLOOR4.seatXs.map(x => P('officechair', x, y, v));
+  const meet = FLOOR4.meeting.flatMap(m => [P('meettable', m.table, 124), P('sidescreen', m.screen, 134),
+    ...[-42, -14, 14, 42].flatMap((dx, i) => [P('meetchair', m.table + dx, 96, i % 2), P('meetchair', m.table + dx, 146, 2 + ((i + 1) % 2))])]);
+  const windowDesks = FLOOR4.windowDesks.flatMap(y => [P('windowdesk', 31, y), P('sidechair', 60, y - 50), P('sidechair', 60, y - 18)]);
+  return finish({
+    id: 'floor4', title: '유로프라자 4층 · 입구 · 복도와 열린 사무실', cols, rows, tiles: g.tiles,
+    buildings: [], markings: [], npcs: [],
+    props: [
+      ...FLOOR4.islands.flatMap(y => [P('longbench', FLOOR4.islandX, y), ...chairs(y - 50, 1), ...chairs(y + 17, 0)]),
+      ...meet, ...windowDesks,
+      P('cabinet', 304, 446), P('cabinet', 352, 446),
+      P('whitetable', 344, 492), P('loungechair', 380, 498, 2),
+    ],
+    targets: [
+      target('closed-glass', '닫힌 유리문', '보기', 316, 488, 18),
+      target('outer-desks', '열린 바깥 사무실', '보기', 360, 312, 22),
+      target('window-desks', '창가 자리', '보기', 84, 312, 18),
+      target('meeting-a', '회의실 1', '보기', 144, 154, 16),
+      target('meeting-b', '회의실 2', '보기', 320, 154, 16),
+      target('corridor-guide', '사무실 안내', '보기', 450, 232, 18),
+    ],
+    doors: [
+      { id: 'lift', zone: { x: 402, y: 517, w: 28, h: 11 }, to: 'lift4', arrive: { x: 80, y: 128 }, facing: 'up', label: '엘리베이터 · 4층' },
+      { id: 'lounge', zone: { x: 471, y: 404, w: 9, h: 24 }, to: 'lounge', arrive: { x: 36, y: 176 }, facing: 'right', label: '라운지 들어가기' },
+      { id: 'inner', zone: { x: 404, y: 48, w: 24, h: 8 }, to: 'newsroom', arrive: { x: 336, y: 416 }, facing: 'up', label: '안쪽 사무실 · 내 자리' },
+    ],
+    interior: {
+      reference: 'floor4', wall: 'office', bottom: 'wall', door: [400, 432], pendants: [], rugs: [], decor: [],
+      // Translucent glass fronts of the two meeting rooms (drawn over what is behind them, under people in front).
+      glass: [{ x: 16, y: 132, w: 112, h: 44 }, { x: 160, y: 132, w: 32, h: 44 }, { x: 192, y: 132, w: 112, h: 44 }, { x: 336, y: 132, w: 16, h: 44 }],
+    },
+    spawn: { x: 416, y: 488 }, spawnFacing: 'up',
+  });
+}
+
+function lounge(): Room {
+  // Separate room entered from the corridor's right wall. D095 (user): dining table twice as long with twice the chairs,
+  // a longer and deeper counter in front, no sink or plant, a one-row desk with chairs on the left wall, two larger sofas
+  // against the walls next to the door and a larger low table beside them.
+  const cols = 24, rows = 18, g = interiorGrid(cols, rows, T.OFFICE, [-1, -1]);
+  g.fill(0, 10, 0, 11, T.OFFICE);
+  return finish({
+    id: 'lounge', title: '유로프라자 4층 · 라운지', cols, rows, tiles: g.tiles, buildings: [], markings: [], npcs: [],
+    props: [
+      P('bigtable', 226, 120), ...[-80, -48, -16, 16, 48, 80].flatMap(dx => [P('tallchair', 226 + dx, 88), P('tallchair', 226 + dx, 138)]),
+      P('walldesk', 30, 152), ...[80, 112, 144].map(y => P('sidechair', 56, y, 1)),
+      P('counterbar', 236, 214),
+      P('bigsofa', 32, 270, 0), P('bigsofa', 112, 271, 1), P('loungetable', 192, 266),
+    ],
+    targets: [target('lounge-table', '4층 라운지', '보기', 226, 160, 20)],
+    doors: [{ id: 'corridor', zone: { x: 0, y: 164, w: 9, h: 24 }, to: 'floor4', arrive: { x: 448, y: 416 }, facing: 'left', label: '4층 복도' }],
+    interior: { reference: 'lounge', wall: 'office', bottom: 'wall', door: [-1, -1], openings: [{ x: 0, y: 160, w: 16, h: 32 }],
+      pendants: [{ x: 178, y: 64 }, { x: 226, y: 64 }, { x: 274, y: 64 }], rugs: [],
+      decor: [{ kind: 'window', x: 240, w: 96, text: '' }] },
+    spawn: { x: 36, y: 176 }, spawnFacing: 'right',
+  });
+}
+
+/* D093 geometry, kept only to recognise positions in older saves (src/domain/state.ts). Never routed to. */
+function lobbyD093(): Room {
+  // User floor sketch, 2026-10-14 16:29. Bottom entrance; lift in the left recess.
+  const cols = 24, rows = 22;
+  const g = interiorGrid(cols, rows, T.MARBLE, [15, 16]);
+  g.fill(0, 16, 8, 21, T.WALL); // Large lower-left wall, with TV/sofa on its right face.
+  g.fill(8, 3, 8, 10, T.WALL); // Divider behind the vertical reception desk; go around its bottom.
+  g.fill(0, 5, 0, 6, T.MARBLE); // Lift on the left-facing wall.
+  return finish({
+    id: 'lobby', title: '유로프라자 · 1층 로비', cols, rows, tiles: g.tiles, buildings: [], markings: [],
+    props: [
+      P('lobbysofa', 174, 292), P('reception-side', 192, 148), P('lobbytable', 288, 176),
+      P('loungechair', 244, 224, 2), P('loungechair', 336, 218, 2), P('lobbyplant', 344, 302),
+    ],
+    npcs: [npc('guard', '안내 데스크', 164, 110, 'right', guardLook)],
+    targets: [target('guard', '안내 데스크', '대화', 164, 132, 22, 'guard'), target('notice', '입주 안내', '보기', 72, 58, 18), target('lobby-tv', '로비 TV와 소파', '보기', 176, 278, 20)],
+    doors: [
+      { id: 'elevator', zone: { x: 0, y: 84, w: 9, h: 24 }, to: 'lift1', arrive: { x: 80, y: 128 }, facing: 'up', label: '엘리베이터 · 1층' },
+      { id: 'front', zone: { x: 242, y: 341, w: 28, h: 11 }, to: 'street', arrive: { x: 292, y: 254 }, facing: 'down', label: '논현로' },
+    ],
+    interior: {
+      reference: 'lobby', wall: 'lobby', bottom: 'wall', door: [240, 272], pendants: [], rugs: [],
+      openings: [{ x: 0, y: 80, w: 16, h: 32 }], decor: [{ kind: 'notice', x: 52, w: 32, text: '' }],
+    },
+    spawn: { x: 256, y: 324 }, spawnFacing: 'up',
+  });
+}
+
+function floor4D093(): Room {
+  const cols = 24, rows = 28, g = grid(cols, rows, T.WALL);
+  g.fill(16, 3, 20, 25, T.OFFICE);
+  g.fill(7, 24, 20, 26, T.OFFICE);
+  g.fill(17, 27, 18, 27, T.OFFICE);
+  g.fill(16, 24, 16, 24, T.WALL); g.fill(19, 24, 20, 24, T.WALL);
+  // Open-plan outer office: a wide, doorless connection, on this same map.
+  g.fill(1, 3, 14, 13, T.OFFICE); g.fill(15, 4, 15, 13, T.OFFICE);
+  // Only a threshold is visible here; lounge furniture belongs to a separate room.
+  g.fill(15, 20, 15, 21, T.OFFICE);
+  return finish({
+    id: 'floor4', title: '유로프라자 4층 · 입구 · 복도와 열린 사무실', cols, rows, tiles: g.tiles,
+    buildings: [], markings: [], npcs: [],
+    props: [
+      P('benchdesk', 120, 152), ...[72, 120, 168].flatMap(x => [P('officechair', x, 102, 1), P('officechair', x, 169)]),
+      P('cabinet', 64, 212), P('cabinet', 120, 212),
+      P('whitetable', 178, 420), P('loungechair', 140, 426, 2),
+    ],
+    targets: [
+      target('closed-glass', '닫힌 유리문', '보기', 116, 406, 18),
+      target('outer-desks', '열린 바깥 사무실', '보기', 208, 176, 20),
+      target('corridor-guide', '사무실 안내', '보기', 322, 208, 20),
+    ],
+    doors: [
+      { id: 'lift', zone: { x: 274, y: 437, w: 28, h: 11 }, to: 'lift4', arrive: { x: 80, y: 128 }, facing: 'up', label: '엘리베이터 · 4층' },
+      { id: 'lounge', zone: { x: 240, y: 324, w: 8, h: 24 }, to: 'lounge', arrive: { x: 348, y: 176 }, facing: 'left', label: '라운지 들어가기' },
+      { id: 'inner', zone: { x: 276, y: 48, w: 24, h: 8 }, to: 'newsroom', arrive: { x: 336, y: 352 }, facing: 'up', label: '안쪽 사무실 · 내 자리' },
+    ],
+    interior: { reference: 'floor4', wall: 'office', bottom: 'wall', door: [272, 304], pendants: [], rugs: [], decor: [] },
+    spawn: { x: 288, y: 416 }, spawnFacing: 'up',
+  });
+}
+
+function loungeD093(): Room {
+  const cols = 24, rows = 16, g = interiorGrid(cols, rows, T.OFFICE, [-1, -1]);
+  g.fill(23, 10, 23, 11, T.OFFICE);
+  return finish({
+    id: 'lounge', title: '유로프라자 4층 · 라운지', cols, rows, tiles: g.tiles, buildings: [], markings: [], npcs: [],
+    props: [P('longtable', 156, 148), ...[124, 156, 188].flatMap(x => [P('tallchair', x, 116), P('tallchair', x, 166)]),
+      P('pantry', 80, 72), P('roundtable', 284, 120, 2), P('loungechair', 274, 148, 2),
+      P('bar', 128, 222), P('plant', 306, 222, 1)],
+    targets: [target('lounge-table', '4층 라운지', '보기', 156, 184, 20)],
+    doors: [{ id: 'corridor', zone: { x: 375, y: 164, w: 9, h: 24 }, to: 'floor4', arrive: { x: 272, y: 336 }, facing: 'right', label: '4층 복도' }],
+    interior: { reference: 'lounge', wall: 'office', bottom: 'wall', door: [-1, -1], openings: [{ x: 368, y: 160, w: 16, h: 32 }],
+      pendants: [{ x: 124, y: 88 }, { x: 156, y: 88 }, { x: 188, y: 88 }], rugs: [],
+      decor: [{ kind: 'window', x: 240, w: 96, text: '' }] },
+    spawn: { x: 348, y: 176 }, spawnFacing: 'left',
+  });
+}
+
+/* D094 geometry (2026-10-15 first preview), kept only to recognise positions in older saves. */
+const FLOOR4_D094 = {
+  islands: [280, 400] as const, islandX: 168, seatXs: [88, 120, 152, 184, 216, 248] as const,
+  meeting: [{ id: 'meeting-a', x0: 16, x1: 176, door: [128, 160] as const, table: 112, screen: 26 },
+    { id: 'meeting-b', x0: 192, x1: 352, door: [304, 336] as const, table: 288, screen: 202 }] as const,
+  glassY: 160, officeRight: 384,
+};
+function lobbyD094(): Room {
+  // User floor sketch, 2026-10-14 16:29 (D092/D093 approved look kept). D094: the lift is no longer a small side
+  // opening here; behind the divider an opening in the back wall leads to a separate lift hall that faces the doors.
+  const cols = 24, rows = 22;
+  const g = interiorGrid(cols, rows, T.MARBLE, [15, 16]);
+  g.fill(0, 16, 8, 21, T.WALL); // Large lower-left wall, with TV/sofa on its right face.
+  g.fill(8, 3, 8, 10, T.WALL); // Divider behind the vertical reception desk; go around its bottom.
+  g.fill(2, 2, 4, 2, T.MARBLE); // Opening into the lift hall, inside the left recess.
+  return finish({
+    id: 'lobby', title: '유로프라자 · 1층 로비', cols, rows, tiles: g.tiles, buildings: [], markings: [],
+    props: [
+      P('lobbysofa', 174, 292), P('reception-side', 192, 148), P('lobbytable', 288, 176),
+      P('loungechair', 244, 224, 2), P('loungechair', 336, 218, 2), P('lobbyplant', 344, 302),
+    ],
+    npcs: [npc('guard', '안내 데스크', 164, 110, 'right', guardLook)],
+    targets: [target('guard', '안내 데스크', '대화', 164, 132, 22, 'guard'), target('notice', '입주 안내', '보기', 112, 58, 18), target('lobby-tv', '로비 TV와 소파', '보기', 176, 278, 20)],
+    doors: [
+      { id: 'elevator', zone: { x: 36, y: 32, w: 40, h: 11 }, to: 'lifthall', arrive: { x: 72, y: 166 }, facing: 'up', label: '엘리베이터 통로' },
+      { id: 'front', zone: { x: 242, y: 341, w: 28, h: 11 }, to: 'street', arrive: { x: 292, y: 254 }, facing: 'down', label: '논현로' },
+    ],
+    interior: {
+      reference: 'lobby', wall: 'lobby', bottom: 'wall', door: [240, 272], pendants: [], rugs: [],
+      decor: [{ kind: 'notice', x: 100, w: 24, text: '' }],
+    },
+    spawn: { x: 256, y: 324 }, spawnFacing: 'up',
+  });
+}
+
+function floor4D094(): Room {
+  const cols = 30, rows = 33, g = grid(cols, rows, T.WALL);
+  g.fill(1, 11, 22, 27, T.OFFICE);    // open office
+  g.fill(23, 11, 23, 27, T.OFFICE);   // doorless edge to the corridor
+  g.fill(1, 3, 10, 9, T.OFFICE);      // meeting room A
+  g.fill(12, 3, 21, 9, T.OFFICE);     // meeting room B
+  g.fill(8, 10, 9, 10, T.OFFICE); g.fill(19, 10, 20, 10, T.OFFICE); // meeting room openings in the glass front
+  g.fill(24, 3, 28, 28, T.OFFICE);    // corridor
+  g.fill(19, 29, 28, 31, T.OFFICE);   // lift landing
+  g.fill(25, 32, 26, 32, T.OFFICE);   // lift doors
+  g.fill(29, 25, 29, 26, T.OFFICE);   // lounge doorway (threshold only)
+  const chairs = (y: number, v: number) => FLOOR4_D094.seatXs.map(x => P('officechair', x, y, v));
+  const meet = FLOOR4_D094.meeting.flatMap(m => [P('meettable', m.table, 124), P('sidescreen', m.screen, 134),
+    ...[-42, -14, 14, 42].flatMap((dx, i) => [P('meetchair', m.table + dx, 96, i % 2), P('meetchair', m.table + dx, 146, 2 + ((i + 1) % 2))])]);
+  return finish({
+    id: 'floor4', title: '유로프라자 4층 · 입구 · 복도와 열린 사무실', cols, rows, tiles: g.tiles,
+    buildings: [], markings: [], npcs: [],
+    props: [
+      ...FLOOR4_D094.islands.flatMap(y => [P('longbench', FLOOR4_D094.islandX, y), ...chairs(y - 50, 1), ...chairs(y + 17, 0)]),
+      ...meet,
+      P('cabinet', 304, 446), P('cabinet', 352, 446),
+      P('whitetable', 344, 492), P('loungechair', 380, 498, 2),
+    ],
+    targets: [
+      target('closed-glass', '닫힌 유리문', '보기', 316, 488, 18),
+      target('outer-desks', '열린 바깥 사무실', '보기', 300, 300, 22),
+      target('meeting-a', '회의실 1', '보기', 144, 154, 16),
+      target('meeting-b', '회의실 2', '보기', 320, 154, 16),
+      target('corridor-guide', '사무실 안내', '보기', 450, 232, 18),
+    ],
+    doors: [
+      { id: 'lift', zone: { x: 402, y: 517, w: 28, h: 11 }, to: 'lift4', arrive: { x: 80, y: 128 }, facing: 'up', label: '엘리베이터 · 4층' },
+      { id: 'lounge', zone: { x: 471, y: 404, w: 9, h: 24 }, to: 'lounge', arrive: { x: 36, y: 176 }, facing: 'right', label: '라운지 들어가기' },
+      { id: 'inner', zone: { x: 404, y: 48, w: 24, h: 8 }, to: 'newsroom', arrive: { x: 336, y: 352 }, facing: 'up', label: '안쪽 사무실 · 내 자리' },
+    ],
+    interior: {
+      reference: 'floor4', wall: 'office', bottom: 'wall', door: [400, 432], pendants: [], rugs: [], decor: [],
+      // Translucent glass fronts of the two meeting rooms (drawn over what is behind them, under people in front).
+      glass: [{ x: 16, y: 132, w: 112, h: 44 }, { x: 160, y: 132, w: 32, h: 44 }, { x: 192, y: 132, w: 112, h: 44 }, { x: 336, y: 132, w: 16, h: 44 }],
+    },
+    spawn: { x: 416, y: 488 }, spawnFacing: 'up',
+  });
+}
+
+function loungeD094(): Room {
+  // Separate room entered from the corridor's right wall (D094 moved the corridor to the right of the open office).
+  const cols = 24, rows = 16, g = interiorGrid(cols, rows, T.OFFICE, [-1, -1]);
+  g.fill(0, 10, 0, 11, T.OFFICE);
+  return finish({
+    id: 'lounge', title: '유로프라자 4층 · 라운지', cols, rows, tiles: g.tiles, buildings: [], markings: [], npcs: [],
+    props: [P('longtable', 156, 148), ...[124, 156, 188].flatMap(x => [P('tallchair', x, 116), P('tallchair', x, 166)]),
+      P('pantry', 80, 72), P('roundtable', 284, 120, 2), P('loungechair', 274, 148, 2),
+      P('bar', 128, 222), P('plant', 306, 222, 1)],
+    targets: [target('lounge-table', '4층 라운지', '보기', 156, 184, 20)],
+    doors: [{ id: 'corridor', zone: { x: 0, y: 164, w: 9, h: 24 }, to: 'floor4', arrive: { x: 448, y: 416 }, facing: 'left', label: '4층 복도' }],
+    interior: { reference: 'lounge', wall: 'office', bottom: 'wall', door: [-1, -1], openings: [{ x: 0, y: 160, w: 16, h: 32 }],
+      pendants: [{ x: 124, y: 88 }, { x: 156, y: 88 }, { x: 188, y: 88 }], rugs: [],
+      decor: [{ kind: 'window', x: 240, w: 96, text: '' }] },
+    spawn: { x: 36, y: 176 }, spawnFacing: 'right',
+  });
+}
+
+function newsroomD094(): Room {
+  const cols = 32, rows = 24;
+  const { tiles } = interiorGrid(cols, rows, T.OFFICE, [20, 21]);
+  return finish({
+    id: 'newsroom', title: '유로프라자 4층 · 안쪽 사무실 · 메디컬 데스크', cols, rows, tiles, buildings: [], markings: [],
+    props: [
+      P('euroeditor', 88, 104), P('editorbench', 208, 142),
+      P('officechair', 184, 157), P('officechair', 232, 157),
+      P('bodyscope', 308, 120),
+      ...[112, 280].flatMap(x => [P('benchdesk', x, 256),
+        ...[-48, 0, 48].flatMap(dx => [P('officechair', x + dx, 206, 1), P('officechair', x + dx, 273)])]),
+      P('shortbench', 432, 256), P('officechair', 416, 206, 1), P('officechair', 448, 206, 1),
+      P('officechair', 416, 273), P('officechair', 448, 273),
+      ...[56, 112, 168, 224, 280, 392, 448].map(x => P('cabinet', x, 350)),
+      P('printer', 448, 344),
+    ],
+    npcs: [npc('editor', '여성 대표 · 편집장', 88, 86, 'down', editorLook), npc('senior', '선배 기자', 262, 158, 'up', seniorLook)],
+    targets: [
+      target('editor', '대표 · 편집장', '대화', 88, 108, 22, 'editor'), target('senior', '선배 기자', '대화', 262, 160, 18, 'senior'),
+      target('my-desk', '내 자리', '살펴보기', 184, 150, 18), target('device', '바디스코프', '살펴보기', 308, 126, 22),
+      target('shelf', '뒤쪽 자료 캐비닛', '살펴보기', 168, 356, 18),
+    ],
+    doors: [{ id: 'office-exit', zone: { x: 322, y: 373, w: 28, h: 11 }, to: 'floor4', arrive: { x: 416, y: 72 }, facing: 'down', label: '4층 복도 · 엘리베이터 방향' }],
+    interior: {
+      reference: 'office', wall: 'office', bottom: 'wall', door: [320, 352], pendants: [], rugs: [],
+      decor: [22, 76, 230, 290, 390, 448].map(x => ({ kind: 'window' as const, x, w: 46, text: '' })),
+    },
+    spawn: { x: 212, y: 176 }, spawnFacing: 'down',
+  });
+}
+
+function outeroffice(): Room {
+  const cols = 24, rows = 15, g = interiorGrid(cols, rows, T.OFFICE, [-1, -1]);
+  g.fill(23, 10, 23, 11, T.OFFICE);
+  return finish({
+    id: 'outeroffice', title: '유로프라자 4층 · 바깥 사무실', cols, rows, tiles: g.tiles, buildings: [], markings: [], npcs: [],
+    props: [...[80, 144, 208].flatMap(x => [100, 166].flatMap(y => [P('eurodesk', x, y), P('officechair', x, y + 14)])),
+      ...[280].flatMap(x => [104, 156, 208].map(y => P('cabinet', x, y))), P('plant', 32, 210, 1)],
+    targets: [target('outer-desks', '바깥 사무실', '보기', 244, 188, 20)],
+    doors: [{ id: 'corridor', zone: { x: 375, y: 164, w: 9, h: 24 }, to: 'floor4', arrive: { x: 416, y: 300 }, facing: 'right', label: '4층 복도 · 안쪽 사무실 방향' }],
+    interior: { reference: 'office', wall: 'office', bottom: 'wall', door: [-1, -1], openings: [{ x: 368, y: 160, w: 16, h: 32 }], pendants: [], rugs: [],
+      decor: [24, 88, 152, 216, 280].map(x => ({ kind: 'window' as const, x, w: 48, text: '' })) },
+    spawn: { x: 348, y: 176 }, spawnFacing: 'left',
   });
 }
 
@@ -346,7 +709,12 @@ function cafe(): Room {
 }
 
 
-export const rooms: Record<RoomId, Room> = { newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), ...heartRooms() };
+export const rooms: Record<RoomId, Room> = { lounge: lounge(), lifthall: lifthall(), lift1: lift(1), lift4: lift(4), floor4: floor4(), outeroffice: outeroffice(), newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), ...heartRooms() };
+/** D093 rooms as they were, for save migration only. */
+export const roomsD093 = { lobby: lobbyD093(), floor4: floor4D093(), lounge: loungeD093() } as const;
+/** D094 first-preview rooms, for save migration only. */
+export const roomsD094 = { lobby: lobbyD094(), floor4: floor4D094(), lounge: loungeD094(), newsroom: newsroomD094() } as const;
+
 export function tileAt(room: Room, tx: number, ty: number): number {
   if (tx < 0 || ty < 0 || tx >= room.cols || ty >= room.rows) return T.VOID;
   return room.tiles[ty * room.cols + tx] ?? T.VOID;

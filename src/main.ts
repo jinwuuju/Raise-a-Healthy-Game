@@ -352,7 +352,13 @@ async function interact(t: Target) {
   try {
     const routeNote=q4Text.notes.find(n=>n.target===t.id&&n.room===w.roomId);
     const signalNote = q5Text.notes.find(n => n.target === t.id && n.room === w.roomId);
-    if (t.id === 'hx-sa' && w.roomId === 'heart' && game.state.q005.accepted && q5NormalDone(game.state)) {
+    if (t.id === 'lift-panel' && (w.roomId === 'lift1' || w.roomId === 'lift4')) {
+      const floor = await dialog.show([{ who: '엘리베이터', text: '이동할 층을 선택하세요.', npc: null }], [
+        { id: 'lift1', label: '1층 · 로비', sub: '정문과 논현로', disabled: w.roomId === 'lift1' },
+        { id: 'lift4', label: '4층 · 라운지와 사무실', sub: '복도 안쪽에 내 자리', disabled: w.roomId === 'lift4' },
+      ]);
+      if (floor === 'lift1' || floor === 'lift4') void travel({ to: floor, arrive: rooms[floor].spawn, facing: 'down', mode: 'walk', card: floor === 'lift1' ? '1층' : '4층' });
+    } else if (t.id === 'hx-sa' && w.roomId === 'heart' && game.state.q005.accepted && q5NormalDone(game.state)) {
       pauseInput(); openRhythmComparison(game);
     } else if (game.state.q005.accepted && signalNote) {
       await say([{ who: signalNote.name, text: signalNote.text + '\n' + q5Text.disclaimer, npc: null }]);
@@ -410,7 +416,7 @@ async function interact(t: Target) {
     } else if (t.id === 'return-pad') {
       const go = await dialog.show([{ who: '귀환 장치', text: q1Text.returnPad, npc: null }],
         [{ id: 'go', label: q1Text.returnChoices.go, sub: q1Text.returnChoices.goSub, disabled: false }, { id: 'stay', label: q1Text.returnChoices.stay, sub: q1Text.returnChoices.staySub, disabled: false }]);
-      if (go === 'go') travel({ to: 'newsroom', arrive: { x: 308, y: 152 }, facing: 'down', mode: 'scope-out' });
+      if (go === 'go') travel({ to: 'newsroom', arrive: { x: 464, y: 152 }, facing: 'down', mode: 'scope-out' });
     } else {
       const text = lookText[t.id] ?? '';
       await say([{ who: t.label, text, npc: null }]);

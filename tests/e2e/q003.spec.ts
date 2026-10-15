@@ -21,7 +21,7 @@ async function start(p:Page, patch: Partial<GameState> = {}) {
 async function choices(p:Page) { for(let i=0;i<15&&!await p.locator('.dialog .choices').count();i++){await p.keyboard.press('e');await p.waitForTimeout(120);} }
 async function finish(p:Page) { for(let i=0;i<15&&await p.locator('.dialog').count();i++){await p.keyboard.press('e');await p.waitForTimeout(120);} }
 async function enter(p:Page) {
-  await tap(p,308,118);await expect(p.locator('.dialog')).toBeVisible({timeout:12000});await choices(p);
+  await tap(p, 464, 118);await expect(p.locator('.dialog')).toBeVisible({timeout:12000});await choices(p);
   await p.getByRole('button',{name:/심장 속으로 들어가기/}).click();await p.getByRole('button',{name:'바로 들어가기'}).click();
   await expect.poll(()=>room(p)).toBe('heart');await p.waitForTimeout(200);
 }
@@ -43,13 +43,13 @@ async function publish(p:Page) {
 
 test('Q003 six-stage reporting: commission, physical normal valves, same-space comparison, sources, fictional tests, care and factcheck publication',async({page})=>{
   test.setTimeout(180000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await start(page);
-  await tap(page,88,80);await expect(page.locator('.dialog')).toBeVisible({timeout:10000});await choices(page);await page.getByRole('button',{name:/판막 취재 맡기/}).click();
+  await tap(page, 256, 80);await expect(page.locator('.dialog')).toBeVisible({timeout:10000});await choices(page);await page.getByRole('button',{name:/판막 취재 맡기/}).click();
   await enter(page);await tap(page,248,350);await expect(page.locator('.dialog')).toBeVisible({timeout:15000});await finish(page);
   expect((await state(page)).q003.notes).toContain('tricuspid');
   await tap(page,300,412);await expect.poll(()=>room(page),{timeout:20000}).toBe('rv');await page.waitForTimeout(200);
   await tap(page,388,100);await expect(page.locator('.dialog')).toBeVisible({timeout:20000});await finish(page);expect((await state(page)).q003.notes).toContain('pulmonary');
   await returnOffice(page,250,430);await enter(page);await compare(page);await returnOffice(page,280,128);
-  await tap(page,184,142);await expect(page.getByRole('dialog',{name:'Q003 취재 · 거꾸로 열리는 문'})).toBeVisible({timeout:12000});
+  await tap(page, 160, 176);await expect(page.getByRole('dialog',{name:'Q003 취재 · 거꾸로 열리는 문'})).toBeVisible({timeout:12000});
   await publish(page);const result=page.getByRole('dialog',{name:'발행 결과 · 독자 반응'});await expect(result).toContainText('Q003');
   const s=await state(page);expect(s.totalXp).toBe(450);expect(s.q003.notes).toHaveLength(7);expect(s.q003.publishedAt).toBeTruthy();
   await result.getByRole('button',{name:'월드로 돌아가기'}).click();await expect(page.locator('.chip .rank')).toContainText('Lv.4');expect(errors).toEqual([]);
@@ -66,9 +66,9 @@ for(const [width,height] of [[390,844],[844,390]] as const) test(`Q003 ${width}�
   await view.getByRole('button',{name:'협착 비교 기록하기'}).tap();await page.keyboard.press('Escape');
   expect(await page.evaluate(()=>({...((window as unknown as {__mq:Hook}).__mq.world.player)}))).toEqual(pose);
   await page.reload();expect((await state(page)).q003.notes).toContain('stenosis');await compare(page);
-  await returnOffice(page,280,128);await tap(page,184,142);const file=page.getByRole('dialog',{name:'Q003 취재 · 거꾸로 열리는 문'});await expect(file).toBeVisible({timeout:15000});
+  await returnOffice(page,280,128);await tap(page, 160, 176);const file=page.getByRole('dialog',{name:'Q003 취재 · 거꾸로 열리는 문'});await expect(file).toBeVisible({timeout:15000});
   await file.getByRole('button',{name:'이 자료를 취재 메모로 남기기'}).tap();await expect(file).toContainText('가상 검사자료');
-  await page.reload();await tap(page,184,142);await expect(file).toBeVisible();await expect(file).toContainText('4 · 검사');
+  await page.reload();await tap(page, 160, 176);await expect(file).toBeVisible();await expect(file).toContainText('4 · 검사');
   for(let i=0;i<2;i++)await file.getByRole('button',{name:'이 자료를 취재 메모로 남기기'}).tap();
   await file.getByRole('button',{name:'문이 여닫히는 순간으로 시작'}).tap();await file.getByRole('button',{name:'검사 해석의 범위로 마무리'}).tap();
   await file.getByRole('button',{name:'편집장에게 초안 보여주기'}).tap();await file.getByRole('button',{name:'게임 속 신문에 발행'}).tap();

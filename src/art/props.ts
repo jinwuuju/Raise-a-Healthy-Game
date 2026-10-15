@@ -1,3 +1,4 @@
+import { euroProp } from './euro-interior';
 import type { PropKind } from '../world/rooms';
 import { carSprite } from './vehicles';
 import { ellipse, hash2, jinU, makeCanvas, outline, pixelText, px, rect, rng, shade, sprite, type Ctx, type Sprite } from './pixel';
@@ -320,7 +321,7 @@ const builders: Record<string, (v: number, frame: number) => Sprite> = {
   }, INK),
   stool: () => sprite(10, 15, 5, 14, g => { ellipse(g, 5, 4, 4, 2, '#c8463a'); rect(g, 2, 4, 6, 1, '#9a3329'); rect(g, 4, 6, 2, 7, '#3a3e48'); rect(g, 2, 13, 6, 1, '#3a3e48'); }, INK),
   loungechair: v => sprite(24, 24, 12, 23, g => {
-    const c0 = v ? '#d08a52' : '#7a8fb0', c1 = shade(c0, 0.25), c2 = shade(c0, -0.25);
+    const c0 = v === 2 ? '#a2aba8' : v ? '#d08a52' : '#7a8fb0', c1 = shade(c0, 0.25), c2 = shade(c0, -0.25);
     rect(g, 3, 1, 18, 10, c0); rect(g, 3, 1, 18, 2, c1); rect(g, 0, 7, 5, 13, c2); rect(g, 19, 7, 5, 13, c2);
     rect(g, 5, 11, 14, 6, c0); rect(g, 5, 11, 14, 1, c1); rect(g, 3, 17, 18, 4, c2); rect(g, 3, 21, 2, 2, '#3a2c22'); rect(g, 19, 21, 2, 2, '#3a2c22');
   }, INK),
@@ -347,7 +348,7 @@ export function propSprite(kind: PropKind, v: number, frame = 0): Sprite {
   const key = kind + ':' + v + ':' + (animated ? frame : 0);
   let s = cache.get(key);
   if (!s) {
-    s = kind === 'fountain' ? fountain(frame) : kind === 'bodyscope' ? bodyscope(frame) : kind === 'papillary' ? papillary(v) : kind === 'robot' ? robot(frame) : kind === 'pad' ? pad(frame) : (builders[kind] ?? builders.bench!)(v, frame);
+    s = euroProp(kind, v) ?? (kind === 'fountain' ? fountain(frame) : kind === 'bodyscope' ? bodyscope(frame) : kind === 'papillary' ? papillary(v) : kind === 'robot' ? robot(frame) : kind === 'pad' ? pad(frame) : (builders[kind] ?? builders.bench!)(v, frame));
     cache.set(key, s);
   }
   return s;

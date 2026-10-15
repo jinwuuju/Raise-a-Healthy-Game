@@ -13,7 +13,7 @@ async function scopeState(page: Page, accepted: boolean, y = 176) {
   await start(page);
   await Promise.all([page.waitForEvent('load'), page.evaluate(({ accepted, y }) => {
     const game = (window as unknown as { __mq: { game: { state: Record<string, unknown> & { cafe: Record<string, unknown> }; importState(s: unknown): void } } }).__mq.game;
-    game.importState({ ...game.state, flags: accepted ? ['met-editor', 'reported-back', 'q001-accepted'] : [], cafe: { ...game.state.cafe, welcomeUsed: true }, at: { room: 'newsroom', x: 308, y, facing: 'up' } });
+    game.importState({ ...game.state, flags: accepted ? ['met-editor', 'reported-back', 'q001-accepted'] : [], cafe: { ...game.state.cafe, welcomeUsed: true }, at: { room: 'newsroom', x: 464, y, facing: 'up' } });
     location.reload();
   }, { accepted, y })]);
   await page.waitForFunction(() => !!(window as unknown as { __mq?: { world?: unknown } }).__mq?.world);
@@ -42,7 +42,7 @@ test('Bodyscope auto entry respects the commission and does not open behind the 
   await page.reload();
   await Promise.all([page.waitForEvent('load'), page.evaluate(() => {
     const game = (window as unknown as { __mq: { game: { state: Record<string, unknown>; importState(s: unknown): void } } }).__mq.game;
-    game.importState({ ...game.state, flags: ['met-editor', 'reported-back', 'q001-accepted'], at: { room: 'newsroom', x: 308, y: 90, facing: 'up' } }); location.reload();
+    game.importState({ ...game.state, flags: ['met-editor', 'reported-back', 'q001-accepted'], at: { room: 'newsroom', x: 464, y: 90, facing: 'up' } }); location.reload();
   })]);
   await page.waitForTimeout(350);
   await expect(page.locator('.dialog')).toHaveCount(0);

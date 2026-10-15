@@ -1,3 +1,4 @@
+import { euroArchitecture, warmLobby } from './euro-interior';
 import { T, tileAt, type Room, type WallDecor } from '../world/rooms';
 import { TILE } from '../world/types';
 import { ellipse, hash2, hex, makeCanvas, pixelText, px, rect, shade, textWidth, type Ctx } from './pixel';
@@ -53,6 +54,10 @@ function texel(t: number, x: number, y: number): RGB {
       if (dx === 1 && dy === 1) return C('#f6d76a');
       if ((dx === 1 || dx === 2) && (dy === 1 || dy === 2)) return C('#d0a82c');
       return C('#e8bf3c');
+    }
+    case T.OFFICE: {
+      const seam = x % 5 === 0;
+      return seam ? C('#aaa99f') : n < 0.15 ? C('#b9b8ae') : C('#c2c1b7');
     }
     case T.WOOD: {
       const R = y >> 2, off = Math.floor(hash2(0, R, 5) * 24), cx = Math.floor((x + off) / 24);
@@ -111,7 +116,9 @@ export function bakeGround(room: Room): HTMLCanvasElement {
     }
   }
   g.putImageData(img, 0, 0);
-  if (room.interior) interior(g, room); else outdoor(g, room);
+  if (room.interior?.reference === 'floor4' || room.interior?.reference === 'lifthall') euroArchitecture(g, room);
+  else if (room.interior) { interior(g, room); if (room.interior.reference) { euroArchitecture(g, room); if (room.interior.reference === 'lobby' || room.interior.reference === 'lift') for (const d of room.interior.decor) decor(g, d, room.interior.wall); } } else outdoor(g, room);
+  if (room.id === 'lobby') warmLobby(g, W, H);
   return c;
 }
 

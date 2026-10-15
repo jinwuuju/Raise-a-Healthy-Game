@@ -29,13 +29,13 @@ test('Q001 inside the heart: commission → Bodyscope → right atrium → wait 
   page.on('pageerror', e => errors.push(e.message));
   await start(page, { flags: ['met-editor', 'reported-back'] });
   await expect(page.locator('.quest p')).toContainText('첫 취재');
-  await tap(page, 88, 80);
+  await tap(page, 256, 80);
   await expect(page.locator('.dialog')).toBeVisible({ timeout: 8000 });
   await untilChoices(page);
   await page.locator('.choice', { hasText: '취재 맡기' }).click();
   await finishDialog(page);
   await expect(page.locator('.quest p')).toContainText('바디스코프');
-  await tap(page, 308, 118);
+  await tap(page, 464, 118);
   await expect(page.locator('.dialog')).toBeVisible({ timeout: 10000 });
   await untilChoices(page);
   await page.locator('.choice', { hasText: '심장 속으로 들어가기' }).click();
@@ -73,13 +73,13 @@ test('Q001 inside the heart: commission → Bodyscope → right atrium → wait 
   await expect.poll(() => room(page), { timeout: 8000 }).toBe('newsroom');
   await expect(page.locator('.cycle')).toBeHidden();
   await page.waitForTimeout(400);
-  await tap(page, 88, 80);
+  await tap(page, 256, 80);
   await expect(page.locator('.dialog')).toBeVisible({ timeout: 10000 });
   await finishDialog(page);
   expect((await saved(page)).flags).toContain('q001-briefed');
   await expect(page.locator('.quest p')).toContainText('첫 기사');
   // The actual reporting route now continues from the newsroom desk to the first issue.
-  await tap(page, 184, 142);
+  await tap(page, 160, 176);
   const article = page.getByRole('dialog', { name: '첫 기사 · 사라진 혈액 배달표' });
   await expect(article).toBeVisible({ timeout: 10000 });
   await article.getByRole('button', { name: /독자의 질문으로 시작/ }).click();

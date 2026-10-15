@@ -23,8 +23,10 @@ function solidsByTile(room: Room): Map<number, Rect[]> {
   return index;
 }
 
-export function canStand(roomId: RoomId, p: Point): boolean {
-  const room = rooms[roomId];
+export function canStand(roomId: RoomId, p: Point): boolean { return canStandIn(rooms[roomId], p); }
+
+/** Same test against any room geometry (also the kept D093 rooms used to migrate older saves). */
+export function canStandIn(room: Room, p: Point): boolean {
   if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return false;
   const f = footRect(p);
   if (f.x < 0 || f.y < 0 || f.x + f.w > room.cols * TILE || f.y + f.h > room.rows * TILE) return false;

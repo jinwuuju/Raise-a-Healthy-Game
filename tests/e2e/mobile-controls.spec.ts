@@ -7,7 +7,7 @@ async function start(page: Page, heart = false, scope = false) {
   await Promise.all([page.waitForEvent('load'), page.evaluate(({ heart, scope }) => {
     const mq = (window as unknown as { __mq: Hook }).__mq, s = mq.game.state;
     mq.game.importState({ ...s, flags: heart || scope ? ['met-editor', 'reported-back', 'q001-accepted', 'q001-entered', 'heart-guided'] : [],
-      at: heart ? { room: 'heart', x: 230, y: 200, facing: 'down' } : scope ? { room: 'newsroom', x: 308, y: 142, facing: 'down' } : { room: 'newsroom', x: 88, y: 122, facing: 'up' },
+      at: heart ? { room: 'heart', x: 230, y: 200, facing: 'down' } : scope ? { room: 'newsroom', x: 464, y: 142, facing: 'down' } : { room: 'newsroom', x: 256, y: 140, facing: 'up' },
       cafe: { ...s.cafe, welcomeUsed: heart || scope } }); location.reload();
   }, { heart, scope })]);
   await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world);

@@ -30,7 +30,7 @@ async function inspect(p: Page, x: number, y: number, id: string) {
   await expect.poll(async () => ((await state(p)).q005.notes as string[]).includes(id)).toBe(true);
 }
 async function enter(p: Page) {
-  await tap(p, 308, 118); await expect(p.locator('.dialog')).toBeVisible({ timeout: 12000 }); await choices(p);
+  await tap(p, 464, 118); await expect(p.locator('.dialog')).toBeVisible({ timeout: 12000 }); await choices(p);
   await p.getByRole('button', { name: /심장 속으로 들어가기/ }).click(); await p.getByRole('button', { name: '바로 들어가기' }).click();
   await expect.poll(() => room(p)).toBe('heart'); await p.waitForTimeout(200);
 }
@@ -51,7 +51,7 @@ async function compose(p: Page, f = file(p)) {
 
 test('Q005: commission, five physical signal observations, AF observer at the SA node, desk materials, order board and Lv.6', async ({ page }) => {
   test.setTimeout(240000); const errors: string[] = []; page.on('pageerror', e => errors.push(e.message)); await seed(page);
-  await tap(page, 88, 80); await expect(page.locator('.dialog')).toBeVisible({ timeout: 10000 }); await choices(page); await page.getByRole('button', { name: /박동 신호 취재 맡기/ }).click();
+  await tap(page, 256, 80); await expect(page.locator('.dialog')).toBeVisible({ timeout: 10000 }); await choices(page); await page.getByRole('button', { name: /박동 신호 취재 맡기/ }).click();
   expect((await state(page)).q005.accepted).toBe(true); expect((await state(page)).q005.notes).toEqual([]);
   await enter(page);
   await inspect(page, 150, 116, 'sa'); await inspect(page, 316, 250, 'av');
@@ -66,7 +66,7 @@ test('Q005: commission, five physical signal observations, AF observer at the SA
   await view.getByRole('button', { name: '심방세동', exact: true }).click(); await expect.poll(() => page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.world.heart?.rhythm)).toBe('af');
   await view.getByRole('button', { name: '심방세동 비교 기록하기' }).click(); await page.keyboard.press('Escape'); await expect(view).toHaveCount(0);
   expect((await state(page)).q005.mode).toBe('normal'); expect((await state(page)).q005.notes).toContain('af');
-  await returnOffice(page); await tap(page, 184, 142); const f = file(page); await expect(f).toBeVisible({ timeout: 15000 });
+  await returnOffice(page); await tap(page, 160, 176); const f = file(page); await expect(f).toBeVisible({ timeout: 15000 });
   for (let i = 0; i < 3; i++) await f.getByRole('button', { name: '이 자료를 취재 메모로 남기기' }).click();
   await compose(page); await f.getByRole('button', { name: '게임 속 신문에 발행' }).click();
   const result = page.getByRole('dialog', { name: '발행 결과 · 독자 반응' }); await expect(result).toContainText('Q005');
@@ -89,12 +89,12 @@ for (const [width, height] of [[390, 844], [844, 390]] as const) test(`Q005 ${wi
   await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world); expect((await state(page)).q005.notes).toContain('af'); expect((await state(page)).q005.mode).toBe('normal');
   await page.keyboard.press('j'); await page.getByRole('tab', { name: '인체 탐험' }).click(); await page.locator('summary').filter({ hasText: '박자 비교 (Q005' }).click();
   await expect(page.getByRole('tabpanel', { name: '인체 탐험' })).toContainText('합병증 연결 기관(뇌졸중·심부전) · 준비 중'); await page.keyboard.press('Escape');
-  await returnOffice(page); await tap(page, 184, 142); const f = file(page); await expect(f).toBeVisible({ timeout: 15000 });
+  await returnOffice(page); await tap(page, 160, 176); const f = file(page); await expect(f).toBeVisible({ timeout: 15000 });
   await f.getByRole('button', { name: '이 자료를 취재 메모로 남기기' }).tap(); await expect(f.locator('canvas.ecg-strip')).toHaveCount(2); await expect(f).toContainText('가상 심전도 모형 B');
-  await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world); await tap(page, 184, 142); await expect(f).toBeVisible({ timeout: 15000 }); await expect(f).toContainText('4 · 검사');
+  await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world); await tap(page, 160, 176); await expect(f).toBeVisible({ timeout: 15000 }); await expect(f).toContainText('4 · 검사');
   for (let i = 0; i < 2; i++) await f.getByRole('button', { name: '이 자료를 취재 메모로 남기기' }).tap();
   await f.getByRole('button', { name: /동방결절에서 출발/ }).tap(); await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world);
-  await tap(page, 184, 142); await expect(f).toBeVisible({ timeout: 15000 }); expect((await state(page)).q005.order).toEqual(['sa']);
+  await tap(page, 160, 176); await expect(f).toBeVisible({ timeout: 15000 }); expect((await state(page)).q005.order).toEqual(['sa']);
   await f.getByRole('button', { name: '순서 다시 놓기' }).tap(); expect((await state(page)).q005.order).toEqual([]);
   await page.screenshot({ path: `artifacts/q005-board-${width}.png` });
   await compose(page); await f.getByRole('button', { name: '게임 속 신문에 발행' }).tap();

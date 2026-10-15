@@ -9,7 +9,7 @@ async function entry(page: Page) {
   await page.goto('/'); await page.getByRole('button', { name: '첫 출근하기' }).click();
   await Promise.all([page.waitForEvent('load'), page.evaluate(() => {
     const mq = (window as unknown as { __mq: Hook }).__mq;
-    mq.game.importState({ ...mq.game.state, flags: ['met-editor', 'reported-back', 'q001-accepted', 'heart-guided'], at: { room: 'newsroom', x: 308, y: 142, facing: 'up' } }); location.reload();
+    mq.game.importState({ ...mq.game.state, flags: ['met-editor', 'reported-back', 'q001-accepted', 'heart-guided'], at: { room: 'newsroom', x: 464, y: 142, facing: 'up' } }); location.reload();
   })]);
   await expect(page.locator('.dialog')).toBeVisible();
   for (let i = 0; i < 12 && !await page.locator('.dialog .choices').count(); i++) { await page.keyboard.press('e'); await page.waitForTimeout(120); }

@@ -5,6 +5,7 @@ import { bakeGround } from '../art/ground';
 import { organMinimap, type MiniMap } from '../art/organ';
 import { ellipse, makeCanvas, pixelText, type Sprite } from '../art/pixel';
 import { propSprite } from '../art/props';
+import { drawGlassFace } from '../art/euro-interior';
 import type { Look } from '../domain/appearance';
 import { timeOfDayAt, type TimeOfDay } from '../domain/clock';
 import { passable, realTime, secondsUntilOpen, soundBetween } from '../domain/cardiac';
@@ -353,6 +354,7 @@ export class World {
       } });
     }
     for (const n of this.npcs) items.push({ y: n.y, x: n.x, occluder: null, draw: () => this.drawActor(g, n, cx, cy) });
+    for (const gl of room.interior?.glass ?? []) items.push({ y: gl.y + gl.h, x: gl.x, occluder: null, draw: () => drawGlassFace(g, gl, cx, cy) });
     const hv = this.heart;
     if (hv) for (const b of hv.organ.bands) {
       const x0 = Math.min(b.x1, b.x2), y0 = Math.min(b.y1, b.y2) - b.lift - b.thick;

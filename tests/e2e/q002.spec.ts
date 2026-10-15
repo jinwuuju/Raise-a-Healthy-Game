@@ -34,11 +34,11 @@ async function article(page: Page) {
 test('Q002: editor commission → four chambers on the blood route → report → diagram article → Lv.3 result', async ({ page }) => {
   test.setTimeout(180000); const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await seed(page); await expect(page.locator('.quest p')).toContainText('다음 취재');
-  await tap(page,88,80); await expect(page.locator('.dialog')).toBeVisible();
+  await tap(page, 256, 80); await expect(page.locator('.dialog')).toBeVisible();
   for (let i = 0; i < 12 && !await page.locator('.dialog .choices').count(); i++) { await page.keyboard.press('e'); await page.waitForTimeout(120); }
   await page.getByRole('button', { name: /네 방의 주소 취재 맡기/ }).click();
   await expect(page.locator('.quest p')).toContainText('0/4');
-  await tap(page,308,118); await expect(page.locator('.dialog')).toBeVisible({ timeout: 10000 });
+  await tap(page, 464, 118); await expect(page.locator('.dialog')).toBeVisible({ timeout: 10000 });
   for (let i = 0; i < 12 && !await page.locator('.dialog .choices').count(); i++) { await page.keyboard.press('e'); await page.waitForTimeout(120); }
   await page.getByRole('button', { name: /심장 속으로 들어가기/ }).click();
   await page.getByRole('button', { name: '바로 들어가기' }).click();
@@ -55,7 +55,7 @@ test('Q002: editor commission → four chambers on the blood route → report �
   await tap(page,330,470); await expect(page.locator('.dialog')).toBeVisible({ timeout: 20000 });
   for (let i = 0; i < 12 && !await page.locator('.dialog .choices').count(); i++) { await page.keyboard.press('e'); await page.waitForTimeout(120); }
   await page.getByRole('button', { name: /돌아가기/ }).click(); await expect.poll(() => room(page)).toBe('newsroom'); await page.waitForTimeout(200);
-  await tap(page,88,80); await expect(page.locator('.dialog')).toBeVisible({ timeout: 15000 }); await finish(page);
+  await tap(page, 256, 80); await expect(page.locator('.dialog')).toBeVisible({ timeout: 15000 }); await finish(page);
   const paper = await article(page);
   await paper.getByRole('button', { name: '네 방의 주소로 시작' }).click();
   for (const [label,id] of [['우심방','heart'],['우심실','rv'],['좌심방','la'],['좌심실','lv']]) await paper.getByLabel(label + '의 주소 카드').selectOption(id!);

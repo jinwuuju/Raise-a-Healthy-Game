@@ -7,7 +7,8 @@ async function finishDialog(page: Page) {
   for (let i = 0; i < 12 && await page.locator('.dialog').count(); i++) { await page.keyboard.press('e'); await page.waitForTimeout(120); }
 }
 
-test('first day route: editor → lobby → street → cafe order', async ({ page }) => {
+test('first day route: editor → corridor → elevator → lift hall → lobby → street → cafe order', async ({ page }) => {
+  test.setTimeout(60000);
   const errors: string[] = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.goto('/');
@@ -16,15 +17,30 @@ test('first day route: editor → lobby → street → cafe order', async ({ pag
   await expect(page.locator('.chip .name')).toHaveText('테스트');
   await expect(page.locator('.quest p')).toContainText('편집장');
 
-  await tap(page, 88, 80);
+  await tap(page, 256, 80);
   await expect(page.locator('.dialog')).toBeVisible({ timeout: 8000 });
   await finishDialog(page);
   await expect(page.locator('.quest p')).toContainText('엘리베이터');
 
-  await tap(page, 336, 50);
+  await tap(page, 336, 442);
+  await expect.poll(() => hook(page), { timeout: 10000 }).toBe('floor4');
+  await page.waitForTimeout(400);
+  await tap(page, 416, 523);
+  await expect.poll(() => hook(page), { timeout: 15000 }).toBe('lift4');
+  await page.waitForTimeout(400);
+  await tap(page, 132, 84);
+  await expect(page.locator('.dialog')).toBeVisible({ timeout: 8000 });
+  await page.keyboard.press('e'); await page.waitForTimeout(150);
+  await page.getByRole('button', { name: /1층 · 로비/ }).click();
+  await expect.poll(() => hook(page)).toBe('lift1');
+  await page.waitForTimeout(400);
+  await tap(page, 80, 155);
+  await expect.poll(() => hook(page), { timeout: 10000 }).toBe('lifthall');
+  await page.waitForTimeout(400);
+  await tap(page, 72, 187);
   await expect.poll(() => hook(page), { timeout: 10000 }).toBe('lobby');
   await page.waitForTimeout(400);
-  await tap(page, 160, 188);
+  await tap(page, 240, 347);
   await expect.poll(() => hook(page), { timeout: 10000 }).toBe('street');
   await page.waitForTimeout(400);
   await tap(page, 116, 403);

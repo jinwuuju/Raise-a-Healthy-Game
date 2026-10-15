@@ -23,7 +23,11 @@ export function objective(s: GameState, room: RoomId): string {
   const has = (f: string) => s.flags.includes(f);
   if (!has('met-editor')) return room === 'newsroom' ? '편집장에게 첫 출근 인사하기' : '편집국으로 돌아가 편집장에게 인사하기';
   if (!s.cafe.welcomeUsed) {
-    if (room === 'newsroom') return '엘리베이터를 타고 1층 로비로 내려가기';
+    if (room === 'newsroom') return '아래쪽 문 → 4층 복도 → 엘리베이터로 1층 내려가기';
+    if (room === 'floor4' || room === 'outeroffice') return '복도를 따라 아래쪽 4층 입구의 엘리베이터로 가기';
+    if (room === 'lounge') return '라운지에서 나와 4층 입구 쪽 엘리베이터로 가기';
+    if (room === 'lift1' || room === 'lift4') return '층 선택 패널에서 1층을 고르고 문으로 나가기';
+    if (room === 'lifthall') return '통로를 따라 로비로 나가기';
     if (room === 'lobby') return '정문으로 나가 논현로 거리로';
     if (room === 'street') return '길 건너 진U 옆 골목으로 비투비씨 카페 찾아가기';
     return '바리스타에게 첫 방문 커피 받기';
@@ -123,7 +127,7 @@ export function talk(id: string, s: GameState): Talk {
       if (s.q002.reported) return { flag: null, lines: say('편집장', 'editor', s.q002.publishedAt ? '네 방을 연결한 도해 기사도 도착했어요. 다음 판막 취재를 준비하고 있어요.' : q2Text.brief) };
       if (!has('met-editor')) return { flag: 'met-editor', lines: say('편집장', 'editor',
         `어서 와요, ${name} 기자. 메디컬 데스크에 온 걸 환영해요.`,
-        '여기는 논현로 유로프라자 3층 편집국이에요. 우리는 몸에 관한 궁금증을 직접 취재해서 쉽게 전하는 곳이죠.',
+        '여기는 논현로 유로프라자 4층 편집국이에요. 우리는 몸에 관한 궁금증을 직접 취재해서 쉽게 전하는 곳이죠.',
         '첫 취재 전에 동네부터 익혀 둬요. 길 건너 진U 편의점 옆 골목으로 내려가면 비투비씨 카페가 있는데, 첫 커피가 무료예요.') };
       if (!s.cafe.welcomeUsed) return { flag: null, lines: say('편집장', 'editor', '엘리베이터로 내려가 정문으로 나가면 바로 좁은 길이에요. 길 건너 진U 편의점과 맞은편 빌딩 사이 논현로151길로 내려가면 도산대로 쪽에 비투비씨가 있어요.') };
       if (!has('reported-back')) return { flag: 'reported-back', action: 'offer-q1', lines: say('편집장', 'editor', '커피 맛 괜찮죠? 이제 동네가 조금 익숙해졌을 거예요.') };
@@ -131,6 +135,8 @@ export function talk(id: string, s: GameState): Talk {
       if (!has(Q1.observed)) return { flag: null, lines: say('편집장', 'editor', q1.editorWaiting) };
       if (!has(Q1.briefed)) return { flag: null, action: 'brief-q1', lines: say('편집장', 'editor', ...q1.editorBrief) };
       return { flag: null, lines: say('편집장', 'editor', s.article.publishedAt ? articleText.editorPublished : q1.editorDone) };
+    case 'ceo':
+      return { flag: null, lines: say('대표', 'ceo', `반가워요, ${name} 기자. 취재 의뢰와 기사 이야기는 가운데 자리의 편집장님과 하면 돼요.`, '좋은 기사는 정확한 관찰에서 시작해요. 오늘도 잘 부탁해요.') };
     case 'senior':
       return { flag: 'met-senior', lines: say('선배 기자', 'senior',
         '반가워요! 화면을 누르면 그곳까지 걸어가요. 사람이나 물건을 누르면 다가가서 말을 걸거나 살펴봐요.',
@@ -150,10 +156,19 @@ export function talk(id: string, s: GameState): Talk {
 }
 
 export const lookText: Record<string, string> = {
+  'lobby-tv': '회색 소파 위 큰 TV. 안내 데스크 앞에는 흰 원형 테이블과 좌석이 있고, 맞은편 유리문 너머로 거리가 보인다.',
+  'closed-glass': '반투명 유리에 주황색 띠가 둘러진 문. 이쪽은 닫혀 있다. 라운지는 복도에 들어서자마자 오른쪽 벽의 문으로 들어간다.',
+  'lift-call': '정면의 금속 엘리베이터 문. 위에 층 표시, 오른쪽에 호출 버튼이 있다. 문 앞으로 걸어가면 탄다.',
+  'meeting-a': '반투명 유리로 둘러싼 회의실. 가로로 긴 흰 책상에 주황·초록 의자가 마주 놓였고, 왼쪽 벽에 큰 모니터가 걸려 있다.',
+  'meeting-b': '옆 회의실과 유리 칸막이로 나뉜 두 번째 회의실. 긴 책상, 주황·초록 의자, 왼쪽 벽의 큰 모니터.',
+  'lounge-table': '노출 천장 아래 긴 목재 테이블과 높은 의자. 창에는 블라인드가 있고, 한쪽에는 회색 수납장과 작업대가 놓여 있다.',
+  'corridor-guide': '복도 왼쪽은 문 없이 이어지는 바깥 사무실, 그 뒤쪽 벽에는 유리 회의실 두 곳. 복도 끝 문으로 들어가면 안쪽 사무실과 내 자리가 나온다. 엘리베이터는 복도 아래 4층 입구 쪽이다.',
+  'outer-desks': '긴 공용 책상 두 줄. 한 줄에 양쪽으로 여섯 자리씩 서로 마주 앉는다. 의자 뒤로 지나갈 길이 있고, 문 없이 복도로 이어진다. 내 자리는 더 안쪽 사무실에 있다.',
+
   'my-desk': '내 자리. 모니터에 ‘수습기자 첫 주 일정’이 열려 있다.',
   device: q1.deviceLocked,
-  shelf: '건강 기사 작성 가이드, 용어 사전, 지난 호 신문이 빼곡하게 꽂혀 있다.',
-  notice: '유로프라자 입주사 안내 · 3층 메디컬 데스크 편집국 · 1층 식당가 영업 중.',
+  shelf: '뒤쪽 캐비닛에 건강 기사 작성 가이드, 용어 사전, 지난 호 신문이 정리되어 있다.',
+  notice: '유로프라자 입주사 안내 · 4층 메디컬 데스크 편집국 · 엘리베이터는 이 옆 통로 안쪽. 4층에서 내려 복도 끝까지 가세요.',
   'street-notice': '현재 위치: 유로프라자 앞 논현로159길. 길 건너 진U 편의점과 맞은편 빌딩 사이 논현로151길로 내려가면 도산대로와 을지병원 사거리가 나온다. 북쪽으로 가면 압구정역 방향이다. 큰길은 보행 신호가 초록불일 때만 건널 수 있다. (게임 지도는 실제 거리를 줄여 표현했다.)',
   station: '↑ 압구정역 방향. 지하철역은 아직 열리지 않았다.',
   'jinu-store': '진U 편의점. 문 앞에 음료 상자와 생활용품 묶음이 쌓여 있다. 가게 안은 아직 둘러볼 수 없다.',
@@ -166,6 +181,8 @@ export const lookText: Record<string, string> = {
 };
 
 export const inspectLabels: Record<string, string> = {
-  'my-desk': '내 자리', device: '바디스코프', shelf: '자료 책장', notice: '로비 소식 게시판', 'street-notice': '거리 안내판',
+  'lobby-tv': '1층 TV와 소파', 'lift-call': '1층 엘리베이터 통로', 'meeting-a': '4층 회의실 1', 'meeting-b': '4층 회의실 2', 'closed-glass': '4층 닫힌 유리문', 'lounge-table': '4층 라운지', 'corridor-guide': '4층 복도', 'outer-desks': '바깥 사무실', 'lift-panel': '엘리베이터 층 선택',
+
+  'my-desk': '내 자리', device: '바디스코프', shelf: '뒤쪽 자료 캐비닛', notice: '로비 소식 게시판', 'street-notice': '거리 안내판',
   station: '압구정역 방향 표지', 'jinu-store': '진U 편의점', 'alley-151': '논현로151길 표지', 'shoe-repair': '구두 수선대', 'park-bench': '쉼터 벤치', fountain: '쉼터 분수', 'window-seat': '비투비씨 창가 자리',
 };

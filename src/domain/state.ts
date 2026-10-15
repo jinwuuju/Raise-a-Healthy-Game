@@ -1,3 +1,5 @@
+import { wasD092Position } from '../world/legacy-euro';
+import { wasLegacyLobbyPosition } from '../world/legacy-lobby';
 import { defaultAppearance, outfits, presets, starterOutfits, validateAppearance, type Appearance, type OutfitId, type Preset } from './appearance';
 import { emptyArticle, validateArticle, type Q1Article } from './article-state';
 import { emptyReactions, latestReaction, validateReactions, type Reactions } from './reaction-state';
@@ -6,8 +8,8 @@ import { emptyQ3, validateQ3, type Q3State } from './q003-state';
 import { emptyQ4, validateQ4, type Q4State } from './q004-state';
 import { emptyQ5, validateQ5, type Q5State } from './q005-state';
 import { emptyLunch, validateLunch, type LunchState } from './lunch';
-import { canStand, footRect } from '../world/collision';
-import { rooms } from '../world/rooms';
+import { canStand, canStandIn, footRect } from '../world/collision';
+import { rooms, roomsD093, roomsD094 } from '../world/rooms';
 import { isHeartRoom, overlap, roomIds, type Dir, type RoomId } from '../world/types';
 
 export type GameState = {
@@ -73,11 +75,26 @@ export function validateState(value: unknown): GameState {
   if (!strings(s.owned) || !s.owned.every(id => Object.hasOwn(outfits, id)) || !s.owned.includes(look.outfit)) throw new Error('옷장 기록이 잘못되었습니다.');
   if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir)) throw new Error('저장된 위치가 올바르지 않습니다.');
   let place = { room: at.room as RoomId, x: at.x, y: at.y, facing: at.facing as Dir };
+  // D093: the old separate outer office is now an open area in the corridor map.
+  if (place.room === 'outeroffice') {
+    if (!wasD092Position(place.room, place)) throw new Error('저장된 위치가 올바르지 않습니다.');
+    place = { room: 'floor4', ...rooms.floor4.spawn, facing: rooms.floor4.spawnFacing };
+  }
   if (!canStand(place.room, place)) {
-    // The heart was rebuilt (D056) and the street across from Euro Plaza was built up (D088): a position saved
-    // where there is now a wall moves to that room's safe entry point. Roads and other impossible spots stay invalid.
+    // D092 kept its lounge inside the corridor map; those saves go to the separate lounge (D093).
+    if (place.room === 'floor4' && place.x < 240 && place.y >= 240 && place.y < 368 && wasD092Position('floor4', place)) {
+      place = { room: 'lounge', ...rooms.lounge.spawn, facing: rooms.lounge.spawnFacing };
+    }
+  }
+  if (!canStand(place.room, place)) {
+    // The heart was rebuilt (D056), the street across from Euro Plaza was built up (D088) and Euro Plaza's interior was
+    // rebuilt (D092~D095): a position that was valid where there is now a wall moves to that room's safe entry point.
+    // Roads and other impossible spots stay invalid.
     const builtOver = place.room === 'street' && rooms.street.buildings.some(b => overlap(footRect(place), { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }));
-    if (!isHeartRoom(place.room) && !builtOver) throw new Error('저장된 위치가 올바르지 않습니다.');
+    const rebuiltLobby = place.room === 'lobby' && wasLegacyLobbyPosition(place);
+    const d093 = place.room in roomsD093 && canStandIn(roomsD093[place.room as keyof typeof roomsD093], place);
+    const d094 = place.room in roomsD094 && canStandIn(roomsD094[place.room as keyof typeof roomsD094], place);
+    if (!isHeartRoom(place.room) && !builtOver && !rebuiltLobby && !d093 && !d094 && !wasD092Position(place.room, place)) throw new Error('저장된 위치가 올바르지 않습니다.');
     const r = rooms[place.room];
     place = { room: place.room, x: r.spawn.x, y: r.spawn.y, facing: r.spawnFacing };
   }
