@@ -9,10 +9,10 @@ async function seed(p: Page, at: { room: string; x: number; y: number }) {
 async function spots(p: Page) {
   return p.evaluate(async () => {
     const u = '/src/world/district.ts', r = '/src/world/rooms.ts', cu = '/src/world/collision.ts';
-    const { anchors, crossroads, specialBuilding } = await import(/* @vite-ignore */ u), { rooms } = await import(/* @vite-ignore */ r), { canStand } = await import(/* @vite-ignore */ cu);
+    const { anchors, crossroads, specialBlock } = await import(/* @vite-ignore */ u), { rooms } = await import(/* @vite-ignore */ r), { canStand } = await import(/* @vite-ignore */ cu);
     const snap = (p: { x: number; y: number }) => { for (let rr = 0; rr < 80; rr += 2) for (let k = 0; k < 16; k++) { const q = { x: Math.round(p.x + Math.cos(k * Math.PI / 8) * rr), y: Math.round(p.y + Math.sin(k * Math.PI / 8) * rr) }; if (canStand('district', q)) return q; } return p; };
-    const cafe = rooms.district.doors.find((d: { id: string }) => d.id === 'cafe-door').zone, jinu = specialBuilding('jinu');
-    return { front: anchors.euroOut, cafe: snap({ x: cafe.x + cafe.w / 2, y: cafe.y + cafe.h + 10 }), cross: snap({ x: crossroads.x - 110, y: crossroads.y - 90 }), jinu: snap({ x: jinu.bbox.x + jinu.bbox.w / 2, y: jinu.bbox.y - 14 }) };
+    const cafe = rooms.district.doors.find((d: { id: string }) => d.id === 'cafe-door').zone, jinu = specialBlock('jinu');
+    return { front: anchors.euroOut, cafe: snap({ x: cafe.x + cafe.w / 2, y: cafe.y + cafe.h + 10 }), cross: snap({ x: crossroads.x - 110, y: crossroads.y - 90 }), jinu: snap({ x: jinu.x + jinu.w / 2, y: jinu.y + jinu.d + 14 }) };
   });
 }
 

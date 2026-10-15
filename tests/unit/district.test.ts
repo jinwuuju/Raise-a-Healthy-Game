@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { rooms } from '../../src/world/rooms';
 import { canStand, crossingAt } from '../../src/world/collision';
 import { findPath } from '../../src/world/path';
-import { anchors, carriageways, crossroads, crosswalks, dbuildings, droads, inPoly, nearestS, pointAt, polyline, specialBuilding } from '../../src/world/district';
+import { anchors, carriageways, crossroads, crosswalks, dblocks, droads, nearestS, pointAt, polyline, specialBlock } from '../../src/world/district';
 import ledger from '../../data/world/district-buildings.v0.1.json';
 
 const M = 16 / 3; // px per metre
@@ -14,11 +14,11 @@ describe('D096 real-scale district', () => {
     expect(d.cols * 16).toBe(3840); // 720 m square
     const euro = { x: anchors.euro.x + anchors.euro.w / 2, y: anchors.euro.y + anchors.euro.d / 2 };
     expect(metres(euro, crossroads)).toBeGreaterThan(95); expect(metres(euro, crossroads)).toBeLessThan(135); // ~110 m to Eulji crossroads
-    const cafe = specialBuilding('cafe')!;
-    const c = { x: cafe.bbox.x + cafe.bbox.w / 2, y: cafe.bbox.y + cafe.bbox.h / 2 };
+    const cafe = specialBlock('cafe')!;
+    const c = { x: cafe.x + cafe.w / 2, y: cafe.y + cafe.d / 2 };
     expect(metres(euro, c)).toBeGreaterThan(60); expect(metres(euro, c)).toBeLessThan(95); // ~78 m north-west
     expect(c.x).toBeLessThan(euro.x); expect(c.y).toBeLessThan(euro.y);
-    expect(dbuildings.length).toBeGreaterThan(900); expect(droads.length).toBeGreaterThan(150);
+    expect(dblocks.length).toBeGreaterThan(900); expect(droads.length).toBeGreaterThan(100);
   });
 
   it('blocks the big carriageways except on the crosswalks, and every footprint', () => {
@@ -32,14 +32,19 @@ describe('D096 real-scale district', () => {
       expect(canStand('district', mid), c.id).toBe(true);
       expect(crossingAt('district', mid)?.road, c.id).toBe(c.road);
     }
-    let checked = 0;
-    for (const b of dbuildings) {
-      if (b.special === 'europlaza' || b.bbox.w < 20 || b.bbox.h < 20) continue;
-      const cx = b.bbox.x + b.bbox.w / 2, cy = b.bbox.y + b.bbox.h / 2;
-      if (!inPoly({ x: cx, y: cy }, b.pts)) continue;
-      expect(canStand('district', { x: cx, y: cy })).toBe(false); if (++checked > 200) break;
+    // D097 tidy blocks: solid, snapped to 8 px, never overlapping each other or a big carriageway.
+    const bs = rooms.district.buildings;
+    expect(bs.length).toBe(dblocks.length);
+    for (const b of bs) {
+      expect(canStand('district', { x: b.x + b.w / 2, y: b.y + b.d / 2 }), b.id).toBe(false);
+      expect([b.x, b.y, b.w, b.d].map(v => ((v % 8) + 8) % 8)).toEqual([0, 0, 0, 0]);
     }
-    expect(checked).toBeGreaterThan(100);
+    const sorted = [...bs].sort((a, b) => a.x - b.x);
+    for (let i = 0; i < sorted.length; i++) for (let j = i + 1; j < sorted.length && sorted[j]!.x < sorted[i]!.x + sorted[i]!.w; j++) {
+      const a = sorted[i]!, b = sorted[j]!;
+      expect(a.y < b.y + b.d && b.y < a.y + a.d, `${a.id} overlaps ${b.id}`).toBe(false);
+    }
+    expect(bs.filter(b => b.kind === 'shop' || b.kind === 'small').every(b => b.label === '')).toBe(true); // no invented names
   });
 
   it('walks from Euro Plaza to the cafe and to the crossroads on foot', () => {
@@ -52,7 +57,7 @@ describe('D096 real-scale district', () => {
   });
 
   it('keeps the building ledger names empty for the user to fill in', () => {
-    expect(ledger.buildings.length).toBe(dbuildings.length);
+    expect(ledger.buildings.length).toBe(dblocks.length);
     expect(ledger.buildings.every(b => b.name === null)).toBe(true);
     expect(ledger.buildings.filter(b => b.special).map(b => b.special).sort()).toEqual(['cafe', 'europlaza', 'granite', 'jinu']);
   });

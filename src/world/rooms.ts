@@ -2,7 +2,7 @@ import { TILE, type Dir, type Point, type Rect, type RoomId } from './types';
 import type { Look } from '../domain/appearance';
 import { heartRooms } from './heart-rooms';
 import type { Organ } from './organ-types';
-import { DISTRICT_SIZE, anchors, buildMask, carriageways, crossroads, crosswalks, inPoly, nearestS, offset, pointAt, polyline } from './district';
+import { DISTRICT_SIZE, anchors, buildMask, carriageways, crossroads, crosswalks, dblocks, nearestS, offset, pointAt, polyline } from './district';
 
 /*
  * Map geometry only (no rendering). Distances are game pixels, 1 tile = 16px.
@@ -22,9 +22,10 @@ export const T = {
 const BLOCKED = new Set<number>([T.VOID, T.ROAD, T.WALL]);
 export function walkableTile(t: number): boolean { return !BLOCKED.has(t); }
 
-export type BuildingKind = 'europlaza' | 'b2bc' | 'shop' | 'office' | 'hotel' | 'hospital' | 'jinu' | 'granite' | 'brickcorner';
+export type BuildingKind = 'europlaza' | 'b2bc' | 'shop' | 'office' | 'hotel' | 'hospital' | 'jinu' | 'granite' | 'brickcorner' | 'small' | 'apartment';
 /** `block`: the whole drawn mass (roof + front, y - h .. y + d) is solid ground, used across narrow lanes so a tall front never hides the lane. */
-export type Building = { id: string; kind: BuildingKind; x: number; y: number; w: number; d: number; h: number; v: number; block?: boolean };
+export type Building = { id: string; kind: BuildingKind; x: number; y: number; w: number; d: number; h: number; v: number; block?: boolean;
+  /** Shop sign text; '' = no sign (district buildings until the user names them). */ label?: string };
 
 export type PropKind =
   | 'ginkgo' | 'parktree' | 'lamp' | 'bench' | 'planter' | 'bollard' | 'signal' | 'kiosk' | 'signpost' | 'hydrant'
@@ -278,9 +279,14 @@ function district(): Room {
   const size = DISTRICT_SIZE, cols = size / TILE, rows = cols;
   const tiles = new Uint8Array(cols * rows).fill(T.PAVE);
   const A = anchors, euro: Building = { id: 'europlaza', kind: 'europlaza', ...A.euro, h: 112, v: 0 };
+  // D097: every other building is a tidy block drawn with the street building art; no invented names on signs.
+  const ids: Record<string, string> = { cafe: 'b2bc', jinu: 'jinu', granite: 'granite' };
+  const blocks: Building[] = dblocks.filter(b => b.special !== 'europlaza').map(b => ({ id: (b.special && ids[b.special]) || 'b' + b.id,
+    kind: b.kind as BuildingKind, x: b.x, y: b.y, w: b.w, d: b.d, h: b.h, v: b.v, label: '' }));
+  const inBlock = (p: Point, pad = 0) => [euro, ...blocks].some(b => p.x > b.x - pad && p.x < b.x + b.w + pad && p.y > b.y - pad && p.y < b.y + b.d + pad);
   const euroDoor = A.euroDoor, euroOut = A.euroOut, jinuFront = A.jinuFront, graniteFront = A.graniteFront;
-  const mask = buildMask(b => b.special === 'europlaza');
-  const free = (p: Point) => { const c = mask.data[Math.floor(p.y / mask.cell) * mask.w + Math.floor(p.x / mask.cell)]; return p.x > 8 && p.y > 8 && p.x < size - 8 && p.y < size - 8 && c === 0 && !inPoly(p, euroRect(euro)); };
+  const mask = buildMask();
+  const free = (p: Point) => { const c = mask.data[Math.floor(p.y / mask.cell) * mask.w + Math.floor(p.x / mask.cell)]; return p.x > 8 && p.y > 8 && p.x < size - 8 && p.y < size - 8 && c === 0 && !inBlock(p, 4); };
   // Ginkgo trees and street lamps along the outer kerbs of the two big roads, clear of the crossroads.
   const props: Prop[] = [];
   for (const cw of Object.values(carriageways)) {
@@ -311,7 +317,7 @@ function district(): Room {
   const npcs = routes.filter(([r]) => r.every(free)).map(([r, sp], i) => npc('w' + (i + 1), '', r[0]!.x, r[0]!.y, 'down', walkerLooks[i % walkerLooks.length]!, r, sp));
   const northSign = pointAt(polyline(offset(carriageways.sb.pts, carriageways.sb.w / 2 + 14)), nearestS(polyline(carriageways.sb.pts), { x: 2200, y: 60 })).p;
   return finish({
-    id: 'district', title: '논현로 일대 · 유로프라자 주변 (실제 축척)', cols, rows, tiles, buildings: [euro], props: safeProps, npcs, markings: [], interior: null,
+    id: 'district', title: '논현로 일대 · 유로프라자 주변 (실제 축척)', cols, rows, tiles, buildings: [euro, ...blocks], props: safeProps, npcs, markings: [], interior: null,
     mask,
     crossings: crosswalks.map(c => ({ id: c.id, road: c.road, poly: c.core, rect: bbox(c.core) })),
     spawn: euroOut, spawnFacing: 'down',
@@ -328,7 +334,6 @@ function district(): Room {
     ],
   });
 }
-const euroRect = (b: Building): Point[] => [{ x: b.x, y: b.y }, { x: b.x + b.w, y: b.y }, { x: b.x + b.w, y: b.y + b.d }, { x: b.x, y: b.y + b.d }];
 const bbox = (pts: Point[]): Rect => { const xs = pts.map(p => p.x), ys = pts.map(p => p.y), x = Math.min(...xs), y = Math.min(...ys); return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y }; };
 
 function interiorGrid(cols: number, rows: number, floor: number, door: [number, number]) {

@@ -12,26 +12,19 @@ export const districtLicence: string = raw.licence;
 
 /** kind: 0 big carriageway (blocked, cross on crosswalks), 1 small road (shared, walkable), 2 footpath, 3 slip lane (walkable). */
 export type DRoad = { id: number; kind: 0 | 1 | 2 | 3; w: number; sw: number; bridge: boolean; pts: Point[] };
-export type DBuilding = { id: number; cls: number; floors: number; h: number; pts: Point[]; bbox: Rect; maxY: number; special: string | null };
+/** Tidy game block for one OSM building (D097): axis-aligned, snapped to 8 px, drawn with the street building art. */
+export type DBlock = { id: number; kind: string; v: number; x: number; y: number; w: number; d: number; h: number; special: string | null };
 export type DArea = { cls: number; pts: Point[] };
 
 const pairs = (a: number[]): Point[] => { const out: Point[] = []; for (let i = 0; i + 1 < a.length; i += 2) out.push({ x: a[i]!, y: a[i + 1]! }); return out; };
-const bboxOf = (pts: Point[]): Rect => {
-  const xs = pts.map(p => p.x), ys = pts.map(p => p.y), x = Math.min(...xs), y = Math.min(...ys);
-  return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y };
-};
 const specialOf = new Map<number, string>(Object.entries(raw.special as Record<string, number>).map(([k, v]) => [v, k]));
 
 export const droads: DRoad[] = (raw.roads as number[][]).map(r => ({ id: r[0]!, kind: r[1] as 0 | 1 | 2 | 3, w: r[2]!, sw: r[3]!, bridge: r[4] === 1, pts: pairs(r.slice(5)) }));
-/** Building height in pixels: about half the true scale per floor so tall blocks do not hide whole streets (D096). */
-export const heightPx = (floors: number): number => Math.min(150, floors * 8 + 4);
-export const dbuildings: DBuilding[] = (raw.buildings as number[][]).map(b => {
-  const pts = pairs(b.slice(3)), bbox = bboxOf(pts);
-  return { id: b[0]!, cls: b[1]!, floors: b[2]!, h: heightPx(b[2]!), pts, bbox, maxY: bbox.y + bbox.h, special: specialOf.get(b[0]!) ?? null };
-});
+const KINDS = ['europlaza', 'b2bc', 'jinu', 'granite', 'shop', 'office', 'apartment', 'brickcorner', 'hotel', 'small'];
+export const dblocks: DBlock[] = (raw.blocks as number[][]).map(b => ({ id: b[0]!, kind: KINDS[b[1]!]!, v: b[2]!, x: b[3]!, y: b[4]!, w: b[5]!, d: b[6]!, h: b[7]!, special: specialOf.get(b[0]!) ?? null }));
 export const dareas: DArea[] = (raw.areas as number[][]).map(a => ({ cls: a[0]!, pts: pairs(a.slice(1)) }));
 export const dlabels = (raw.labels as [string, number, number][]).map(([text, x, y]) => ({ text, x, y }));
-export const specialBuilding = (k: string): DBuilding | undefined => dbuildings.find(b => b.special === k);
+export const specialBlock = (k: string): DBlock | undefined => dblocks.find(b => b.special === k);
 
 /* ---------- polylines ---------- */
 export type Polyline = { pts: Point[]; cum: number[]; len: number };
@@ -137,13 +130,12 @@ export function strokePolys(pts: Point[], width: number): Point[][] {
   return out;
 }
 
-/** Collision mask (1 = blocked) at 4 px cells: carriageways of the big roads except crosswalks, and building footprints. */
-export function buildMask(skip: (b: DBuilding) => boolean): { cell: number; w: number; h: number; data: Uint8Array } {
+/** Collision mask (1 = blocked) at 4 px cells: carriageways of the big roads except crosswalks (buildings are solid blocks). */
+export function buildMask(): { cell: number; w: number; h: number; data: Uint8Array } {
   const w = Math.ceil(DISTRICT_SIZE / MASK_CELL), h = w, data = new Uint8Array(w * h), s = 1 / MASK_CELL;
   const set = (v: number) => (x: number, y: number) => { data[y * w + x] = v; };
   for (const r of droads) if (r.kind === 0) for (const q of strokePolys(r.pts, r.w)) scanPoly(q, w, h, set(1), s);
   for (const c of crosswalks) scanPoly(c.poly, w, h, set(0), s);
-  for (const b of dbuildings) if (!skip(b)) scanPoly(b.pts, w, h, set(1), s);
   return { cell: MASK_CELL, w, h, data };
 }
 export function inPoly(p: Point, pts: Point[]): boolean {
@@ -156,33 +148,16 @@ export function inPoly(p: Point, pts: Point[]): boolean {
 }
 
 /* ---------- entrances and fronts of the buildings the game already uses ---------- */
-type Edge = { mid: Point; n: Point };
-function edgeToward(b: DBuilding, score: (p: Point) => number): Edge {
-  let best: Edge & { d: number } = { mid: b.pts[0]!, n: { x: 0, y: 1 }, d: Infinity };
-  for (let i = 1; i < b.pts.length; i++) {
-    const a = b.pts[i - 1]!, c = b.pts[i]!, L = Math.hypot(c.x - a.x, c.y - a.y); if (L < 12) continue;
-    const mid = { x: (a.x + c.x) / 2, y: (a.y + c.y) / 2 }; let n = { x: (c.y - a.y) / L, y: -(c.x - a.x) / L };
-    if (inPoly({ x: mid.x + n.x * 3, y: mid.y + n.y * 3 }, b.pts)) n = { x: -n.x, y: -n.y };
-    const d = score(mid); if (d < best.d) best = { mid, n, d };
-  }
-  return best;
-}
-const out = (e: Edge, d: number): Point => ({ x: Math.round(e.mid.x + e.n.x * d), y: Math.round(e.mid.y + e.n.y * d) });
-const faceOf = (n: Point): 'down' | 'up' | 'left' | 'right' => Math.abs(n.x) > Math.abs(n.y) ? (n.x > 0 ? 'right' : 'left') : (n.y > 0 ? 'down' : 'up');
 function computeAnchors() {
-  const ep = specialBuilding('europlaza')!, cafe = specialBuilding('cafe')!, jinu = specialBuilding('jinu')!, granite = specialBuilding('granite')!;
-  // Euro Plaza keeps its approved rectangle art, laid over the real footprint's bounding box; the lobby door keeps
-  // its place in that art (92 px from the tower end) and opens onto Nonhyeon-ro 151-gil to the south.
-  const euro = { x: Math.round(ep.bbox.x), y: Math.round(ep.bbox.y), w: Math.round(ep.bbox.w / 8) * 8, d: Math.round(ep.bbox.h / 8) * 8 };
+  const ep = specialBlock('europlaza')!, cafe = specialBlock('cafe')!, jinu = specialBlock('jinu')!, granite = specialBlock('granite')!;
+  // Every block shows its south face (the game's 2.5D convention); doors, fronts and the props sit there.
+  const euro = { x: ep.x, y: ep.y, w: ep.w, d: ep.d };
   const euroDoor = { x: euro.x + 92, y: euro.y + euro.d, w: 17, h: 7 };
-  const near25 = droads.filter(r => r.kind === 1 && r.pts.some(p => Math.hypot(p.x - cafe.bbox.x, p.y - cafe.bbox.y) < 220));
-  const cafeEdge = edgeToward(cafe, p => Math.min(...near25.flatMap(r => r.pts.map(q => Math.hypot(q.x - p.x, q.y - p.y)))));
-  const toEuro = (p: Point) => Math.hypot(p.x - euroDoor.x, p.y - euroDoor.y);
-  const jinuEdge = edgeToward(jinu, toEuro), graniteEdge = edgeToward(granite, toEuro);
+  const front = (b: DBlock, dy: number) => ({ x: b.x + Math.round(b.w / 2), y: b.y + b.d + dy });
   return {
     euro, euroDoor, euroOut: { x: euro.x + 100, y: euro.y + euro.d + 14 },
-    cafeDoor: out(cafeEdge, 5), cafeOut: out(cafeEdge, 18), cafeFacing: faceOf(cafeEdge.n), cafeEdge,
-    jinuFront: out(jinuEdge, 9), jinuEdge, graniteFront: out(graniteEdge, 10), graniteEdge,
+    cafeDoor: front(cafe, 3), cafeOut: front(cafe, 16), cafeFacing: 'down' as const,
+    jinuFront: front(jinu, 10), graniteFront: front(granite, 10),
   };
 }
 export const anchors = computeAnchors();

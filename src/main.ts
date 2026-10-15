@@ -38,7 +38,7 @@ import { openNotebook as showNotebook } from './ui/notebook';
 import { latestReaction } from './domain/reaction-state';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
 import { rooms, type Target } from './world/rooms';
-import { anchors, crossroads, dlabels, specialBuilding } from './world/district';
+import { anchors, crossroads, dlabels, specialBlock } from './world/district';
 import { isHeartRoom, type Dir, type Point, type RoomId } from './world/types';
 
 class MemoryStorage implements Storage {
@@ -526,9 +526,9 @@ function openMap() {
     cv.width = base.width * 4; cv.height = base.height * 4; cv.style.width = '100%'; cv.style.imageRendering = 'pixelated'; cv.style.borderRadius = '12px';
     const g = cv.getContext('2d')!; g.imageSmoothingEnabled = false; g.drawImage(base, 0, 0, cv.width, cv.height);
     const lab = (t: string, x: number, y: number) => { g.font = '700 22px system-ui, sans-serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = 'rgba(20,16,30,0.9)'; g.strokeText(t, x, y); g.fillStyle = '#fff6dc'; g.fillText(t, x, y); };
-    const S = 0.5, A = anchors, cafe = specialBuilding('cafe')!, jinu = specialBuilding('jinu')!;
-    lab('유로프라자', (A.euro.x + A.euro.w / 2) * S, (A.euro.y - 12) * S); lab('비투비씨', (cafe.bbox.x + cafe.bbox.w / 2) * S, (cafe.bbox.y - 10) * S);
-    lab('진U', (jinu.bbox.x + jinu.bbox.w / 2) * S, (jinu.maxY + 30) * S); lab('을지병원 사거리', crossroads.x * S, (crossroads.y + 90) * S);
+    const S = 0.5, A = anchors, cafe = specialBlock('cafe')!, jinu = specialBlock('jinu')!;
+    lab('유로프라자', (A.euro.x + A.euro.w / 2) * S, (A.euro.y - 12) * S); lab('비투비씨', (cafe.x + cafe.w / 2) * S, (cafe.y - cafe.h - 6) * S);
+    lab('진U', (jinu.x + jinu.w / 2) * S, (jinu.y + jinu.d + 30) * S); lab('을지병원 사거리', crossroads.x * S, (crossroads.y + 90) * S);
     lab('압구정역 ↑', 2200 * S, 60 * S);
     for (const l of dlabels) if (l.text === '논현로' || l.text === '도산대로') lab(l.text, Math.max(80, Math.min(3760, l.x)) * S, Math.max(40, Math.min(3800, l.y)) * S);
     const p = world!.player; g.fillStyle = '#ff5a6e'; g.beginPath(); g.arc(p.x * S, p.y * S, 9, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();

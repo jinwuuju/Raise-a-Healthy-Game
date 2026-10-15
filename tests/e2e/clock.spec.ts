@@ -98,8 +98,14 @@ test.describe('device in another time zone', () => {
 
     // Walking still works at night and nothing in the save records a time setting.
     const x0 = (await hook(page))!.x;
-    await page.evaluate(() => { const w = (window as unknown as { __mq: { world: { player: { x: number; y: number }; tap(p: { x: number; y: number }): void } } }).__mq.world; w.tap({ x: w.player.x - 100, y: w.player.y + 30 }); });
-    await expect.poll(async () => (await hook(page))!.x, { timeout: 6000 }).toBeLessThan(x0 - 20);
+    const pos = () => page.evaluate(() => { const p = (window as unknown as { __mq: { world: { player: { x: number; y: number } } } }).__mq.world.player; return { x: p.x, y: p.y }; });
+    void x0;
+    const start = await pos();
+    await page.evaluate(async () => { const cu = '/src/world/path.ts'; const { findPath } = await import(/* @vite-ignore */ cu); const w = (window as unknown as { __mq: { world: { player: { x: number; y: number }; tap(p: { x: number; y: number }): void } } }).__mq.world;
+      for (const dx of [130, 170, 100, 210]) for (const dy of [0, 20, 40, -20]) { const q = { x: w.player.x + dx, y: w.player.y + dy }; if (findPath('district', w.player, q).length) { w.tap(q); return; } } });
+    // With a fixed clock the frame loop advances slowly; give the walk a few seconds before measuring.
+    for (let k = 0; k < 6; k++) { await page.waitForTimeout(500); await pos(); }
+    await expect.poll(async () => { const q = await pos(); return Math.hypot(q.x - start.x, q.y - start.y); }, { timeout: 8000 }).toBeGreaterThan(20);
     expect(await page.evaluate(k => 'settings' in JSON.parse(localStorage.getItem(k)!), CURRENT)).toBe(false);
 
     // Indoors stays lit whatever the hour.

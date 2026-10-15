@@ -94,6 +94,7 @@ def main():
         t = e.get('tags', {}); pts = [local(p) for p in e['geometry']]
         if not any(abs(x) < lim and abs(y) < lim for x, y in pts): continue
         hw = t.get('highway')
+        if hw in ('footway', 'path', 'steps', 'cycleway', 'platform', 'service') and not t.get('name'): continue  # D097: less clutter
         if hw and hw in BASE_W or hw in VEH:
             if t.get('tunnel') in ('yes',) or int(num(t.get('layer')) or 0) < 0: continue
             lanes = num(t.get('lanes')); w = num(t.get('width'))
@@ -104,7 +105,7 @@ def main():
             sw = 4 if hw in ('primary', 'secondary', 'trunk') else 2.5 if hw == 'tertiary' else 0
             roads.append({'id': e['id'], 'kind': kind, 'hw': hw, 'name': t.get('name', ''), 'w': round(w * PX, 1), 'sw': round(sw * PX, 1),
                           'oneway': t.get('oneway') == 'yes', 'bridge': t.get('bridge') == 'yes',
-                          'pts': [m2px(*p) for p in simplify(pts, 0.4)]})
+                          'pts': [m2px(*p) for p in simplify(pts, 0.4 if hw in MAJOR else 1.2)]})
         elif 'building' in t:
             if len(pts) < 4: continue
             c = (sum(p[0] for p in pts[:-1]) / (len(pts) - 1), sum(p[1] for p in pts[:-1]) / (len(pts) - 1))
@@ -131,19 +132,22 @@ def main():
     for b in buildings:
         b['special'] = next((k for k, v in special.items() if v == b['id']), None)
     size = round(2 * HALF * PX)
+    blocks = make_blocks(buildings, roads, size, special)
     data = {'version': '0.1', 'licence': 'Map data (c) OpenStreetMap contributors, ODbL 1.0', 'mPerTile': 3, 'pxPerM': round(PX, 4),
             'halfMetres': HALF, 'radiusMetres': RADIUS, 'sizePx': size, 'centrePx': m2px(0, 0),
             'places': {k: m2px(*v) for k, v in PLACES.items()}, 'special': special,
-            'roads': roads, 'buildings': buildings, 'areas': areas}
+            'roads': roads, 'buildings': buildings, 'blocks': blocks, 'areas': areas}
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     json.dump(data, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    src_of = {b['id']: b['floorsSource'] for b in buildings}
     ledger = {'version': '0.1', 'licence': data['licence'],
               'note': 'name는 사용자가 나중에 채운다(null = 이름 없음). floorsSource가 estimate인 층수는 추정값이며 사용자가 고칠 수 있다.',
-              'buildings': [{'id': b['id'], 'centreMetres': b['centre'], 'cls': b['cls'], 'floors': b['floors'], 'floorsSource': b['floorsSource'],
-                             'special': b['special'], 'name': None} for b in sorted(buildings, key=lambda b: (math.hypot(*b['centre']), b['id']))]}
+              'buildings': [{'id': k['id'], 'kind': k['kind'], 'rectPx': [k['x'], k['y'], k['w'], k['d']], 'floors': k['floors'],
+                             'floorsSource': src_of.get(k['id'], 'estimate'), 'special': k['special'], 'name': None}
+                            for k in sorted(blocks, key=lambda k: (math.hypot(k['x'] + k['w'] / 2 - size / 2, k['y'] + k['d'] / 2 - size / 2), k['id']))]}
     json.dump(ledger, open(LEDGER, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     est = sum(1 for b in buildings if b['floorsSource'] == 'estimate')
-    print('size', size, 'px; roads', len(roads), 'buildings', len(buildings), '(estimated floors', est, ') areas', len(areas),
+    print('blocks', len(blocks), 'size', size, 'px; roads', len(roads), 'buildings', len(buildings), '(estimated floors', est, ') areas', len(areas),
           'special', special, 'bytes', os.path.getsize(OUT))
 
     write_game(data)
@@ -182,10 +186,131 @@ def write_game(data):
     g = {'licence': data['licence'], 'size': data['sizePx'], 'centre': [round(v) for v in data['centrePx']], 'fits': fits, 'labels': labels,
          'special': data['special'],
          'roads': [[r['id'], K[r['kind']], round(r['w']), round(r['sw']), 1 if r['bridge'] else 0] + flat(r['pts']) for r in data['roads']],
-         'buildings': [[b['id'], CL.index(b['cls']) if b['cls'] in CL else 0, b['floors']] + flat(b['pts']) for b in data['buildings']],
+         'blocks': [[k['id'], KINDS.index(k['kind']), k['v'], k['x'], k['y'], k['w'], k['d'], k['h']] for k in data['blocks']],
          'areas': [[AC.index(a['cls'])] + flat(a['pts']) for a in data['areas']]}
     json.dump(g, open(GAME, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     print('game file', os.path.getsize(GAME), 'bytes; fits', fits)
+
+
+# ---------- D097: tidy blocks (game look) ----------
+GRID = 8
+KINDS = ['europlaza', 'b2bc', 'jinu', 'granite', 'shop', 'office', 'apartment', 'brickcorner', 'hotel', 'small']
+MIN_W = {'jinu': 80, 'cafe': 72, 'granite': 80}
+
+def stroke_quads(pts, width):
+    r = width / 2; out = []
+    for i in range(1, len(pts)):
+        (ax, ay), (bx, by) = pts[i - 1], pts[i]; L = math.hypot(bx - ax, by - ay) or 1
+        nx, ny = -(by - ay) / L * r, (bx - ax) / L * r
+        out.append([(ax + nx, ay + ny), (bx + nx, by + ny), (bx - nx, by - ny), (ax - nx, ay - ny)])
+    if r >= 2:
+        for (px_, py_) in pts:
+            out.append([(px_ + math.cos(k * math.pi / 4 + math.pi / 8) * r, py_ + math.sin(k * math.pi / 4 + math.pi / 8) * r) for k in range(8)])
+    return out
+
+def raster(poly, grid, n, cell):
+    ys = [p[1] / cell for p in poly]
+    y0, y1 = max(0, math.ceil(min(ys) - 0.5)), min(n - 1, math.floor(max(ys) - 0.5))
+    m = len(poly)
+    for y in range(y0, y1 + 1):
+        sy = y + 0.5; xs = []
+        for i in range(m):
+            (ax, ay), (bx, by) = poly[i], poly[i - 1]; ay /= cell; by /= cell; ax /= cell; bx /= cell
+            if (ay > sy) != (by > sy): xs.append(ax + (sy - ay) / (by - ay) * (bx - ax))
+        xs.sort()
+        for k in range(0, len(xs) - 1, 2):
+            for x in range(max(0, math.ceil(xs[k] - 0.5)), min(n - 1, math.floor(xs[k + 1] - 0.5)) + 1): grid[y * n + x] = 1
+
+def make_blocks(buildings, roads, size, special):
+    cell = 4; n = size // cell; occ = bytearray(n * n)
+    for r in roads:
+        if r['kind'] == 'path': continue
+        w = r['w'] + (2 * r['sw'] if r['kind'] == 'major' else 0) + 4
+        for q in stroke_quads(r['pts'], w): raster(q, occ, n, cell)
+    def road_hits(x, y, w, d):
+        x0, y0, x1, y1 = max(0, x // cell), max(0, y // cell), min(n, (x + w) // cell), min(n, (y + d) // cell)
+        top = sum(occ[y0 * n + i] for i in range(x0, x1)) if y0 < n else 0
+        bot = sum(occ[(y1 - 1) * n + i] for i in range(x0, x1)) if y1 > 0 else 0
+        lef = sum(occ[j * n + x0] for j in range(y0, y1)) if x0 < n else 0
+        rig = sum(occ[j * n + x1 - 1] for j in range(y0, y1)) if x1 > 0 else 0
+        anyhit = any(occ[j * n + i] for j in range(y0, y1) for i in range(x0, x1))
+        return anyhit, {'top': top, 'bottom': bot, 'left': lef, 'right': rig}
+    cands = []
+    for b in buildings:
+        xs = [p[0] for p in b['pts']]; ys = [p[1] for p in b['pts']]
+        bx0, by0, bx1, by1 = min(xs), min(ys), max(xs), max(ys)
+        A = abs(area(b['pts'])); bbA = max(1, (bx1 - bx0) * (by1 - by0))
+        cx, cy = (bx0 + bx1) / 2, (by0 + by1) / 2
+        sp = next((k for k, v in special.items() if v == b['id']), None)
+        f = 1.0 if sp == 'europlaza' else min(1.0, math.sqrt(A / bbA) * 1.05)
+        w, d = (bx1 - bx0) * f, (by1 - by0) * f
+        x0 = round((cx - w / 2) / GRID) * GRID; y0 = round((cy - d / 2) / GRID) * GRID
+        w = max(GRID, round(w / GRID) * GRID); d = max(GRID, round(d / GRID) * GRID)
+        if sp in MIN_W and w < MIN_W[sp]: x0 -= (MIN_W[sp] - w) // 2 // GRID * GRID; w = MIN_W[sp]
+        cands.append({'id': b['id'], 'cls': b['cls'], 'floors': b['floors'], 'special': sp, 'x': x0, 'y': y0, 'w': w, 'd': d, 'area0': w * d})
+    for c in cands:  # clip to the map so every block is fully inside (and solid)
+        x1, y1 = min(size, c['x'] + c['w']), min(size, c['y'] + c['d']); c['x'], c['y'] = max(0, c['x']), max(0, c['y'])
+        c['w'], c['d'] = x1 - c['x'], y1 - c['y']
+    cands = [c for c in cands if c['w'] >= 32 and c['d'] >= 24 or c['special']]
+    order = sorted(cands, key=lambda c: (c['special'] is None, -c['area0']))
+    placed = []
+    def overlaps(a, b, gap=0):
+        return a['x'] < b['x'] + b['w'] + gap and b['x'] < a['x'] + a['w'] + gap and a['y'] < b['y'] + b['d'] + gap and b['y'] < a['y'] + a['d'] + gap
+    for c in order:
+        ok = True
+        if c['special'] != 'europlaza':
+            for _ in range(40):
+                hit, sides = road_hits(c['x'], c['y'], c['w'], c['d'])
+                if not hit: break
+                side = max(sides, key=sides.get)
+                if sides[side] == 0: side = 'bottom'
+                if side == 'top': c['y'] += GRID; c['d'] -= GRID
+                elif side == 'bottom': c['d'] -= GRID
+                elif side == 'left': c['x'] += GRID; c['w'] -= GRID
+                else: c['w'] -= GRID
+                if c['w'] < 32 or c['d'] < 24: ok = False; break
+            else: ok = False
+        if not ok and not c['special']: continue
+        for p in placed:
+            if not overlaps(c, p): continue
+            opts = []
+            if p['x'] + p['w'] - c['x'] < c['w']: opts.append(('left', (c['x'] + c['w']) - (p['x'] + p['w'])))
+            if c['x'] + c['w'] - p['x'] < c['w']: opts.append(('right', p['x'] - c['x']))
+            if p['y'] + p['d'] - c['y'] < c['d']: opts.append(('top', (c['y'] + c['d']) - (p['y'] + p['d'])))
+            if c['y'] + c['d'] - p['y'] < c['d']: opts.append(('bottom', p['y'] - c['y']))
+            opts = [o for o in opts if o[1] > 0]
+            if not opts: ok = False; break
+            side, keep = max(opts, key=lambda o: o[1] * (c['d'] if o[0] in ('left', 'right') else c['w']))
+            if side == 'left': c['x'], c['w'] = p['x'] + p['w'], keep
+            elif side == 'right': c['w'] = keep
+            elif side == 'top': c['y'], c['d'] = p['y'] + p['d'], keep
+            else: c['d'] = keep
+        if not ok or c['w'] < 32 or c['d'] < 24 or (c['w'] * c['d'] < 0.35 * c['area0'] and not c['special']): continue
+        placed.append(c)
+    # Story buildings need a clear frontage on their drawn (south) face for the door and the props.
+    for sp in [c for c in placed if c['special'] in ('cafe', 'jinu', 'granite')]:
+        strip = {'x': sp['x'] - 8, 'y': sp['y'] + sp['d'], 'w': sp['w'] + 16, 'd': 32}
+        for c in list(placed):
+            if c is sp or c['special'] == 'europlaza' or not overlaps(c, strip): continue
+            cut = strip['y'] + strip['d'] - c['y']
+            if c['y'] >= strip['y'] and c['d'] - cut >= 24: c['y'] += cut; c['d'] -= cut
+            else: placed.remove(c)
+    blocks = []
+    for c in placed:
+        f = c['floors']; h = 112 if c['special'] == 'europlaza' else max(48, min(140, 20 + 12 * f))
+        hsh = (c['id'] * 2654435761) % 1000
+        if c['special'] == 'europlaza': kind = 'europlaza'
+        elif c['special'] == 'cafe': kind = 'b2bc'
+        elif c['special'] in ('jinu', 'granite'): kind = c['special']
+        elif c['cls'] in ('apartment', 'home') or (f >= 10 and c['w'] * c['d'] > 20000): kind = 'apartment'
+        elif c['cls'] in ('office',) or c['w'] * c['d'] >= 22000 or f >= 8: kind = 'office'
+        else: kind = ['shop', 'shop', 'shop', 'granite', 'brickcorner', 'shop'][hsh % 6]
+        if kind in ('shop',) and c['w'] < 48: c['w'] = c['w']  # shops need room for the door; narrow ones become granite
+        if kind in ('shop', 'granite') and c['w'] < 56 and not c['special']: kind = 'small'
+        if kind == 'brickcorner' and c['w'] < 64: kind = 'small' if c['w'] < 56 else 'shop'
+        blocks.append({'id': c['id'], 'kind': kind, 'v': hsh % 6, 'x': c['x'], 'y': c['y'], 'w': c['w'], 'd': c['d'], 'h': h,
+                       'floors': f, 'special': c['special']})
+    return blocks
 
 if __name__ == '__main__':
     main()

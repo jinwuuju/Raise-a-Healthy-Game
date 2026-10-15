@@ -6,8 +6,7 @@ import { organMinimap, type MiniMap } from '../art/organ';
 import { ellipse, makeCanvas, pixelText, type Sprite } from '../art/pixel';
 import { propSprite } from '../art/props';
 import { drawGlassFace } from '../art/euro-interior';
-import { buildingSprite, districtMinimap, drawDistrictGround } from '../art/district';
-import { dbuildings } from '../world/district';
+import { districtMinimap, drawDistrictGround } from '../art/district';
 import type { Look } from '../domain/appearance';
 import { timeOfDayAt, type TimeOfDay } from '../domain/clock';
 import { passable, realTime, secondsUntilOpen, soundBetween } from '../domain/cardiac';
@@ -344,10 +343,6 @@ export class World {
     for (const b of room.buildings) {
       if (!inView(b.x, b.y - b.h, b.w, b.d + b.h)) continue;
       items.push({ y: b.y + b.d, x: b.x, occluder: { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, draw: () => this.drawBuilding(g, b, cx, cy, tod === 'night') });
-    }
-    if (this.roomId === 'district') for (const b of dbuildings) {
-      if (b.special === 'europlaza' || !inView(b.bbox.x, b.bbox.y - b.h, b.bbox.w, b.bbox.h + b.h)) continue;
-      items.push({ y: b.maxY, x: b.bbox.x, occluder: { x: b.bbox.x, y: b.bbox.y - b.h, w: b.bbox.w, h: b.bbox.h + b.h - 4 }, draw: () => g.drawImage(buildingSprite(b), Math.round(b.bbox.x - 1 - cx), Math.round(b.bbox.y - b.h - 1 - cy)) });
     }
     const frame4 = Math.floor(this.time * 6) % 4;
     for (const pr of room.props) {

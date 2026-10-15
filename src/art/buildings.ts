@@ -110,7 +110,40 @@ function paintShop(p: Painter, b: Building) {
   storefront(p, 3, gTop + 9, doorX - 6, 12, '#e9d3a6');
   door(g, doorX, gTop + 8, 12, 13, night);
   awningStripe(g, 2, gTop + 2, doorX - 4, s.awning);
-  sign(g, s.sign, Math.floor((doorX - 2) / 2) + 1, Math.max(D + 2, gTop - 9), '#fbf6ea', s.signBg);
+  // District buildings carry no invented names: the sign appears only once the user names the building (D097).
+  const label = b.label ?? s.sign;
+  if (label) sign(g, label, Math.floor((doorX - 2) / 2) + 1, Math.max(D + 2, gTop - 9), '#fbf6ea', s.signBg);
+}
+
+const SMALL: Ramp[] = [['#efe4cf', '#e2d3b7', '#c7b493', '#94805f'], ['#d6dde0', '#c3ccd0', '#a3afb5', '#76838a'], ['#e9c7a8', '#d9ad88', '#b98b66', '#8a6446'], ['#e2e2d6', '#d0d0c2', '#b3b3a4', '#86867a']];
+/** Narrow two-to-four storey building: plain wall, window pairs, a door, no sign. */
+function paintSmall(p: Painter, b: Building) {
+  const { g, night } = p, W = b.w, D = b.d, H = b.h, wall = SMALL[b.v % SMALL.length]!;
+  roof(p, W, D, ROOF, Math.max(0, Math.floor(W / 48)), 'none');
+  facade(g, W, D, H, wall);
+  const gTop = D + H - 18, floors = Math.max(1, Math.floor((H - 22) / 13));
+  for (let f = 0; f < floors; f++) {
+    const fy = D + 4 + f * 13;
+    rect(g, 0, fy + 11, W, 1, wall[2]);
+    for (let x = 4; x + 6 < W - 3; x += 10) windowAt(p, x, fy + 2, 6, 7, wall[3]);
+  }
+  rect(g, 0, gTop - 1, W, 1, wall[0]); rect(g, 0, gTop, W, 18, wall[2]);
+  storefront(p, 3, gTop + 4, Math.max(6, W - 22), 12, '#dfe6e6', wall[3]);
+  door(g, W - 16, gTop + 4, 11, 14, night);
+}
+/** Residential block: balcony rows and a lobby door, no sign. */
+function paintApartment(p: Painter, b: Building) {
+  const { g, night } = p, W = b.w, D = b.d, H = b.h, wall: Ramp = ['#f3ead8', '#e6d9bf', '#cdbc9c', '#9d8b6a'];
+  roof(p, W, D, ['#c2bdb2', '#b0aa9e', '#99938a', '#77726a'], Math.max(1, Math.floor(W / 50)), 'none');
+  facade(g, W, D, H, wall);
+  const gTop = D + H - 18, floors = Math.max(1, Math.floor((H - 22) / 12));
+  for (let f = 0; f < floors; f++) {
+    const fy = D + 3 + f * 12;
+    for (let x = 4; x + 10 < W - 3; x += 14) windowAt(p, x, fy + 1, 10, 6, wall[3], GLASS, 0.5);
+    balcony(g, 2, fy + 8, W - 4);
+  }
+  rect(g, 0, gTop, W, 18, wall[2]); rect(g, 0, gTop, W, 1, wall[0]);
+  door(g, Math.floor(W / 2) - 8, gTop + 3, 16, 15, night);
 }
 
 function paintOffice(p: Painter, b: Building) {
@@ -392,7 +425,7 @@ function paintB2BC(p: Painter, b: Building) {
 const cache = new Map<string, BuildingArt>();
 export function buildingArt(b: Building): BuildingArt {
   const hit = cache.get(b.id);
-  if (hit) return hit;
+  if (hit) { cache.delete(b.id); cache.set(b.id, hit); return hit; }
   const make = (night: boolean) => {
     const { c, g } = makeCanvas(b.w, b.d + b.h);
     const p: Painter = { g, night, r: rng(b.x * 7 + b.y * 13 + b.w), lights: [] };
@@ -406,6 +439,8 @@ export function buildingArt(b: Building): BuildingArt {
       case 'office': paintOffice(p, b); break;
       case 'hotel': paintHotel(p, b); break;
       case 'hospital': paintHospital(p, b); break;
+      case 'small': paintSmall(p, b); break;
+      case 'apartment': paintApartment(p, b); break;
       default: paintShop(p, b);
     }
     return { c, lights: p.lights, billboard };
@@ -413,5 +448,7 @@ export function buildingArt(b: Building): BuildingArt {
   const day = make(false), night = make(true);
   const art: BuildingArt = { day: day.c, night: night.c, lights: night.lights, billboard: day.billboard };
   cache.set(b.id, art);
+  // A real-scale district has ~1,100 buildings: keep only the recently drawn ones (day + night canvases each).
+  if (cache.size > 220) for (const k of [...cache.keys()].slice(0, cache.size - 220)) cache.delete(k);
   return art;
 }

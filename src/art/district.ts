@@ -1,7 +1,6 @@
-import { hash2, jinU, makeCanvas, pixelText } from './pixel';
+import { hash2, makeCanvas } from './pixel';
 import {
-  APPROACH, BAND, DISTRICT_SIZE, carriageways, crossroads, crosswalks, dareas, dbuildings, droads, nearestS, pointAt, polyline, scanPoly, strokePolys,
-  type DBuilding,
+  APPROACH, BAND, DISTRICT_SIZE, carriageways, crossroads, crosswalks, dareas, dblocks, droads, nearestS, pointAt, polyline, scanPoly, strokePolys,
 } from '../world/district';
 import type { Point } from '../world/types';
 
@@ -47,6 +46,7 @@ function groundShapes(): Shape[] {
   for (const r of droads) if (r.kind === 0) for (const q of strokePolys(r.pts, r.w + 2 * r.sw + 4)) out.push({ cls: C.CURB, pts: q });
   for (const r of droads) if (r.kind === 0) for (const q of strokePolys(r.pts, r.w + 2 * r.sw)) out.push({ cls: C.WALK, pts: q });
   for (const r of droads) if (r.kind === 2) for (const q of strokePolys(r.pts, r.w)) out.push({ cls: C.PATH, pts: q });
+  for (const r of droads) if (r.kind === 1) for (const q of strokePolys(r.pts, r.w + 4)) out.push({ cls: C.CURB, pts: q });
   for (const r of droads) if (r.kind === 1) for (const q of strokePolys(r.pts, r.w)) out.push({ cls: C.MINOR, pts: q });
   for (const r of droads) if (r.kind === 0 || r.kind === 3) for (const q of strokePolys(r.pts, r.w)) out.push({ cls: C.MAJOR, pts: q });
   // Lane dashes along each directional carriageway, stop lines before the crosswalks.
@@ -108,69 +108,6 @@ export function drawDistrictGround(g: CanvasRenderingContext2D, cx: number, cy: 
   return missing;
 }
 
-/* ---------- buildings ---------- */
-const TINTS: [string, string][] = [['#d9c3a5', '#e8d8bf'], ['#c98f74', '#dcae96'], ['#bfc3c4', '#d6d9d9'], ['#e6ddcc', '#f1ebdf'], ['#b9a48a', '#d0bea6'], ['#a9b4b8', '#c6cfd2']];
-const CLASS_TINT: Record<number, [string, string]> = { 3: ['#e3c79c', '#efd9b4'], 4: ['#e9dcc0', '#f4ead6'], 5: ['#cfc6d8', '#e0d9e7'], 6: ['#e6cd8a', '#f0dca6'], 7: ['#d8c4dc', '#e7d8ea'], 8: ['#b9b9b4', '#cfcfca'] };
-const SPECIAL: Record<string, [string, string]> = { jinu: ['#b4563f', '#cf9a84'], granite: ['#a9a59e', '#c6c2ba'], cafe: ['#e9e3d6', '#f3efe7'] };
-const shadeHex = (h: string, f: number): RGB => hex(h).map(v => Math.max(0, Math.min(255, Math.round(f > 0 ? v + (255 - v) * f : v * (1 + f))))) as RGB;
-
-const sprites = new Map<number, HTMLCanvasElement>();
-export function buildingSprite(b: DBuilding): HTMLCanvasElement {
-  let c = sprites.get(b.id); if (c) return c;
-  const W = Math.ceil(b.bbox.w) + 3, H = Math.ceil(b.bbox.h) + b.h + 3, ox = -b.bbox.x + 1, oy = -b.bbox.y + b.h + 1;
-  const made = makeCanvas(W, H); c = made.c; const g = made.g, img = g.createImageData(W, H), d = img.data;
-  const put = (col: RGB) => (x: number, y: number) => { const i = (y * W + x) * 4; d[i] = col[0]; d[i + 1] = col[1]; d[i + 2] = col[2]; d[i + 3] = 255; };
-  const [wall, roof] = (b.special && SPECIAL[b.special]) || CLASS_TINT[b.cls] || TINTS[b.id % TINTS.length]!;
-  const foot = b.pts.map(p => ({ x: p.x + ox, y: p.y + oy })), top = foot.map(p => ({ x: p.x, y: p.y - b.h }));
-  let area = 0; for (let i = 0; i < foot.length - 1; i++) area += foot[i]!.x * foot[i + 1]!.y - foot[i + 1]!.x * foot[i]!.y;
-  const visible: [Point, Point, number][] = [];
-  for (let i = 0; i < foot.length - 1; i++) {
-    const a = foot[i]!, e = foot[i + 1]!, ex = e.x - a.x, ey = e.y - a.y, L = Math.hypot(ex, ey) || 1;
-    const nx = (area > 0 ? -ey : ey) / L, ny = (area > 0 ? ex : -ex) / L;
-    if (ny <= 0.05) continue;
-    visible.push([a, e, nx]);
-    scanPoly([a, e, { x: e.x, y: e.y - b.h }, { x: a.x, y: a.y - b.h }], W, H, put(shadeHex(wall, nx < -0.3 ? 0.1 : nx > 0.3 ? -0.14 : 0)));
-  }
-  // Floor lines and windows on the visible walls; commercial ground floors get a lighter shop band.
-  const line = (a: Point, e: Point, lift: number, col: RGB, step = 1, len = 1) => {
-    const L = Math.hypot(e.x - a.x, e.y - a.y);
-    for (let t = 0; t <= L; t += step) for (let k = 0; k < len; k++) { const x = Math.round(a.x + (e.x - a.x) * t / L), y = Math.round(a.y + (e.y - a.y) * t / L - lift - k); if (x >= 0 && y >= 0 && x < W && y < H) put(col)(x, y); }
-  };
-  for (const [a, e] of visible) {
-    line(a, e, 0, shadeHex(wall, -0.45));
-    for (let f = 1; f < b.floors; f++) line(a, e, f * 8 - 4 + (b.h - b.floors * 8 - 4 > 0 ? 0 : 0), shadeHex(wall, -0.22), 1);
-    for (let f = 0; f < b.floors; f++) {
-      const lift = f * 8 + 3, L = Math.hypot(e.x - a.x, e.y - a.y);
-      for (let t = 3; t + 3 < L; t += 6) {
-        const x = Math.round(a.x + (e.x - a.x) * t / L), y = Math.round(a.y + (e.y - a.y) * t / L - lift);
-        const col = f === 0 && b.cls === 1 ? hex('#a9c4cc') : hash2(b.id % 997, f * 31 + t, 5) < 0.12 ? hex('#e7d9a8') : hex('#7d97a1');
-        for (let yy = 0; yy < 3; yy++) for (let xx = 0; xx < 2; xx++) if (x + xx < W && y - yy >= 0) put(col)(x + xx, y - yy);
-      }
-    }
-  }
-  scanPoly(top, W, H, put(hex(roof)));
-  for (let i = 0; i < top.length - 1; i++) line(top[i]!, top[i + 1]!, 0, shadeHex(roof, -0.4));
-  for (const [a] of visible) for (let y = 0; y <= b.h; y++) { const x = Math.round(a.x), yy = Math.round(a.y) - y; if (x >= 0 && x < W && yy >= 0 && yy < H) put(shadeHex(wall, -0.4))(x, yy); }
-  // A couple of rooftop units so roofs are not flat colour.
-  for (let k = 0; k < Math.min(3, Math.floor(b.bbox.w * b.bbox.h / 2500)); k++) {
-    const p = top[Math.floor(hash2(b.id % 991, k, 7) * (top.length - 1))]!, q = { x: (p.x * 2 + top.reduce((s, v) => s + v.x, 0) / top.length * 3) / 5, y: (p.y * 2 + top.reduce((s, v) => s + v.y, 0) / top.length * 3) / 5 };
-    for (let y = 0; y < 3; y++) for (let x = 0; x < 4; x++) put(y === 0 ? hex('#d9dcdb') : hex('#9aa2a3'))(Math.round(q.x) + x, Math.round(q.y) + y);
-  }
-  g.putImageData(img, 0, 0);
-  // Signs for the buildings the story uses (game-original lettering; no real logos).
-  const front = visible.slice().sort((p, q) => Math.hypot(q[1].x - q[0].x, q[1].y - q[0].y) - Math.hypot(p[1].x - p[0].x, p[1].y - p[0].y))[0];
-  if (front && b.special === 'jinu') {
-    const mx = Math.round((front[0].x + front[1].x) / 2), my = Math.round((front[0].y + front[1].y) / 2);
-    g.fillStyle = '#2fa59a'; g.fillRect(mx - 12, my - 15, 24, 12); g.fillStyle = '#f07a5a'; g.fillRect(mx - 12, my - 4, 24, 2); jinU(g, mx - 6, my - 13, '#ffffff');
-  }
-  if (front && b.special === 'cafe') {
-    const mx = Math.round((front[0].x + front[1].x) / 2), my = Math.round((front[0].y + front[1].y) / 2);
-    g.fillStyle = '#2e2e33'; g.fillRect(mx - 14, my - 13, 28, 9); pixelText(g, 'B2BC', mx - 7, my - 11, '#f6efe2');
-  }
-  sprites.set(b.id, c);
-  return c;
-}
-
 /* ---------- minimap ---------- */
 let mini: HTMLCanvasElement | null = null;
 /** 1/8 scale overview (480 px) for the HUD minimap and the neighbourhood map sheet. */
@@ -182,7 +119,7 @@ export function districtMinimap(): HTMLCanvasElement {
   for (const a of dareas) { path(a.pts); g.closePath(); g.fillStyle = a.cls === 0 ? '#6faa4c' : '#a8a397'; g.fill(); }
   g.lineCap = g.lineJoin = 'round';
   for (const r of droads) { if (r.kind === 2) continue; path(r.pts); g.lineWidth = Math.max(1, r.w * s); g.strokeStyle = r.kind === 0 ? '#4b505b' : '#666a74'; g.stroke(); }
-  for (const b of dbuildings) { path(b.pts); g.closePath(); g.fillStyle = b.special === 'europlaza' ? '#e8c88a' : b.special === 'cafe' ? '#f08a6a' : b.special === 'jinu' ? '#2fa59a' : '#8b8f9c'; g.fill(); }
+  for (const b of dblocks) { g.fillStyle = b.special === 'europlaza' ? '#e8c88a' : b.special === 'cafe' ? '#f08a6a' : b.special === 'jinu' ? '#2fa59a' : '#8b8f9c'; g.fillRect(Math.floor(b.x * s), Math.floor((b.y - b.h * 0.3) * s), Math.ceil(b.w * s), Math.ceil((b.d + b.h * 0.3) * s)); }
   mini = c;
   return c;
 }
