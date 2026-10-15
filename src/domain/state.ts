@@ -75,6 +75,12 @@ export function validateState(value: unknown): GameState {
   if (!strings(s.owned) || !s.owned.every(id => Object.hasOwn(outfits, id)) || !s.owned.includes(look.outfit)) throw new Error('옷장 기록이 잘못되었습니다.');
   if (!at || !roomIds.includes(at.room as RoomId) || typeof at.x !== 'number' || typeof at.y !== 'number' || !dirs.includes(at.facing as Dir)) throw new Error('저장된 위치가 올바르지 않습니다.');
   let place = { room: at.room as RoomId, x: at.x, y: at.y, facing: at.facing as Dir };
+  // D096: the compressed street became the real-scale district; any former street position reopens at Euro Plaza's door.
+  if (place.room === 'street') {
+    const builtOver = rooms.street.buildings.some(b => overlap(footRect(place), { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }));
+    if (!canStand('street', place) && !builtOver) throw new Error('저장된 위치가 올바르지 않습니다.');
+    place = { room: 'district', ...rooms.district.spawn, facing: rooms.district.spawnFacing };
+  }
   // D093: the old separate outer office is now an open area in the corridor map.
   if (place.room === 'outeroffice') {
     if (!wasD092Position(place.room, place)) throw new Error('저장된 위치가 올바르지 않습니다.');

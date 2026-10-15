@@ -72,7 +72,7 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
     if (latest) current.append(action('최근 독자 반응 · ' + latest.score + '점', () => actions.reaction(latest)));
     const lunchLine = lunchHudText(s, Date.now());
     if (lunchLine) current.append(action(lunchLine, () => actions.lunch()));
-    if (room === 'street' || isHeartRoom(room)) current.append(action('현재 장소 지도 보기', actions.map));
+    if (room === 'district' || isHeartRoom(room)) current.append(action('현재 장소 지도 보기', actions.map));
     current.append(el('p', 'muted', '분류를 골라 기록을 읽어요. 같은 기록은 한 곳에만 보관하고, 여기서는 필요한 곳으로 바로 이어집니다.'));
 
     const file = panels[1]!; file.append(el('h3', '', '취재 파일'));

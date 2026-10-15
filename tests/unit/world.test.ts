@@ -42,7 +42,8 @@ describe('street rules', () => {
   it('every returned segment is traversable, including the first grid connection', () => {
     for (const id of roomIds) {
       const room = rooms[id];
-      for (let y = 24; y < room.rows * 16; y += 24) for (let x = 24; x < room.cols * 16; x += 24) {
+      const step = room.cols > 100 ? 480 : 24; // the real-scale district is sampled sparsely
+      for (let y = 24; y < room.rows * 16; y += step) for (let x = 24; x < room.cols * 16; x += step) {
         if (!canStand(id, { x, y })) continue;
         const from = { x, y };
         const path = findPath(id, from, room.spawn);
@@ -53,7 +54,7 @@ describe('street rules', () => {
         }
       }
     }
-  });
+  }, 60000);
   it('wide roads are crossed only on crosswalks', () => {
     expect(canStand('street', { x: 432, y: 300 })).toBe(false);
     expect(canStand('street', { x: 432, y: 432 })).toBe(true);

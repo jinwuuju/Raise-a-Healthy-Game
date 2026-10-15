@@ -6,6 +6,8 @@ import { organMinimap, type MiniMap } from '../art/organ';
 import { ellipse, makeCanvas, pixelText, type Sprite } from '../art/pixel';
 import { propSprite } from '../art/props';
 import { drawGlassFace } from '../art/euro-interior';
+import { buildingSprite, districtMinimap, drawDistrictGround } from '../art/district';
+import { dbuildings } from '../world/district';
 import type { Look } from '../domain/appearance';
 import { timeOfDayAt, type TimeOfDay } from '../domain/clock';
 import { passable, realTime, secondsUntilOpen, soundBetween } from '../domain/cardiac';
@@ -219,7 +221,7 @@ export class World {
       .sort((a, b) => a.d - b.d).slice(0, 4).map(({ t }) => t);
 
     this.updateNpcs(dt);
-    if (this.roomId === 'street') { this.traffic.update(dt, [p, ...this.npcs]); this.updateLeaves(dt); }
+    if (this.roomId === 'district') { this.traffic.update(dt, [p, ...this.npcs]); this.updateLeaves(dt); }
   }
 
   /** A person may step onto a crosswalk only on a green pedestrian light; once on it they may finish crossing. */
@@ -281,7 +283,7 @@ export class World {
   }
 
   private updateLeaves(dt: number): void {
-    const trees = this.room.props.filter(pr => pr.kind === 'ginkgo');
+    const trees = this.room.props.filter(pr => pr.kind === 'ginkgo' && Math.abs(pr.x - this.player.x) < 260 && Math.abs(pr.y - this.player.y) < 200);
     while (this.leaves.length < 22) {
       const tr = trees[Math.floor(Math.random() * trees.length)];
       if (!tr) break;
@@ -327,6 +329,7 @@ export class World {
     g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
     g.fillStyle = room.organ ? '#170a12' : room.interior ? '#17141f' : '#2a2e3a'; g.fillRect(0, 0, vw, vh);
     if (this.heart) this.heart.drawFloor(g, cx, cy, vw, vh, this.real);
+    else if (this.roomId === 'district') drawDistrictGround(g, cx, cy, vw, vh);
     else g.drawImage(this.ground(this.roomId), -cx, -cy);
     const tod = room.interior ? 'day' : this.timeOfDay;
 
@@ -341,6 +344,10 @@ export class World {
     for (const b of room.buildings) {
       if (!inView(b.x, b.y - b.h, b.w, b.d + b.h)) continue;
       items.push({ y: b.y + b.d, x: b.x, occluder: { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, draw: () => this.drawBuilding(g, b, cx, cy, tod === 'night') });
+    }
+    if (this.roomId === 'district') for (const b of dbuildings) {
+      if (b.special === 'europlaza' || !inView(b.bbox.x, b.bbox.y - b.h, b.bbox.w, b.bbox.h + b.h)) continue;
+      items.push({ y: b.maxY, x: b.bbox.x, occluder: { x: b.bbox.x, y: b.bbox.y - b.h, w: b.bbox.w, h: b.bbox.h + b.h - 4 }, draw: () => g.drawImage(buildingSprite(b), Math.round(b.bbox.x - 1 - cx), Math.round(b.bbox.y - b.h - 1 - cy)) });
     }
     const frame4 = Math.floor(this.time * 6) % 4;
     for (const pr of room.props) {
@@ -360,7 +367,7 @@ export class World {
       const x0 = Math.min(b.x1, b.x2), y0 = Math.min(b.y1, b.y2) - b.lift - b.thick;
       items.push({ y: hv.bandY(b, p.x), x: x0, occluder: { x: x0, y: y0, w: Math.abs(b.x2 - b.x1), h: b.thick + 2 }, draw: () => hv.drawBand(g, b, cx, cy, this.real) });
     }
-    if (this.roomId === 'street') for (const car of this.traffic.cars) {
+    if (this.roomId === 'district') for (const car of this.traffic.cars) {
       const a = this.traffic.anchor(car);
       if (!inView(a.x - car.sprite.ax, a.y - car.sprite.ay, car.sprite.c.width, car.sprite.c.height)) continue;
       items.push({ y: a.y, x: a.x, occluder: null, draw: () => this.blit(g, car.sprite, a.x, a.y, cx, cy) });
@@ -473,7 +480,7 @@ export class World {
         glow(ox + b.w / 2, oy + b.d + b.h - 4, b.w * 0.45, 0.25);
       }
       for (const car of this.traffic.cars) {
-        const a = this.traffic.anchor(car), d = car.lane.dir;
+        const a = this.traffic.anchor(car), d = car.dir;
         const hx = a.x - cx + (d === 'right' ? 18 : d === 'left' ? -18 : 0), hy = a.y - cy + (d === 'down' ? 8 : d === 'up' ? -car.len - 4 : -6);
         glow(hx, hy, 18, 0.6);
       }
@@ -543,7 +550,7 @@ export class World {
 
   /** HUD minimap for the current room: the street, or a heart room (null indoors at the office and cafe). */
   miniMap(): MiniMap | null {
-    if (this.roomId === 'street') return { c: this.minimapBase(), s: 1 / 8, ox: 0, oy: 0 };
+    if (this.roomId === 'district') return { c: this.minimapBase(), s: 1 / 8, ox: 0, oy: 0 };
     return this.room.organ ? organMinimap(this.room, 1 / 4) : null;
   }
 
@@ -590,6 +597,7 @@ export class World {
 
   /** Small overview used by the HUD minimap (street only). */
   minimapBase(): HTMLCanvasElement {
+    if (this.roomId === 'district' || !this.room.interior) return districtMinimap();
     const room = rooms.street, s = 2;
     const { c, g } = makeCanvas(room.cols * s, room.rows * s);
     const col: Record<number, string> = { [T.ROAD]: '#4b505b', [T.CROSS]: '#d8d8d0', [T.LANE]: '#666a74', [T.GRASS]: '#6faa4c', [T.GRAVEL]: '#c9b78f', [T.PARKING]: '#5a5e67', [T.VOID]: '#3a3e48', [T.TACTILE]: '#d8b440', [T.TURF]: '#5eae4d' };

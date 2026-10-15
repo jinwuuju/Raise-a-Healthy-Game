@@ -7,7 +7,7 @@ const CELL = 8;
 const navigation = new WeakMap<Room, { cells: Int8Array; edges: Int8Array }>();
 
 /** A* on an 8px grid, followed by line-of-sight smoothing. Returns waypoints after the start. */
-export function findPath(roomId: RoomId, from: Point, to: Point, maxNodes = 9000): Point[] {
+export function findPath(roomId: RoomId, from: Point, to: Point, maxNodes = rooms[roomId].cols > 100 ? 90000 : 9000): Point[] {
   if (!canStand(roomId, from) || !Number.isFinite(to.x) || !Number.isFinite(to.y)) return [];
   // Most local taps have an unobstructed route: skip grid allocation and A* entirely.
   if (canStand(roomId, to) && clearLine(roomId, from, to)) return [{ ...to }];

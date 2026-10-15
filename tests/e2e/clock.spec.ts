@@ -61,7 +61,7 @@ test('old save with settings.time loads with progress, and the first new save dr
   await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world);
   const state = await page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.game.state);
   expect('settings' in state).toBe(false);
-  expect([state.totalXp, state.gold, (state.at as { room: string }).room]).toEqual([120, 40, 'street']);
+  expect([state.totalXp, state.gold, (state.at as { room: string }).room]).toEqual([120, 40, 'district']); // old street saves reopen in the real-scale district (D096)
   await expect(page.locator('.save-error')).toBeHidden();
   await page.getByRole('button', { name: '메뉴', exact: true }).click();
   await page.getByRole('button', { name: '지금 저장하기' }).click();
@@ -98,7 +98,7 @@ test.describe('device in another time zone', () => {
 
     // Walking still works at night and nothing in the save records a time setting.
     const x0 = (await hook(page))!.x;
-    await page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.world!.tap({ x: 330, y: 432 }));
+    await page.evaluate(() => { const w = (window as unknown as { __mq: { world: { player: { x: number; y: number }; tap(p: { x: number; y: number }): void } } }).__mq.world; w.tap({ x: w.player.x - 100, y: w.player.y + 30 }); });
     await expect.poll(async () => (await hook(page))!.x, { timeout: 6000 }).toBeLessThan(x0 - 20);
     expect(await page.evaluate(k => 'settings' in JSON.parse(localStorage.getItem(k)!), CURRENT)).toBe(false);
 

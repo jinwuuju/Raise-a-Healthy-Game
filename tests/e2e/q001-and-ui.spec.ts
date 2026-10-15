@@ -123,16 +123,28 @@ test('valves: a closed valve holds the reporter, it never opens backwards, and b
 });
 
 test('red pedestrian light holds the reporter at the curb, green lets them cross', async ({ page }) => {
-  await start(page, { flags: ['met-editor'], at: { room: 'street', x: 372, y: 432, facing: 'right' } });
-  expect(await room(page)).toBe('street');
-  await page.evaluate(() => { (window as unknown as { __mq: Hook }).__mq.world!.traffic.t = 0; });
-  await tap(page, 500, 432);
+  test.setTimeout(60000);
+  // Real Eulji crossroads (D096): the north crosswalk over Nonhyeon-ro.
+  await page.goto('/');
+  const cw = await page.evaluate(async () => {
+    const u = '/src/world/district.ts', cu = '/src/world/collision.ts'; const { crosswalks } = await import(/* @vite-ignore */ u), { canStand, crossingAt } = await import(/* @vite-ignore */ cu);
+    const c = crosswalks.find((c: { id: string }) => c.id === 'cross-n'); const [a, b] = c.ends, L = Math.hypot(b.x - a.x, b.y - a.y), v = { x: (b.x - a.x) / L, y: (b.y - a.y) / L };
+    // First standable sidewalk spot just outside each end of the crosswalk.
+    const outside = (e: { x: number; y: number }, s: number) => { const c0 = { x: e.x + v.x * s * 12, y: e.y + v.y * s * 12 }; for (let r = 0; r < 40; r += 2) for (let k = 0; k < 16; k++) { const q = { x: Math.round(c0.x + Math.cos(k * Math.PI / 8) * r), y: Math.round(c0.y + Math.sin(k * Math.PI / 8) * r) }; if (canStand('district', q) && !crossingAt('district', q) && (q.x - e.x) * v.x * s + (q.y - e.y) * v.y * s > 0) return q; } return null; };
+    return { from: outside(a, -1)!, to: outside(b, 1)!, a, b };
+  });
+  await start(page, { flags: ['met-editor'], at: { room: 'district', ...cw.from, facing: 'right' } });
+  expect(await room(page)).toBe('district');
+  await page.evaluate(() => { (window as unknown as { __mq: Hook }).__mq.world!.traffic.t = 7; }); // both corners' lights are red/blinking, so the route cannot detour over the other crosswalk
+  await tap(page, cw.to.x, cw.to.y);
   await page.waitForTimeout(1500);
-  const held = await page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.world!.player.x);
-  expect(held).toBeLessThan(384);
+  const held = await page.evaluate(() => { const p = (window as unknown as { __mq: Hook }).__mq.world!.player; return { x: p.x, y: p.y }; });
+  const L = Math.hypot(cw.b.x - cw.a.x, cw.b.y - cw.a.y), along = ((held.x - cw.a.x) * (cw.b.x - cw.a.x) + (held.y - cw.a.y) * (cw.b.y - cw.a.y)) / L;
+  expect(along).toBeLessThan(L / 3); // held near the near kerb
+  expect(await page.evaluate(async ([x, y]) => { const cu = '/src/world/collision.ts'; const { crossingAt } = await import(/* @vite-ignore */ cu); return crossingAt('district', { x: x!, y: y! })?.id ?? null; }, [held.x, held.y])).toBeNull(); // not on the crosswalk
   await expect(page.locator('.toast')).toContainText('빨간불');
   await page.evaluate(() => { (window as unknown as { __mq: Hook }).__mq.world!.traffic.t = 10; });
-  await expect.poll(() => page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.world!.player.x), { timeout: 6000 }).toBeGreaterThan(480);
+  await expect.poll(() => page.evaluate(([bx, by]) => { const p = (window as unknown as { __mq: Hook }).__mq.world!.player; return Math.hypot(p.x - bx!, p.y - by!); }, [cw.to.x, cw.to.y]), { timeout: 12000 }).toBeLessThan(12);
 });
 
 test('no PC-style corner action button; the notebook stays open while reading and closes explicitly', async ({ browser }) => {

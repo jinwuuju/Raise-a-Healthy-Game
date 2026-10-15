@@ -29,7 +29,7 @@ export function objective(s: GameState, room: RoomId): string {
     if (room === 'lift1' || room === 'lift4') return '층 선택 패널에서 1층을 고르고 문으로 나가기';
     if (room === 'lifthall') return '통로를 따라 로비로 나가기';
     if (room === 'lobby') return '정문으로 나가 논현로 거리로';
-    if (room === 'street') return '길 건너 진U 옆 골목으로 비투비씨 카페 찾아가기';
+    if (room === 'district' || room === 'street') return '정문 앞 골목에서 서쪽 도산대로25길로 · 북쪽으로 조금 가서 비투비씨 카페 찾아가기';
     return '바리스타에게 첫 방문 커피 받기';
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
@@ -128,8 +128,8 @@ export function talk(id: string, s: GameState): Talk {
       if (!has('met-editor')) return { flag: 'met-editor', lines: say('편집장', 'editor',
         `어서 와요, ${name} 기자. 메디컬 데스크에 온 걸 환영해요.`,
         '여기는 논현로 유로프라자 4층 편집국이에요. 우리는 몸에 관한 궁금증을 직접 취재해서 쉽게 전하는 곳이죠.',
-        '첫 취재 전에 동네부터 익혀 둬요. 길 건너 진U 편의점 옆 골목으로 내려가면 비투비씨 카페가 있는데, 첫 커피가 무료예요.') };
-      if (!s.cafe.welcomeUsed) return { flag: null, lines: say('편집장', 'editor', '엘리베이터로 내려가 정문으로 나가면 바로 좁은 길이에요. 길 건너 진U 편의점과 맞은편 빌딩 사이 논현로151길로 내려가면 도산대로 쪽에 비투비씨가 있어요.') };
+        '첫 취재 전에 동네부터 익혀 둬요. 정문 앞 골목에서 서쪽 도산대로25길로 들어가 북쪽으로 조금 올라가면 비투비씨 카페가 있는데, 첫 커피가 무료예요.') };
+      if (!s.cafe.welcomeUsed) return { flag: null, lines: say('편집장', 'editor', '엘리베이터로 내려가 정문으로 나가면 바로 앞 골목이 논현로151길이에요. 서쪽 끝 도산대로25길로 들어가 북쪽으로 조금 올라가면 비투비씨가 있어요. 길 건너 진U 편의점은 정문 바로 맞은편이에요.') };
       if (!has('reported-back')) return { flag: 'reported-back', action: 'offer-q1', lines: say('편집장', 'editor', '커피 맛 괜찮죠? 이제 동네가 조금 익숙해졌을 거예요.') };
       if (q1CanOffer(s)) return { flag: null, action: 'offer-q1', lines: [] };
       if (!has(Q1.observed)) return { flag: null, lines: say('편집장', 'editor', q1.editorWaiting) };
@@ -169,15 +169,15 @@ export const lookText: Record<string, string> = {
   device: q1.deviceLocked,
   shelf: '뒤쪽 캐비닛에 건강 기사 작성 가이드, 용어 사전, 지난 호 신문이 정리되어 있다.',
   notice: '유로프라자 입주사 안내 · 4층 메디컬 데스크 편집국 · 엘리베이터는 이 옆 통로 안쪽. 4층에서 내려 복도 끝까지 가세요.',
-  'street-notice': '현재 위치: 유로프라자 앞 논현로159길. 길 건너 진U 편의점과 맞은편 빌딩 사이 논현로151길로 내려가면 도산대로와 을지병원 사거리가 나온다. 북쪽으로 가면 압구정역 방향이다. 큰길은 보행 신호가 초록불일 때만 건널 수 있다. (게임 지도는 실제 거리를 줄여 표현했다.)',
+  'street-notice': '현재 위치: 유로프라자 앞 논현로151길. 서쪽 도산대로25길로 들어가 북쪽으로 조금 가면 비투비씨 카페, 남동쪽 약 110m가 을지병원 사거리(논현로 × 도산대로), 북쪽 논현로를 따라가면 압구정역 방향이다. 큰길은 보행 신호가 초록불일 때만 횡단보도로 건널 수 있다. (실제 축척 지도: 1칸 = 3m, OpenStreetMap 기반)',
   station: '↑ 압구정역 방향. 지하철역은 아직 열리지 않았다.',
   'jinu-store': '진U 편의점. 문 앞에 음료 상자와 생활용품 묶음이 쌓여 있다. 가게 안은 아직 둘러볼 수 없다.',
-  'alley-151': '논현로151길. 진U와 맞은편 빌딩 사이로 내려가는 좁은 골목이다. 끝까지 가면 도산대로와 을지병원 사거리가 나온다.',
+  'alley-151': '논현로151길. 유로프라자 정문 앞을 지나는 좁은 골목으로, 논현로에서 들어와 서쪽으로 이어진다. 맞은편 진U 편의점 옆으로는 도산대로25길이 남쪽 도산대로로 내려간다.',
   'shoe-repair': '구두 수선대. 굽갈이와 광택을 한다는 안내가 붙어 있다.',
   // Kept for old saves: the pocket park was replaced by the buildings across the lane (D088).
   'park-bench': '쉼터 벤치에 앉아 잠시 숨을 골랐다. 은행잎이 노랗게 물들기 시작했다. (지금은 그 자리에 건물이 들어섰다.)',
   fountain: '작은 분수. 물소리가 큰길의 소음을 조금 덮어 준다. (지금은 그 자리에 건물이 들어섰다.)',
-  'window-seat': '창가 자리에 앉아 잠시 쉬었다. 유리 너머로 도산대로의 차들이 지나간다.',
+  'window-seat': '창가 높은 자리에 앉아 잠시 쉬었다. 유리 너머로 도산대로25길 골목이 보인다.',
 };
 
 export const inspectLabels: Record<string, string> = {

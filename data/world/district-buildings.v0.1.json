@@ -96,7 +96,7 @@
    "cls": "general",
    "floors": 7,
    "floorsSource": "estimate",
-   "special": null,
+   "special": "granite",
    "name": null
   },
   {
@@ -144,7 +144,7 @@
    "cls": "general",
    "floors": 4,
    "floorsSource": "estimate",
-   "special": null,
+   "special": "jinu",
    "name": null
   },
   {

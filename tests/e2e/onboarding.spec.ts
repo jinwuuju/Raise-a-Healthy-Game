@@ -7,8 +7,8 @@ async function finishDialog(page: Page) {
   for (let i = 0; i < 12 && await page.locator('.dialog').count(); i++) { await page.keyboard.press('e'); await page.waitForTimeout(120); }
 }
 
-test('first day route: editor → corridor → elevator → lift hall → lobby → street → cafe order', async ({ page }) => {
-  test.setTimeout(60000);
+test('first day route: editor → corridor → elevator → lift hall → lobby → real-scale district → cafe order', async ({ page }) => {
+  test.setTimeout(90000);
   const errors: string[] = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.goto('/');
@@ -41,10 +41,12 @@ test('first day route: editor → corridor → elevator → lift hall → lobby 
   await expect.poll(() => hook(page), { timeout: 10000 }).toBe('lobby');
   await page.waitForTimeout(400);
   await tap(page, 240, 347);
-  await expect.poll(() => hook(page), { timeout: 10000 }).toBe('street');
+  await expect.poll(() => hook(page), { timeout: 10000 }).toBe('district');
   await page.waitForTimeout(400);
-  await tap(page, 116, 403);
-  await expect.poll(() => hook(page), { timeout: 20000 }).toBe('cafe');
+  // The cafe is at its real address, about 78 m north-west of Euro Plaza (D096).
+  const door = await page.evaluate(async () => { const u = '/src/world/rooms.ts'; const { rooms } = await import(/* @vite-ignore */ u); const z = rooms.district.doors.find((d: { id: string }) => d.id === 'cafe-door').zone; return { x: z.x + z.w / 2, y: z.y + z.h / 2 }; });
+  await tap(page, door.x, door.y);
+  await expect.poll(() => hook(page), { timeout: 40000 }).toBe('cafe');
   await page.waitForTimeout(400);
 
   await tap(page, 112, 50);

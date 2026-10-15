@@ -139,7 +139,7 @@ export class Hud {
   }
 
   setRoom(room: RoomId, make: () => MiniMap | null, caption = ''): void {
-    const street = room === 'street', heart = isHeartRoom(room);
+    const street = room === 'district', heart = isHeartRoom(room);
     let m = this.miniCache.get(room) ?? null;
     if (!m && (street || heart)) { m = make(); if (m) this.miniCache.set(room, m); }
     this.miniCur = m;

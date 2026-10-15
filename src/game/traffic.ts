@@ -2,21 +2,15 @@ import { carSprite, type CarDir, type CarKind } from '../art/vehicles';
 import { CAR_COLORS } from '../art/props';
 import type { Sprite } from '../art/pixel';
 import type { Point } from '../world/types';
+import { lanes, pointAt, type Lane } from '../world/district';
 
 /*
- * Light-weight traffic for the street map. Cars follow fixed lanes, stop at red lights
- * before the stop line, queue behind each other and always yield to the player.
+ * Light-weight traffic on the real Nonhyeon-ro and Dosan-daero carriageways (D096). Cars follow lane polylines,
+ * stop at red lights before the crosswalk, queue behind each other and always yield to people.
  */
-type Lane = { dir: CarDir; fixed: number; stop: number; axis: 'NS' | 'EW' };
-export type Car = { lane: Lane; pos: number; speed: number; kind: CarKind; color: string; len: number; sprite: Sprite };
-
-const LANES: Lane[] = [
-  { dir: 'down', fixed: 396, stop: 410, axis: 'NS' }, { dir: 'down', fixed: 420, stop: 410, axis: 'NS' },
-  { dir: 'up', fixed: 444, stop: 582, axis: 'NS' }, { dir: 'up', fixed: 468, stop: 582, axis: 'NS' },
-  { dir: 'right', fixed: 508, stop: 329, axis: 'EW' }, { dir: 'right', fixed: 532, stop: 329, axis: 'EW' },
-  { dir: 'left', fixed: 456, stop: 535, axis: 'EW' }, { dir: 'left', fixed: 480, stop: 535, axis: 'EW' },
-];
-const MIN = -80, MAX = 720, CRUISE = 42;
+export type Car = { lane: Lane; pos: number; speed: number; kind: CarKind; color: string; len: number; sprite: Sprite; dir: CarDir };
+const dirOf = (d: Point): CarDir => Math.abs(d.x) > Math.abs(d.y) ? (d.x > 0 ? 'right' : 'left') : (d.y > 0 ? 'down' : 'up');
+const CRUISE = 42;
 
 /*
  * One 20 s cycle. NS cars: green 0-7, yellow 7-9, all red 9-10. EW cars: green 10-17, yellow 17-19, all red 19-20.
@@ -45,72 +39,60 @@ export class Traffic {
   cars: Car[] = [];
   t = 0;
   private seed = 7;
-
   constructor() {
-    for (const lane of LANES) for (let i = 0; i < 2; i++) this.spawn(lane, MIN + 60 + i * 380 + this.rand() * 120);
+    for (const lane of lanes) for (let i = 0; i < 6; i++) this.spawn(lane, 40 + i * lane.line.len / 6 + this.rand() * 120);
   }
-
   /** Signal phase for cars on the north-south and east-west roads. */
   phase(axis: 'NS' | 'EW'): CarPhase { return carPhase(this.t, axis); }
   /** Pedestrian signal for crosswalks that cross the given road. */
   walk(road: 'NS' | 'EW'): PedPhase { return pedPhase(this.t, road); }
   /** Seconds until the pedestrian light for this road turns green (0 while walking). */
   waitFor(road: 'NS' | 'EW'): number { return pedWait(this.t, road); }
-
   private rand(): number { this.seed = (this.seed * 1103515245 + 12345) >>> 0; return (this.seed >>> 8) / 16777216; }
-
   private spawn(lane: Lane, pos: number): void {
     const kind = KINDS[Math.floor(this.rand() * KINDS.length)]!;
     const color = kind === 'taxi' ? '#e9944a' : kind === 'bus' ? (this.rand() < 0.5 ? '#3da35d' : '#2f6fb8') : CAR_COLORS[Math.floor(this.rand() * CAR_COLORS.length)]!;
-    const sprite = carSprite(kind, color, lane.dir);
-    const len = lane.dir === 'down' || lane.dir === 'up' ? sprite.c.height : sprite.c.width;
-    this.cars.push({ lane, pos, speed: CRUISE, kind, color, len, sprite });
+    const dir = dirOf(pointAt(lane.line, pos).dir), sprite = carSprite(kind, color, dir);
+    const len = dir === 'down' || dir === 'up' ? sprite.c.height : sprite.c.width;
+    this.cars.push({ lane, pos, speed: CRUISE, kind, color, len, sprite, dir });
   }
-
-  /** Position along the travel direction: larger = further ahead. */
-  private ahead(car: Car): number { return car.lane.dir === 'down' || car.lane.dir === 'right' ? car.pos : -car.pos; }
-
   update(dt: number, people: Point[]): void {
     this.t += dt;
     for (const car of this.cars) {
-      const sign = car.lane.dir === 'down' || car.lane.dir === 'right' ? 1 : -1;
-      const front = car.pos + sign * car.len / 2;
+      const front = car.pos + car.len / 2, { p: head, dir } = pointAt(car.lane.line, front);
       let limit = Infinity;
-      const light = this.phase(car.lane.axis);
-      const toStop = (car.lane.stop - front) * sign;
-      if (light !== 'green' && toStop > -2 && toStop < 70) limit = Math.min(limit, toStop);
+      const toStop = car.lane.stop - front;
+      if (this.phase(car.lane.axis) !== 'green' && toStop > -2 && toStop < 70) limit = Math.min(limit, toStop);
       for (const other of this.cars) {
-        if (other === car || other.lane !== car.lane) continue;
-        const gap = (this.ahead(other) - this.ahead(car)) - (other.len + car.len) / 2 - 6;
-        if (this.ahead(other) > this.ahead(car)) limit = Math.min(limit, gap);
+        if (other === car || other.lane !== car.lane || other.pos <= car.pos) continue;
+        limit = Math.min(limit, other.pos - car.pos - (other.len + car.len) / 2 - 6);
       }
-      for (const player of people) {
-        const vertical = car.lane.dir === 'down' || car.lane.dir === 'up';
-        const lateral = vertical ? Math.abs(player.x - car.lane.fixed) : Math.abs(player.y - 4 - car.lane.fixed);
-        const along = ((vertical ? player.y : player.x) - front) * sign;
+      for (const q of people) {
+        const along = (q.x - head.x) * dir.x + (q.y - head.y) * dir.y, lateral = Math.abs((q.x - head.x) * dir.y - (q.y - head.y) * dir.x);
         if (lateral < 14 && along > -4 && along < 46) limit = Math.min(limit, along - 10);
       }
       const target = limit < 1 ? 0 : limit < 40 ? CRUISE * Math.max(0, limit) / 40 : CRUISE;
       car.speed += (target - car.speed) * Math.min(1, dt * (target < car.speed ? 6 : 1.5));
       if (limit < 0.5) car.speed = Math.min(car.speed, 0);
       const requested = car.speed * dt, step = Math.min(requested, Math.max(0, limit));
-      car.pos += sign * step;
+      car.pos += step;
       if (step < requested) car.speed = 0;
+      const d = dirOf(pointAt(car.lane.line, car.pos).dir);
+      if (d !== car.dir) { car.dir = d; car.sprite = carSprite(car.kind, car.color, d); car.len = d === 'down' || d === 'up' ? car.sprite.c.height : car.sprite.c.width; }
     }
     for (let i = this.cars.length - 1; i >= 0; i--) {
       const car = this.cars[i]!;
-      if (car.pos > MAX || car.pos < MIN) {
+      if (car.pos > car.lane.line.len - 4) {
         this.cars.splice(i, 1);
-        const entry = car.lane.dir === 'down' || car.lane.dir === 'right' ? MIN + 4 : MAX - 4;
-        const blocked = this.cars.some(o => o.lane === car.lane && Math.abs(o.pos - entry) < 60);
-        if (!blocked) this.spawn(car.lane, entry); else this.cars.push({ ...car, pos: entry + (entry < 0 ? -90 : 90) });
+        if (!this.cars.some(o => o.lane === car.lane && o.pos < 80)) this.spawn(car.lane, 4);
+        else this.cars.push({ ...car, pos: -90 });
       }
     }
   }
-
   /** World anchor (bottom-centre) for drawing and depth sorting. */
   anchor(car: Car): Point {
-    const v = car.lane.dir === 'down' || car.lane.dir === 'up';
-    return v ? { x: car.lane.fixed, y: car.pos + car.len / 2 } : { x: car.pos, y: car.lane.fixed + 10 };
+    const { p } = pointAt(car.lane.line, Math.max(0, car.pos));
+    const v = car.dir === 'down' || car.dir === 'up';
+    return v ? { x: p.x, y: p.y + car.len / 2 } : { x: p.x, y: p.y + 10 };
   }
 }

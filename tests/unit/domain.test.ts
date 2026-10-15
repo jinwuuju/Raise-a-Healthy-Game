@@ -24,10 +24,10 @@ describe('state', () => {
     expect(() => validateState({ ...newState(), schemaVersion: 3 })).toThrow();
     expect(() => validateState({ ...newState(), at: { room: 'street', x: 432, y: 300, facing: 'down' } })).toThrow();
   });
-  it('moves a street position saved on the old pocket park, where buildings now stand, to the street spawn', () => {
-    for (const at of [{ x: 224, y: 350 }, { x: 186, y: 326 }, { x: 300, y: 360 }]) {
+  it('reopens any valid old-street position (incl. the built-over pocket park) at Euro Plaza in the real-scale district', () => {
+    for (const at of [{ x: 224, y: 350 }, { x: 186, y: 326 }, { x: 300, y: 360 }, { x: 292, y: 254 }]) {
       const v = validateState({ ...newState(), at: { room: 'street', ...at, facing: 'down' } });
-      expect(v.at).toEqual({ room: 'street', x: rooms.street.spawn.x, y: rooms.street.spawn.y, facing: rooms.street.spawnFacing });
+      expect(v.at).toEqual({ room: 'district', x: rooms.district.spawn.x, y: rooms.district.spawn.y, facing: rooms.district.spawnFacing });
     }
   });
   it('drops unknown imported fields', () => {

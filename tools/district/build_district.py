@@ -15,6 +15,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 SRC = os.path.join(ROOT, 'data/raw/district/osm-1km.json')
 OUT = os.path.join(ROOT, 'data/world/district-r300.v0.1.json')
 LEDGER = os.path.join(ROOT, 'data/world/district-buildings.v0.1.json')
+GAME = os.path.join(ROOT, 'src/world/district.generated.json')  # compact copy the game imports
 LAT0, LON0 = 37.52067, 127.02767            # Nonhyeon-ro 805 (Euro Plaza)
 MX, MY = 111320.0 * math.cos(math.radians(LAT0)), 110574.0
 PX = 16 / 3                                 # game pixels per metre (16 px tile = 3 m)
@@ -22,6 +23,8 @@ HALF = 360.0                                # map half-size in metres (300 m rad
 RADIUS = 300.0
 # Known places (Kakao address search 2026-10-15, metres from Euro Plaza): used to attach existing game entrances.
 PLACES = {'europlaza': (1.6, 2.5), 'cafe': (-70.7, 33.0)}
+# Facing Euro Plaza across the lane, either side of Dosan-daero 25-gil (user photos, D088): Jin-U brick block west, granite east.
+FIXED = {'jinu': 1553709254, 'granite': 899216069}
 EUROPLAZA_OSM = 899216070
 
 def m2px(x, y): return [round((x + HALF) * PX, 1), round((HALF - y) * PX, 1)]
@@ -36,6 +39,13 @@ def simplify(pts, eps):
         if d > dmax: i, dmax = k, d
     if dmax <= eps: return [a, b]
     return simplify(pts[:i + 1], eps)[:-1] + simplify(pts[i:], eps)
+
+def simplify_ring(pts, eps):
+    # Closed rings (first == last) cannot go straight into Douglas-Peucker: split at the vertex farthest from the start.
+    if len(pts) < 4 or math.hypot(pts[0][0] - pts[-1][0], pts[0][1] - pts[-1][1]) > 1e-6: return simplify(pts, eps)
+    k = max(range(len(pts) - 1), key=lambda i: math.hypot(pts[i][0] - pts[0][0], pts[i][1] - pts[0][1]))
+    ring = simplify(pts[:k + 1], eps)[:-1] + simplify(pts[k:], eps)
+    return ring if len(ring) >= 4 else pts
 
 def area(pts):
     s = 0.0
@@ -87,8 +97,10 @@ def main():
         if hw and hw in BASE_W or hw in VEH:
             if t.get('tunnel') in ('yes',) or int(num(t.get('layer')) or 0) < 0: continue
             lanes = num(t.get('lanes')); w = num(t.get('width'))
+            # One-way carriageways: at most 4 through lanes (wider tags here include turn pockets and swallowed the sidewalks).
+            if lanes and t.get('oneway') == 'yes': lanes = min(lanes, 4)
             if not w: w = lanes * 3.25 if lanes and (hw in MAJOR or hw == 'tertiary') else BASE_W.get(hw, 4)
-            kind = 'major' if hw in MAJOR else 'minor' if hw in VEH else 'path'
+            kind = ('link' if hw.endswith('_link') else 'major') if hw in MAJOR else 'minor' if hw in VEH else 'path'
             sw = 4 if hw in ('primary', 'secondary', 'trunk') else 2.5 if hw == 'tertiary' else 0
             roads.append({'id': e['id'], 'kind': kind, 'hw': hw, 'name': t.get('name', ''), 'w': round(w * PX, 1), 'sw': round(sw * PX, 1),
                           'oneway': t.get('oneway') == 'yes', 'bridge': t.get('bridge') == 'yes',
@@ -101,11 +113,11 @@ def main():
             lv = num(t.get('building:levels')); h = num(t.get('height'))
             floors, src = (round(lv), 'osm-levels') if lv else (max(1, round(h / 3.2)), 'osm-height') if h else (estimate_floors(cls, a), 'estimate')
             buildings.append({'id': e['id'], 'cls': cls, 'floors': floors, 'floorsSource': src, 'areaM2': round(a),
-                              'centre': [round(c[0], 1), round(c[1], 1)], 'pts': [m2px(*p) for p in simplify(pts, 0.5)]})
+                              'centre': [round(c[0], 1), round(c[1], 1)], 'pts': [m2px(*p) for p in simplify_ring(pts, 0.5)]})
         else:
             cls = ('green' if t.get('leisure') in ('park', 'garden', 'playground') or t.get('landuse') in ('grass', 'meadow') or t.get('natural') in ('grassland', 'wood', 'scrub')
                    else 'parking' if t.get('amenity') == 'parking' else 'school' if t.get('amenity') in ('school', 'kindergarten') else None)
-            if cls and len(pts) > 3: areas.append({'id': e['id'], 'cls': cls, 'pts': [m2px(*p) for p in simplify(pts, 0.5)]})
+            if cls and len(pts) > 3: areas.append({'id': e['id'], 'cls': cls, 'pts': [m2px(*p) for p in simplify_ring(pts, 0.5)]})
     # Special buildings that already have game art / entrances.
     special = {}
     for b in buildings:
@@ -115,6 +127,7 @@ def main():
     if 'cafe' not in special:  # address point may sit on the entrance side: nearest centroid within 15 m
         near = min(buildings, key=lambda b: math.hypot(b['centre'][0] - PLACES['cafe'][0], b['centre'][1] - PLACES['cafe'][1]))
         if math.hypot(near['centre'][0] - PLACES['cafe'][0], near['centre'][1] - PLACES['cafe'][1]) < 15: special['cafe'] = near['id']
+    special.update(FIXED)
     for b in buildings:
         b['special'] = next((k for k, v in special.items() if v == b['id']), None)
     size = round(2 * HALF * PX)
@@ -132,6 +145,47 @@ def main():
     est = sum(1 for b in buildings if b['floorsSource'] == 'estimate')
     print('size', size, 'px; roads', len(roads), 'buildings', len(buildings), '(estimated floors', est, ') areas', len(areas),
           'special', special, 'bytes', os.path.getsize(OUT))
+
+    write_game(data)
+
+def fit_line(pts, vertical):
+    # least squares: vertical -> x = a + b*y ; else y = a + b*x
+    us = [p[1] if vertical else p[0] for p in pts]; vs = [p[0] if vertical else p[1] for p in pts]
+    n = len(us); mu, mv = sum(us) / n, sum(vs) / n
+    b = sum((u - mu) * (v - mv) for u, v in zip(us, vs)) / (sum((u - mu) ** 2 for u in us) or 1)
+    return mv - b * mu, b
+
+def write_game(data):
+    K = {'major': 0, 'minor': 1, 'path': 2, 'link': 3}
+    CL = ['general', 'commercial', 'office', 'home', 'apartment', 'hotel', 'school', 'religious', 'parking']
+    AC = ['green', 'parking', 'school']
+    fits = {}
+    for name, key, vertical in (('논현로', 'ns', True), ('도산대로', 'ew', False)):
+        ways = [r for r in data['roads'] if r['name'] == name and r['kind'] == 'major']
+        pts = [p for r in ways for p in r['pts']]
+        a, b = fit_line(pts, vertical)
+        offs = []
+        for r in ways:
+            for p in r['pts']:
+                u, v = (p[1], p[0]) if vertical else (p[0], p[1])
+                d = (v - (a + b * u)) / math.sqrt(1 + b * b)
+                offs += [d - r['w'] / 2, d + r['w'] / 2]
+        lo, hi = sorted(offs)[len(offs) // 20], sorted(offs)[-len(offs) // 20 - 1]
+        fits[key] = {'a': round(a, 2), 'b': round(b, 5), 'lo': round(lo, 1), 'hi': round(hi, 1)}
+    flat = lambda pts: [v for p in pts for v in (round(p[0]), round(p[1]))]
+    labels = []
+    for name in ('논현로', '도산대로', '논현로151길', '도산대로25길', '도산대로27길', '가로수길'):
+        ways = [r for r in data['roads'] if r['name'] == name]
+        if not ways: continue
+        r = max(ways, key=lambda r: len(r['pts'])); m = r['pts'][len(r['pts']) // 2]
+        labels.append([name, round(m[0]), round(m[1])])
+    g = {'licence': data['licence'], 'size': data['sizePx'], 'centre': [round(v) for v in data['centrePx']], 'fits': fits, 'labels': labels,
+         'special': data['special'],
+         'roads': [[r['id'], K[r['kind']], round(r['w']), round(r['sw']), 1 if r['bridge'] else 0] + flat(r['pts']) for r in data['roads']],
+         'buildings': [[b['id'], CL.index(b['cls']) if b['cls'] in CL else 0, b['floors']] + flat(b['pts']) for b in data['buildings']],
+         'areas': [[AC.index(a['cls'])] + flat(a['pts']) for a in data['areas']]}
+    json.dump(g, open(GAME, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    print('game file', os.path.getsize(GAME), 'bytes; fits', fits)
 
 if __name__ == '__main__':
     main()

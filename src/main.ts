@@ -38,6 +38,7 @@ import { openNotebook as showNotebook } from './ui/notebook';
 import { latestReaction } from './domain/reaction-state';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
 import { rooms, type Target } from './world/rooms';
+import { anchors, crossroads, dlabels, specialBuilding } from './world/district';
 import { isHeartRoom, type Dir, type Point, type RoomId } from './world/types';
 
 class MemoryStorage implements Storage {
@@ -118,7 +119,7 @@ window.addEventListener('keydown', e => {
   else if ((k === 'e' || k === ' ' || k === 'enter') && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); if (world?.near && !busy()) interact(world.near); }
   else if (k === 'escape') { e.preventDefault(); openMenu(); }
   else if (k === 'j' || k === 'n') openNotebook();
-  else if (k === 'm' && world && (world.roomId === 'street' || isHeartRoom(world.roomId))) openMap();
+  else if (k === 'm' && world && (world.roomId === 'district' || isHeartRoom(world.roomId))) openMap();
 });
 window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
 window.addEventListener('blur', pauseInput);
@@ -279,7 +280,7 @@ function refresh() {
 game.subscribe(refresh);
 
 /** Short place name shown on the minimap. */
-function mapCaption(room: RoomId): string { const t = rooms[room].title; return room === 'street' ? t.split(' · ')[0]! : t.split(' · ').pop()!.replace(/ \(.*\)/, ''); }
+function mapCaption(room: RoomId): string { const t = rooms[room].title; return room === 'district' ? t.split(' · ')[0]! : t.split(' · ').pop()!.replace(/ \(.*\)/, ''); }
 
 function startWorld() {
   const s = game.state;
@@ -518,17 +519,20 @@ function editLook() {
 function openMap() {
   if (busy() || !world) return;
   if (isHeartRoom(world.roomId)) { pauseInput(); openAtlas({ room: world.room, roomId: world.roomId, player: { x: world.player.x, y: world.player.y }, state: game.state }, 'room'); return; }
-  if (world.roomId !== 'street') return;
+  if (world.roomId !== 'district') return;
   pauseInput();
-  openSheet('동네 지도 · 논현로 일대', c => {
+  openSheet('동네 지도 · 유로프라자 주변', c => {
     const cv = el('canvas'); const base = world!.minimapBase();
     cv.width = base.width * 4; cv.height = base.height * 4; cv.style.width = '100%'; cv.style.imageRendering = 'pixelated'; cv.style.borderRadius = '12px';
     const g = cv.getContext('2d')!; g.imageSmoothingEnabled = false; g.drawImage(base, 0, 0, cv.width, cv.height);
     const lab = (t: string, x: number, y: number) => { g.font = '700 22px system-ui, sans-serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = 'rgba(20,16,30,0.9)'; g.strokeText(t, x, y); g.fillStyle = '#fff6dc'; g.fillText(t, x, y); };
-    const S = 0.5;
-    lab('유로프라자', 256 * S, 200 * S); lab('비투비씨', 88 * S, 372 * S); lab('진U', 184 * S, 352 * S); lab('을지병원 사거리', 432 * S, 520 * S); lab('압구정역 ↑', 400 * S, 40 * S); lab('호텔', 592 * S, 96 * S); lab('병원', 584 * S, 360 * S);
+    const S = 0.5, A = anchors, cafe = specialBuilding('cafe')!, jinu = specialBuilding('jinu')!;
+    lab('유로프라자', (A.euro.x + A.euro.w / 2) * S, (A.euro.y - 12) * S); lab('비투비씨', (cafe.bbox.x + cafe.bbox.w / 2) * S, (cafe.bbox.y - 10) * S);
+    lab('진U', (jinu.bbox.x + jinu.bbox.w / 2) * S, (jinu.maxY + 30) * S); lab('을지병원 사거리', crossroads.x * S, (crossroads.y + 90) * S);
+    lab('압구정역 ↑', 2200 * S, 60 * S);
+    for (const l of dlabels) if (l.text === '논현로' || l.text === '도산대로') lab(l.text, Math.max(80, Math.min(3760, l.x)) * S, Math.max(40, Math.min(3800, l.y)) * S);
     const p = world!.player; g.fillStyle = '#ff5a6e'; g.beginPath(); g.arc(p.x * S, p.y * S, 9, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
-    c.append(cv, el('p', 'muted', '게임 지도는 실제 거리를 줄이고 단순화했어요. 큰길은 횡단보도로만 건널 수 있어요.'));
+    c.append(cv, el('p', 'muted', '실제 축척 지도예요(1칸 = 3m, 반경 약 300m). 큰길은 횡단보도로만 건널 수 있어요. 지도 데이터 © OpenStreetMap 기여자(ODbL).'));
   });
 }
 
