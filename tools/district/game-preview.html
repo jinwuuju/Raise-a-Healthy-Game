@@ -1,0 +1,54 @@
+<!doctype html><meta charset=utf-8><title>district game preview</title>
+<style>html,body{margin:0;background:#1d2026}canvas{display:block;image-rendering:pixelated}</style>
+<canvas id=c></canvas>
+<script src=../../artifacts/map-ref/district-data.js></script>
+<script>
+// 2.5D preview of data/world/district-r300.v0.1.json in the game's look: north up, 16 px = 3 m, buildings extruded upward.
+// Hash: x,y = crop centre in game px (default Euro Plaza), w,h = crop size in game px, s = output scale.
+const Q = Object.fromEntries(new URLSearchParams(location.hash.slice(1))), D = window.DISTRICT;
+const s = +(Q.s ?? 1), W = +(Q.w ?? 1600), H = +(Q.h ?? 1600), cx = +(Q.x ?? D.centrePx[0]), cy = +(Q.y ?? D.centrePx[1]);
+const c = document.getElementById('c'); c.width = Math.round(W * s); c.height = Math.round(H * s);
+const g = c.getContext('2d'); g.scale(s, s); g.translate(Math.round(W / 2 - cx), Math.round(H / 2 - cy));
+const path = (pts, close) => { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); if (close) g.closePath(); };
+g.fillStyle = '#d3cab8'; g.fillRect(cx - W, cy - H, W * 2, H * 2);
+for (let y = Math.floor((cy - H) / 16) * 16; y < cy + H; y += 16) { g.fillStyle = 'rgba(0,0,0,0.035)'; g.fillRect(cx - W, y, W * 2, 1); }
+for (const a of D.areas) { path(a.pts, true); g.fillStyle = a.cls === 'green' ? '#8fb866' : a.cls === 'parking' ? '#b6b0a3' : '#e2d4a8'; g.fill(); }
+g.lineJoin = g.lineCap = 'round';
+const rs = D.roads.filter(r => !r.bridge);
+for (const r of rs) if (r.kind === 'major') { path(r.pts); g.lineWidth = r.w + 2 * r.sw + 4; g.strokeStyle = '#a49c8c'; g.stroke(); path(r.pts); g.lineWidth = r.w + 2 * r.sw; g.strokeStyle = '#ddd5c6'; g.stroke(); }
+for (const r of rs) if (r.kind !== 'path') { path(r.pts); g.lineWidth = r.w; g.strokeStyle = r.kind === 'major' ? '#585c63' : '#6d7076'; g.stroke(); }
+for (const r of rs) if (r.kind === 'major') { path(r.pts); g.setLineDash([14, 14]); g.lineWidth = 1.5; g.strokeStyle = '#f2efe6'; g.stroke(); g.setLineDash([]); }
+for (const r of rs) if (r.kind === 'minor' && r.w >= 28) { path(r.pts); g.lineWidth = 1; g.strokeStyle = '#e7c34a'; g.setLineDash([]); }
+for (const r of rs) if (r.kind === 'path') { path(r.pts); g.lineWidth = r.w; g.strokeStyle = '#c9bc9f'; g.stroke(); }
+// Buildings: walls facing the viewer (south) then the roof lifted by the height. Depth order by southern edge.
+const PAL = { apartment: ['#e9d9b8', '#c8b48e'], home: ['#e8c99a', '#c6a473'], commercial: ['#d9a585', '#b67f60'], office: ['#c5cdd2', '#9aa6ad'],
+  hotel: ['#cfc6d8', '#a99fb8'], school: ['#e6cd8a', '#c4a862'], religious: ['#d8c4dc', '#b39cb9'], parking: ['#b9b9b4', '#959590'], general: ['#d7c3a7', '#b49e80'] };
+const hOf = b => Math.min(150, b.floors * 8 + 4);
+const bs = D.buildings.filter(b => b.pts.some(p => Math.abs(p[0] - cx) < W && Math.abs(p[1] - cy) < H)).sort((a, b) => Math.max(...a.pts.map(p => p[1])) - Math.max(...b.pts.map(p => p[1])));
+for (const b of bs) {
+  const h = hOf(b), pts = b.pts, [roof, wall] = b.special === 'europlaza' ? ['#f4f1ea', '#cfcac0'] : b.special === 'cafe' ? ['#f0b29a', '#c9806a'] : PAL[b.cls] ?? PAL.general;
+  let A = 0; for (let i = 0; i < pts.length - 1; i++) A += pts[i][0] * pts[i + 1][1] - pts[i + 1][0] * pts[i][1];
+  const cw = A > 0; // clockwise in screen space
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [a, d] = [pts[i], pts[i + 1]], ex = d[0] - a[0], ey = d[1] - a[1];
+    const nx = cw ? -ey : ey, ny = cw ? ex : -ex; // outward normal
+    if (ny <= 0) continue;
+    const lit = nx < 0 ? 0.08 : nx > 0 ? -0.1 : 0;
+    g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(d[0], d[1]); g.lineTo(d[0], d[1] - h); g.lineTo(a[0], a[1] - h); g.closePath();
+    g.fillStyle = shade(wall, lit); g.fill();
+    g.strokeStyle = 'rgba(40,30,30,0.18)'; g.lineWidth = 1;
+    for (let f = 8; f < h - 4; f += 8) { g.beginPath(); g.moveTo(a[0], a[1] - f); g.lineTo(d[0], d[1] - f); g.stroke(); }
+  }
+  path(pts.map(p => [p[0], p[1] - h]), true); g.fillStyle = roof; g.fill(); g.lineWidth = 1; g.strokeStyle = '#5a4a40'; g.stroke();
+}
+// Labels for places the game already uses.
+g.font = 'bold 14px sans-serif'; g.textAlign = 'center';
+for (const [k, label] of [['europlaza', '유로프라자'], ['cafe', '비투비씨(카페 참고 위치)']]) {
+  const b = D.buildings.find(x => x.id === D.special[k]); if (!b) continue;
+  const x = b.pts.reduce((s, p) => s + p[0], 0) / b.pts.length, y = Math.min(...b.pts.map(p => p[1])) - hOf(b) - 8;
+  g.lineWidth = 4; g.strokeStyle = '#fff'; g.strokeText(label, x, y); g.fillStyle = '#8a0f36'; g.fillText(label, x, y);
+}
+if (Q.ring !== '0') { g.setLineDash([10, 8]); g.lineWidth = 3; g.strokeStyle = 'rgba(224,36,94,.7)'; g.beginPath(); g.arc(D.centrePx[0], D.centrePx[1], D.radiusMetres * D.pxPerM, 0, 7); g.stroke(); g.setLineDash([]); }
+function shade(hex, f) { const n = parseInt(hex.slice(1), 16), ch = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(v + (f > 0 ? (255 - v) * f : v * f))))); return '#' + ch.map(v => v.toString(16).padStart(2, '0')).join(''); }
+window.DONE = true;
+</script>

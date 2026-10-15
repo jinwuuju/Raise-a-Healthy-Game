@@ -19,3 +19,8 @@
 자체 작성 HTML/CSS/JavaScript/SVG, 시스템 서체, Python 표준 라이브러리만 사용한다. GitHub Actions의 공식 actions/ 도구는 CI에 쓰며 사이트 자산으로 복제하지 않는다.
 
 참고 작품(바람의나라 연 모바일, 스타듀밸리 등)은 분위기와 읽기 쉬움의 원칙만 참고했고 캐릭터·타일·UI·지도를 복제하지 않았다. 지도/로드뷰 사진은 관찰 자료이며 게임에 포함하지 않았다. 의학·기술 출처는 [출처 문서](docs/references/SOURCES.md)를 참조한다.
+
+## OpenStreetMap 지도 데이터
+
+`data/world/district-*.json`의 도로·건물 윤곽·영역은 OpenStreetMap에서 파생했다. Map data © OpenStreetMap contributors, Open Database License 1.0 (https://www.openstreetmap.org/copyright). 이 파생 데이터베이스도 ODbL 1.0을 따른다. 항공사진·로드뷰 캡처는 참고용으로만 로컬에 두며 저장소·게임에 포함하지 않는다.
+
