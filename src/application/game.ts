@@ -82,13 +82,6 @@ export class Game {
     this.commit({ ...base, started: true, avatar: { preset, name: trimmed, look: valid } });
   }
 
-  /** D100: a new play session clocks in at the newsroom in front of the editor. Heart comparison layers close with the move. */
-  startShift(): void {
-    const s = this.state, sp = rooms.newsroom.spawn;
-    if (!s.started || s.at.room === 'newsroom') return;
-    this.commit({ ...s, at: { room: 'newsroom', x: sp.x, y: sp.y, facing: rooms.newsroom.spawnFacing }, q003: { ...s.q003, mode: 'normal' }, q005: { ...s.q005, mode: 'normal' }, q006: { ...s.q006, mode: 'rest' } });
-  }
-
   resetLook(preset: Preset): Appearance { return defaultAppearance(preset); }
 
   /** Position updates are kept in memory and flushed by autosave, room changes and the menu. */

@@ -34,7 +34,7 @@ test('opening: title and maker, hidden green tea hunt that persists, then the cr
   expect(errors).toEqual([]);
 });
 
-test('opening: a reload keeps the saved place, a new session clocks in at the newsroom in front of the editor', async ({ context }) => {
+test('opening: an existing reporter continues from the saved place after a reload and in a new session (D101)', async ({ context }) => {
   const page = await context.newPage(); const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await page.goto('/?opening'); await page.getByRole('button', { name: '시작하기' }).click(); await page.getByRole('button', { name: '첫 출근하기' }).click();
   await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world);
@@ -44,8 +44,8 @@ test('opening: a reload keeps the saved place, a new session clocks in at the ne
   await page.close();
   const next = await context.newPage(); next.on('pageerror', e => errors.push(e.message));
   await next.goto('/?opening'); await next.getByRole('button', { name: '이어서 출근하기' }).click();
-  await next.waitForFunction(() => (window as unknown as { __mq?: Hook }).__mq?.world?.roomId === 'newsroom');
-  expect((await state(next)).at).toEqual({ room: 'newsroom', x: 256, y: 152, facing: 'up' });
+  await next.waitForFunction(() => (window as unknown as { __mq?: Hook }).__mq?.world?.roomId === 'lung');
+  expect((await state(next)).at).toEqual({ room: 'lung', x: 26, y: 176, facing: 'right' });
   expect(errors).toEqual([]);
 });
 
