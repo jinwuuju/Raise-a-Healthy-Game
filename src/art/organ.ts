@@ -220,7 +220,7 @@ function feature(g: Ctx, ft: Feature, p: Pal) {
   }
 }
 
-export type MiniMap = { c: HTMLCanvasElement; s: number; ox: number; oy: number };
+export type MiniMap = { c: HTMLCanvasElement; s: number; ox: number; oy: number; /** Show only a square window of this size around the player (big maps). */ view?: number };
 
 /** Small square overview of an organ room: lumen, openings, cut wall, valves (bright = way out), exit and return pad. */
 export function organMinimap(room: Room, scale: number): MiniMap {

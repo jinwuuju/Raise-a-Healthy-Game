@@ -144,7 +144,7 @@ test('red pedestrian light holds the reporter at the curb, green lets them cross
   expect(await page.evaluate(async ([x, y]) => { const cu = '/src/world/collision.ts'; const { crossingAt } = await import(/* @vite-ignore */ cu); return crossingAt('district', { x: x!, y: y! })?.id ?? null; }, [held.x, held.y])).toBeNull(); // not on the crosswalk
   await expect(page.locator('.toast')).toContainText('빨간불');
   await page.evaluate(() => { (window as unknown as { __mq: Hook }).__mq.world!.traffic.t = 10; });
-  await expect.poll(() => page.evaluate(([bx, by]) => { const p = (window as unknown as { __mq: Hook }).__mq.world!.player; return Math.hypot(p.x - bx!, p.y - by!); }, [cw.to.x, cw.to.y]), { timeout: 12000 }).toBeLessThan(12);
+  await expect.poll(() => page.evaluate(([bx, by]) => { const p = (window as unknown as { __mq: Hook }).__mq.world!.player; return Math.hypot(p.x - bx!, p.y - by!); }, [cw.to.x, cw.to.y]), { timeout: 20000 }).toBeLessThan(12); // the route may wait at the corner's other light too
 });
 
 test('no PC-style corner action button; the notebook stays open while reading and closes explicitly', async ({ browser }) => {

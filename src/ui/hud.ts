@@ -144,7 +144,7 @@ export class Hud {
     if (!m && (street || heart)) { m = make(); if (m) this.miniCache.set(room, m); }
     this.miniCur = m;
     this.mini.classList.toggle('hidden', !m);
-    if (m) { this.miniCanvas.width = m.c.width; this.miniCanvas.height = m.c.height; }
+    if (m) { this.miniCanvas.width = m.view ?? m.c.width; this.miniCanvas.height = m.view ?? m.c.height; }
     this.miniCap.textContent = caption;
     this.mini.classList.toggle('organ', heart);
     this.cycle.classList.toggle('hidden', !heart);
@@ -158,9 +158,11 @@ export class Hud {
     if (!m || this.mini.classList.contains('hidden')) return;
     const g = this.miniCanvas.getContext('2d')!;
     g.imageSmoothingEnabled = false;
-    g.clearRect(0, 0, m.c.width, m.c.height);
-    g.drawImage(m.c, 0, 0);
-    const x = Math.round(m.ox + px * m.s), y = Math.round(m.oy + py * m.s);
+    const V = m.view, mx = m.ox + px * m.s, my = m.oy + py * m.s;
+    const sx = V ? Math.round(Math.max(0, Math.min(m.c.width - V, mx - V / 2))) : 0, sy = V ? Math.round(Math.max(0, Math.min(m.c.height - V, my - V / 2))) : 0;
+    g.clearRect(0, 0, this.miniCanvas.width, this.miniCanvas.height);
+    g.drawImage(m.c, -sx, -sy);
+    const x = Math.round(mx - sx), y = Math.round(my - sy);
     g.fillStyle = 'rgba(255,255,255,' + (0.35 + 0.25 * Math.sin(t * 6)) + ')'; g.fillRect(x - 3, y - 3, 7, 7);
     g.fillStyle = '#ff5a6e'; g.fillRect(x - 2, y - 2, 5, 5); g.fillStyle = '#ffffff'; g.fillRect(x - 1, y - 1, 3, 3);
   }

@@ -38,7 +38,7 @@ import { openNotebook as showNotebook } from './ui/notebook';
 import { latestReaction } from './domain/reaction-state';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
 import { rooms, type Target } from './world/rooms';
-import { anchors, crossroads, dlabels, specialBlock } from './world/district';
+import { anchors, crossroads, districtLoaded, dlabels, dstations, loadDistrict, specialBlock } from './world/district';
 import { isHeartRoom, type Dir, type Point, type RoomId } from './world/types';
 
 class MemoryStorage implements Storage {
@@ -65,6 +65,11 @@ async function storage(): Promise<SaveStore> {
   return new SaveStore(durable, reason);
 }
 
+// The real-scale district map is its own chunk (D098). It loads in the background; boot waits for it only when the
+// saved position is outside (the save names the district, or the old street that migrates to it).
+const districtReady = loadDistrict();
+void districtReady.catch(() => undefined); // retried by travel() if the background load failed
+try { if (/"room":"(district|street)"/.test(localStorage.getItem('medical-quest.v4.current') ?? '')) await districtReady; } catch { await districtReady; }
 const game = new Game(await storage());
 const canvas = el('canvas'); canvas.id = 'view'; canvas.tabIndex = 0; canvas.setAttribute('aria-label', '게임 화면');
 document.querySelector('#app')!.append(canvas);
@@ -73,7 +78,8 @@ const fade = el('div', 'fade'); const fadeCard = el('div', 'card'); fade.append(
 
 let world: World | null = null;
 const npcLooks: Record<string, Look> = {};
-for (const r of Object.values(rooms)) for (const n of r.npcs) npcLooks[n.id] = n.look;
+// The district (loaded later) only has anonymous walkers; reading it here would need its map chunk.
+for (const id of Object.keys(rooms) as RoomId[]) if (id !== 'district') for (const n of rooms[id].npcs) npcLooks[n.id] = n.look;
 const confirmControl = new ConfirmControl(() => confirmAction());
 const dialog = new Dialog(id => (id ? npcLooks[id] ?? null : null), () => confirmControl.visible ? [confirmControl.root] : []);
 
@@ -307,6 +313,7 @@ type Trip = { to: RoomId; arrive: Point; facing: Dir; mode: 'walk' | 'scope-in' 
 let traveling = false;
 async function travel(d: Trip) {
   if (!world || traveling) return;
+  if (d.to === 'district' && !districtLoaded()) { traveling = true; await loadDistrict(); traveling = false; }
   const w = world;
   traveling = true;
   w.locked = true; pauseInput();
@@ -523,16 +530,16 @@ function openMap() {
   pauseInput();
   openSheet('동네 지도 · 유로프라자 주변', c => {
     const cv = el('canvas'); const base = world!.minimapBase();
-    cv.width = base.width * 4; cv.height = base.height * 4; cv.style.width = '100%'; cv.style.imageRendering = 'pixelated'; cv.style.borderRadius = '12px';
+    const Z = world!.roomId === 'district' ? 1 : 4; cv.width = base.width * Z; cv.height = base.height * Z; cv.style.width = '100%'; cv.style.imageRendering = 'pixelated'; cv.style.borderRadius = '12px';
     const g = cv.getContext('2d')!; g.imageSmoothingEnabled = false; g.drawImage(base, 0, 0, cv.width, cv.height);
-    const lab = (t: string, x: number, y: number) => { g.font = '700 22px system-ui, sans-serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = 'rgba(20,16,30,0.9)'; g.strokeText(t, x, y); g.fillStyle = '#fff6dc'; g.fillText(t, x, y); };
-    const S = 0.5, A = anchors, cafe = specialBlock('cafe')!, jinu = specialBlock('jinu')!;
+    const lab = (t: string, x: number, y: number) => { g.font = '700 30px system-ui, sans-serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = 'rgba(20,16,30,0.9)'; g.strokeText(t, x, y); g.fillStyle = '#fff6dc'; g.fillText(t, x, y); };
+    const S = 1 / 8, A = anchors, cafe = specialBlock('cafe')!, jinu = specialBlock('jinu')!;
     lab('유로프라자', (A.euro.x + A.euro.w / 2) * S, (A.euro.y - 12) * S); lab('비투비씨', (cafe.x + cafe.w / 2) * S, (cafe.y - cafe.h - 6) * S);
     lab('진U', (jinu.x + jinu.w / 2) * S, (jinu.y + jinu.d + 30) * S); lab('을지병원 사거리', crossroads.x * S, (crossroads.y + 90) * S);
-    lab('압구정역 ↑', 2200 * S, 60 * S);
-    for (const l of dlabels) if (l.text === '논현로' || l.text === '도산대로') lab(l.text, Math.max(80, Math.min(3760, l.x)) * S, Math.max(40, Math.min(3800, l.y)) * S);
-    const p = world!.player; g.fillStyle = '#ff5a6e'; g.beginPath(); g.arc(p.x * S, p.y * S, 9, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
-    c.append(cv, el('p', 'muted', '실제 축척 지도예요(1칸 = 3m, 반경 약 300m). 큰길은 횡단보도로만 건널 수 있어요. 지도 데이터 © OpenStreetMap 기여자(ODbL).'));
+    for (const st of dstations) lab(st.name + '역', st.x * S, st.y * S - 10);
+    for (const l of dlabels) if (l.text === '논현로' || l.text === '도산대로' || l.text === '가로수길') lab(l.text, Math.max(240, Math.min(base.width * 8 - 240, l.x)) * S, Math.max(120, Math.min(base.height * 8 - 120, l.y)) * S);
+    const p = world!.player; g.fillStyle = '#ff5a6e'; g.beginPath(); g.arc(p.x * S, p.y * S, 12, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
+    c.append(cv, el('p', 'muted', '실제 축척 지도예요(1칸 = 3m, 유로프라자 반경 약 1km). 큰길은 횡단보도로만 건널 수 있어요. 지도 데이터 © OpenStreetMap 기여자(ODbL).'));
   });
 }
 

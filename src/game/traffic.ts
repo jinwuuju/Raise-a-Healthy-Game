@@ -40,7 +40,7 @@ export class Traffic {
   t = 0;
   private seed = 7;
   constructor() {
-    for (const lane of lanes) for (let i = 0; i < 6; i++) this.spawn(lane, 40 + i * lane.line.len / 6 + this.rand() * 120);
+    for (const lane of lanes) { const n = Math.max(1, Math.round(lane.line.len / 520)); for (let i = 0; i < n; i++) this.spawn(lane, 40 + i * lane.line.len / n + this.rand() * 120); }
   }
   /** Signal phase for cars on the north-south and east-west roads. */
   phase(axis: 'NS' | 'EW'): CarPhase { return carPhase(this.t, axis); }
@@ -58,13 +58,16 @@ export class Traffic {
   }
   update(dt: number, people: Point[]): void {
     this.t += dt;
+    const byLane = new Map<Lane, Car[]>();
+    for (const car of this.cars) { const l = byLane.get(car.lane); if (l) l.push(car); else byLane.set(car.lane, [car]); }
+    // Only people near a car can make it yield; skip the per-person test for cars far from everyone.
     for (const car of this.cars) {
       const front = car.pos + car.len / 2, { p: head, dir } = pointAt(car.lane.line, front);
       let limit = Infinity;
       const toStop = car.lane.stop - front;
-      if (this.phase(car.lane.axis) !== 'green' && toStop > -2 && toStop < 70) limit = Math.min(limit, toStop);
-      for (const other of this.cars) {
-        if (other === car || other.lane !== car.lane || other.pos <= car.pos) continue;
+      if (car.lane.stop >= 0 && car.lane.axis && this.phase(car.lane.axis) !== 'green' && toStop > -2 && toStop < 70) limit = Math.min(limit, toStop);
+      for (const other of byLane.get(car.lane)!) {
+        if (other === car || other.pos <= car.pos) continue;
         limit = Math.min(limit, other.pos - car.pos - (other.len + car.len) / 2 - 6);
       }
       for (const q of people) {

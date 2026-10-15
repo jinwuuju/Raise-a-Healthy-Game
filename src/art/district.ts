@@ -1,6 +1,6 @@
 import { hash2, makeCanvas } from './pixel';
 import {
-  APPROACH, BAND, DISTRICT_SIZE, carriageways, crossroads, crosswalks, dareas, dblocks, droads, nearestS, pointAt, polyline, scanPoly, strokePolys,
+  APPROACH, BAND, DISTRICT_SIZE, carriageways, crossroads, crosswalks, dareas, dblocks, droads, nearestS, pointAt, polyline, scanPoly, strokePolys, zebras,
 } from '../world/district';
 import type { Point } from '../world/types';
 
@@ -61,7 +61,7 @@ function groundShapes(): Shape[] {
     const pl = polyline(cw.pts), s = nearestS(pl, crossroads) - APPROACH - BAND - 4, { p, dir } = pointAt(pl, s), n = { x: -dir.y, y: dir.x }, r = cw.w / 2;
     out.push({ cls: C.MARK, pts: strokePolys([{ x: p.x - n.x * r, y: p.y - n.y * r }, { x: p.x + n.x * r, y: p.y + n.y * r }], 3)[0]! });
   }
-  for (const c of crosswalks) {
+  for (const c of [...crosswalks, ...zebras]) {
     const [a, b, , d] = c.poly as [Point, Point, Point, Point], L = Math.hypot(b.x - a.x, b.y - a.y), v = { x: (b.x - a.x) / L, y: (b.y - a.y) / L }, u = { x: d.x - a.x, y: d.y - a.y };
     for (let t = 2; t + 4 < L; t += 8) {
       const p0 = { x: a.x + v.x * t, y: a.y + v.y * t }, p1 = { x: p0.x + v.x * 4, y: p0.y + v.y * 4 };

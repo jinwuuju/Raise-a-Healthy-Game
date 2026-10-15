@@ -228,6 +228,11 @@ export class World {
     if (!this.room.crossings.length) return null;
     const c = crossingAt(this.roomId, to);
     if (!c || crossingAt(this.roomId, from)?.id === c.id) return null;
+    // Where two crosswalk bands overlap at a real corner, only the one being walked across applies (D098).
+    if (c.poly) {
+      const [a, b] = c.poly as [Point, Point], L = Math.hypot(b.x - a.x, b.y - a.y) || 1, m = Math.hypot(to.x - from.x, to.y - from.y) || 1;
+      if (Math.abs(((to.x - from.x) * (b.x - a.x) + (to.y - from.y) * (b.y - a.y)) / (L * m)) < 0.5) return null;
+    }
     return this.traffic.walk(c.road) === 'walk' ? null : c;
   }
 
@@ -466,9 +471,9 @@ export class World {
     }
     if (tod === 'night') {
       for (const b of this.room.buildings) {
-        const art = buildingArt(b);
         const ox = b.x - cx, oy = b.y - b.h - cy;
-        if (ox > vw || ox + b.w < 0 || oy > vh || oy + b.d + b.h < 0) continue;
+        if (ox > vw || ox + b.w < 0 || oy > vh || oy + b.d + b.h < 0) continue; // check first: art is built lazily (4,800 buildings in the district)
+        const art = buildingArt(b);
         l.fillStyle = 'rgba(255,232,180,0.9)';
         for (const r of art.lights) l.fillRect(ox + r.x, oy + r.y, r.w, r.h);
         if (art.billboard) { l.fillStyle = 'rgba(255,255,255,0.95)'; l.fillRect(ox + art.billboard.x, oy + art.billboard.y, art.billboard.w, art.billboard.h); glow(ox + art.billboard.x + 13, oy + art.billboard.y + 14, 30, 0.35); }
@@ -545,7 +550,7 @@ export class World {
 
   /** HUD minimap for the current room: the street, or a heart room (null indoors at the office and cafe). */
   miniMap(): MiniMap | null {
-    if (this.roomId === 'district') return { c: this.minimapBase(), s: 1 / 8, ox: 0, oy: 0 };
+    if (this.roomId === 'district') return { c: this.minimapBase(), s: 1 / 8, ox: 0, oy: 0, view: 220 };
     return this.room.organ ? organMinimap(this.room, 1 / 4) : null;
   }
 

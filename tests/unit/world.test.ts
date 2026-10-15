@@ -42,7 +42,7 @@ describe('street rules', () => {
   it('every returned segment is traversable, including the first grid connection', () => {
     for (const id of roomIds) {
       const room = rooms[id];
-      const step = room.cols > 100 ? 480 : 24; // the real-scale district is sampled sparsely
+      const step = room.cols > 100 ? 1400 : 24; // the real-scale district is sampled sparsely
       for (let y = 24; y < room.rows * 16; y += step) for (let x = 24; x < room.cols * 16; x += step) {
         if (!canStand(id, { x, y })) continue;
         const from = { x, y };

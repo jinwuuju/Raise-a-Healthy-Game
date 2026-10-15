@@ -2,7 +2,7 @@ import { TILE, type Dir, type Point, type Rect, type RoomId } from './types';
 import type { Look } from '../domain/appearance';
 import { heartRooms } from './heart-rooms';
 import type { Organ } from './organ-types';
-import { DISTRICT_SIZE, anchors, buildMask, carriageways, crossroads, crosswalks, dblocks, nearestS, offset, pointAt, polyline } from './district';
+import { DISTRICT_SIZE, anchors, buildMask, crossroads, crosswalks, dblocks, districtLoaded, droads, dstations, exits, offset, pointAt, polyline, zebras } from './district';
 
 /*
  * Map geometry only (no rendering). Distances are game pixels, 1 tile = 16px.
@@ -272,29 +272,38 @@ function street(): Room {
 }
 
 /**
- * D096: the real-scale district around Euro Plaza (OpenStreetMap geometry, 1 tile = 3 m), replacing the compressed
- * 'street' map. Euro Plaza keeps its approved art; every other building is drawn from its real footprint.
+ * D096-D098: the real-scale district around Euro Plaza (OpenStreetMap geometry, 1 tile = 3 m, 1 km radius), replacing
+ * the compressed 'street'. Euro Plaza keeps its approved art; every other building is a tidy block (D097). Built on
+ * first use, after loadDistrict() has fetched the map chunk.
  */
 function district(): Room {
   const size = DISTRICT_SIZE, cols = size / TILE, rows = cols;
   const tiles = new Uint8Array(cols * rows).fill(T.PAVE);
   const A = anchors, euro: Building = { id: 'europlaza', kind: 'europlaza', ...A.euro, h: 112, v: 0 };
+  const euroDoor = A.euroDoor, euroOut = A.euroOut, jinuFront = A.jinuFront, graniteFront = A.graniteFront;
   // D097: every other building is a tidy block drawn with the street building art; no invented names on signs.
   const ids: Record<string, string> = { cafe: 'b2bc', jinu: 'jinu', granite: 'granite' };
   const blocks: Building[] = dblocks.filter(b => b.special !== 'europlaza').map(b => ({ id: (b.special && ids[b.special]) || 'b' + b.id,
     kind: b.kind as BuildingKind, x: b.x, y: b.y, w: b.w, d: b.d, h: b.h, v: b.v, label: '' }));
-  const inBlock = (p: Point, pad = 0) => [euro, ...blocks].some(b => p.x > b.x - pad && p.x < b.x + b.w + pad && p.y > b.y - pad && p.y < b.y + b.d + pad);
-  const euroDoor = A.euroDoor, euroOut = A.euroOut, jinuFront = A.jinuFront, graniteFront = A.graniteFront;
+  // Occupancy at 8 px for quick placement tests (blocks + a little margin).
+  const occN = Math.ceil(size / 8), occ = new Uint8Array(occN * occN);
+  for (const b of [euro, ...blocks]) for (let y = Math.max(0, Math.floor((b.y - 4) / 8)); y <= Math.min(occN - 1, Math.floor((b.y + b.d + 4) / 8)); y++)
+    for (let x = Math.max(0, Math.floor((b.x - 4) / 8)); x <= Math.min(occN - 1, Math.floor((b.x + b.w + 4) / 8)); x++) occ[y * occN + x] = 1;
   const mask = buildMask();
-  const free = (p: Point) => { const c = mask.data[Math.floor(p.y / mask.cell) * mask.w + Math.floor(p.x / mask.cell)]; return p.x > 8 && p.y > 8 && p.x < size - 8 && p.y < size - 8 && c === 0 && !inBlock(p, 4); };
-  // Ginkgo trees and street lamps along the outer kerbs of the two big roads, clear of the crossroads.
+  const free = (p: Point) => p.x > 8 && p.y > 8 && p.x < size - 8 && p.y < size - 8 && mask.data[Math.floor(p.y / mask.cell) * mask.w + Math.floor(p.x / mask.cell)] === 0 && occ[Math.floor(p.y / 8) * occN + Math.floor(p.x / 8)] === 0;
+  const nearCrossing = (p: Point) => Math.hypot(p.x - crossroads.x, p.y - crossroads.y) < 150 || zebras.some(z => Math.hypot(p.x - (z.ends[0].x + z.ends[1].x) / 2, p.y - (z.ends[0].y + z.ends[1].y) / 2) < 70);
+  // Ginkgo trees and street lamps along the outer kerbs of every big road (one-way carriageways: their outer side only).
   const props: Prop[] = [];
-  for (const cw of Object.values(carriageways)) {
-    const side = polyline(offset(cw.pts, cw.w / 2 + 9));
-    for (let s = 0; s < side.len; s += 64) {
-      const { p } = pointAt(side, s);
-      if (Math.hypot(p.x - crossroads.x, p.y - crossroads.y) < 150 || !free(p)) continue;
-      props.push(P(Math.round(s / 64) % 3 === 0 ? 'lamp' : 'ginkgo', Math.round(p.x), Math.round(p.y), Math.round(s / 64) % 3));
+  for (const r of droads) {
+    if (r.kind !== 0 || r.bridge) continue;
+    for (const side of r.oneway ? [1] : [1, -1]) {
+      const line = polyline(offset(r.pts, side * (r.w / 2 + 9)));
+      for (let s = 20; s < line.len; s += 64) {
+        const { p } = pointAt(line, s);
+        if (nearCrossing(p) || !free(p)) continue;
+        const k = Math.round((p.x + p.y) / 64) % 3;
+        props.push(P(k === 0 ? 'lamp' : 'ginkgo', Math.round(p.x), Math.round(p.y), Math.abs(k)));
+      }
     }
   }
   for (const c of crosswalks) {
@@ -306,24 +315,27 @@ function district(): Room {
   props.push(P('cypress', euro.x + 70, euro.y + euro.d + 10), P('cypress', euro.x + 130, euro.y + euro.d + 10, 1));
   const alley = { x: Math.round(euroDoor.x - 70), y: Math.round(euroDoor.y + 64) };
   props.push(P('streetsign', alley.x, alley.y));
-  const safeProps = props.filter(p => !p.solid || (free({ x: p.solid.x, y: p.solid.y }) && free({ x: p.solid.x + p.solid.w, y: p.solid.y + p.solid.h })));
-  // Pedestrians on the sidewalks of the two big roads.
-  const walk = (cw: { pts: Point[]; w: number }, from: number, to: number): Point[] => {
-    const side = polyline(offset(cw.pts, cw.w / 2 + 22)), s0 = nearestS(side, crossroads);
-    return [pointAt(side, s0 + from).p, pointAt(side, s0 + to).p].map(p => ({ x: Math.round(p.x), y: Math.round(p.y) }));
-  };
-  const routes: [Point[], number][] = [[walk(carriageways.nb, 160, 900), 24], [walk(carriageways.sb, -900, -160), 26], [walk(carriageways.wb, 160, 800), 22],
-    [walk(carriageways.eb, -800, -160), 25], [walk(carriageways.nb, -700, -160), 23], [walk(carriageways.sb, 160, 700), 27]];
-  const npcs = routes.filter(([r]) => r.every(free)).map(([r, sp], i) => npc('w' + (i + 1), '', r[0]!.x, r[0]!.y, 'down', walkerLooks[i % walkerLooks.length]!, r, sp));
-  const northSign = pointAt(polyline(offset(carriageways.sb.pts, carriageways.sb.w / 2 + 14)), nearestS(polyline(carriageways.sb.pts), { x: 2200, y: 60 })).p;
+  const safeProps = props.filter(p => !p.solid || (free({ x: p.solid.x, y: p.solid.y }) && free({ x: p.solid.x + p.solid.w, y: p.solid.y + p.solid.h })) || p.kind !== 'ginkgo' && p.kind !== 'lamp');
+  // Pedestrians on the sidewalks of the big roads (a few per road, deterministic).
+  const npcs: NpcSpec[] = [];
+  let k = 0;
+  for (const r of droads) {
+    if (r.kind !== 0 || r.bridge || r.sw <= 0 || npcs.length >= 24) continue;
+    const line = polyline(offset(r.pts, r.w / 2 + r.sw / 2)); if (line.len < 400) continue;
+    const a = pointAt(line, line.len * 0.2).p, b = pointAt(line, line.len * 0.7).p, route = [a, b].map(p => ({ x: Math.round(p.x), y: Math.round(p.y) }));
+    if (!route.every(free)) continue;
+    npcs.push(npc('w' + (++k), '', route[0]!.x, route[0]!.y, 'down', walkerLooks[k % walkerLooks.length]!, route, 22 + (k % 6)));
+  }
+  const snapFree = (p: Point): Point => { for (let r = 0; r < 120; r += 4) for (let a = 0; a < 16; a++) { const q = { x: Math.round(p.x + Math.cos(a * Math.PI / 8) * r), y: Math.round(p.y + Math.sin(a * Math.PI / 8) * r) }; if (free(q)) return q; } return p; };
+  const apgu = dstations.find(s => s.name === '압구정'), station = snapFree(apgu ?? { x: crossroads.x, y: 60 });
   return finish({
-    id: 'district', title: '논현로 일대 · 유로프라자 주변 (실제 축척)', cols, rows, tiles, buildings: [euro, ...blocks], props: safeProps, npcs, markings: [], interior: null,
+    id: 'district', title: '신사·압구정 일대 · 유로프라자 반경 1km (실제 축척)', cols, rows, tiles, buildings: [euro, ...blocks], props: safeProps, npcs, markings: [], interior: null,
     mask,
     crossings: crosswalks.map(c => ({ id: c.id, road: c.road, poly: c.core, rect: bbox(c.core) })),
     spawn: euroOut, spawnFacing: 'down',
     targets: [
       target('street-notice', '거리 안내판', '보기', euro.x + 44, euro.y + euro.d + 18, 18),
-      target('station', '압구정역 방향', '보기', Math.round(northSign.x), Math.round(northSign.y), 18),
+      target('station', '압구정역', '보기', station.x, station.y, 18),
       target('jinu-store', '진U 편의점', '보기', jinuFront.x, jinuFront.y, 18),
       target('alley-151', '논현로151길', '보기', alley.x, alley.y - 4, 16),
       target('shoe-repair', '구두 수선대', '보기', graniteFront.x + 26, graniteFront.y - 2, 16),
@@ -402,7 +414,7 @@ function lobby(): Room {
     targets: [target('guard', '안내 데스크', '대화', 148, 132, 22, 'guard'), target('notice', '입주 안내', '보기', 152, 58, 18), target('lobby-tv', '로비 TV와 소파', '보기', 160, 278, 20)],
     doors: [
       { id: 'elevator', zone: { x: 36, y: 32, w: 40, h: 11 }, to: 'lifthall', arrive: { x: 72, y: 166 }, facing: 'up', label: '엘리베이터 통로' },
-      { id: 'front', zone: { x: 226, y: 341, w: 28, h: 11 }, to: 'district', arrive: anchors.euroOut, facing: 'down', label: '논현로151길' },
+      { id: 'front', zone: { x: 226, y: 341, w: 28, h: 11 }, to: 'district', arrive: exits.euroOut, facing: 'down', label: '논현로151길' },
     ],
     interior: {
       reference: 'lobby', wall: 'lobby', bottom: 'wall', door: [224, 256], pendants: [], rugs: [],
@@ -765,7 +777,7 @@ function cafe(): Room {
       target('barista', '바리스타', '주문', 112, 90, 22, 'barista'),
       target('window-seat', '창가 자리', '앉기', 80, 156, 18),
     ],
-    doors: [{ id: 'exit', zone: { x: 226, y: 181, w: 28, h: 11 }, to: 'district', arrive: anchors.cafeOut, facing: anchors.cafeFacing, label: '도산대로25길' }],
+    doors: [{ id: 'exit', zone: { x: 226, y: 181, w: 28, h: 11 }, to: 'district', arrive: exits.cafeOut, facing: exits.cafeFacing, label: '도산대로25길' }],
     interior: {
       wall: 'cafe', bottom: 'glass', door: [224, 256], pendants: [{ x: 76, y: 30 }, { x: 148, y: 30 }, { x: 204, y: 84 }, { x: 244, y: 112 }], rugs: [],
       decor: [
@@ -778,7 +790,13 @@ function cafe(): Room {
 }
 
 
-export const rooms: Record<RoomId, Room> = { lounge: lounge(), lifthall: lifthall(), district: district(), lift1: lift(1), lift4: lift(4), floor4: floor4(), outeroffice: outeroffice(), newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), ...heartRooms() };
+export const rooms: Record<RoomId, Room> = { lounge: lounge(), lifthall: lifthall(), district: null as unknown as Room, lift1: lift(1), lift4: lift(4), floor4: floor4(), outeroffice: outeroffice(), newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), ...heartRooms() };
+// The district needs the separately loaded map chunk: build it on first use (after loadDistrict()).
+let districtRoom: Room | null = null;
+Object.defineProperty(rooms, 'district', { enumerable: true, get: () => {
+  if (!districtRoom && !districtLoaded()) throw new Error('동네 지도를 아직 불러오는 중이에요. 잠시 후 다시 시도해 주세요.');
+  return districtRoom ??= district();
+} });
 /** D093 rooms as they were, for save migration only. */
 export const roomsD093 = { lobby: lobbyD093(), floor4: floor4D093(), lounge: loungeD093() } as const;
 /** D094 first-preview rooms, for save migration only. */

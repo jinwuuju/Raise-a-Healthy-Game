@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { rooms } from '../../src/world/rooms';
 import { canStand, crossingAt } from '../../src/world/collision';
 import { findPath } from '../../src/world/path';
-import { anchors, carriageways, crossroads, crosswalks, dblocks, droads, nearestS, pointAt, polyline, specialBlock } from '../../src/world/district';
+import { anchors, carriageways, crossroads, crosswalks, dblocks, droads, dstations, nearestS, pointAt, polyline, specialBlock } from '../../src/world/district';
 import ledger from '../../data/world/district-buildings.v0.1.json';
 
 const M = 16 / 3; // px per metre
@@ -11,7 +11,7 @@ const metres = (a: { x: number; y: number }, b: { x: number; y: number }) => Mat
 
 describe('D096 real-scale district', () => {
   it('is drawn at 1 tile = 3 m with real distances', () => {
-    expect(d.cols * 16).toBe(3840); // 720 m square
+    expect(d.cols * 16).toBe(11200); // 2.1 km square: 1 km radius plus margin (D098)
     const euro = { x: anchors.euro.x + anchors.euro.w / 2, y: anchors.euro.y + anchors.euro.d / 2 };
     expect(metres(euro, crossroads)).toBeGreaterThan(95); expect(metres(euro, crossroads)).toBeLessThan(135); // ~110 m to Eulji crossroads
     const cafe = specialBlock('cafe')!;
@@ -55,6 +55,27 @@ describe('D096 real-scale district', () => {
     expect(rooms.lobby.doors.find(x => x.id === 'front')!.to).toBe('district');
     expect(rooms.cafe.doors[0]!.to).toBe('district');
   });
+
+  it('reaches most of the 1 km district on foot, the three stations included (D098 zebra crossings)', () => {
+    const C = 8, n = Math.ceil(d.cols * 16 / C), seen = new Uint8Array(n * n), stand = (i: number) => canStand('district', { x: (i % n) * C + 4, y: Math.floor(i / n) * C + 4 });
+    const s0 = Math.floor(d.spawn.y / C) * n + Math.floor(d.spawn.x / C), q = [s0]; seen[s0] = 1;
+    while (q.length) {
+      const i = q.pop()!, x = i % n, y = (i - x) / n;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= n || Y >= n) continue;
+        const j = Y * n + X; if (seen[j]) continue;
+        seen[j] = stand(j) ? 1 : 2; if (seen[j] === 1) q.push(j);
+      }
+    }
+    let reach = 0, all = 0; for (let i = 0; i < n * n; i++) if (seen[i] === 1 || (seen[i] === 0 && stand(i))) { all++; if (seen[i] === 1) reach++; }
+    expect(reach / all).toBeGreaterThan(0.85);
+    expect(dstations.map(s => s.name).sort()).toEqual(['신사', '압구정', '학동']);
+    for (const st of dstations) {
+      let ok = false;
+      for (let r = 0; r < 160 && !ok; r += C) for (let k = 0; k < 16 && !ok; k++) { const x = st.x + Math.cos(k * Math.PI / 8) * r, y = st.y + Math.sin(k * Math.PI / 8) * r; if (seen[Math.floor(y / C) * n + Math.floor(x / C)] === 1) ok = true; }
+      expect(ok, st.name).toBe(true);
+    }
+  }, 60000);
 
   it('keeps the building ledger names empty for the user to fill in', () => {
     expect(ledger.buildings.length).toBe(dblocks.length);

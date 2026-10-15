@@ -40,6 +40,7 @@ test('Bodyscope auto entry respects the commission and does not open behind the 
   await page.waitForTimeout(350);
   await expect(page.locator('.dialog')).toHaveCount(0);
   await page.reload();
+  await page.waitForFunction(() => !!(window as unknown as { __mq?: { game?: unknown } }).__mq?.game); // the map chunk loads before the game hook exists (D098)
   await Promise.all([page.waitForEvent('load'), page.evaluate(() => {
     const game = (window as unknown as { __mq: { game: { state: Record<string, unknown>; importState(s: unknown): void } } }).__mq.game;
     game.importState({ ...game.state, flags: ['met-editor', 'reported-back', 'q001-accepted'], at: { room: 'newsroom', x: 464, y: 90, facing: 'up' } }); location.reload();
@@ -89,6 +90,7 @@ test('second tab cannot overwrite the writer and can export its in-memory record
   await start(page);
   const other = await page.context().newPage();
   await other.goto('/');
+  await other.waitForFunction(() => !!(window as unknown as { __mq?: { game?: unknown } }).__mq?.game);
   // The time-of-day setting is gone (D068); a progress change in the second tab is the write attempt instead.
   await other.evaluate(() => (window as unknown as { __mq: { game: { flag(f: string): void } } }).__mq.game.flag('second-tab-probe'));
   await other.getByRole('button', { name: '메뉴', exact: true }).click();

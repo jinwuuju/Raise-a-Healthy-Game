@@ -9,8 +9,10 @@ vi.mock('../../src/art/vehicles', () => ({
 }));
 
 it('lanes follow the real carriageways through the crossroads, stopping before it', () => {
-  expect(lanes).toHaveLength(8);
-  for (const l of lanes) {
+  const through = lanes.filter(l => l.stop >= 0);
+  expect(through.length).toBeGreaterThanOrEqual(8); // both directions of Nonhyeon-ro and Dosan-daero, two lanes each
+  expect(lanes.length).toBeGreaterThan(through.length); // and every other big road (D098)
+  for (const l of through) {
     expect(l.stop).toBeGreaterThan(0); expect(l.stop).toBeLessThan(l.line.len);
     const p = pointAt(l.line, l.stop).p;
     expect(Math.hypot(p.x - crossroads.x, p.y - crossroads.y)).toBeGreaterThan(60);
@@ -19,7 +21,7 @@ it('lanes follow the real carriageways through the crossroads, stopping before i
 });
 
 it('braking cannot carry a fast car past a red stop line during a long frame', () => {
-  const traffic = new Traffic(), car = traffic.cars.find(c => c.lane.axis === 'NS')!;
+  const traffic = new Traffic(), car = traffic.cars.find(c => c.lane.axis === 'NS' && c.lane.stop >= 0)!;
   traffic.cars = [car]; traffic.t = 9.5;
   car.pos = car.lane.stop - car.len / 2 - 1; car.speed = 42;
   traffic.update(0.1, []);

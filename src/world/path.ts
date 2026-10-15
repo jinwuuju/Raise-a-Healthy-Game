@@ -12,24 +12,31 @@ export function findPath(roomId: RoomId, from: Point, to: Point, maxNodes = room
   // Most local taps have an unobstructed route: skip grid allocation and A* entirely.
   if (canStand(roomId, to) && clearLine(roomId, from, to)) return [{ ...to }];
   const room = rooms[roomId];
-  const cols = Math.ceil(room.cols * TILE / CELL), rows = Math.ceil(room.rows * TILE / CELL);
-  let grid = navigation.get(room);
-  if (!grid) { grid = { cells: new Int8Array(cols * rows), edges: new Int8Array(cols * rows * 9) }; navigation.set(room, grid); }
+  const fullCols = Math.ceil(room.cols * TILE / CELL), fullRows = Math.ceil(room.rows * TILE / CELL);
+  // Big maps (the 1 km district, D098) search a window around both ends instead of allocating the whole map.
+  const big = fullCols * fullRows > 250000, M = 110;
+  const wx = big ? Math.max(0, Math.floor(Math.min(from.x, to.x) / CELL) - M) : 0, wy = big ? Math.max(0, Math.floor(Math.min(from.y, to.y) / CELL) - M) : 0;
+  const cols = big ? Math.min(fullCols, Math.ceil(Math.max(from.x, to.x) / CELL) + M) - wx : fullCols;
+  const rows = big ? Math.min(fullRows, Math.ceil(Math.max(from.y, to.y) / CELL) + M) - wy : fullRows;
+  let grid = big ? undefined : navigation.get(room);
+  if (!grid) { grid = { cells: new Int8Array(cols * rows), edges: new Int8Array(cols * rows * 9) }; if (!big) navigation.set(room, grid); }
   const cache = grid.cells, edges = grid.edges;
+  const wpt = (cx: number, cy: number): Point => ({ x: (cx + wx) * CELL + CELL / 2, y: (cy + wy) * CELL + CELL / 2 });
   const ok = (cx: number, cy: number): boolean => {
     if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) return false;
     const i = cy * cols + cx;
-    if (cache[i] === 0) cache[i] = canStand(roomId, { x: cx * CELL + CELL / 2, y: cy * CELL + CELL / 2 }) ? 1 : 2;
+    if (cache[i] === 0) cache[i] = canStand(roomId, wpt(cx, cy)) ? 1 : 2;
     return cache[i] === 1;
   };
   const nearest = (p: Point, connect: boolean): [number, number] | null => {
-    const bx = Math.floor(p.x / CELL), by = Math.floor(p.y / CELL);
+    const bx = Math.floor(p.x / CELL) - wx, by = Math.floor(p.y / CELL) - wy;
     for (let r = 0; r <= 4; r++) {
       let best: [number, number] | null = null, bestD = Infinity;
       for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== r || !ok(bx + dx, by + dy)) continue;
-        if (connect && !clearLine(roomId, p, { x: (bx + dx) * CELL + 4, y: (by + dy) * CELL + 4 })) continue;
-        const d = Math.hypot((bx + dx) * CELL + 4 - p.x, (by + dy) * CELL + 4 - p.y);
+        const q = wpt(bx + dx, by + dy);
+        if (connect && !clearLine(roomId, p, q)) continue;
+        const d = Math.hypot(q.x - p.x, q.y - p.y);
         if (d < bestD) { bestD = d; best = [bx + dx, by + dy]; }
       }
       if (best) return best;
@@ -70,7 +77,7 @@ export function findPath(roomId: RoomId, from: Point, to: Point, maxNodes = room
       if (!ok(nx, ny)) continue;
       if (dx && dy && (!ok(cx + dx, cy) || !ok(cx, cy + dy))) continue;
       const edge = cur * 9 + (dy + 1) * 3 + dx + 1;
-      if (!edges[edge]) edges[edge] = clearLine(roomId, { x: cx * CELL + 4, y: cy * CELL + 4 }, { x: nx * CELL + 4, y: ny * CELL + 4 }) ? 1 : 2;
+      if (!edges[edge]) edges[edge] = clearLine(roomId, wpt(cx, cy), wpt(nx, ny)) ? 1 : 2;
       if (edges[edge] !== 1) continue;
       const ni = ny * cols + nx; if (closed[ni]) continue;
       const cost = gScore[cur]! + (dx && dy ? 1.414 : 1);
@@ -79,9 +86,9 @@ export function findPath(roomId: RoomId, from: Point, to: Point, maxNodes = room
   }
   if (!found) return [];
   const cells: Point[] = [];
-  for (let i = goal; i !== -1 && i !== start; i = came[i]!) cells.push({ x: (i % cols) * CELL + CELL / 2, y: Math.floor(i / cols) * CELL + CELL / 2 });
+  for (let i = goal; i !== -1 && i !== start; i = came[i]!) cells.push(wpt(i % cols, Math.floor(i / cols)));
   cells.reverse();
-  cells.unshift({ x: s[0] * CELL + 4, y: s[1] * CELL + 4 });
+  cells.unshift(wpt(s[0], s[1]));
   if (canStand(roomId, to)) cells.push({ ...to });
   return smooth(roomId, from, cells);
 }
