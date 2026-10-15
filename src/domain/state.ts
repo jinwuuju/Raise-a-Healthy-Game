@@ -41,7 +41,7 @@ export function newState(): GameState {
     saveId: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : String(Date.now()),
     revision: 0, createdAt: now, updatedAt: now, started: false,
     avatar: { preset: 'male', name: '새 기자', look: defaultAppearance('male') }, owned: [...starterOutfits],
-    at: { room: 'newsroom', x: spawn.x, y: spawn.y, facing: 'down' },
+    at: { room: 'newsroom', x: spawn.x, y: spawn.y, facing: rooms.newsroom.spawnFacing },
     totalXp: 0, gold: 0, ledger: [], inspected: [], flags: [],
     article: emptyArticle(),
     q002: emptyQ2(),

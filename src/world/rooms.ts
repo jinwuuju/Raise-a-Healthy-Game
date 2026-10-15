@@ -392,7 +392,8 @@ function newsroom(): Room {
       reference: 'office', wall: 'office', bottom: 'wall', door: [320, 352], pendants: [], rugs: [],
       decor: [22, 76, 140, 340, 390, 440].map(x => ({ kind: 'window' as const, x, w: 46, text: '' })),
     },
-    spawn: { x: 212, y: 176 }, spawnFacing: 'down',
+    // D100: new reporters (and every new session) start just in front of the editor's desk, facing the editor.
+    spawn: { x: 256, y: 152 }, spawnFacing: 'up',
   });
 }
 

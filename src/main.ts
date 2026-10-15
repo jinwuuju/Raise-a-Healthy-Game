@@ -14,6 +14,7 @@ import { Dialog } from './ui/dialog';
 import { button, el } from './ui/dom';
 import { Hud } from './ui/hud';
 import { openCreator } from './ui/creator';
+import { showOpening } from './ui/opening';
 import { Joystick } from './ui/joystick';
 import { ConfirmControl } from './ui/confirm';
 import { openAtlas } from './ui/atlas';
@@ -71,10 +72,24 @@ async function storage(): Promise<SaveStore> {
 
 // The real-scale district map is its own chunk (D098). It loads in the background; boot waits for it only when the
 // saved position is outside (the save names the district, or the old street that migrates to it).
+// D100: every page load shows the title screen while the game gets ready. A new tab session clocks in at the newsroom in
+// front of the editor; reloads inside the same session keep the saved place. Browser tests (DEV + webdriver) skip both
+// unless the URL asks for ?opening.
+const forceOpening = new URLSearchParams(location.search).has('opening');
+const skipOpening = import.meta.env.DEV && navigator.webdriver && !forceOpening;
+const opening = showOpening(skipOpening);
+const SHIFT_KEY = 'medical-quest.shift';
+let newShift = !skipOpening;
+try { newShift = !skipOpening && !sessionStorage.getItem(SHIFT_KEY); sessionStorage.setItem(SHIFT_KEY, '1'); } catch { /* without session storage every load is a new shift */ }
+opening.progress(0.25, '동네 지도를 펼치는 중…');
 const districtReady = loadDistrict();
 void districtReady.catch(() => undefined); // retried by travel() if the background load failed
-try { if (/"room":"(district|street)"/.test(localStorage.getItem('medical-quest.v4.current') ?? '')) await districtReady; } catch { await districtReady; }
+try { if (!newShift && /"room":"(district|street)"/.test(localStorage.getItem('medical-quest.v4.current') ?? '')) await districtReady; } catch { await districtReady; }
+opening.progress(0.55, '취재 수첩을 펼치는 중…');
 const game = new Game(await storage());
+if (newShift) game.startShift();
+opening.setLook(game.state.avatar.look);
+opening.progress(0.85, '편집국 불을 켜는 중…');
 const canvas = el('canvas'); canvas.id = 'view'; canvas.tabIndex = 0; canvas.setAttribute('aria-label', '게임 화면');
 document.querySelector('#app')!.append(canvas);
 const ctx = canvas.getContext('2d', { alpha: false })!;
@@ -116,7 +131,7 @@ function confirmAction(): void {
 }
 
 window.addEventListener('keydown', e => {
-  if (document.querySelector('.creator')) return;
+  if (document.querySelector('.creator, .opening')) return;
   const k = e.key.toLowerCase();
   if (dialog.open) {
     if (['e', ' ', 'enter'].includes(k) && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); dialog.advance(); }
@@ -630,6 +645,7 @@ function importSave(close: () => void) {
 if (import.meta.env.DEV) (window as unknown as Record<string, unknown>).__mq = { game, get world() { return world; } };
 
 // ---------- Boot ----------
+void opening.ready(game.state.started).then(() => {
 if (game.state.started) startWorld();
 else {
   const s = game.state;
@@ -637,4 +653,5 @@ else {
     onDone: (name, preset, look) => { game.begin(name, preset, look); startWorld(); },
     onCancel: () => {} });
 }
+});
 void closeSheet;

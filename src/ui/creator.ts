@@ -18,7 +18,7 @@ export function openCreator(o: Opts): void {
   const card = el('div', 'card');
   const stage = el('div', 'stage');
   const title = el('div', 'title');
-  title.append(el('small', '', 'MEDICAL QUEST'), el('b', '', o.mode === 'new' ? '의학기자 키우기' : '외형 꾸미기'));
+  title.append(el('small', '', 'HEALTH REPORTER'), el('b', '', o.mode === 'new' ? '건강 기자 키우기' : '외형 꾸미기'));
   const ped = el('div', 'pedestal');
   const preview = el('canvas', 'preview');
   const pg = preview.getContext('2d')!;

@@ -569,3 +569,32 @@ a.row { color: var(--text); text-decoration: none; }
   .lunch-chips { grid-template-columns: 1fr 1fr; }
   .lunch-card { grid-template-columns: 1fr; justify-items: start; }
 }
+
+/* Opening title screen (D100): bright and cute, shown while the game loads; the world and HUD stay hidden behind it. */
+.opening { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; overflow: auto; padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); background: radial-gradient(circle at 20% 10%, #fff8e7 0, #fdeed6 45%, #f6dccb 100%); color: #3a2d4f; font-family: var(--font); transition: opacity .28s ease; }
+.opening::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(#e9cfb4 1.2px, transparent 1.6px); background-size: 22px 22px; opacity: .55; pointer-events: none; }
+.op-inner { position: relative; width: min(560px, 100%); display: grid; gap: 12px; justify-items: center; text-align: center; }
+.op-title small { display: inline-block; padding: 3px 10px; border-radius: 999px; background: #3a2d4f; color: #ffe9a8; font-size: .75rem; font-weight: 800; letter-spacing: .08em; }
+.op-title h1 { margin: 10px 0 6px; font-size: clamp(2rem, 9vw, 3.2rem); line-height: 1.15; font-weight: 900; letter-spacing: -.02em; text-shadow: 0 3px 0 #3a2d4f, 3px 0 0 #3a2d4f, -3px 0 0 #3a2d4f, 0 -3px 0 #3a2d4f, 3px 3px 0 #3a2d4f, -3px 3px 0 #3a2d4f, 3px -3px 0 #3a2d4f, -3px -3px 0 #3a2d4f, 0 8px 0 rgba(58,45,79,.22); }
+.op-title h1 span { display: inline-block; }
+.op-title .g { color: #9be06d; } .op-title .y { color: #ffd76a; } .op-title .p { color: #ff9fc0; }
+.op-title p { margin: 0; color: #6b5a7e; font-size: .9375rem; font-weight: 700; }
+.op-scene { display: grid; justify-items: center; gap: 6px; width: 100%; min-height: 40px; }
+.op-scene canvas { display: block; image-rendering: pixelated; border-radius: 14px; border: 3px solid #3a2d4f; box-shadow: 0 6px 0 #3a2d4f, 0 14px 30px rgba(58,45,79,.22); background: #bfe3ff; cursor: pointer; touch-action: manipulation; }
+.op-tea { margin: 0; min-height: 1.4em; font-size: .875rem; font-weight: 800; color: #4d7a3c; }
+.op-foot { display: grid; gap: 8px; justify-items: center; width: min(320px, 100%); min-height: 60px; align-content: center; }
+.op-status { margin: 0; font-weight: 800; font-size: .9375rem; }
+.op-bar { width: 100%; height: 12px; border-radius: 999px; border: 2px solid #3a2d4f; background: #fff; overflow: hidden; }
+.op-bar i { display: block; height: 100%; width: 8%; background: repeating-linear-gradient(90deg, #8fc95a 0 8px, #a6d874 8px 16px); transition: width .3s ease; }
+.op-start { min-height: 52px; min-width: 220px; padding: 0 28px; border-radius: 16px; border: 3px solid #3a2d4f; background: #ffd76a; color: #3a2d4f; font: inherit; font-size: 1.125rem; font-weight: 900; box-shadow: 0 5px 0 #3a2d4f; cursor: pointer; }
+.op-start:active { transform: translateY(3px); box-shadow: 0 2px 0 #3a2d4f; }
+.op-start:focus-visible { outline: 3px solid #4d7a3c; outline-offset: 3px; }
+.op-credit { margin: 0; font-size: .8125rem; font-weight: 800; color: #7b6a8d; }
+.opening.op-leaving { opacity: 0; pointer-events: none; }
+@media (max-height: 520px) and (orientation: landscape) {
+  .op-inner { width: min(900px, 100%); grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; column-gap: 20px; }
+  .op-scene { grid-column: 1; grid-row: 1 / span 3; }
+  .op-title { grid-column: 2; grid-row: 1; } .op-foot { grid-column: 2; grid-row: 2; } .op-credit { grid-column: 2; grid-row: 3; }
+  .op-title h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); margin: 6px 0 4px; }
+}
+@media (prefers-reduced-motion: reduce) { .opening, .op-bar i { transition: none; } }
