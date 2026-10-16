@@ -37,14 +37,20 @@ export let crosswalks: Crosswalk[] = [];
 export let zebras: Zebra[] = [];
 export let anchors: ReturnType<typeof computeAnchors> = null!;
 export const APPROACH = 70, BAND = 11;
-let loaded = false;
+let loaded = false, loading: Promise<void> | null = null;
 export const districtLoaded = () => loaded;
 
-/** Loads the generated map chunk once and derives everything else from it. */
-export async function loadDistrict(): Promise<void> {
-  if (loaded) return;
-  const raw = (await import('./district.generated.json')).default as unknown as Raw;
-  init(raw);
+/**
+ * Loads the generated map chunk once and derives everything else from it. Callers that overlap (the background load
+ * at boot and a trip outside) share one load, so the data is never initialised twice; a failed load can be retried.
+ */
+export function loadDistrict(): Promise<void> {
+  if (loaded) return Promise.resolve();
+  loading ??= import('./district.generated.json').then(
+    m => { if (!loaded) init(m.default as unknown as Raw); },
+    e => { loading = null; throw e; },
+  );
+  return loading;
 }
 type Raw = { licence: string; size: number; special: Record<string, number>; roads: number[][]; blocks: number[][]; areas: number[][];
   labels: [string, number, number][]; routes: number[][]; zebras: number[][]; stations: [string, number, number][] };
@@ -128,7 +134,10 @@ export function polyline(pts: Point[]): Polyline {
 }
 export function pointAt(pl: Polyline, s: number): { p: Point; dir: Point } {
   const d = Math.max(0, Math.min(pl.len, s));
-  let i = 1; while (i < pl.pts.length - 1 && pl.cum[i]! < d) i++;
+  // First segment end at or beyond d (binary search; long lanes are walked every frame by the traffic).
+  let lo = 1, hi = Math.max(1, pl.pts.length - 1);
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (pl.cum[mid]! < d) lo = mid + 1; else hi = mid; }
+  const i = lo;
   const a = pl.pts[i - 1]!, b = pl.pts[i]!, seg = pl.cum[i]! - pl.cum[i - 1]! || 1, t = (d - pl.cum[i - 1]!) / seg;
   return { p: { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, dir: { x: (b.x - a.x) / seg, y: (b.y - a.y) / seg } };
 }
@@ -178,10 +187,21 @@ export function strokePolys(pts: Point[], width: number): Point[][] {
   return out;
 }
 
+/** Collision mask at 4 px cells, one bit per cell (1 = blocked). Read it with maskBlocked(). */
+export type CollisionMask = { cell: number; w: number; h: number; data: Uint8Array };
+
+/** Whether the mask blocks the world point (x, y). Points outside the mask count as blocked. */
+export function maskBlocked(m: CollisionMask, x: number, y: number): boolean {
+  const cx = Math.floor(x / m.cell), cy = Math.floor(y / m.cell);
+  if (!(cx >= 0 && cy >= 0 && cx < m.w && cy < m.h)) return true;
+  const i = cy * m.w + cx;
+  return (m.data[i >> 3]! & (1 << (i & 7))) !== 0;
+}
+
 /** Collision mask (1 = blocked) at 4 px cells: carriageways of the big roads except crosswalks (buildings are solid blocks). */
-export function buildMask(): { cell: number; w: number; h: number; data: Uint8Array } {
-  const w = Math.ceil(DISTRICT_SIZE / MASK_CELL), h = w, data = new Uint8Array(w * h), s = 1 / MASK_CELL;
-  const set = (v: number) => (x: number, y: number) => { data[y * w + x] = v; };
+export function buildMask(): CollisionMask {
+  const w = Math.ceil(DISTRICT_SIZE / MASK_CELL), h = w, data = new Uint8Array(Math.ceil(w * h / 8)), s = 1 / MASK_CELL;
+  const set = (v: number) => (x: number, y: number) => { const i = y * w + x; if (v) data[i >> 3]! |= 1 << (i & 7); else data[i >> 3]! &= ~(1 << (i & 7)); };
   for (const r of droads) if (r.kind === 0 && !r.bridge) for (const q of strokePolys(r.pts, r.w)) scanPoly(q, w, h, set(1), s);
   for (const c of crosswalks) scanPoly(c.poly, w, h, set(0), s);
   for (const z of zebras) scanPoly(z.poly, w, h, set(0), s);

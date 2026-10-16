@@ -1,6 +1,6 @@
 import { rooms, tileAt, walkableTile, type Crossing, type Door, type Room, type Target } from './rooms';
 import { TILE, inRect, overlap, type Point, type Rect, type RoomId } from './types';
-import { inPoly } from './district';
+import { inPoly, maskBlocked } from './district';
 
 /** Feet box: the character only collides with a small footprint, never with its head. */
 export function footRect(p: Point): Rect { return { x: p.x - 4, y: p.y - 3, w: 8, h: 4 }; }
@@ -34,7 +34,7 @@ export function canStandIn(room: Room, p: Point): boolean {
   const xs = [f.x, f.x + f.w - 0.01], ys = [f.y, f.y + f.h - 0.01];
   const organ = room.organ;
   if (organ) { for (const x of xs) for (const y of ys) if (!organ.walk(x, y)) return false; }
-  else if (room.mask) { const m = room.mask; for (const x of xs) for (const y of ys) if (m.data[Math.floor(y / m.cell) * m.w + Math.floor(x / m.cell)] !== 0) return false; }
+  else if (room.mask) { const m = room.mask; for (const x of xs) for (const y of ys) if (maskBlocked(m, x, y)) return false; }
   else for (const x of xs) for (const y of ys) if (!walkableTile(tileAt(room, Math.floor(x / TILE), Math.floor(y / TILE)))) return false;
   const index = solidsByTile(room);
   for (const x of xs) for (const y of ys) {

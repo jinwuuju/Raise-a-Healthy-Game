@@ -13,14 +13,51 @@ import { passable, realTime, secondsUntilOpen, soundBetween } from '../domain/ca
 import { canStand, crossingAt, doorAt, footRect, moveWithCollision, nearestTarget } from '../world/collision';
 import type { Valve } from '../world/organ-types';
 import { findPath } from '../world/path';
-import { T, rooms, tileAt, type Building, type Crossing, type Door, type Room, type Target } from '../world/rooms';
+import { T, rooms, tileAt, type Building, type Crossing, type Door, type Prop, type Room, type Target } from '../world/rooms';
 import { TILE, overlap, type Dir, type Point, type RoomId } from '../world/types';
+import { buildSceneGrid, querySceneGrid, type SceneGrid } from '../world/scene-index';
 import { HeartView, valveSet } from './heart-view';
 import { Traffic } from './traffic';
 
 export type Actor = { id: string; name: string; look: Look; x: number; y: number; facing: Dir; homeFacing: Dir; walk: number; moving: boolean; route: Point[] | null; leg: number; step: number; speed: number; wait: number };
 export type Input = { vx: number; vy: number; steer: Point | null };
 type Drawable = { y: number; x: number; draw: () => void; occluder: { x: number; y: number; w: number; h: number } | null };
+
+/*
+ * Fixed scenery of big rooms is looked up through a grid (D102, src/world/scene-index.ts) so that each frame only
+ * tests what is near the camera; small rooms keep the plain lists.
+ */
+type Scenery = { buildings: SceneGrid; props: SceneGrid };
+const sceneries = new WeakMap<Room, Scenery | null>();
+const ANIMATED_PROPS = new Set(['fountain', 'bodyscope', 'robot', 'pad']);
+function scenery(room: Room): Scenery | null {
+  if (sceneries.has(room)) return sceneries.get(room)!;
+  let out: Scenery | null = null;
+  if (room.buildings.length + room.props.length >= 400) {
+    const W = room.cols * TILE, H = room.rows * TILE;
+    const props = room.props.map(pr => {
+      // Union of every animation frame, so the box is never narrower than the sprite drawn this frame.
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      for (let f = 0; f < (ANIMATED_PROPS.has(pr.kind) ? 4 : 1); f++) {
+        const sp = propSprite(pr.kind, pr.v, f);
+        x0 = Math.min(x0, pr.x - sp.ax); y0 = Math.min(y0, pr.y - sp.ay); x1 = Math.max(x1, pr.x - sp.ax + sp.c.width); y1 = Math.max(y1, pr.y - sp.ay + sp.c.height);
+      }
+      return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+    });
+    out = { buildings: buildSceneGrid(W, H, room.buildings.map(b => ({ x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }))), props: buildSceneGrid(W, H, props) };
+  }
+  sceneries.set(room, out);
+  return out;
+}
+/** Buildings and props of the room that may show in the rectangle, in their original order. */
+function sceneryIn<K extends 'buildings' | 'props'>(room: Room, kind: K, x: number, y: number, w: number, h: number): Room[K] {
+  const sc = scenery(room);
+  if (!sc) return room[kind];
+  const list = room[kind] as readonly unknown[];
+  return querySceneGrid(sc[kind], x, y, w, h).map(i => list[i]) as Room[K];
+}
+/** Ginkgo trees of a room (falling leaves), found once per room. */
+const ginkgoTrees = new WeakMap<Room, Prop[]>();
 
 const LABEL_FONT = (px: number) => `700 ${px}px 'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif`;
 
@@ -69,6 +106,7 @@ export class World {
   private light = makeCanvas(2, 2);
   private cam = { x: 0, y: 0, ready: false };
   private leaves: { x: number; y: number; vx: number; vy: number; c: string; life: number }[] = [];
+  private todCache: { second: number; tod: TimeOfDay } = { second: NaN, tod: 'day' };
   view = { x: 0, y: 0, w: 1, h: 1, zoom: 1 };
 
   constructor(roomId: RoomId, x: number, y: number, facing: Dir, look: Look, name: string) {
@@ -287,7 +325,9 @@ export class World {
   }
 
   private updateLeaves(dt: number): void {
-    const trees = this.room.props.filter(pr => pr.kind === 'ginkgo' && Math.abs(pr.x - this.player.x) < 260 && Math.abs(pr.y - this.player.y) < 200);
+    let ginkgos = ginkgoTrees.get(this.room);
+    if (!ginkgos) { ginkgos = this.room.props.filter(pr => pr.kind === 'ginkgo'); ginkgoTrees.set(this.room, ginkgos); }
+    const trees = ginkgos.length ? ginkgos.filter(pr => Math.abs(pr.x - this.player.x) < 260 && Math.abs(pr.y - this.player.y) < 200) : ginkgos;
     while (this.leaves.length < 22) {
       const tr = trees[Math.floor(Math.random() * trees.length)];
       if (!tr) break;
@@ -299,7 +339,14 @@ export class World {
 
   /** Outdoor lighting from the real Seoul clock, whatever the device time zone is. */
   get timeOfDay(): TimeOfDay {
-    try { return timeOfDayAt(this.now()); } catch { return 'day'; }
+    let ms: number;
+    try { ms = this.now(); } catch { return 'day'; }
+    const second = Math.floor(ms / 1000);
+    if (second === this.todCache.second) return this.todCache.tod;
+    let tod: TimeOfDay;
+    try { tod = timeOfDayAt(ms); } catch { tod = 'day'; }
+    this.todCache = { second, tod };
+    return tod;
   }
 
   ground(id: RoomId): HTMLCanvasElement {
@@ -345,12 +392,13 @@ export class World {
     if (this.heart) ellipse(g, Math.round(p.x - cx), Math.round(p.y - cy), 8, 3, `rgba(127,240,242,${(0.25 + 0.15 * Math.sin(this.time * 3)).toFixed(3)})`);
     const items: Drawable[] = [];
     const inView = (x: number, y: number, w: number, h: number) => x + w > cx - 8 && x < cx + vw + 8 && y + h > cy - 8 && y < cy + vh + 8;
-    for (const b of room.buildings) {
+    const nearBuildings = sceneryIn(room, 'buildings', cx - 8, cy - 8, vw + 16, vh + 16), nearProps = sceneryIn(room, 'props', cx - 8, cy - 8, vw + 16, vh + 16);
+    for (const b of nearBuildings) {
       if (!inView(b.x, b.y - b.h, b.w, b.d + b.h)) continue;
       items.push({ y: b.y + b.d, x: b.x, occluder: { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, draw: () => this.drawBuilding(g, b, cx, cy, tod === 'night') });
     }
     const frame4 = Math.floor(this.time * 6) % 4;
-    for (const pr of room.props) {
+    for (const pr of nearProps) {
       const s = propSprite(pr.kind, pr.v, pr.kind === 'fountain' || pr.kind === 'bodyscope' || pr.kind === 'robot' || pr.kind === 'pad' ? frame4 : 0);
       if (!inView(pr.x - s.ax, pr.y - s.ay, s.c.width, s.c.height)) continue;
       const tall = pr.kind === 'ginkgo' || pr.kind === 'parktree' || pr.kind === 'bookshelf' || pr.kind === 'lamp' || pr.kind === 'papillary';
@@ -461,6 +509,7 @@ export class World {
     l.globalCompositeOperation = 'lighter';
     const strength = tod === 'night' ? 1 : 0.35;
     const glow = (x: number, y: number, r: number, a: number) => {
+      if (x + r < 0 || x - r > vw || y + r < 0 || y - r > vh) return; // would paint nothing on the light map
       const grd = l.createRadialGradient(x, y, 0, x, y, r);
       grd.addColorStop(0, `rgba(255,214,150,${a * strength})`); grd.addColorStop(1, 'rgba(255,214,150,0)');
       l.fillStyle = grd; l.fillRect(x - r, y - r, r * 2, r * 2);
@@ -470,7 +519,7 @@ export class World {
       if (pr.kind === 'vending') glow(pr.x - cx, pr.y - 12 - cy, 18, 0.5);
     }
     if (tod === 'night') {
-      for (const b of this.room.buildings) {
+      for (const b of sceneryIn(this.room, 'buildings', cx - 8, cy - 8, vw + 16, vh + 16)) {
         const ox = b.x - cx, oy = b.y - b.h - cy;
         if (ox > vw || ox + b.w < 0 || oy > vh || oy + b.d + b.h < 0) continue; // check first: art is built lazily (4,800 buildings in the district)
         const art = buildingArt(b);

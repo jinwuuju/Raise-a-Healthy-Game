@@ -2,7 +2,7 @@ import { TILE, type Dir, type Point, type Rect, type RoomId } from './types';
 import type { Look } from '../domain/appearance';
 import { heartRooms } from './heart-rooms';
 import type { Organ } from './organ-types';
-import { DISTRICT_SIZE, anchors, buildMask, crossroads, crosswalks, dblocks, districtLoaded, droads, dstations, exits, offset, pointAt, polyline, zebras } from './district';
+import { DISTRICT_SIZE, anchors, buildMask, maskBlocked, type CollisionMask, crossroads, crosswalks, dblocks, districtLoaded, droads, dstations, exits, offset, pointAt, polyline, zebras } from './district';
 
 /*
  * Map geometry only (no rendering). Distances are game pixels, 1 tile = 16px.
@@ -59,7 +59,7 @@ export type Room = {
   /** Bodyscope organ rooms (heart chambers, vessels, lung): smooth walls, valves, blood flow. */
   organ: Organ | null;
   /** Fine collision mask (1 = blocked) replacing tile walkability for the real-scale district. */
-  mask?: { cell: number; w: number; h: number; data: Uint8Array };
+  mask?: CollisionMask;
 };
 
 function grid(cols: number, rows: number, base: number) {
@@ -290,7 +290,7 @@ function district(): Room {
   for (const b of [euro, ...blocks]) for (let y = Math.max(0, Math.floor((b.y - 4) / 8)); y <= Math.min(occN - 1, Math.floor((b.y + b.d + 4) / 8)); y++)
     for (let x = Math.max(0, Math.floor((b.x - 4) / 8)); x <= Math.min(occN - 1, Math.floor((b.x + b.w + 4) / 8)); x++) occ[y * occN + x] = 1;
   const mask = buildMask();
-  const free = (p: Point) => p.x > 8 && p.y > 8 && p.x < size - 8 && p.y < size - 8 && mask.data[Math.floor(p.y / mask.cell) * mask.w + Math.floor(p.x / mask.cell)] === 0 && occ[Math.floor(p.y / 8) * occN + Math.floor(p.x / 8)] === 0;
+  const free = (p: Point) => p.x > 8 && p.y > 8 && p.x < size - 8 && p.y < size - 8 && !maskBlocked(mask, p.x, p.y) && occ[Math.floor(p.y / 8) * occN + Math.floor(p.x / 8)] === 0;
   const nearCrossing = (p: Point) => Math.hypot(p.x - crossroads.x, p.y - crossroads.y) < 150 || zebras.some(z => Math.hypot(p.x - (z.ends[0].x + z.ends[1].x) / 2, p.y - (z.ends[0].y + z.ends[1].y) / 2) < 70);
   // Ginkgo trees and street lamps along the outer kerbs of every big road (one-way carriageways: their outer side only).
   const props: Prop[] = [];

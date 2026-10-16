@@ -100,7 +100,8 @@ export function drawDistrictGround(g: CanvasRenderingContext2D, cx: number, cy: 
   for (let iy = Math.max(0, Math.floor(cy / CHUNK)); iy <= Math.min(n - 1, Math.floor((cy + vh) / CHUNK)); iy++)
     for (let ix = Math.max(0, Math.floor(cx / CHUNK)); ix <= Math.min(n - 1, Math.floor((cx + vw) / CHUNK)); ix++) {
       const key = iy * n + ix; let ch = chunks.get(key);
-      if (!ch && budget > 0) { ch = bakeChunk(ix, iy); chunks.set(key, ch); budget--; }
+      if (ch) { chunks.delete(key); chunks.set(key, ch); } // keep visible chunks at the recent end of the LRU order
+      else if (budget > 0) { ch = bakeChunk(ix, iy); chunks.set(key, ch); budget--; }
       if (ch) g.drawImage(ch, ix * CHUNK - cx, iy * CHUNK - cy);
       else { g.fillStyle = '#cfc6b4'; g.fillRect(ix * CHUNK - cx, iy * CHUNK - cy, CHUNK, CHUNK); missing++; }
     }

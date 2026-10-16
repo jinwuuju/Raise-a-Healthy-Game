@@ -81,7 +81,16 @@ const opening = showOpening(skipOpening);
 opening.progress(0.25, '동네 지도를 펼치는 중…');
 const districtReady = loadDistrict();
 void districtReady.catch(() => undefined); // retried by travel() if the background load failed
-try { if (/"room":"(district|street)"/.test(localStorage.getItem('medical-quest.v4.current') ?? '')) await districtReady; } catch { await districtReady; }
+let savedOutside = true;
+try { savedOutside = /"room":"(district|street)"/.test(localStorage.getItem('medical-quest.v4.current') ?? ''); } catch { /* unreadable storage: wait for the map to be safe */ }
+if (savedOutside) {
+  // A reporter saved outside cannot be placed without the map: retry once, then say so instead of a frozen loading bar.
+  try { await districtReady; }
+  catch {
+    try { await loadDistrict(); }
+    catch (e) { opening.progress(0.25, '동네 지도를 불러오지 못했어요. 연결을 확인하고 새로고침해 주세요.'); throw e; }
+  }
+}
 opening.progress(0.55, '취재 수첩을 펼치는 중…');
 const game = new Game(await storage());
 opening.setLook(game.state.avatar.look);
@@ -330,7 +339,12 @@ type Trip = { to: RoomId; arrive: Point; facing: Dir; mode: 'walk' | 'scope-in' 
 let traveling = false;
 async function travel(d: Trip) {
   if (!world || traveling) return;
-  if (d.to === 'district' && !districtLoaded()) { traveling = true; await loadDistrict(); traveling = false; }
+  if (d.to === 'district' && !districtLoaded()) {
+    traveling = true;
+    try { await loadDistrict(); }
+    catch { hud.toast('동네 지도를 불러오지 못했어요. 연결을 확인하고 다시 나가 보세요.', true); return; }
+    finally { traveling = false; }
+  }
   const w = world;
   traveling = true;
   w.locked = true; pauseInput();
