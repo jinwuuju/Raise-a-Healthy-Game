@@ -64,7 +64,7 @@ export function openCreator(o: Opts): void {
   if (o.mode === 'edit') actions.append(button('secondary', '취소', () => { stop(); o.onCancel(); }));
   const go = button('primary', o.mode === 'new' ? '첫 출근하기' : '저장하기', () => finish());
   actions.append(go);
-  form.append(el('p', 'note', '외형은 언제든 왼쪽 위 기자 정보에서 다시 바꿀 수 있어요. 도시 코트는 옷가게가 열리면 얻을 수 있어요.'));
+  form.append(el('p', 'note', '외형은 언제든 왼쪽 위 기자 정보에서 다시 바꿀 수 있어요. 새 옷은 유로프라자 근처 옷가게 ‘오비트 테일러’에서 살 수 있어요.'));
   card.append(stage, form, actions);
   root.append(card);
   document.body.append(root);

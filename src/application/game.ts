@@ -1,5 +1,6 @@
 import { defaultAppearance, validateAppearance, type Appearance, type Preset } from '../domain/appearance';
 import { orderDrink } from '../domain/cafe';
+import { buyItem, buyOutfit } from '../domain/shop';
 import { checkArticle, selectArticle } from '../domain/article';
 import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, publishQ4WithReaction, publishQ5WithReaction, publishQ6WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
 import type { QuestId } from '../domain/reaction-state';
@@ -112,10 +113,14 @@ export class Game {
   }
   has(name: string): boolean { return this.state.flags.includes(name); }
 
-  order(itemId: string): void {
-    const id = (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : String(Date.now())).replaceAll('-', '').slice(0, 24);
-    this.commit(orderDrink(this.state, itemId, id));
+  private commandId(): string {
+    return (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : String(Date.now()) + String(Math.random()).slice(2, 8)).replaceAll('-', '').slice(0, 24);
   }
+  order(itemId: string): void { this.commit(orderDrink(this.state, itemId, this.commandId())); }
+  /** D103: buy one item at Jin-U (gold, bag and ledger change together). */
+  buyItem(itemId: string): void { this.commit(buyItem(this.state, itemId, this.commandId())); }
+  /** D103: buy a piece of clothing at the Orbit Tailor, optionally wearing it at once. */
+  buyOutfit(id: string, wear: boolean): void { const next = buyOutfit(this.state, id, wear); if (next !== this.state) this.commit(next); }
 
   acceptQuest(): void { this.commit(acceptQ1(this.state)); }
   acceptQ2(): void { const next = acceptQ2(this.state); if (next !== this.state) this.commit(next); }

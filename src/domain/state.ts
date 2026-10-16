@@ -9,6 +9,7 @@ import { emptyQ4, validateQ4, type Q4State } from './q004-state';
 import { emptyQ5, validateQ5, type Q5State } from './q005-state';
 import { emptyQ6, validateQ6, type Q6State } from './q006-state';
 import { emptyLunch, validateLunch, type LunchState } from './lunch';
+import { emptyShop, validateShop, type ShopState } from './shop';
 import { canStand, canStandIn, footRect } from '../world/collision';
 import { rooms, roomsD093, roomsD094 } from '../world/rooms';
 import { isHeartRoom, overlap, roomIds, type Dir, type RoomId } from '../world/types';
@@ -30,6 +31,8 @@ export type GameState = {
   cafe: { welcomeUsed: boolean; orderCount: number; lastOrder: { itemId: string; price: number; orderedAt: string } | null; restedAt: string | null };
   /** 오늘의 점심(D085). schema4 옛 저장에는 없으며 빈 기록으로 읽는다. */
   lunch: LunchState;
+  /** 진U 가방·오비트 테일러 구매 기록(D103). 옛 저장에는 없으며 빈 기록으로 읽는다. */
+  shop: ShopState;
   // No `settings`: the in-game time-of-day setting was removed (D068, lunch step 5). The game follows the device clock in Asia/Seoul (domain/clock).
 };
 
@@ -52,6 +55,7 @@ export function newState(): GameState {
     reactions: emptyReactions(),
     cafe: { welcomeUsed: false, orderCount: 0, lastOrder: null, restedAt: null },
     lunch: emptyLunch(),
+    shop: emptyShop(),
   };
 }
 
@@ -153,6 +157,7 @@ export function validateState(value: unknown): GameState {
     reactions,
     cafe: { welcomeUsed: cafe.welcomeUsed, orderCount: cafe.orderCount, restedAt: (cafe.restedAt as string | null), lastOrder: lo ? { itemId: lo.itemId as string, price: lo.price as number, orderedAt: lo.orderedAt as string } : null },
     lunch: validateLunch(s.lunch),
+    shop: validateShop(s.shop),
   };
 }
 

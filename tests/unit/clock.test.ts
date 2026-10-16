@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import lunch from '../../data/balance/lunch.v0.1.json';
-import { DAY_FROM_HOUR, DUSK_FROM_HOUR, GAME_TIME_ZONE, NIGHT_FROM_HOUR, seoulTime, seoulTimeByOffset, timeOfDayAt } from '../../src/domain/clock';
+import { GAME_TIME_ZONE, seoulTime, seoulTimeByOffset } from '../../src/domain/clock';
 import { newState, validateState } from '../../src/domain/state';
 import { SaveStore } from '../../src/infrastructure/save';
 
@@ -54,25 +54,11 @@ describe('Seoul real-time clock (D068, lunch step 5)', () => {
     }
   });
 
-  it('switches street lighting at 07:00, 17:00 and 19:00 Seoul time', () => {
-    expect([DAY_FROM_HOUR, DUSK_FROM_HOUR, NIGHT_FROM_HOUR]).toEqual([7, 17, 19]);
-    const seoul = (hms: string) => at('2026-10-14T' + hms + '+09:00');
-    expect(timeOfDayAt(seoul('00:00:00'))).toBe('night');
-    expect(timeOfDayAt(seoul('06:59:59'))).toBe('night');
-    expect(timeOfDayAt(seoul('07:00:00'))).toBe('day');
-    expect(timeOfDayAt(seoul('16:59:59'))).toBe('day');
-    expect(timeOfDayAt(seoul('17:00:00'))).toBe('dusk');
-    expect(timeOfDayAt(seoul('18:59:59'))).toBe('dusk');
-    expect(timeOfDayAt(seoul('19:00:00'))).toBe('night');
-    expect(timeOfDayAt(seoul('23:59:59'))).toBe('night');
-  });
-
   it('falls back to UTC+9 when the runtime has no time-zone data', async () => {
     vi.resetModules();
     vi.stubGlobal('Intl', { ...Intl, DateTimeFormat: function () { throw new RangeError('no tz data'); } });
     const fresh = await import('../../src/domain/clock');
     expect(fresh.seoulTime(at('2026-10-13T15:00:00Z'))).toMatchObject({ dateKey: '2026-10-14', secondOfDay: 0 });
-    expect(fresh.timeOfDayAt(at('2026-10-14T10:00:00Z'))).toBe('night');
   });
 
   it('rejects impossible clock values instead of inventing a time', () => {

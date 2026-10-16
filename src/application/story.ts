@@ -165,6 +165,10 @@ export function talk(id: string, s: GameState): Talk {
       return { flag: null, lines: say('안내 데스크', 'guard', `좋은 하루예요, ${name} 기자님. 정문으로 나가면 바로 논현로예요. 횡단보도는 신호를 지켜 주세요.`) };
     case 'barista':
       return { flag: null, lines: say('바리스타', 'barista', s.cafe.welcomeUsed ? '또 오셨네요! 무엇으로 드릴까요?' : '비투비씨에 오신 걸 환영해요. 첫 방문이시면 아메리카노 한 잔은 무료예요.') };
+    case 'jinu-clerk':
+      return { flag: null, lines: say('진U 점원', 'jinu-clerk', s.shop.jinuCount ? '또 오셨네요! 천천히 골라 보세요.' : '어서 오세요, 진U입니다! 음료는 냉장고에, 과자랑 문구는 진열대에 있어요.') };
+    case 'tailor':
+      return { flag: null, lines: say('오비트 테일러 주인', 'tailor', s.shop.tailorCount ? '다시 와 주셨네요. 새 옷 입은 모습, 잘 어울려요!' : '오비트 테일러에 어서 오세요. 마음에 드는 옷이 있으면 먼저 입어 보고 결정하세요.') };
     case 'guide': {
       const seen = q1Seen(s).length;
       const lines = seen === 0 || !s.flags.includes(Q1.accepted) ? heart.guide : seen === 1 ? [q1.guideOne] : [q1.guideBoth];
@@ -191,7 +195,11 @@ export const lookText: Record<string, string> = {
   notice: '유로프라자 입주사 안내 · 4층 메디컬 데스크 편집국 · 엘리베이터는 이 옆 통로 안쪽. 4층에서 내려 복도 끝까지 가세요.',
   'street-notice': '현재 위치: 유로프라자 앞 논현로151길. 서쪽 도산대로25길로 들어가 북쪽으로 조금 가면 비투비씨 카페, 남동쪽 약 110m가 을지병원 사거리(논현로 × 도산대로), 북쪽 논현로를 따라가면 압구정역 방향이다. 큰길은 보행 신호가 초록불일 때만 횡단보도로 건널 수 있다. (실제 축척 지도: 1칸 = 3m, OpenStreetMap 기반)',
   station: '↑ 압구정역 방향. 지하철역은 아직 열리지 않았다.',
-  'jinu-store': '진U 편의점. 문 앞에 음료 상자와 생활용품 묶음이 쌓여 있다. 가게 안은 아직 둘러볼 수 없다.',
+  'jinu-store': '진U 편의점. 문 앞에 음료 상자와 생활용품 묶음이 쌓여 있다. 오른쪽 유리문으로 들어가면 물건을 살 수 있다.',
+  'jinu-fridge': '유리문 음료 냉장고. 생수, 녹차, 바나나 우유가 줄지어 있다. 계산은 문 옆 계산대의 점원에게 한다.',
+  'jinu-shelf': '과자와 삼각김밥, 컵라면, 볼펜과 미니 수첩이 놓인 진열대. 고른 물건은 계산대에서 산다.',
+  'tailor-rack': '색색의 옷이 걸린 옷걸이. 데님 재킷, 줄무늬 셔츠, 트랙 재킷, 가디건, 도시 코트가 보인다. 주인에게 말하면 입어 볼 수 있다.',
+  'tailor-mannequin': '마네킹 세 개가 이번 가을 옷을 입고 서 있다. 옷은 모습만 바꾸고 취재 실력은 바꾸지 않는다.',
   'alley-151': '논현로151길. 유로프라자 정문 앞을 지나는 좁은 골목으로, 논현로에서 들어와 서쪽으로 이어진다. 맞은편 진U 편의점 옆으로는 도산대로25길이 남쪽 도산대로로 내려간다.',
   'shoe-repair': '구두 수선대. 굽갈이와 광택을 한다는 안내가 붙어 있다.',
   // Kept for old saves: the pocket park was replaced by the buildings across the lane (D088).
@@ -204,5 +212,5 @@ export const inspectLabels: Record<string, string> = {
   'lobby-tv': '1층 TV와 소파', 'lift-call': '1층 엘리베이터 통로', 'meeting-a': '4층 회의실 1', 'meeting-b': '4층 회의실 2', 'closed-glass': '4층 닫힌 유리문', 'lounge-table': '4층 라운지', 'corridor-guide': '4층 복도', 'outer-desks': '바깥 사무실', 'lift-panel': '엘리베이터 층 선택',
 
   'my-desk': '내 자리', device: '바디스코프', shelf: '뒤쪽 자료 캐비닛', notice: '로비 소식 게시판', 'street-notice': '거리 안내판',
-  station: '압구정역 방향 표지', 'jinu-store': '진U 편의점', 'alley-151': '논현로151길 표지', 'shoe-repair': '구두 수선대', 'park-bench': '쉼터 벤치', fountain: '쉼터 분수', 'window-seat': '비투비씨 창가 자리',
+  station: '압구정역 방향 표지', 'jinu-store': '진U 편의점', 'jinu-fridge': '진U 음료 냉장고', 'jinu-shelf': '진U 진열대', 'tailor-rack': '오비트 테일러 옷걸이', 'tailor-mannequin': '오비트 테일러 마네킹', 'alley-151': '논현로151길 표지', 'shoe-repair': '구두 수선대', 'park-bench': '쉼터 벤치', fountain: '쉼터 분수', 'window-seat': '비투비씨 창가 자리',
 };

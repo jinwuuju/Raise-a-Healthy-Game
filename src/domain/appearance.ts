@@ -28,7 +28,8 @@ export const hairColors = {
   ink: '검정', brown: '갈색', ash: '애쉬 브라운', chestnut: '적갈색', gold: '금빛', silver: '은빛',
   pink: '벚꽃 핑크', lavender: '라벤더', teal: '청록',
 } as const;
-export const outfits = { reporter: '취재 재킷', knit: '캐주얼 니트', hoodie: '포근한 후드', coat: '도시 코트' } as const;
+/** Starter three plus clothes sold at the Orbit Tailor (D103). Clothes change looks only, never abilities. */
+export const outfits = { reporter: '취재 재킷', knit: '캐주얼 니트', hoodie: '포근한 후드', coat: '도시 코트', denim: '데님 재킷', stripe: '줄무늬 셔츠', track: '트랙 재킷', cardigan: '베리 가디건' } as const;
 
 export type HairId = keyof typeof hairStyles;
 export type FaceId = keyof typeof faceStyles;

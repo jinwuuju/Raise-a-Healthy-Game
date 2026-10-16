@@ -22,7 +22,7 @@ export const T = {
 const BLOCKED = new Set<number>([T.VOID, T.ROAD, T.WALL]);
 export function walkableTile(t: number): boolean { return !BLOCKED.has(t); }
 
-export type BuildingKind = 'europlaza' | 'b2bc' | 'shop' | 'office' | 'hotel' | 'hospital' | 'jinu' | 'granite' | 'brickcorner' | 'small' | 'apartment';
+export type BuildingKind = 'europlaza' | 'b2bc' | 'shop' | 'office' | 'hotel' | 'hospital' | 'jinu' | 'granite' | 'brickcorner' | 'small' | 'apartment' | 'tailor';
 /** `block`: the whole drawn mass (roof + front, y - h .. y + d) is solid ground, used across narrow lanes so a tall front never hides the lane. */
 export type Building = { id: string; kind: BuildingKind; x: number; y: number; w: number; d: number; h: number; v: number; block?: boolean;
   /** Shop sign text; '' = no sign (district buildings until the user names them). */ label?: string };
@@ -36,17 +36,18 @@ export type PropKind =
   | 'reception-side' | 'sofa-side' | 'eurodesk' | 'euroeditor' | 'cabinet' | 'greysofa' | 'whitetable' | 'longtable' | 'tallchair' | 'pantry' | 'officechair'
   | 'reception' | 'counter' | 'roundtable' | 'cafechair' | 'bar' | 'stool' | 'loungechair'
   | 'pedsignal' | 'robot' | 'pad' | 'papillary'
-  | 'cypress' | 'crates' | 'goods' | 'aboard' | 'streetsign' | 'repairbooth';
+  | 'cypress' | 'crates' | 'goods' | 'aboard' | 'streetsign' | 'repairbooth'
+  | 'storeshelf' | 'fridge' | 'storecounter' | 'rack' | 'mannequin' | 'mirror' | 'tailorcounter';
 export type Prop = { kind: PropKind; x: number; y: number; v: number; solid: Rect | null };
 
 export type NpcSpec = { id: string; name: string; x: number; y: number; facing: Dir; look: Look; route: Point[] | null; speed: number };
 export type Target = { id: string; label: string; verb: string; x: number; y: number; r: number; npc: string | null };
 export type Door = { id: string; zone: Rect; to: RoomId; arrive: Point; facing: Dir; label: string; card?: string | null };
 export type Marking = { kind: 'crossV' | 'crossH' | 'dashV' | 'dashH' | 'centerV' | 'centerH' | 'stop' | 'slow30' | 'stall' | 'edgeH' | 'edgeV'; x: number; y: number; w: number; h: number };
-export type WallDecor = { kind: 'window' | 'whiteboard' | 'clock' | 'elevator' | 'sign' | 'notice' | 'menu' | 'shelf' | 'poster' | 'mailbox' | 'neon'; x: number; w: number; text: string };
+export type WallDecor = { kind: 'window' | 'whiteboard' | 'clock' | 'elevator' | 'sign' | 'notice' | 'menu' | 'shelf' | 'poster' | 'mailbox' | 'neon' | 'jinu' | 'curtain'; x: number; w: number; text: string };
 export type Interior = { reference?: 'lobby' | 'lifthall' | 'floor4' | 'office' | 'lift' | 'lounge'; openings?: Rect[];
   /** Translucent glass wall faces: drawn sorted with people at their base line (y + h), over what stands behind them. */
-  glass?: Rect[]; wall: 'office' | 'lobby' | 'cafe'; decor: WallDecor[]; bottom: 'wall' | 'glass'; door: [number, number]; pendants: Point[]; rugs: Rect[] };
+  glass?: Rect[]; wall: 'office' | 'lobby' | 'cafe' | 'store' | 'boutique'; decor: WallDecor[]; bottom: 'wall' | 'glass'; door: [number, number]; pendants: Point[]; rugs: Rect[] };
 
 /** Road part of a crosswalk. People may enter it only while the pedestrian light for `road` is green. */
 export type Crossing = { id: string; rect: Rect; road: 'NS' | 'EW'; /** Exact crosswalk band when the road is not axis-aligned (district). */ poly?: Point[] };
@@ -130,6 +131,13 @@ function solidFor(kind: PropKind, x: number, y: number, v = 0): Rect | null {
     case 'aboard': return r(10, 3);
     case 'streetsign': return r(3, 3);
     case 'repairbooth': return r(22, 10);
+    case 'storeshelf': return r(64, 10);
+    case 'fridge': return r(48, 10);
+    case 'storecounter': return r(66, 14);
+    case 'rack': return r(50, 6);
+    case 'mannequin': return r(10, 4);
+    case 'mirror': return r(14, 4);
+    case 'tailorcounter': return r(50, 12);
     default: return null;
   }
 }
@@ -283,8 +291,9 @@ function district(): Room {
   const euroDoor = A.euroDoor, euroOut = A.euroOut, jinuFront = A.jinuFront, graniteFront = A.graniteFront;
   // D097: every other building is a tidy block drawn with the street building art; no invented names on signs.
   const ids: Record<string, string> = { cafe: 'b2bc', jinu: 'jinu', granite: 'granite' };
-  const blocks: Building[] = dblocks.filter(b => b.special !== 'europlaza').map(b => ({ id: (b.special && ids[b.special]) || 'b' + b.id,
-    kind: b.kind as BuildingKind, x: b.x, y: b.y, w: b.w, d: b.d, h: b.h, v: b.v, label: '' }));
+  // D103: one small block west of Jin-U becomes the fictional Orbit Tailor clothes shop (game assignment, see exits.tailorId).
+  const blocks: Building[] = dblocks.filter(b => b.special !== 'europlaza').map(b => ({ id: b.id === exits.tailorId ? 'tailor' : (b.special && ids[b.special]) || 'b' + b.id,
+    kind: (b.id === exits.tailorId ? 'tailor' : b.kind) as BuildingKind, x: b.x, y: b.y, w: b.w, d: b.d, h: b.h, v: b.v, label: '' }));
   // Occupancy at 8 px for quick placement tests (blocks + a little margin).
   const occN = Math.ceil(size / 8), occ = new Uint8Array(occN * occN);
   for (const b of [euro, ...blocks]) for (let y = Math.max(0, Math.floor((b.y - 4) / 8)); y <= Math.min(occN - 1, Math.floor((b.y + b.d + 4) / 8)); y++)
@@ -310,7 +319,7 @@ function district(): Room {
     const a = c.poly[0]!, d = c.poly[3]!, u = { x: (d.x - a.x) / 22, y: (d.y - a.y) / 22 };
     for (const e of c.ends) props.push(P('pedsignal', Math.round(e.x + u.x * 17), Math.round(e.y + u.y * 17), c.road === 'NS' ? 0 : 1));
   }
-  props.push(P('crates', jinuFront.x - 18, jinuFront.y + 2), P('goods', jinuFront.x + 2, jinuFront.y + 2), P('aboard', jinuFront.x + 20, jinuFront.y + 2));
+  props.push(P('crates', jinuFront.x - 18, jinuFront.y + 2), P('goods', jinuFront.x + 2, jinuFront.y + 2), P('aboard', jinuFront.x - 36, jinuFront.y + 2));
   props.push(P('repairbooth', graniteFront.x + 26, graniteFront.y + 6));
   props.push(P('cypress', euro.x + 70, euro.y + euro.d + 10), P('cypress', euro.x + 130, euro.y + euro.d + 10, 1));
   const alley = { x: Math.round(euroDoor.x - 70), y: Math.round(euroDoor.y + 64) };
@@ -336,13 +345,15 @@ function district(): Room {
     targets: [
       target('street-notice', '거리 안내판', '보기', euro.x + 44, euro.y + euro.d + 18, 18),
       target('station', '압구정역', '보기', station.x, station.y, 18),
-      target('jinu-store', '진U 편의점', '보기', jinuFront.x, jinuFront.y, 18),
+      target('jinu-store', '진U 편의점', '보기', jinuFront.x - 18, jinuFront.y, 16),
       target('alley-151', '논현로151길', '보기', alley.x, alley.y - 4, 16),
       target('shoe-repair', '구두 수선대', '보기', graniteFront.x + 26, graniteFront.y - 2, 16),
     ],
     doors: [
       { id: 'euro-door', zone: euroDoor, to: 'lobby', arrive: { x: 240, y: 324 }, facing: 'up', label: '유로프라자 로비' },
       { id: 'cafe-door', zone: { x: A.cafeDoor.x - 8, y: A.cafeDoor.y - 6, w: 17, h: 12 }, to: 'cafe', arrive: { x: 240, y: 168 }, facing: 'up', label: '비투비씨 카페' },
+      { id: 'jinu-door', zone: A.jinuDoor, to: 'jinu', arrive: { x: 128, y: 152 }, facing: 'up', label: '진U 편의점' },
+      { id: 'tailor-door', zone: A.tailorDoor, to: 'tailor', arrive: { x: 128, y: 168 }, facing: 'up', label: '오비트 테일러' },
     ],
   });
 }
@@ -363,6 +374,8 @@ export const editorLook: Look = { build: 'f', hair: 'bob', face: 'calm', shape: 
 export const seniorLook: Look = { build: 'f', hair: 'ponytail', face: 'bright', shape: 'oval', skin: 'peach', hairColor: 'chestnut', outfit: 'reporter' };
 export const guardLook: Look = { build: 'm', hair: 'buzz', face: 'smile', shape: 'round', skin: 'tan', hairColor: 'ink', outfit: 'uniform' };
 export const baristaLook: Look = { build: 'f', hair: 'bob', face: 'doe', shape: 'round', skin: 'fair', hairColor: 'brown', outfit: 'apron' };
+export const jinuClerkLook: Look = { build: 'm', hair: 'part', face: 'smile', shape: 'round', skin: 'peach', hairColor: 'brown', outfit: 'apron' };
+export const tailorLook: Look = { build: 'f', hair: 'layered', face: 'calm', shape: 'oval', skin: 'honey', hairColor: 'lavender', outfit: 'coat', glasses: true };
 
 /** D095 (user): three rows. Top: the CEO's desk at the far left, the editor-in-chief alone at the long desk in the middle,
  * the Bodyscope at the far right end. Below: the facing desk islands, now two identical rows. Cabinets along the back. */
@@ -791,7 +804,61 @@ function cafe(): Room {
 }
 
 
-export const rooms: Record<RoomId, Room> = { lounge: lounge(), lifthall: lifthall(), district: null as unknown as Room, lift1: lift(1), lift4: lift(4), floor4: floor4(), outeroffice: outeroffice(), newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), ...heartRooms() };
+/** D103 (user): inside the fictional Jin-U convenience store. Drink coolers on the back wall, two snack gondolas, the till. */
+function jinuStore(): Room {
+  const cols = 16, rows = 11;
+  const { tiles } = interiorGrid(cols, rows, T.OFFICE, [7, 8]);
+  return finish({
+    id: 'jinu', title: '진U · 편의점', cols, rows, tiles, buildings: [], markings: [],
+    props: [
+      P('fridge', 52, 64), P('fridge', 102, 64, 1),
+      P('storeshelf', 70, 106), P('storeshelf', 70, 140, 1),
+      P('storecounter', 196, 112),
+    ],
+    npcs: [npc('jinu-clerk', '진U 점원', 196, 88, 'down', jinuClerkLook)],
+    targets: [
+      target('jinu-clerk', '진U 점원', '계산', 196, 124, 22, 'jinu-clerk'),
+      target('jinu-fridge', '음료 냉장고', '보기', 78, 74, 18),
+      target('jinu-shelf', '과자·생활용품 진열대', '보기', 70, 118, 16),
+    ],
+    doors: [{ id: 'exit', zone: { x: 114, y: 165, w: 28, h: 11 }, to: 'district', arrive: exits.jinuOut, facing: 'down', label: '논현로151길' }],
+    interior: {
+      wall: 'store', bottom: 'glass', door: [112, 144], pendants: [], rugs: [],
+      decor: [{ kind: 'jinu', x: 140, w: 44, text: '' }, { kind: 'notice', x: 200, w: 32, text: '' }],
+    },
+    spawn: { x: 128, y: 152 }, spawnFacing: 'up',
+  });
+}
+
+/** D103 (user): the fictional clothes shop ‘Orbit Tailor’ (design 11, section 4) near Euro Plaza: racks, mannequins, mirror, till. */
+function tailorShop(): Room {
+  const cols = 16, rows = 12;
+  const { tiles } = interiorGrid(cols, rows, T.WOOD, [7, 8]);
+  return finish({
+    id: 'tailor', title: '오비트 테일러 · 옷가게', cols, rows, tiles, buildings: [], markings: [],
+    props: [
+      P('mannequin', 116, 72), P('mannequin', 140, 72, 1), P('mannequin', 164, 72, 2),
+      P('tailorcounter', 214, 96),
+      P('rack', 54, 100), P('rack', 54, 146, 1),
+      P('mirror', 226, 152), P('plant', 90, 172),
+    ],
+    npcs: [npc('tailor', '오비트 테일러 주인', 214, 72, 'down', tailorLook)],
+    targets: [
+      target('tailor', '오비트 테일러 주인', '옷 고르기', 214, 110, 22, 'tailor'),
+      target('tailor-mirror', '전신 거울', '외형 꾸미기', 226, 164, 18),
+      target('tailor-rack', '옷걸이', '보기', 54, 122, 18),
+      target('tailor-mannequin', '마네킹', '보기', 140, 84, 16),
+    ],
+    doors: [{ id: 'exit', zone: { x: 114, y: 181, w: 28, h: 11 }, to: 'district', arrive: exits.tailorOut, facing: 'down', label: '유로프라자 쪽 골목' }],
+    interior: {
+      wall: 'boutique', bottom: 'glass', door: [112, 144], pendants: [{ x: 96, y: 30 }, { x: 176, y: 30 }], rugs: [{ x: 96, y: 112, w: 80, h: 40 }],
+      decor: [{ kind: 'curtain', x: 22, w: 30, text: '' }, { kind: 'sign', x: 92, w: 96, text: 'ORBIT TAILOR' }, { kind: 'poster', x: 204, w: 16, text: '' }],
+    },
+    spawn: { x: 128, y: 168 }, spawnFacing: 'up',
+  });
+}
+
+export const rooms: Record<RoomId, Room> = { lounge: lounge(), lifthall: lifthall(), district: null as unknown as Room, lift1: lift(1), lift4: lift(4), floor4: floor4(), outeroffice: outeroffice(), newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), jinu: jinuStore(), tailor: tailorShop(), ...heartRooms() };
 // The district needs the separately loaded map chunk: build it on first use (after loadDistrict()).
 let districtRoom: Room | null = null;
 Object.defineProperty(rooms, 'district', { enumerable: true, get: () => {

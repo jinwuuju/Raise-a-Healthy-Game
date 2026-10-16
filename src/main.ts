@@ -5,8 +5,8 @@ import { heartText, lookText, objective, q1Text, talk, type Line } from './appli
 import { discovered, discoveries, discoveryIds } from './domain/heart';
 import { outfits, presetNames, type Look } from './domain/appearance';
 import { cafeMenu, canOrder } from './domain/cafe';
+import { canBuyItem, canBuyOutfit, jinuItems, tailorItems } from './domain/shop';
 import { Q1, Q1_OBSERVATIONS, Q1_ROOM, canEnterHeart, levelOf, obsKey, q1CanOffer } from './domain/quest';
-import { DAY_FROM_HOUR, DUSK_FROM_HOUR, NIGHT_FROM_HOUR } from './domain/clock';
 import { lunchHudText } from './domain/lunch';
 import { SaveStore } from './infrastructure/save';
 import { World } from './game/world';
@@ -149,6 +149,8 @@ window.addEventListener('keydown', e => {
   else if ((k === 'e' || k === ' ' || k === 'enter') && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); if (world?.near && !busy()) interact(world.near); }
   else if (k === 'escape') { e.preventDefault(); openMenu(); }
   else if (k === 'j' || k === 'n') openNotebook();
+  else if (k === '+' || k === '=') { e.preventDefault(); setZoomStep(zoomStep + 1); }
+  else if (k === '-' || k === '_') { e.preventDefault(); setZoomStep(zoomStep - 1); }
   else if (k === 'm' && world && (world.roomId === 'district' || isHeartRoom(world.roomId))) openMap();
 });
 window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
@@ -216,6 +218,33 @@ if (touchMode) {
   canvas.addEventListener('touchend', e => { const t = findTouch(e.changedTouches); if (t) { e.preventDefault(); finishPointer(t.clientX, t.clientY, true); } }, { passive: false });
   canvas.addEventListener('touchcancel', e => { const t = findTouch(e.changedTouches); if (t) finishPointer(t.clientX, t.clientY, false); });
 }
+// Two fingers on the world: pinch to zoom (D103). The first finger's tap or steering is cancelled so nothing walks.
+let pinch: { dist: number; step: number } | null = null;
+const spread = (list: TouchList) => Math.hypot(list[0]!.clientX - list[1]!.clientX, list[0]!.clientY - list[1]!.clientY);
+canvas.addEventListener('touchstart', e => {
+  if (e.targetTouches.length < 2 || dialog.open || sheetOpen()) return;
+  e.preventDefault();
+  pointer.id = -1; pointer.steering = false; world?.stop();
+  pinch = { dist: Math.max(1, spread(e.targetTouches)), step: zoomStep };
+}, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  if (!pinch || e.targetTouches.length < 2) return;
+  e.preventDefault();
+  setZoomStep(pinch.step + Math.round(Math.log(spread(e.targetTouches) / pinch.dist) / Math.log(1.3)));
+}, { passive: false });
+const endPinch = (e: TouchEvent) => { if (pinch && e.targetTouches.length < 2) pinch = null; };
+canvas.addEventListener('touchend', endPinch);
+canvas.addEventListener('touchcancel', endPinch);
+// iOS Safari ignores user-scalable=no: keep its page zoom gesture from fighting the game zoom.
+for (const type of ['gesturestart', 'gesturechange']) document.addEventListener(type, e => e.preventDefault(), { passive: false });
+let wheelSum = 0;
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (busy()) return;
+  wheelSum += e.deltaY * (e.deltaMode === 1 ? 30 : 1);
+  const need = e.ctrlKey ? 24 : 80; // trackpad pinch arrives as ctrl+wheel with small deltas
+  if (Math.abs(wheelSum) >= need) { setZoomStep(zoomStep + (wheelSum < 0 ? 1 : -1)); wheelSum = 0; }
+}, { passive: false });
 canvas.addEventListener('pointerup', e => endPointer(e, true));
 canvas.addEventListener('pointercancel', e => endPointer(e, false));
 canvas.addEventListener('contextmenu', e => e.preventDefault());
@@ -231,11 +260,23 @@ function inputState() {
 }
 
 // ---------- Rendering ----------
-let zoom = 4;
+// D103 (user): the view can be zoomed in and out (two-finger pinch on touch screens, wheel or +/- on PC). The step is kept
+// per device (not in the save) and applied on top of the size-based zoom, in whole steps so pixels stay crisp.
+const ZOOM_KEY = 'medical-quest.view.zoom', ZOOM_STEPS = 4;
+let zoom = 4, baseZoom = 4;
+let zoomStep = (() => { try { const v = Number(localStorage.getItem(ZOOM_KEY) ?? 0); return Number.isInteger(v) && Math.abs(v) <= ZOOM_STEPS ? v : 0; } catch { return 0; } })();
+const applyZoom = () => { zoom = Math.max(2, Math.min(14, baseZoom + zoomStep)); };
+function setZoomStep(next: number): void {
+  const step = Math.max(-ZOOM_STEPS, Math.min(ZOOM_STEPS, Math.round(next)));
+  if (step === zoomStep) return;
+  zoomStep = step; applyZoom();
+  try { localStorage.setItem(ZOOM_KEY, String(step)); } catch { /* the zoom still works for this visit */ }
+}
 function resize() {
   const r = dpr();
   canvas.width = Math.round(window.innerWidth * r); canvas.height = Math.round(window.innerHeight * r);
-  zoom = Math.max(2, Math.min(12, Math.round(Math.min(canvas.width, canvas.height) / 240)));
+  baseZoom = Math.max(2, Math.min(12, Math.round(Math.min(canvas.width, canvas.height) / 240)));
+  applyZoom();
 }
 window.addEventListener('resize', resize); resize();
 
@@ -444,6 +485,8 @@ async function interact(t: Target) {
         if(choice==='accept'){game.acceptQ4();hud.toast('Q004 · 두 순환 취재를 맡았어요');}
       }
       if (t.npc === 'barista') await cafeOrder();
+      if (t.npc === 'jinu-clerk') await jinuCounter();
+      if (t.npc === 'tailor') await tailorFitting();
     } else if (t.id === 'my-desk' && game.has(Q1.briefed)) {
       pauseInput(); if (game.state.q006.accepted) showQ6(); else if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
@@ -467,6 +510,10 @@ async function interact(t: Target) {
       const go = await dialog.show([{ who: '귀환 장치', text: q1Text.returnPad, npc: null }],
         [{ id: 'go', label: q1Text.returnChoices.go, sub: q1Text.returnChoices.goSub, disabled: false }, { id: 'stay', label: q1Text.returnChoices.stay, sub: q1Text.returnChoices.staySub, disabled: false }]);
       if (go === 'go') travel({ to: 'newsroom', arrive: { x: 464, y: 152 }, facing: 'down', mode: 'scope-out' });
+    } else if (t.id === 'tailor-mirror') {
+      const go = await dialog.show([{ who: '전신 거울', text: '거울 앞에 섰다. 옷장에 있는 옷이나 머리 모양을 바꿔 볼까?', npc: null }],
+        [{ id: 'edit', label: '외형 꾸미기', sub: '옷장 ' + game.state.owned.length + '벌 · 머리·얼굴도 바꿀 수 있어요', disabled: false }]);
+      if (go === 'edit') window.setTimeout(() => editLook(), 0);
     } else {
       const text = lookText[t.id] ?? '';
       await say([{ who: t.label, text, npc: null }]);
@@ -509,6 +556,52 @@ async function cafeOrder() {
     await say([{ who: '바리스타', text: item.title + ' 나왔습니다! 따뜻할 때 드세요.', npc: 'barista' }]);
     hud.toast(item.title + ' 받음 · ' + (item.price ? item.price + 'G 사용' : '무료'));
   } catch (e) { await say([{ who: '바리스타', text: e instanceof Error ? e.message : '주문을 처리하지 못했어요.', npc: 'barista' }]); }
+}
+
+/** D103: the Jin-U till. One purchase per conversation; gold, bag and ledger change together in the application. */
+async function jinuCounter() {
+  const s = game.state;
+  const choice = await dialog.show([{ who: '진U 점원', text: '무엇을 계산해 드릴까요? (보유 ' + s.gold + 'G)', npc: 'jinu-clerk' }],
+    jinuItems.map(item => {
+      const why = canBuyItem(s, item), have = s.shop.bag[item.id] ?? 0;
+      return { id: item.id, label: item.title, sub: (why ?? item.price + 'G') + (have ? ' · 가방에 ' + have + '개' : ''), disabled: why !== null };
+    }));
+  if (!choice) return;
+  const item = jinuItems.find(i => i.id === choice)!;
+  try {
+    game.buyItem(choice);
+    hud.toast(item.title + ' 샀어요 · ' + item.price + 'G 사용 · 가방에 ' + (game.state.shop.bag[item.id] ?? 0) + '개');
+    await say([{ who: '진U 점원', text: item.line, npc: 'jinu-clerk' }]);
+  } catch (e) { await say([{ who: '진U 점원', text: e instanceof Error ? e.message : '계산하지 못했어요.', npc: 'jinu-clerk' }]); }
+}
+
+/** D103: Orbit Tailor. The chosen outfit is tried on the reporter in the world first; leaving the fitting buys nothing. */
+async function tailorFitting() {
+  const w = world, s = game.state;
+  if (!w) return;
+  const pick = await dialog.show([{ who: '오비트 테일러 주인', text: '어떤 옷을 입어 볼까요? (보유 ' + s.gold + 'G)', npc: 'tailor' }],
+    tailorItems.map(item => {
+      const why = canBuyOutfit(s, item);
+      const sub = why === '보유 중' ? (s.avatar.look.outfit === item.id ? '보유 중 · 지금 입고 있어요' : '보유 중 · 갈아입기') : why ? item.price + 'G · ' + why : item.price + 'G · 입어 보기';
+      return { id: item.id, label: outfits[item.id], sub, disabled: why === '골드 부족' || s.avatar.look.outfit === item.id };
+    }));
+  if (!pick) return;
+  const item = tailorItems.find(i => i.id === pick)!, owned = s.owned.includes(item.id), name = outfits[item.id];
+  const before = w.player.look;
+  w.player.look = { ...s.avatar.look, outfit: item.id };
+  let choice: string | null = null;
+  try {
+    choice = await dialog.show([{ who: '오비트 테일러 주인', text: item.line + (owned ? ' 이미 옷장에 있는 옷이에요.' : ' 가격은 ' + item.price + 'G, 지금 ' + s.gold + 'G 있어요.'), npc: 'tailor' }],
+      owned ? [{ id: 'wear', label: '이 옷으로 갈아입기', sub: '옷장에 있는 옷', disabled: false }]
+        : [{ id: 'buy-wear', label: '사서 바로 입기', sub: item.price + 'G', disabled: false }, { id: 'buy', label: '사서 옷장에 넣기', sub: item.price + 'G · 지금 옷은 그대로', disabled: false }]);
+  } finally { w.player.look = before; }
+  if (!choice) { hud.toast('입어 보기만 했어요. 산 옷은 없어요.'); return; }
+  try {
+    game.buyOutfit(item.id, choice !== 'buy');
+    w.player.look = game.state.avatar.look;
+    hud.toast(owned ? name + '(으)로 갈아입었어요' : name + ' 샀어요 · ' + item.price + 'G 사용' + (choice === 'buy' ? ' · 옷장에 넣었어요' : ''));
+    if (!owned) await say([{ who: '오비트 테일러 주인', text: choice === 'buy' ? '옷장에 넣어 둘게요. 기자 정보의 외형 꾸미기나 이 거울에서 언제든 입을 수 있어요.' : '정말 잘 어울려요! 즐거운 취재 되세요.', npc: 'tailor' }]);
+  } catch (e) { await say([{ who: '오비트 테일러 주인', text: e instanceof Error ? e.message : '계산하지 못했어요.', npc: 'tailor' }]); }
 }
 
 // ---------- Sheets ----------
@@ -578,7 +671,7 @@ function openMap() {
     const lab = (t: string, x: number, y: number) => { g.font = '700 30px system-ui, sans-serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = 'rgba(20,16,30,0.9)'; g.strokeText(t, x, y); g.fillStyle = '#fff6dc'; g.fillText(t, x, y); };
     const S = 1 / 8, A = anchors, cafe = specialBlock('cafe')!, jinu = specialBlock('jinu')!;
     lab('유로프라자', (A.euro.x + A.euro.w / 2) * S, (A.euro.y - 12) * S); lab('비투비씨', (cafe.x + cafe.w / 2) * S, (cafe.y - cafe.h - 6) * S);
-    lab('진U', (jinu.x + jinu.w / 2) * S, (jinu.y + jinu.d + 30) * S); lab('을지병원 사거리', crossroads.x * S, (crossroads.y + 90) * S);
+    lab('진U', (jinu.x + jinu.w / 2) * S, (jinu.y + jinu.d + 30) * S); lab('오비트 테일러', (A.tailorDoor.x + 7) * S - 110, (A.tailorDoor.y - 60) * S); lab('을지병원 사거리', crossroads.x * S, (crossroads.y + 90) * S);
     for (const st of dstations) lab(st.name + '역', st.x * S, st.y * S - 10);
     for (const l of dlabels) if (l.text === '논현로' || l.text === '도산대로' || l.text === '가로수길') lab(l.text, Math.max(240, Math.min(base.width * 8 - 240, l.x)) * S, Math.max(120, Math.min(base.height * 8 - 120, l.y)) * S);
     const p = world!.player; g.fillStyle = '#ff5a6e'; g.beginPath(); g.arc(p.x * S, p.y * S, 12, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
@@ -602,7 +695,8 @@ function openMenu() {
     const help = el('div'); help.append(el('h3', '', '조작 안내'));
     help.append(el('p', '', 'PC: 방향키/WASD 이동 · E/Space 대화·살펴보기 · J 수첩 · M 지도 · Esc 메뉴'));
     help.append(el('p', '', '마우스·터치: 화면을 누르면 그곳으로 걷고, 사람이나 물건을 누르면 다가가서 말을 걸어요. 꾹 누른 채 움직이면 손가락 쪽으로 계속 걸어요. 대화창·창은 아무 곳이나 누르면 넘어가거나 닫혀요.'));
-    help.append(el('p', '', `시간: 게임은 기기 시계의 한국 시간(서울)을 따라가요. 거리는 오전 ${DAY_FROM_HOUR}시부터 낮, 오후 ${DUSK_FROM_HOUR - 12}시부터 노을, 오후 ${NIGHT_FROM_HOUR - 12}시부터 밤이에요. 따로 시간대를 고르는 설정은 없어요.`));
+    help.append(el('p', '', '시간: 점심 주문 마감 같은 하루 일정은 기기 시계의 한국 시간(서울)을 따라가요. 거리는 언제나 낮이에요. 따로 시간대를 고르는 설정은 없어요.'));
+    help.append(el('p', '', '화면 확대·축소: 휴대폰은 두 손가락으로 벌리거나 모으고, PC는 마우스 휠이나 +/- 키를 써요. 고른 크기는 이 기기에 기억돼요.'));
     help.append(el('p', '', '큰길 횡단보도는 보행 신호가 초록불일 때만 건널 수 있어요. 깜빡이기 시작하면 새로 건너지 않아요.'));
     help.append(el('p', '', '휴대폰·태블릿: 왼쪽 아래 조작볼로 걷고 오른쪽 확인 버튼으로 가까운 사람·구조를 살펴봐요. 확인은 대화도 넘겨요. 선택지는 직접 눌러 주세요.'));
     help.append(el('p', '', '심장 속: 판막은 열려 있을 때, 피가 흐르는 방향으로만 지나갈 수 있어요. 오른쪽 위 심장 주기는 접고 펼칠 수 있어요. 작은 지도나 펼친 주기의 심장 길 안내를 누르면 이 방·심장·인체 지도가 열려요.'));

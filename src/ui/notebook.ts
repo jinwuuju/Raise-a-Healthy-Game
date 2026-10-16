@@ -1,4 +1,6 @@
 import type { Game } from '../application/game';
+import { outfits } from '../domain/appearance';
+import { jinuItems, tailorItems } from '../domain/shop';
 import { notebookRecords } from '../application/notebook';
 import { heartText, inspectLabels, lookText, objective, q1Text } from '../application/story';
 import { discoveries, discoveryIds, roomProgress } from '../domain/heart';
@@ -188,8 +190,15 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
       body.append(el('p', 'muted', q6Text.disclaimer), el('p', 'muted', '정상 심장의 조건 비교예요 · 통로 조건 비교는 다음 취재(준비 중)'), button('row notebook-link', q6Ready(s) ? '취재 파일의 근거 확인하기' : '자료 취재 위치 확인하기', () => choose(1)));
     });
     const life = panels[4]!; life.append(el('h3', '', '동네·생활 기록'));
-    const placeNames = { office: '편집국', neighborhood: '동네와 로비', cafe: '비투비씨 카페' };
+    const placeNames = { office: '편집국', neighborhood: '동네와 로비', cafe: '비투비씨 카페', shops: '진U 편의점·오비트 테일러' };
     for (const [id, label] of Object.entries(placeNames) as [keyof typeof placeNames, string][]) fold(life, 'place-' + id, label + ' · 장소 기록 ' + records.local[id].length + '건', body => {
+      if (id === 'shops') {
+        const bag = jinuItems.filter(i => s.shop.bag[i.id]).map(i => i.title + ' ' + s.shop.bag[i.id] + '개');
+        const bought = tailorItems.filter(i => s.ledger.includes('shop.tailor.' + i.id)).map(i => outfits[i.id]);
+        body.append(el('p', '', '진U 가방 · ' + (bag.length ? bag.join(', ') : '아직 산 물건이 없어요') + ' (계산 ' + s.shop.jinuCount + '회)'));
+        body.append(el('p', '', '오비트 테일러에서 산 옷 · ' + (bought.length ? bought.join(', ') : '아직 없어요') + ' · 옷장 ' + s.owned.length + '벌'));
+        body.append(el('p', 'muted', '산 물건과 옷은 기록과 모습만 바꿔요. 경험치나 취재 실력은 바뀌지 않아요.'));
+      }
       if (id === 'cafe') body.append(el('p', '', '첫 방문 커피 ' + (s.cafe.welcomeUsed ? '받음' : '아직') + ' · 주문 ' + s.cafe.orderCount + '회 · 창가 쉬기 ' + (s.cafe.restedAt ? '기록 있음' : '아직')));
       for (const key of records.local[id]) fold(body, 'place-note-' + key, inspectLabels[key] ?? '장소 기록', detail => detail.append(el('p', '', lookText[key] ?? '살펴본 장소입니다.')));
       if (!records.local[id].length) body.append(el('p', 'muted', '아직 살펴본 장소 기록이 없어요.'));

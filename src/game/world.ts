@@ -8,7 +8,6 @@ import { propSprite } from '../art/props';
 import { drawGlassFace } from '../art/euro-interior';
 import { districtMinimap, drawDistrictGround } from '../art/district';
 import type { Look } from '../domain/appearance';
-import { timeOfDayAt, type TimeOfDay } from '../domain/clock';
 import { passable, realTime, secondsUntilOpen, soundBetween } from '../domain/cardiac';
 import { canStand, crossingAt, doorAt, footRect, moveWithCollision, nearestTarget } from '../world/collision';
 import type { Valve } from '../world/organ-types';
@@ -59,6 +58,9 @@ function sceneryIn<K extends 'buildings' | 'props'>(room: Room, kind: K, x: numb
 /** Ginkgo trees of a room (falling leaves), found once per room. */
 const ginkgoTrees = new WeakMap<Room, Prop[]>();
 
+const distToRect = (q: Point, r: { x: number; y: number; w: number; h: number }) =>
+  Math.hypot(Math.max(r.x - q.x, 0, q.x - (r.x + r.w)), Math.max(r.y - q.y, 0, q.y - (r.y + r.h)));
+
 const LABEL_FONT = (px: number) => `700 ${px}px 'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif`;
 
 export class World {
@@ -75,8 +77,6 @@ export class World {
   /** Touch screens say ‘누르기’, keyboards say ‘E’. */
   touchHint = false;
   locked = false;
-  /** Device clock (epoch ms). Street lighting reads it in Asia/Seoul; there is no in-game time setting (D068). */
-  now: () => number = () => Date.now();
   questNpc: string | null = null;
   /** Non-person targets that carry a quest marker (e.g. the Bodyscope, observation points). */
   questTargets: string[] = [];
@@ -106,7 +106,6 @@ export class World {
   private light = makeCanvas(2, 2);
   private cam = { x: 0, y: 0, ready: false };
   private leaves: { x: number; y: number; vx: number; vy: number; c: string; life: number }[] = [];
-  private todCache: { second: number; tod: TimeOfDay } = { second: NaN, tod: 'day' };
   view = { x: 0, y: 0, w: 1, h: 1, zoom: 1 };
 
   constructor(roomId: RoomId, x: number, y: number, facing: Dir, look: Look, name: string) {
@@ -246,7 +245,11 @@ export class World {
     if (this.waitingAt && this.traffic.walk(this.waitingAt.road) === 'walk') this.waitingAt = null;
 
     const door = doorAt(this.roomId, p);
-    if (door && this.doorLatch !== door.id && !locked) { this.doorLatch = door.id; this.stop(); this.onDoor(door); return; }
+    // D103: a tapped route that only passes a door on its way somewhere else (the shop doors line the lanes) does not
+    // enter it; walking into a door by hand or tapping the door itself still does.
+    const end = this.path[this.path.length - 1];
+    const passing = !!door && !manual && !!end && distToRect(end, door.zone) > 24;
+    if (door && this.doorLatch !== door.id && !locked && !passing) { this.doorLatch = door.id; this.stop(); this.onDoor(door); return; }
     if (!door) this.doorLatch = null;
 
     const near = locked ? null : nearestTarget(this.roomId, p) ?? null;
@@ -337,17 +340,8 @@ export class World {
     this.leaves = this.leaves.filter(l => l.life > 0);
   }
 
-  /** Outdoor lighting from the real Seoul clock, whatever the device time zone is. */
-  get timeOfDay(): TimeOfDay {
-    let ms: number;
-    try { ms = this.now(); } catch { return 'day'; }
-    const second = Math.floor(ms / 1000);
-    if (second === this.todCache.second) return this.todCache.tod;
-    let tod: TimeOfDay;
-    try { tod = timeOfDayAt(ms); } catch { tod = 'day'; }
-    this.todCache = { second, tod };
-    return tod;
-  }
+  /** The world is always in daylight (D103, user): no dusk or night lighting, whatever the clock says. */
+  get timeOfDay(): 'day' { return 'day'; }
 
   ground(id: RoomId): HTMLCanvasElement {
     let c = this.grounds.get(id);
@@ -382,7 +376,6 @@ export class World {
     if (this.heart) this.heart.drawFloor(g, cx, cy, vw, vh, this.real);
     else if (this.roomId === 'district') drawDistrictGround(g, cx, cy, vw, vh);
     else g.drawImage(this.ground(this.roomId), -cx, -cy);
-    const tod = room.interior ? 'day' : this.timeOfDay;
 
     if (this.marker) {
       const age = this.time - this.marker.t, r = 3 + (age * 10) % 5;
@@ -395,7 +388,7 @@ export class World {
     const nearBuildings = sceneryIn(room, 'buildings', cx - 8, cy - 8, vw + 16, vh + 16), nearProps = sceneryIn(room, 'props', cx - 8, cy - 8, vw + 16, vh + 16);
     for (const b of nearBuildings) {
       if (!inView(b.x, b.y - b.h, b.w, b.d + b.h)) continue;
-      items.push({ y: b.y + b.d, x: b.x, occluder: { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, draw: () => this.drawBuilding(g, b, cx, cy, tod === 'night') });
+      items.push({ y: b.y + b.d, x: b.x, occluder: { x: b.x, y: b.y - b.h, w: b.w, h: b.d + b.h }, draw: () => this.drawBuilding(g, b, cx, cy) });
     }
     const frame4 = Math.floor(this.time * 6) % 4;
     for (const pr of nearProps) {
@@ -430,7 +423,6 @@ export class World {
 
     for (const l of this.leaves) { g.fillStyle = l.c; g.fillRect(Math.round(l.x - cx), Math.round(l.y - cy), 2, 1); }
     if (room.interior) for (const pd of room.interior.pendants) this.drawPendant(g, pd.x - cx, pd.y - cy);
-    if (!room.interior && tod !== 'day') this.applyLight(g, vw, vh, cx, cy, tod);
     if (this.heart) this.heart.drawOverlay(g, cx, cy, vw, vh, this.real);
 
     out.imageSmoothingEnabled = false;
@@ -450,10 +442,10 @@ export class World {
     g.drawImage(characterFrame(a.look, a.facing, frame), x - AX, y - AY);
   }
 
-  private drawBuilding(g: CanvasRenderingContext2D, b: Building, cx: number, cy: number, night: boolean): void {
+  private drawBuilding(g: CanvasRenderingContext2D, b: Building, cx: number, cy: number): void {
     const art = buildingArt(b);
     const ox = b.x - cx, oy = b.y - b.h - cy;
-    g.drawImage(night ? art.night : art.day, ox, oy);
+    g.drawImage(art.day, ox, oy);
     const bb = art.billboard;
     if (!bb) return;
     const x0 = ox + bb.x, y0 = oy + bb.y, scene = Math.floor(this.time / 4) % 3, t = this.time;
@@ -498,44 +490,6 @@ export class World {
     g.fillStyle = '#2d2a33'; g.fillRect(Math.round(x - 3), Math.round(y - 5), 7, 3);
     g.fillStyle = '#ffe3a0'; g.fillRect(Math.round(x - 2), Math.round(y - 2), 5, 1);
     g.fillStyle = 'rgba(255,230,160,0.12)'; g.fillRect(Math.round(x - 6), Math.round(y - 1), 13, 3);
-  }
-
-  private applyLight(g: CanvasRenderingContext2D, vw: number, vh: number, cx: number, cy: number, tod: 'dusk' | 'night'): void {
-    const lm = this.light;
-    if (lm.c.width !== vw || lm.c.height !== vh) { lm.c.width = vw; lm.c.height = vh; }
-    const l = lm.g;
-    l.globalCompositeOperation = 'source-over';
-    l.fillStyle = tod === 'night' ? '#7682b6' : '#f2c9ad'; l.fillRect(0, 0, vw, vh);
-    l.globalCompositeOperation = 'lighter';
-    const strength = tod === 'night' ? 1 : 0.35;
-    const glow = (x: number, y: number, r: number, a: number) => {
-      if (x + r < 0 || x - r > vw || y + r < 0 || y - r > vh) return; // would paint nothing on the light map
-      const grd = l.createRadialGradient(x, y, 0, x, y, r);
-      grd.addColorStop(0, `rgba(255,214,150,${a * strength})`); grd.addColorStop(1, 'rgba(255,214,150,0)');
-      l.fillStyle = grd; l.fillRect(x - r, y - r, r * 2, r * 2);
-    };
-    for (const pr of this.room.props) {
-      if (pr.kind === 'lamp') glow(pr.x - cx, pr.y - 36 - cy, 44, 0.62);
-      if (pr.kind === 'vending') glow(pr.x - cx, pr.y - 12 - cy, 18, 0.5);
-    }
-    if (tod === 'night') {
-      for (const b of sceneryIn(this.room, 'buildings', cx - 8, cy - 8, vw + 16, vh + 16)) {
-        const ox = b.x - cx, oy = b.y - b.h - cy;
-        if (ox > vw || ox + b.w < 0 || oy > vh || oy + b.d + b.h < 0) continue; // check first: art is built lazily (4,800 buildings in the district)
-        const art = buildingArt(b);
-        l.fillStyle = 'rgba(255,232,180,0.9)';
-        for (const r of art.lights) l.fillRect(ox + r.x, oy + r.y, r.w, r.h);
-        if (art.billboard) { l.fillStyle = 'rgba(255,255,255,0.95)'; l.fillRect(ox + art.billboard.x, oy + art.billboard.y, art.billboard.w, art.billboard.h); glow(ox + art.billboard.x + 13, oy + art.billboard.y + 14, 30, 0.35); }
-        glow(ox + b.w / 2, oy + b.d + b.h - 4, b.w * 0.45, 0.25);
-      }
-      for (const car of this.traffic.cars) {
-        const a = this.traffic.anchor(car), d = car.dir;
-        const hx = a.x - cx + (d === 'right' ? 18 : d === 'left' ? -18 : 0), hy = a.y - cy + (d === 'down' ? 8 : d === 'up' ? -car.len - 4 : -6);
-        glow(hx, hy, 18, 0.6);
-      }
-      glow(this.player.x - cx, this.player.y - 12 - cy, 26, 0.32);
-    }
-    g.globalCompositeOperation = 'multiply'; g.drawImage(lm.c, 0, 0); g.globalCompositeOperation = 'source-over';
   }
 
   private drawLabels(out: CanvasRenderingContext2D, cx: number, cy: number, zoom: number, dpr: number): void {

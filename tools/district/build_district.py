@@ -25,6 +25,9 @@ RADIUS = 1000.0
 PLACES = {'europlaza': (1.6, 2.5), 'cafe': (-70.7, 33.0)}
 # Facing Euro Plaza across the lane, either side of Dosan-daero 25-gil (user photos, D088): Jin-U brick block west, granite east.
 FIXED = {'jinu': 1553709254, 'granite': 899216069}
+# D103: the fictional Orbit Tailor clothes shop is given to this small block west of Jin-U (game assignment only:
+# the building ledger is unchanged and the shop is not a real business).
+TAILOR = 1553709277
 EUROPLAZA_OSM = 899216070
 
 def m2px(x, y): return [round((x + HALF) * PX, 1), round((HALF - y) * PX, 1)]
@@ -199,8 +202,12 @@ def write_game(data):
          'areas': [[AC.index(a['cls'])] + flat(a['pts']) for a in data['areas']]}
     json.dump(g, open(GAME, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     ep = next(b for b in data['blocks'] if b['special'] == 'europlaza'); cafe = next(b for b in data['blocks'] if b['special'] == 'cafe')
+    jinu = next(b for b in data['blocks'] if b['special'] == 'jinu'); tailor = next(b for b in data['blocks'] if b['id'] == TAILOR)
     exits = {'size': data['sizePx'], 'euroOut': {'x': ep['x'] + 100, 'y': ep['y'] + ep['d'] + 14},
-             'cafeOut': {'x': cafe['x'] + round(cafe['w'] / 2), 'y': cafe['y'] + cafe['d'] + 16}, 'cafeFacing': 'down'}
+             'cafeOut': {'x': cafe['x'] + round(cafe['w'] / 2), 'y': cafe['y'] + cafe['d'] + 16}, 'cafeFacing': 'down',
+             # D103: shop doors on the south faces (Jin-U's door art sits 55-69 px from its west edge; the tailor's is centred).
+             'jinuOut': {'x': jinu['x'] + 62, 'y': jinu['y'] + jinu['d'] + 16},
+             'tailorId': TAILOR, 'tailorOut': {'x': tailor['x'] + round(tailor['w'] / 2), 'y': tailor['y'] + tailor['d'] + 16}}
     json.dump(exits, open(os.path.join(ROOT, 'src/world/district-exits.generated.json'), 'w', encoding='utf-8'))
     print('game file', os.path.getsize(GAME), 'bytes; fits', fits)
 

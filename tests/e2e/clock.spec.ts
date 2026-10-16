@@ -41,7 +41,7 @@ test('menu has no time-of-day setting and explains the Seoul clock', async ({ pa
   await expect(sheet.getByRole('heading', { name: /시간대/ })).toHaveCount(0);
   for (const name of ['낮', '노을', '밤', '실제 시간']) await expect(sheet.getByRole('button', { name, exact: true })).toHaveCount(0);
   await expect(sheet).toContainText('기기 시계의 한국 시간(서울)');
-  await expect(sheet).toContainText('오전 7시부터 낮, 오후 5시부터 노을, 오후 7시부터 밤');
+  await expect(sheet).toContainText('거리는 언제나 낮이에요');
   expect(await page.evaluate(k => 'settings' in JSON.parse(localStorage.getItem(k)!), CURRENT)).toBe(false);
 });
 
@@ -76,7 +76,7 @@ test('old save with settings.time loads with progress, and the first new save dr
 test.describe('device in another time zone', () => {
   test.use({ timezoneId: 'America/Los_Angeles' });
 
-  test('street lighting follows Seoul time, not the device time zone', async ({ page }) => {
+  test('the street stays in daylight at every Seoul hour (D103), whatever the device time zone', async ({ page }) => {
     test.setTimeout(60000);
     const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
     await page.clock.setFixedTime(new Date('2026-10-14T03:00:00Z')); // Seoul 12:00 · Los Angeles 20:00 (13 Oct)
@@ -87,14 +87,14 @@ test.describe('device in another time zone', () => {
     const day = await brightness(page);
 
     await page.clock.setFixedTime(new Date('2026-10-14T08:30:00Z')); // Seoul 17:30 · Los Angeles 01:30
-    expect((await hook(page))?.tod).toBe('dusk');
+    expect((await hook(page))?.tod).toBe('day');
 
     await page.clock.setFixedTime(new Date('2026-10-14T12:00:00Z')); // Seoul 21:00 · Los Angeles 05:00
     expect(await page.evaluate(() => new Date().getHours())).toBe(5);
-    expect((await hook(page))?.tod).toBe('night');
+    expect((await hook(page))?.tod).toBe('day');
     await page.waitForTimeout(300);
     const night = await brightness(page);
-    expect(night).toBeLessThan(day - 5);
+    expect(Math.abs(night - day)).toBeLessThan(6); // no darkening (cars and walkers may move a little)
 
     // Walking still works at night and nothing in the save records a time setting.
     const x0 = (await hook(page))!.x;

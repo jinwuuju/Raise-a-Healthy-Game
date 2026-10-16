@@ -320,6 +320,63 @@ const builders: Record<string, (v: number, frame: number) => Sprite> = {
     rect(g, 80, 1, 6, 6, '#c97b4c'); ellipse(g, 83, 0, 4, 2, '#6aa84c');
   }, INK),
   stool: () => sprite(10, 15, 5, 14, g => { ellipse(g, 5, 4, 4, 2, '#c8463a'); rect(g, 2, 4, 6, 1, '#9a3329'); rect(g, 4, 6, 2, 7, '#3a3e48'); rect(g, 2, 13, 6, 1, '#3a3e48'); }, INK),
+  // ---- D103 shops: Jin-U convenience store (teal and coral) and the Orbit Tailor clothes shop (berry and cream). ----
+  storeshelf: v => sprite(68, 30, 34, 29, g => {
+    const r = rng(41 + v * 7), cols = ['#e85d5d', '#f2c14e', '#5aa0e0', '#7cc36a', '#f4f4f4', '#e88aa8', '#f08a3a'];
+    rect(g, 1, 2, 66, 26, '#d7dcde'); rect(g, 1, 2, 66, 1, '#f2f5f6'); rect(g, 1, 27, 66, 2, '#8e979b');
+    for (const y of [4, 12, 20]) {
+      for (let x = 3; x < 65; x += 3) { const c = cols[Math.floor(r() * cols.length)]!; rect(g, x, y, 2, 6, c); px(g, x, y, '#ffffff'); }
+      rect(g, 2, y + 6, 64, 1, '#9aa4a8');
+    }
+    rect(g, 0, 2, 1, 26, '#6e777b'); rect(g, 67, 2, 1, 26, '#6e777b'); rect(g, 26, 0, 16, 3, v ? '#f07b6a' : '#2fa59a');
+  }, INK),
+  fridge: v => sprite(50, 46, 25, 45, g => {
+    const r = rng(77 + v), cols = ['#f2c14e', '#7cc36a', '#e85d5d', '#5aa0e0', '#ffffff', '#8fd0a8'];
+    rect(g, 1, 0, 48, 45, '#e9eef0'); rect(g, 1, 0, 48, 4, v ? '#f07b6a' : '#2fa59a'); rect(g, 1, 4, 48, 1, '#ffffff');
+    for (const x0 of [3, 26]) {
+      rect(g, x0, 6, 21, 36, '#2b3a3f'); rect(g, x0 + 1, 7, 19, 34, '#a8dbe6');
+      for (const y of [9, 17, 25, 33]) {
+        for (let x = x0 + 2; x < x0 + 19; x += 3) { rect(g, x, y, 2, 6, cols[Math.floor(r() * cols.length)]!); px(g, x, y, '#ffffff'); }
+        rect(g, x0 + 1, y + 6, 19, 1, '#7fb4c2');
+      }
+      rect(g, x0 + 17, 18, 1, 8, '#d0d6d8'); rect(g, x0 + 2, 7, 1, 30, 'rgba(255,255,255,0.45)');
+    }
+    rect(g, 1, 42, 48, 3, '#9aa4a8');
+  }, INK),
+  storecounter: () => sprite(68, 32, 34, 31, g => {
+    rect(g, 1, 12, 66, 18, '#2fa59a'); rect(g, 1, 12, 66, 1, '#5fc9bd'); rect(g, 1, 24, 66, 2, '#f07b6a'); rect(g, 1, 29, 66, 2, '#1f6f66');
+    rect(g, 0, 8, 68, 5, '#eef1f2'); rect(g, 0, 8, 68, 1, '#ffffff'); rect(g, 0, 12, 68, 1, '#b9c2c5');
+    jinU(g, 6, 15, '#ffffff');
+    rect(g, 44, 0, 14, 9, '#3a3e48'); rect(g, 45, 1, 12, 5, '#7fd0e0'); rect(g, 49, 6, 4, 3, '#2a2d36');
+    rect(g, 28, 4, 10, 5, '#f2c14e'); rect(g, 29, 3, 8, 1, '#f6d77a'); rect(g, 20, 5, 6, 4, '#e85d5d'); px(g, 21, 5, '#ffffff');
+  }, INK),
+  rack: v => sprite(52, 36, 26, 35, g => {
+    const set = [['#5f86b8', '#f1efe8', '#2f8f6a', '#a9586c', '#c79768'], ['#a9586c', '#c79768', '#5f86b8', '#f1efe8', '#2f8f6a']][v % 2]!;
+    rect(g, 2, 4, 2, 30, '#8a8f99'); rect(g, 48, 4, 2, 30, '#8a8f99'); rect(g, 2, 3, 48, 2, '#b8bdc6'); rect(g, 0, 33, 52, 2, '#6e747c');
+    set.forEach((c, i) => {
+      const x = 6 + i * 9;
+      px(g, x + 3, 5, '#3a3e48'); rect(g, x, 6, 8, 2, shade(c, 0.15)); rect(g, x, 8, 8, 16, c); rect(g, x, 8, 1, 16, shade(c, 0.2)); rect(g, x + 7, 8, 1, 16, shade(c, -0.2));
+      if (c === '#f1efe8') for (const y of [11, 15, 19]) rect(g, x, y, 8, 1, '#3f5a8f');
+      if (c === '#2f8f6a') rect(g, x + 3, 8, 1, 16, '#f7f7f2');
+    });
+  }, INK),
+  mannequin: v => sprite(18, 38, 9, 37, g => {
+    const c = ['#c79768', '#5f86b8', '#a9586c'][v % 3]!;
+    ellipse(g, 9, 5, 4, 4, '#efe4d6'); rect(g, 8, 9, 2, 2, '#d9cdbd');
+    rect(g, 3, 11, 12, 15, c); rect(g, 3, 11, 12, 1, shade(c, 0.25)); rect(g, 8, 11, 2, 12, '#f6efe0'); rect(g, 14, 11, 1, 15, shade(c, -0.25));
+    rect(g, 8, 26, 2, 8, '#6e747c'); rect(g, 4, 34, 10, 2, '#4a4f58');
+  }, INK),
+  mirror: () => sprite(18, 40, 9, 39, g => {
+    rect(g, 1, 0, 16, 36, '#c9a35a'); rect(g, 3, 2, 12, 32, '#cfe6ee'); rect(g, 4, 3, 1, 30, '#e6f4f8');
+    for (let i = 0; i < 6; i++) px(g, 6 + i, 6 + i, '#ffffff');
+    rect(g, 3, 36, 2, 3, '#8a6a3a'); rect(g, 13, 36, 2, 3, '#8a6a3a');
+  }, INK),
+  tailorcounter: () => sprite(52, 30, 26, 29, g => {
+    rect(g, 1, 10, 50, 18, '#8c6a7a'); rect(g, 1, 10, 50, 1, '#a8879a'); rect(g, 1, 27, 50, 2, '#5e4552');
+    rect(g, 0, 6, 52, 5, '#f3e9ee'); rect(g, 0, 6, 52, 1, '#ffffff');
+    rect(g, 6, 1, 14, 5, '#e8d9a8'); rect(g, 8, 2, 10, 1, '#c9a35a'); rect(g, 30, 2, 12, 4, '#5f86b8'); rect(g, 30, 2, 12, 1, '#86aad6');
+    pixelText(g, 'OT', 22, 15, '#f3e9ee');
+  }, INK),
   loungechair: v => sprite(24, 24, 12, 23, g => {
     const c0 = v === 2 ? '#a2aba8' : v ? '#d08a52' : '#7a8fb0', c1 = shade(c0, 0.25), c2 = shade(c0, -0.25);
     rect(g, 3, 1, 18, 10, c0); rect(g, 3, 1, 18, 2, c1); rect(g, 0, 7, 5, 13, c2); rect(g, 19, 7, 5, 13, c2);

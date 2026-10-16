@@ -1,9 +1,9 @@
-export type RoomId = 'district' | 'lounge' | 'lifthall' | 'lift1' | 'lift4' | 'floor4' | 'outeroffice' | 'newsroom' | 'lobby' | 'street' | 'cafe' | 'heart' | 'rv' | 'lung' | 'la' | 'lv' | 'aorta';
+export type RoomId = 'district' | 'lounge' | 'lifthall' | 'lift1' | 'lift4' | 'floor4' | 'outeroffice' | 'newsroom' | 'lobby' | 'street' | 'cafe' | 'jinu' | 'tailor' | 'heart' | 'rv' | 'lung' | 'la' | 'lv' | 'aorta';
 export type Dir = 'down' | 'up' | 'left' | 'right';
 export type Point = { x: number; y: number };
 export type Rect = { x: number; y: number; w: number; h: number };
 export const TILE = 16;
-export const roomIds: RoomId[] = ['district', 'lounge', 'lifthall', 'lift1', 'lift4', 'floor4', 'outeroffice', 'newsroom', 'lobby', 'street', 'cafe', 'heart', 'rv', 'lung', 'la', 'lv', 'aorta'];
+export const roomIds: RoomId[] = ['district', 'lounge', 'lifthall', 'lift1', 'lift4', 'floor4', 'outeroffice', 'newsroom', 'lobby', 'street', 'cafe', 'jinu', 'tailor', 'heart', 'rv', 'lung', 'la', 'lv', 'aorta'];
 /** Bodyscope heart: 'heart' is the right atrium (kept as the id of the old entry room so saves stay valid). */
 export const heartRoomIds: RoomId[] = ['heart', 'rv', 'lung', 'la', 'lv', 'aorta'];
 export const isHeartRoom = (r: RoomId): boolean => heartRoomIds.includes(r);

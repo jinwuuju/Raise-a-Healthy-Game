@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
   "status": "prototype_rules",
-  "note": "게임 논리 픽셀 단위(1타일=16px). 실제 거리·보행 속도가 아니다. redesign-1에서 타일을 32px에서 16px로 바꾸며 타일/초 기준 속도(약 3.5타일/초)는 유지했다.",
+  "note": "게임 논리 픽셀 단위(1타일=16px). 실제 거리·보행 속도가 아니다. redesign-1에서 타일을 32px에서 16px로 바꾸며 타일/초 기준 속도(약 3.5타일/초)는 유지했다. D103(사용자: 너무 느리다)에서 1.5배인 84px/초(약 5.25타일/초)로 올렸다.",
   "logicalTilePixels": 16,
-  "walkPixelsPerSecond": 56,
+  "walkPixelsPerSecond": 84,
   "accelerationMilliseconds": 70,
   "releaseMilliseconds": 50,
   "maxFrameMilliseconds": 50,

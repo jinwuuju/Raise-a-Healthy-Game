@@ -1,7 +1,7 @@
 import { euroArchitecture, warmLobby } from './euro-interior';
 import { T, tileAt, type Room, type WallDecor } from '../world/rooms';
 import { TILE } from '../world/types';
-import { ellipse, hash2, hex, makeCanvas, pixelText, px, rect, shade, textWidth, type Ctx } from './pixel';
+import { ellipse, hash2, hex, makeCanvas, pixelText, px, rect, shade, textWidth, type Ctx, jinU, JINU_WIDTH } from './pixel';
 
 type RGB = [number, number, number];
 const C = (h: string): RGB => hex(h);
@@ -190,18 +190,20 @@ function interior(g: Ctx, room: Room) {
   const it = room.interior!;
   const W = room.cols * TILE, H = room.rows * TILE;
   for (const r of it.rugs) {
-    const col = it.wall === 'office' ? ['#5b7f86', '#4c6f76', '#7aa0a6'] : ['#a35a4a', '#8a4a3c', '#c9806e'];
+    const col = it.wall === 'office' ? ['#5b7f86', '#4c6f76', '#7aa0a6'] : it.wall === 'boutique' ? ['#b88aa0', '#9c6f86', '#dcb6c8'] : ['#a35a4a', '#8a4a3c', '#c9806e'];
     rect(g, r.x, r.y, r.w, r.h, col[0]!); rect(g, r.x + 2, r.y + 2, r.w - 4, r.h - 4, col[1]!); rect(g, r.x + 4, r.y + 4, r.w - 8, r.h - 8, col[0]!);
     for (let x = r.x + 6; x < r.x + r.w - 6; x += 6) px(g, x, r.y + 3, col[2]!);
     rect(g, r.x, r.y + r.h, r.w, 1, 'rgba(0,0,0,0.18)');
   }
   // Back wall face (3 tiles tall) with cap.
-  const face = it.wall === 'office' ? '#efe6d2' : it.wall === 'lobby' ? '#dfe3e8' : '#c4785a';
+  const face = it.wall === 'office' ? '#efe6d2' : it.wall === 'lobby' ? '#dfe3e8' : it.wall === 'store' ? '#f4f7f5' : it.wall === 'boutique' ? '#f1e4e9' : '#c4785a';
   rect(g, 0, 0, W, 48, face);
   if (it.wall === 'office') for (let x = 0; x < W; x += 6) rect(g, x, 4, 1, 30, '#e6dcc6');
   if (it.wall === 'lobby') { for (let x = 0; x < W; x += 32) rect(g, x, 4, 1, 32, '#c9ced6'); rect(g, 0, 20, W, 1, '#c9ced6'); }
+  if (it.wall === 'store') { rect(g, 0, 26, W, 4, '#2fa59a'); rect(g, 0, 26, W, 1, '#5fc9bd'); rect(g, 0, 30, W, 1, '#f07b6a'); }
+  if (it.wall === 'boutique') for (let x = 4; x < W; x += 8) rect(g, x, 4, 1, 30, '#e6d3db');
   if (it.wall === 'cafe') for (let y = 4; y < 34; y += 4) for (let x = ((y / 4) % 2) * 4; x < W; x += 8) { rect(g, x, y + 3, 8, 1, '#a75f45'); px(g, x, y, '#a75f45'); }
-  const wain = it.wall === 'office' ? ['#a87a4f', '#c0915f'] : it.wall === 'lobby' ? ['#8c919b', '#a8adb6'] : ['#6e4630', '#8a5a3c'];
+  const wain = it.wall === 'office' ? ['#a87a4f', '#c0915f'] : it.wall === 'lobby' ? ['#8c919b', '#a8adb6'] : it.wall === 'store' ? ['#cfd6d4', '#e3e8e6'] : it.wall === 'boutique' ? ['#8c6a7a', '#a8879a'] : ['#6e4630', '#8a5a3c'];
   rect(g, 0, 34, W, 12, wain[0]!); rect(g, 0, 34, W, 1, wain[1]!); for (let x = 8; x < W; x += 16) rect(g, x, 36, 1, 9, shade(wain[0]!, -0.15));
   rect(g, 0, 46, W, 2, '#4e3a2c'); rect(g, 0, 48, W, 2, 'rgba(0,0,0,0.16)');
   const edge = '#3d3550', edgeHi = '#5a4f6e';
@@ -280,6 +282,17 @@ function decor(g: Ctx, d: WallDecor, wall: string) {
     case 'poster': {
       rect(g, x, 12, w, 20, '#3a3e48'); rect(g, x + 1, 13, w - 2, 18, wall === 'cafe' ? '#f2e2c4' : '#f6f2ea');
       ellipse(g, x + w / 2, 20, 4, 3, '#e05a6a'); px(g, x + w / 2 - 2, 18, '#ffffff'); rect(g, x + 3, 26, w - 6, 1, '#3a6ea8'); rect(g, x + 3, 28, w - 8, 1, '#9aa0aa');
+      break;
+    }
+    case 'jinu': {
+      rect(g, x, 8, w, 16, '#2fa59a'); rect(g, x, 8, w, 1, '#5fc9bd'); rect(g, x, 22, w, 2, '#f07b6a');
+      jinU(g, x + Math.round((w - JINU_WIDTH) / 2) - 3, 11, '#ffffff'); ellipse(g, x + w - 6, 15, 2, 2, '#f07b6a');
+      break;
+    }
+    case 'curtain': {
+      rect(g, x - 1, 6, w + 2, 2, '#8a6a3a');
+      for (let i = 0; i < w; i++) rect(g, x + i, 8, 1, 38, i % 4 === 0 ? '#7d3e50' : i % 4 === 2 ? '#c97a8d' : '#a9586c');
+      rect(g, x, 44, w, 2, '#5e2e3c');
       break;
     }
     case 'mailbox': {

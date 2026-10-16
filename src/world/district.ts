@@ -9,7 +9,8 @@ import type { Point } from './types';
  */
 export const MASK_CELL = 4;
 /** Arrival points outside Euro Plaza and the cafe, available before the map data loads (doors of other rooms use them). */
-export const exits = exitsRaw as { euroOut: Point; cafeOut: Point; cafeFacing: 'down' | 'up' | 'left' | 'right'; size: number };
+export const exits = exitsRaw as { euroOut: Point; cafeOut: Point; cafeFacing: 'down' | 'up' | 'left' | 'right'; size: number;
+  /** D103: outside the Jin-U store and the fictional Orbit Tailor (game-assigned block `tailorId`). */ jinuOut: Point; tailorId: number; tailorOut: Point };
 
 /** kind: 0 big carriageway (blocked, cross on crosswalks), 1 small road (shared, walkable), 2 footpath, 3 slip lane (walkable). */
 export type DRoad = { id: number; kind: 0 | 1 | 2 | 3; w: number; sw: number; bridge: boolean; oneway: boolean; pts: Point[] };
@@ -115,6 +116,7 @@ function band(a: { pts: Point[]; w: number }, sa: number, b: { pts: Point[]; w: 
 
 function computeAnchors() {
   const ep = specialBlock('europlaza')!, cafe = specialBlock('cafe')!, jinu = specialBlock('jinu')!, granite = specialBlock('granite')!;
+  const tailor = dblocks.find(b => b.id === exits.tailorId)!;
   // Every block shows its south face (the game's 2.5D convention); doors, fronts and the props sit there.
   const euro = { x: ep.x, y: ep.y, w: ep.w, d: ep.d };
   const front = (b: DBlock, dy: number) => ({ x: b.x + Math.round(b.w / 2), y: b.y + b.d + dy });
@@ -122,6 +124,9 @@ function computeAnchors() {
     euro, euroDoor: { x: euro.x + 92, y: euro.y + euro.d, w: 17, h: 7 }, euroOut: exits.euroOut,
     cafeDoor: front(cafe, 3), cafeOut: exits.cafeOut, cafeFacing: exits.cafeFacing,
     jinuFront: front(jinu, 10), graniteFront: front(granite, 10),
+    // D103 shop doors on the south faces: Jin-U's door art is 55-69 px from its west edge, the tailor's door is centred.
+    jinuDoor: { x: jinu.x + 55, y: jinu.y + jinu.d - 3, w: 14, h: 12 }, jinuOut: exits.jinuOut,
+    tailorDoor: { x: tailor.x + Math.round(tailor.w / 2) - 7, y: tailor.y + tailor.d - 3, w: 14, h: 12 }, tailorOut: exits.tailorOut,
   };
 }
 

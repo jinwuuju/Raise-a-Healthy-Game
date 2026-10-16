@@ -21,9 +21,6 @@ export type SeoulTime = {
   secondOfDay: number;
 };
 
-export type TimeOfDay = 'day' | 'dusk' | 'night';
-/** Street lighting hours in Seoul time (unchanged from the former ‘실제 시간’ mode): day 07–17, dusk 17–19, otherwise night. */
-export const DAY_FROM_HOUR = 7, DUSK_FROM_HOUR = 17, NIGHT_FROM_HOUR = 19;
 
 let formatter: Intl.DateTimeFormat | null | undefined;
 function seoulFormatter(): Intl.DateTimeFormat | null {
@@ -75,10 +72,4 @@ export function seoulTime(ms: number): SeoulTime {
     } catch { /* fall back to the fixed offset below */ }
   }
   return seoulTimeByOffset(ms);
-}
-
-/** Street lighting for an instant, in Seoul time. Interiors stay lit regardless (decided by the renderer). */
-export function timeOfDayAt(ms: number): TimeOfDay {
-  const h = seoulTime(ms).hour;
-  return h >= DAY_FROM_HOUR && h < DUSK_FROM_HOUR ? 'day' : h >= DUSK_FROM_HOUR && h < NIGHT_FROM_HOUR ? 'dusk' : 'night';
 }

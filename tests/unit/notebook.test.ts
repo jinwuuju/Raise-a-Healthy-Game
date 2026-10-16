@@ -15,7 +15,7 @@ describe('notebook record classification', () => {
     const s = { ...newState(), inspected: ['q001:heart-in', 'hx:' + discoveryIds[0], 'shelf', 'park-bench', 'window-seat'] };
     const vm = notebookRecords(s); expect(vm.evidence).toEqual(['q001:heart-in']);
     expect(vm.anatomy[discoveries[discoveryIds[0]!]!.room]).toEqual(['hx:' + discoveryIds[0]]);
-    expect(vm.local).toEqual({ office: ['shelf'], neighborhood: ['park-bench'], cafe: ['window-seat'] });
+    expect(vm.local).toEqual({ office: ['shelf'], neighborhood: ['park-bench'], cafe: ['window-seat'], shops: [] });
   });
   it('treats prototype-like imported keys as legacy records rather than inherited dictionary entries', () => {
     const keys = ['constructor', 'toString', '__proto__', 'hx:constructor', 'hx:toString', 'hx:__proto__'];

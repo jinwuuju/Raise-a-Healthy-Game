@@ -1,6 +1,6 @@
 import { hash2, makeCanvas } from './pixel';
 import {
-  APPROACH, BAND, DISTRICT_SIZE, carriageways, crossroads, crosswalks, dareas, dblocks, droads, nearestS, pointAt, polyline, scanPoly, strokePolys, zebras,
+  APPROACH, BAND, DISTRICT_SIZE, carriageways, exits, crossroads, crosswalks, dareas, dblocks, droads, nearestS, pointAt, polyline, scanPoly, strokePolys, zebras,
 } from '../world/district';
 import type { Point } from '../world/types';
 
@@ -120,7 +120,7 @@ export function districtMinimap(): HTMLCanvasElement {
   for (const a of dareas) { path(a.pts); g.closePath(); g.fillStyle = a.cls === 0 ? '#6faa4c' : '#a8a397'; g.fill(); }
   g.lineCap = g.lineJoin = 'round';
   for (const r of droads) { if (r.kind === 2) continue; path(r.pts); g.lineWidth = Math.max(1, r.w * s); g.strokeStyle = r.kind === 0 ? '#4b505b' : '#666a74'; g.stroke(); }
-  for (const b of dblocks) { g.fillStyle = b.special === 'europlaza' ? '#e8c88a' : b.special === 'cafe' ? '#f08a6a' : b.special === 'jinu' ? '#2fa59a' : '#8b8f9c'; g.fillRect(Math.floor(b.x * s), Math.floor((b.y - b.h * 0.3) * s), Math.ceil(b.w * s), Math.ceil((b.d + b.h * 0.3) * s)); }
+  for (const b of dblocks) { g.fillStyle = b.special === 'europlaza' ? '#e8c88a' : b.special === 'cafe' ? '#f08a6a' : b.special === 'jinu' ? '#2fa59a' : b.id === exits.tailorId ? '#b87a96' : '#8b8f9c'; g.fillRect(Math.floor(b.x * s), Math.floor((b.y - b.h * 0.3) * s), Math.ceil(b.w * s), Math.ceil((b.d + b.h * 0.3) * s)); }
   mini = c;
   return c;
 }

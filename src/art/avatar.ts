@@ -422,6 +422,10 @@ function outfit(set: SetFn, row: RowFn, o: string, view: View, A: (r: number) =>
       case 'knit': row(A(13), 7, 12, 'k'); row(A(16), 6, 12, 'k'); break;
       case 'hoodie': row(A(13), 7, 12, 'J'); s(8, 14, 'g'); s(8, 15, 'g'); s(11, 14, 'g'); s(11, 15, 'g'); row(A(17), 7, 12, 'J'); break;
       case 'coat': s(9, 13, 'w'); s(10, 13, 'w'); s(9, 14, 'w'); s(10, 14, 'w'); for (let r = 13; r <= 15; r++) { s(8, r, 'k'); s(11, r, 'k'); } row(A(17), 6, 13, 'J'); s(9, 17, 'g'); s(10, 17, 'g'); row(A(20), 6, 13, 'j'); row(A(21), 6, 13, 'J'); break;
+      case 'denim': for (let r = 13; r <= 17; r++) { s(9, r, 'w'); s(10, r, 'w'); } s(8, 13, 'k'); s(11, 13, 'k'); s(7, 15, 'J'); s(12, 15, 'J'); s(8, 16, 'g'); s(11, 16, 'g'); break;
+      case 'stripe': for (const r of [14, 16, 18]) row(A(r), 6, 13, 'g'); s(9, 13, 'k'); s(10, 13, 'k'); break;
+      case 'track': row(A(13), 7, 12, 'J'); for (let r = 13; r <= 18; r++) s(9, r, 'w'); s(10, 14, 'g'); break;
+      case 'cardigan': for (let r = 13; r <= 17; r++) { s(9, r, 'w'); s(10, r, 'w'); } for (const r of [14, 16, 18]) s(8, r, 'g'); row(A(19), 6, 13, 'k'); break;
       case 'apron': s(7, 13, 'g'); s(12, 13, 'g'); s(9, 13, 'w'); s(10, 13, 'w'); for (let r = 15; r <= 19; r++) row(A(r), 7, 12, 'g'); break;
       case 'uniform': s(9, 13, 'w'); s(10, 13, 'w'); for (let r = 14; r <= 16; r++) { s(9, r, 'g'); s(10, r, 'g'); } s(12, 15, 'k'); s(7, 16, 'J'); s(12, 16, 'J'); break;
       default: row(A(13), 8, 11, 'k');
@@ -431,6 +435,10 @@ function outfit(set: SetFn, row: RowFn, o: string, view: View, A: (r: number) =>
       case 'hoodie': row(A(13), 7, 12, 'k'); row(A(14), 7, 12, 'k'); row(A(15), 8, 11, 'J'); break;
       case 'coat': row(A(17), 6, 13, 'J'); row(A(20), 6, 13, 'j'); row(A(21), 6, 13, 'J'); break;
       case 'apron': s(9, 17, 'g'); s(10, 17, 'g'); s(8, 16, 'g'); s(11, 16, 'g'); break;
+      case 'denim': row(A(14), 6, 13, 'J'); break;
+      case 'stripe': for (const r of [14, 16, 18]) row(A(r), 6, 13, 'g'); break;
+      case 'track': row(A(13), 7, 12, 'J'); s(9, 15, 'g'); s(10, 15, 'g'); break;
+      case 'cardigan': row(A(18), 6, 13, 'k'); row(A(19), 6, 13, 'k'); break;
       case 'reporter': case 'suit': for (let r = 17; r <= 19; r++) s(9, r, 'J'); break;
       default: break;
     }
@@ -442,6 +450,10 @@ function outfit(set: SetFn, row: RowFn, o: string, view: View, A: (r: number) =>
       case 'hoodie': s(7, 13, 'J'); s(7, 14, 'J'); s(8, 13, 'J'); s(12, 14, 'g'); break;
       case 'coat': for (let r = 13; r <= 15; r++) s(12, r, 'k'); row(A(17), 7, 12, 'J'); row(A(20), 7, 12, 'j'); row(A(21), 7, 12, 'J'); break;
       case 'apron': for (let r = 15; r <= 19; r++) { s(11, r, 'g'); s(12, r, 'g'); } break;
+      case 'denim': for (let r = 13; r <= 16; r++) s(12, r, 'w'); s(11, 13, 'k'); s(12, 17, 'g'); s(12, 18, 'J'); break;
+      case 'stripe': for (const r of [14, 16, 18]) row(A(r), 7, 12, 'g'); break;
+      case 'track': row(A(13), 8, 11, 'J'); for (let r = 14; r <= 18; r++) s(8, r, 'w'); break;
+      case 'cardigan': for (let r = 13; r <= 16; r++) s(12, r, 'w'); s(11, 14, 'g'); s(11, 16, 'g'); row(A(19), 7, 12, 'k'); break;
       case 'uniform': for (let r = 13; r <= 15; r++) s(12, r, 'g'); s(11, 15, 'k'); break;
       default: s(11, 13, 'k'); s(12, 13, 'k');
     }

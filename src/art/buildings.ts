@@ -3,7 +3,8 @@ import type { Rect } from '../world/types';
 import { ellipse, jinU, makeCanvas, pixelText, px, rect, rng, shade, textWidth, type Ctx } from './pixel';
 
 type Ramp = [string, string, string, string]; // light, base, shade, dark
-export type BuildingArt = { day: HTMLCanvasElement; night: HTMLCanvasElement; lights: Rect[]; billboard: Rect | null };
+/** Daytime art only: the world is always in daylight (D103). */
+export type BuildingArt = { day: HTMLCanvasElement; billboard: Rect | null };
 
 const ROOF: Ramp = ['#bdbbb5', '#a9a7a1', '#93918b', '#73716c'];
 const GLASS: [string, string, string] = ['#b9d6ec', '#6f97bb', '#4d7194'];
@@ -131,6 +132,28 @@ function paintSmall(p: Painter, b: Building) {
   storefront(p, 3, gTop + 4, Math.max(6, W - 22), 12, '#dfe6e6', wall[3]);
   door(g, W - 16, gTop + 4, 11, 14, night);
 }
+/** D103: the fictional ‘Orbit Tailor’ clothes shop (game-original name and sign): cream walls, berry awning, two display windows. */
+function paintTailor(p: Painter, b: Building) {
+  const { g, night } = p, W = b.w, D = b.d, H = b.h;
+  const wall: Ramp = ['#f8eef0', '#efdfe4', '#d9c2ca', '#a8879a'];
+  roof(p, W, D, ROOF, Math.max(0, Math.floor(W / 48)), 'garden');
+  facade(g, W, D, H, wall);
+  const gTop = D + H - 24;
+  for (let fy = D + 4; fy + 12 < gTop - 9; fy += 13) for (let x = 4; x + 6 < W - 3; x += 10) windowAt(p, x, fy + 2, 6, 7, wall[3]);
+  rect(g, 0, gTop - 1, W, 1, wall[0]);
+  sign(g, 'TAILOR', Math.floor(W / 2), Math.max(D + 2, gTop - 9), '#fbf6ea', '#7d3e50');
+  awningStripe(g, 1, gTop + 1, W - 2, '#a9586c');
+  const doorX = Math.floor(W / 2) - 6, winW = Math.max(6, doorX - 4);
+  for (const wx of [2, doorX + 14]) {
+    rect(g, wx, gTop + 9, winW, 13, '#3a2f38'); rect(g, wx + 1, gTop + 10, winW - 2, 11, '#f6eadf');
+    const mx = wx + Math.floor(winW / 2);
+    ellipse(g, mx, gTop + 12, 1, 1, '#efe4d6'); rect(g, mx - 2, gTop + 14, 5, 6, wx === 2 ? '#c79768' : '#5f86b8'); rect(g, mx, gTop + 14, 1, 5, '#f6efe0');
+    px(g, wx + 2, gTop + 11, '#ffffff');
+  }
+  door(g, doorX, gTop + 8, 12, 14, night);
+  rect(g, 0, D + H - 1, W, 1, wall[3]);
+}
+
 /** Residential block: balcony rows and a lobby door, no sign. */
 function paintApartment(p: Painter, b: Building) {
   const { g, night } = p, W = b.w, D = b.d, H = b.h, wall: Ramp = ['#f3ead8', '#e6d9bf', '#cdbc9c', '#9d8b6a'];
@@ -440,15 +463,16 @@ export function buildingArt(b: Building): BuildingArt {
       case 'hotel': paintHotel(p, b); break;
       case 'hospital': paintHospital(p, b); break;
       case 'small': paintSmall(p, b); break;
+      case 'tailor': paintTailor(p, b); break;
       case 'apartment': paintApartment(p, b); break;
       default: paintShop(p, b);
     }
     return { c, lights: p.lights, billboard };
   };
-  const day = make(false), night = make(true);
-  const art: BuildingArt = { day: day.c, night: night.c, lights: night.lights, billboard: day.billboard };
+  const day = make(false);
+  const art: BuildingArt = { day: day.c, billboard: day.billboard };
   cache.set(b.id, art);
-  // A real-scale district has ~1,100 buildings: keep only the recently drawn ones (day + night canvases each).
+  // A real-scale district has ~1,100 buildings: keep only the recently drawn ones (one daytime canvas each).
   if (cache.size > 220) for (const k of [...cache.keys()].slice(0, cache.size - 220)) cache.delete(k);
   return art;
 }
