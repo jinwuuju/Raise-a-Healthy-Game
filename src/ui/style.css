@@ -172,6 +172,10 @@ button { font: inherit; color: inherit; }
 .iconbtn span { font-size: 10px; color: var(--muted); line-height: 1; }
 .iconbtn:hover { border-color: var(--line-strong); }
 .minimap { width: 112px; height: 112px; padding: 4px; cursor: pointer; }
+.homebtn { width: 112px; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 5px 8px; cursor: pointer; font-weight: 800; font-size: 11px; line-height: 1.2; color: var(--text); text-align: left; }
+.homebtn svg { width: 20px; height: 20px; flex: none; stroke: var(--gold); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.homebtn:hover { border-color: var(--line-strong); }
+.homebtn[hidden] { display: none; }
 .cycle { width: 196px; padding: 0; overflow: hidden; }
 .cycle:hover { border-color: var(--line-strong); }
 .cycle.collapsed { width: 134px; }
@@ -316,10 +320,13 @@ button { font: inherit; color: inherit; }
   .dialog .text { font-size: 16px; }
   .scrim { place-items: end center; }
   .sheet { width: 100%; border-radius: 18px 18px 0 0; max-height: 82dvh; padding-bottom: var(--safe-b); }
+  .homebtn { width: 92px; min-height: 40px; font-size: 10px; padding: 4px 6px; gap: 4px; }
+  .homebtn svg { width: 17px; height: 17px; }
 }
 @media (max-height: 460px) {
   .quest { top: calc(74px + var(--safe-t)); max-width: 260px; }
   .minimap { width: 84px; height: 84px; }
+  .homebtn { width: 84px; min-height: 36px; }
   .dialog { grid-template-columns: 1fr; }
   .dialog .face { display: none; }
   .creator .card { grid-template-columns: minmax(140px, 32%) minmax(0, 1fr); }

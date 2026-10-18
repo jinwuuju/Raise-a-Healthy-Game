@@ -143,6 +143,8 @@ def main():
     blocks = make_blocks(buildings, roads, size, special)
     routes = make_routes(roads)
     zebras = make_zebras(roads, size, blocks, (2154, 2502 - 3840 // 2 + size // 2) if False else crossroads_px())
+    ep = next(b for b in blocks if b['special'] == 'europlaza')
+    zebras += connect_zebras(roads, size, blocks, zebras, crossroads_px(), (ep['x'] + 100, ep['y'] + ep['d'] + 14))
     data = {'version': '0.1', 'licence': 'Map data (c) OpenStreetMap contributors, ODbL 1.0', 'mPerTile': 3, 'pxPerM': round(PX, 4),
             'halfMetres': HALF, 'radiusMetres': RADIUS, 'sizePx': size, 'centrePx': m2px(0, 0),
             'places': {k: m2px(*v) for k, v in PLACES.items()}, 'special': special,
@@ -427,6 +429,107 @@ def make_zebras(roads, size, blocks, crossroads):
                 z = zebra_at(q, ((b[0] - a[0]) / L, (b[1] - a[1]) / L))
                 if z: zebras.append(z)
     return zebras
+
+# ---------- D104: every walkable area connects back to Euro Plaza ----------
+def connect_zebras(roads, size, blocks, zebras, crossroads, start, min_cells=150):
+    '''Extra plain zebra crossings so no sizeable walkable area is cut off from Euro Plaza by big roads.
+    Mirrors the game's collision at 8 px: big non-bridge carriageways block (all of them, trunk included), zebras and the
+    Eulji signal crossings open them, building blocks are solid. Areas that are not reachable get the shortest crossing
+    to the reachable part, perpendicular-ish to the road, until nothing sizeable is left (checked again by
+    tests/unit/district-reach.test.ts against the real game collision).'''
+    from collections import deque
+    cell = 8; n = size // cell; g = bytearray(n * n)  # 0 free, 1 big road, 2 solid
+    def fill(poly, val):
+        ys = [p[1] / cell for p in poly]
+        y0, y1 = max(0, math.ceil(min(ys) - 0.5)), min(n - 1, math.floor(max(ys) - 0.5))
+        for y in range(y0, y1 + 1):
+            sy = y + 0.5; xs = []
+            for i in range(len(poly)):
+                (ax, ay), (bx, by) = poly[i], poly[i - 1]
+                ay /= cell; by /= cell; ax /= cell; bx /= cell
+                if (ay > sy) != (by > sy): xs.append(ax + (sy - ay) / (by - ay) * (bx - ax))
+            xs.sort()
+            for k in range(0, len(xs) - 1, 2):
+                for x in range(max(0, math.ceil(xs[k] - 0.5)), min(n - 1, math.floor(xs[k + 1] - 0.5)) + 1):
+                    if val == 0 and g[y * n + x] == 2: continue
+                    g[y * n + x] = val
+    for r in roads:
+        if r['kind'] == 'major' and not r['bridge']:
+            for q in stroke_quads(r['pts'], r['w']): fill(q, 1)
+    def zpoly(z):
+        A, B = (z[0], z[1]), (z[2], z[3]); L = math.hypot(B[0] - A[0], B[1] - A[1]) or 1
+        ux, uy = -(B[1] - A[1]) / L * 10, (B[0] - A[0]) / L * 10
+        return [(A[0] - ux, A[1] - uy), (B[0] - ux, B[1] - uy), (B[0] + ux, B[1] + uy), (A[0] + ux, A[1] + uy)]
+    for z in zebras: fill(zpoly(z), 0)
+    cx, cy = crossroads  # the four signal crossings link every corner of the Eulji crossroads
+    for j in range(max(0, int((cy - 150) // cell)), min(n, int((cy + 150) // cell) + 1)):
+        for i in range(max(0, int((cx - 150) // cell)), min(n, int((cx + 150) // cell) + 1)):
+            if g[j * n + i] == 1 and math.hypot(i * cell + 4 - cx, j * cell + 4 - cy) < 150: g[j * n + i] = 0
+    for b in blocks:
+        for j in range(max(0, (b['y'] - 4) // cell), min(n, (b['y'] + b['d'] + 4) // cell + 1)):
+            for i in range(max(0, (b['x'] - 4) // cell), min(n, (b['x'] + b['w'] + 4) // cell + 1)):
+                if b['x'] - 4 <= i * cell + 4 <= b['x'] + b['w'] + 4 and b['y'] - 3 <= j * cell + 4 <= b['y'] + b['d'] + 4: g[j * n + i] = 2
+    for k in range(n): g[k] = g[(n - 1) * n + k] = g[k * n] = g[k * n + n - 1] = 2
+    lab = [-1] * (n * n); sizes = []
+    for s in range(n * n):
+        if g[s] or lab[s] >= 0: continue
+        c = len(sizes); lab[s] = c; dq = deque([s]); cnt = 0
+        while dq:
+            v = dq.popleft(); cnt += 1; x, y = v % n, v // n
+            for k in (v - 1 if x else -1, v + 1 if x < n - 1 else -1, v - n if y else -1, v + n if y < n - 1 else -1):
+                if k >= 0 and not g[k] and lab[k] < 0: lab[k] = c; dq.append(k)
+        sizes.append(cnt)
+    home = lab[int(start[1] // cell) * n + int(start[0] // cell)]
+    assert home >= 0, 'Euro Plaza exit is not walkable'
+    linked = {home}
+    dirs = [(math.cos(a * math.pi / 8), math.sin(a * math.pi / 8)) for a in range(16)]
+    added = []
+    # boundary cells of every component (free cells touching a big road), gathered once
+    edge = {}
+    for v in range(n, n * n - n):
+        if g[v] or lab[v] < 0: continue
+        if g[v - 1] == 1 or g[v + 1] == 1 or g[v - n] == 1 or g[v + n] == 1: edge.setdefault(lab[v], []).append(v)
+    while True:
+        todo = [c for c in range(len(sizes)) if sizes[c] >= min_cells and c not in linked and c in edge]
+        progress = False
+        for C in sorted(todo, key=lambda c: -sizes[c]):
+            if C in linked: continue
+            best = None
+            for v in edge[C]:
+                x0, y0 = (v % n) * cell + 4, (v // n) * cell + 4
+                for dx, dy in dirs:
+                    t = 4; road = 0; gap = 0; via = set(); ok = False
+                    while t <= 360:
+                        px, py = x0 + dx * t, y0 + dy * t
+                        i, j = int(px // cell), int(py // cell)
+                        if not (0 <= i < n and 0 <= j < n): break
+                        k = j * n + i; cv = g[k]
+                        if cv == 2: break
+                        if cv == 1: road += 4; gap = 0
+                        else:
+                            c = lab[k]
+                            if road == 0:
+                                if c != C: break
+                            elif c in linked: ok = True; break
+                            elif c == C: break
+                            else:
+                                gap += 4; via.add(c)
+                                if gap > 48: break
+                        t += 4
+                    if not ok or road < 12: continue
+                    mx, my = x0 + dx * t / 2, y0 + dy * t / 2
+                    if math.hypot(mx - cx, my - cy) < 220: continue
+                    if best is None or t < best[0]: best = (t, x0, y0, dx, dy, via)
+            if not best: continue
+            t, x0, y0, dx, dy, via = best
+            z = [round(x0 - dx * 2), round(y0 - dy * 2), round(x0 + dx * (t + 2)), round(y0 + dy * (t + 2))]
+            added.append(z); fill(zpoly(z), 0)
+            linked |= {C} | via; progress = True
+        if not progress: break
+    left = sorted((sizes[c] for c in range(len(sizes)) if sizes[c] >= min_cells and c not in linked), reverse=True)
+    print('connect: added', len(added), 'zebras; unreachable areas left (8px cells):', left[:10])
+    return added
+
 
 def m_w(r): return r['w']
 

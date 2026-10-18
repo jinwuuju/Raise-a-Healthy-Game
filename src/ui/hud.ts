@@ -6,7 +6,7 @@ import { REAL_CYCLE, SLOW, beat, ecg, openness, phaseAt } from '../domain/cardia
 import { isHeartRoom, type RoomId } from '../world/types';
 import { ICONS, button, el } from './dom';
 
-export type HudActions = { onChip: () => void; onNote: () => void; onMenu: () => void; onMap: () => void; onLunch: () => void };
+export type HudActions = { onChip: () => void; onNote: () => void; onMenu: () => void; onMap: () => void; onLunch: () => void; onHome: () => void };
 
 export class Hud {
   root = el('div', 'hud');
@@ -43,6 +43,7 @@ export class Hud {
   private miniCur: MiniMap | null = null;
   private miniCache = new Map<RoomId, MiniMap>();
   private miniCap = el('span', 'cap');
+  private homeBtn: HTMLButtonElement;
 
   constructor(private a: HudActions) {
     this.chip = button('chip glass', '', a.onChip, '기자 정보');
@@ -76,7 +77,10 @@ export class Hud {
     this.cycleBody.append(ch, this.cycleCanvas, pills, this.cycleNote, button('cycle-map', '심장 길 안내', a.onMap));
     this.cycle.append(this.cycleToggle, this.cycleBody);
     this.setCycleCollapsed(false);
-    tr.append(row, this.mini, this.cycle);
+    // D104: one tap back to the front of Euro Plaza from anywhere outside the heart (lost far away in the district).
+    this.homeBtn = button('homebtn glass', '', a.onHome, '유로프라자 앞으로 복귀');
+    this.homeBtn.innerHTML = ICONS.home + '<span>유로프라자<br>복귀</span>';
+    tr.append(row, this.mini, this.homeBtn, this.cycle);
 
     this.saveError.setAttribute('role', 'status');
     this.root.append(this.chip, this.quest, tr, this.banner, this.toastEl, this.hintEl, this.saveError);
@@ -149,6 +153,7 @@ export class Hud {
     this.mini.classList.toggle('organ', heart);
     this.cycle.classList.toggle('hidden', !heart);
     this.root.classList.toggle('in-heart', heart);
+    this.homeBtn.hidden = heart;
     this.cycle.classList.toggle('lung', room === 'lung');
     this.lastPhase = '';
   }

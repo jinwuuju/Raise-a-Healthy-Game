@@ -19,5 +19,6 @@ export function pixelCanvas(src: HTMLCanvasElement): HTMLCanvasElement {
 }
 export const ICONS = {
   note: '<svg viewBox=\'0 0 24 24\' aria-hidden=\'true\'><path d=\'M6 3h10l3 3v15H6z\'/><path d=\'M9 9h7M9 13h7M9 17h4\'/></svg>',
+  home: '<svg viewBox=\'0 0 24 24\' aria-hidden=\'true\'><path d=\'M3 11l9-7 9 7\'/><path d=\'M5 10v10h5v-6h4v6h5V10\'/></svg>',
   menu: '<svg viewBox=\'0 0 24 24\' aria-hidden=\'true\'><path d=\'M4 7h16M4 12h16M4 17h16\'/></svg>',
 };

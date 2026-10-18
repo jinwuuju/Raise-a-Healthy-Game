@@ -43,7 +43,7 @@ import { openNotebook as showNotebook } from './ui/notebook';
 import { latestReaction } from './domain/reaction-state';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
 import { rooms, type Target } from './world/rooms';
-import { anchors, crossroads, districtLoaded, dlabels, dstations, loadDistrict, specialBlock } from './world/district';
+import { anchors, crossroads, districtLoaded, dlabels, dstations, exits, loadDistrict, specialBlock } from './world/district';
 import { isHeartRoom, type Dir, type Point, type RoomId } from './world/types';
 
 class MemoryStorage implements Storage {
@@ -113,6 +113,7 @@ const hud = new Hud({
   onMenu: () => openMenu(),
   onMap: () => openMap(),
   onLunch: () => openLunchSheet(),
+  onHome: () => returnToEuro(),
 });
 hud.setVisible(false);
 // Touch screens get a movement ball at the bottom left (D058); PC keeps keyboard/mouse only.
@@ -149,6 +150,7 @@ window.addEventListener('keydown', e => {
   else if ((k === 'e' || k === ' ' || k === 'enter') && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); if (world?.near && !busy()) interact(world.near); }
   else if (k === 'escape') { e.preventDefault(); openMenu(); }
   else if (k === 'j' || k === 'n') openNotebook();
+  else if (k === 'h') returnToEuro();
   else if (k === '+' || k === '=') { e.preventDefault(); setZoomStep(zoomStep + 1); }
   else if (k === '-' || k === '_') { e.preventDefault(); setZoomStep(zoomStep - 1); }
   else if (k === 'm' && world && (world.roomId === 'district' || isHeartRoom(world.roomId))) openMap();
@@ -376,7 +378,7 @@ function startWorld() {
 }
 
 /** walk: ordinary doors · scope-in/out: the Bodyscope · flow: following the blood between heart rooms. */
-type Trip = { to: RoomId; arrive: Point; facing: Dir; mode: 'walk' | 'scope-in' | 'scope-out' | 'flow'; card?: string | null };
+type Trip = { to: RoomId; arrive: Point; facing: Dir; mode: 'walk' | 'scope-in' | 'scope-out' | 'flow'; card?: string | null; done?: string };
 let traveling = false;
 async function travel(d: Trip) {
   if (!world || traveling) return;
@@ -408,6 +410,7 @@ async function travel(d: Trip) {
     fade.classList.remove('on', 'scope', 'flow'); fadeCard.classList.remove('show');
     hud.showBanner(rooms[w.roomId].title);
     if (d.mode === 'scope-in') hud.toast(heartText.disclaimer);
+    else if (d.done && w.roomId === d.to) hud.toast(d.done);
     if (!game.persist()) hud.toast('저장하지 못했어요: ' + game.lastError, true);
     window.setTimeout(() => {
       w.locked = false; traveling = false;
@@ -419,6 +422,18 @@ async function travel(d: Trip) {
       }
     }, 120);
   }, wait);
+}
+
+/**
+ * D104: the HUD button (and the H key) brings the reporter back to the front of Euro Plaza, wherever they wandered.
+ * Outside the heart only: inside it the Bodyscope trip and the quest modes decide how the reporter leaves.
+ */
+function returnToEuro(): void {
+  if (!world || busy() || traveling) return;
+  if (isHeartRoom(world.roomId)) { hud.toast('심장 속에서는 바디스코프로 먼저 나와 주세요.', true); return; }
+  const to = exits.euroOut;
+  if (world.roomId === 'district' && Math.hypot(world.player.x - to.x, world.player.y - to.y) < 24) { hud.toast('이미 유로프라자 앞이에요.'); return; }
+  void travel({ to: 'district', arrive: to, facing: 'down', mode: 'walk', done: '유로프라자 앞으로 돌아왔어요.' });
 }
 
 async function say(lines: Line[]) { if (lines.length) await dialog.show(lines); }
