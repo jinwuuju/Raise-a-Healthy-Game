@@ -16,6 +16,8 @@ export class Hud {
   private goldEl = el('span', 'coin');
   private quest = el('section', 'quest glass');
   private questText = el('p');
+  private questTag = el('span', 'tag', '현재 목표');
+  private runBox = el('div', 'run-box');
   private lunchBtn: HTMLButtonElement;
   private lunchText = el('span', 'lunch-text');
   private mini = el('div', 'minimap glass');
@@ -53,11 +55,12 @@ export class Hud {
     this.chip.append(this.portraitBox, who);
 
     const head = button('', '', () => this.quest.classList.toggle('closed'), '현재 목표 접기/펼치기');
-    head.append(el('span', 'tag', '현재 목표'), el('span', 'chev', '▾'));
+    head.append(this.questTag, el('span', 'chev', '▾'));
     // 오늘의 점심(D085): 현재 목표 자리의 짧은 한 줄. 누르면 오늘 카드/고르기 창이 열린다.
     this.lunchBtn = button('lunch-line', '', a.onLunch, '오늘의 점심 열기');
     this.lunchBtn.append(el('span', 'tag lunch-tag', '점심'), this.lunchText); this.lunchBtn.hidden = true;
-    this.quest.append(head, this.questText, this.lunchBtn);
+    this.runBox.hidden = true;
+    this.quest.append(head, this.questText, this.runBox, this.lunchBtn);
 
     const tr = el('div', 'topright');
     const row = el('div', 'btnrow');
@@ -135,6 +138,19 @@ export class Hud {
     this.lunchBtn.hidden = !text;
     if (text && this.lunchText.textContent !== text) this.lunchText.textContent = text;
   }
+  /** D106 blood-delivery run: replaces the objective line while a run is on (title + rows, done rows ticked). */
+  setRun(run: { title: string; rows: { text: string; done: boolean; here?: boolean }[] } | null): void {
+    this.questText.hidden = !!run; this.runBox.hidden = !run;
+    this.questTag.textContent = run ? '배달 런' : '현재 목표'; this.questTag.classList.toggle('run-tag', !!run);
+    if (!run) return;
+    const key = JSON.stringify(run);
+    if (this.runBox.dataset.key === key) return;
+    this.runBox.dataset.key = key;
+    const rows = run.rows.map(r => { const li = el('div', 'run-row' + (r.done ? ' done' : '') + (r.here ? ' here' : '')); li.append(el('b', '', r.done ? '✓' : '·'), el('span', '', r.text)); return li; });
+    this.runBox.replaceChildren(el('div', 'run-title', run.title), ...rows);
+    this.quest.classList.remove('closed');
+  }
+
   setObjective(text: string): void {
     if (this.questText.textContent === text) return;
     const changed = this.questText.textContent !== '';

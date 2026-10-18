@@ -43,6 +43,9 @@ for path in dist.rglob('*'):
             assert 'disease.arrhythmia' not in text, 'Arrhythmia disease draft must stay outside the runtime/public atlas; Q005 is the labelled quest exception'
             assert 'disease.atherosclerosis' not in text, 'Planned atherosclerosis draft must not ship in runtime/public atlas'
             assert 'disease.valve' not in text, 'Standalone unreviewed disease atlas draft must stay outside the runtime; Q003 is the labelled quest exception'
+            if 'content.heart.mastery' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Heart field-check clues and blood sightings (D106) must stay labelled drafts'
+                assert 'medical_reviewed' not in text, 'Heart mastery content must not claim review'
             if 'content.lunch.extras' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text and '가상 가게' in text, 'Lunch shop lines (D081) must stay labelled as fictional drafts'
             if 'content.lunch.menus' in text:

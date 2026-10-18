@@ -2,7 +2,9 @@ import './ui/style.css';
 import motion from '../data/balance/movement.v0.2.json';
 import { Game } from './application/game';
 import { heartText, lookText, objective, q1Text, talk, type Line } from './application/story';
-import { discovered, discoveries, discoveryIds } from './domain/heart';
+import { discovered, discoveries, discoveryIds, hxKey } from './domain/heart';
+import { MASTERY_DISCLAIMER, hints, isOpen, makeQuestion, maxStars, nextKind, nextLocked, roomNames, shortName, starsOf, tierOf, totalStars, type QuizKind } from './domain/mastery';
+import { DELIVER, LOAD, pickWaypoints, type RunReward } from './domain/heart-run';
 import { outfits, presetNames, type Look } from './domain/appearance';
 import { cafeMenu, canOrder } from './domain/cafe';
 import { canBuyItem, canBuyOutfit, jinuItems, tailorItems } from './domain/shop';
@@ -339,7 +341,7 @@ function refresh() {
   if (world.roomId === 'newsroom' && s.q004.accepted && !s.q004.publishedAt) world.questTargets = q4Ready(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q005.accepted && !s.q005.publishedAt) world.questTargets = q5CompareDone(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q006.accepted && !s.q006.publishedAt) world.questTargets = q6CompareDone(s) ? ['my-desk'] : ['device'];
-  world.sparkTargets = [];
+  world.sparkTargets = []; world.labelOverride = {}; world.verbOverride = {}; world.badges = {};
   if (isHeartRoom(world.roomId)) {
     const here = world.roomId;
     world.questTargets = has(Q1.accepted) && !has(Q1.observed) ? Q1_OBSERVATIONS.filter(id => Q1_ROOM[id] === here && !s.inspected.includes(obsKey(id))) : has(Q1.observed) && !has(Q1.briefed) ? ['return-pad'] : [];
@@ -350,6 +352,20 @@ function refresh() {
     if (s.q006.accepted && !s.q006.publishedAt) world.questTargets = !q6NormalDone(s) ? q6Text.notes.filter(n => n.room === here && !s.q006.notes.includes(n.id as SupplyCard)).map(n => n.target) : !q6CompareDone(s) ? (here === 'aorta' ? ['hx-sinus'] : []) : ['return-pad'];
     const found = discovered(s);
     world.sparkTargets = world.room.targets.filter(t => t.id.startsWith('hx-') && !found.includes(t.id)).map(t => t.id);
+    // D106: recorded structures hide their names until mastered (field checks); deeper tiers stay locked until enough stars.
+    const lab: Record<string, string> = {}, verb: Record<string, string> = {}, badge: Record<string, string> = {}, wps = run ? run.waypoints.map(x => x.id) : [];
+    for (const t of world.room.targets) {
+      if (t.id === 'guide' && here === 'heart') { verb[t.id] = run ? '안내' : '배달 런 · 안내'; continue; }
+      if (!t.id.startsWith('hx-') || !discoveries[t.id] || world.questTargets.includes(t.id)) continue;
+      const known = s.inspected.includes(hxKey(t.id)), stars = starsOf(s, t.id);
+      if (run && (t.id === LOAD || t.id === DELIVER)) { badge[t.id] = '배달 런'; verb[t.id] = t.id === LOAD ? '산소 싣기' : '배달하기'; continue; }
+      if (run && wps.includes(t.id)) { lab[t.id] = '???'; verb[t.id] = '경유지 확인'; continue; }
+      if (!known && !isOpen(s, t.id)) { lab[t.id] = tierOf(t.id).title; verb[t.id] = '잠김'; badge[t.id] = '잠김'; continue; }
+      if (known && stars < 3) { lab[t.id] = '???'; verb[t.id] = '확인 문제'; badge[t.id] = '★' + stars + '/3'; }
+      else if (known) badge[t.id] = '★★★';
+    }
+    world.labelOverride = lab; world.verbOverride = verb; world.badges = badge;
+    world.sparkTargets = world.sparkTargets.filter(id => isOpen(s, id) && !wps.includes(id));
   }
 }
 game.subscribe(refresh);
@@ -405,6 +421,7 @@ async function travel(d: Trip) {
     try { if (d.mode === 'scope-in') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
     catch (e) { hud.toast(e instanceof Error ? e.message : '이동하지 못했어요.', true); }
     w.setRoom(game.state.at.room, game.state.at.x, game.state.at.y, game.state.at.facing);
+    if (run && !isHeartRoom(w.roomId)) stopRun('심장 밖으로 나와서 배달을 그만뒀어요.'); else runHud();
     hud.setRoom(w.roomId, () => w.miniMap(), mapCaption(w.roomId));
     refresh();
     fade.classList.remove('on', 'scope', 'flow'); fadeCard.classList.remove('show');
@@ -418,7 +435,7 @@ async function travel(d: Trip) {
       if (d.mode === 'scope-in' && !game.has('heart-guided')) {
         const guide = w.room.targets.find(t => t.id === 'guide');
         game.flag('heart-guided');
-        if (guide) window.setTimeout(() => { if (!busy()) void interact(guide); }, 500);
+        if (guide) window.setTimeout(() => { if (!busy()) { guideIntro = true; void interact(guide); } }, 500);
       }
     }, 120);
   }, wait);
@@ -434,6 +451,99 @@ function returnToEuro(): void {
   const to = exits.euroOut;
   if (world.roomId === 'district' && Math.hypot(world.player.x - to.x, world.player.y - to.y) < 24) { hud.toast('이미 유로프라자 앞이에요.'); return; }
   void travel({ to: 'district', arrive: to, facing: 'down', mode: 'walk', done: '유로프라자 앞으로 돌아왔어요.' });
+}
+
+/* ---------- D106 heart learning: field checks and the blood-delivery run (design 18) ---------- */
+const NL = String.fromCharCode(10);
+type ActiveRun = { id: string; start: number; oxygen: boolean; waypoints: { id: string; done: boolean; correct: boolean }[] };
+let run: ActiveRun | null = null, runTimer = 0;
+/** The first heart visit plays the guide's explanation, not the delivery menu. */
+let guideIntro = false;
+const fmt = (sec: number) => Math.floor(sec / 60) + ':' + String(Math.floor(sec % 60)).padStart(2, '0');
+const newRunId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+function runHud(): void {
+  if (!run) { hud.setRun(null); return; }
+  const here = world?.roomId, sec = (performance.now() - run.start) / 1000, best = game.state.heartRun.best;
+  hud.setRun({ title: '⏱ ' + fmt(sec) + (best !== null ? ' · 최고 ' + fmt(best) : '') + ' · 산소 ' + (run.oxygen ? '실음' : '아직'), rows: [
+    { text: '폐 · 가스 교환에서 산소 싣기', done: run.oxygen, here: here === 'lung' && !run.oxygen },
+    ...run.waypoints.map(x => ({ text: '경유지 · ' + hints[x.id]! + (here === discoveries[x.id]!.room && !x.done ? ' (이 방)' : ''), done: x.done, here: here === discoveries[x.id]!.room && !x.done })),
+    { text: '대동맥 뿌리 · 오름대동맥에서 배달', done: false, here: here === 'aorta' },
+  ] });
+}
+function startRun(): void {
+  if (!world || world.roomId !== 'heart' || run) return;
+  const id = newRunId();
+  run = { id, start: performance.now(), oxygen: false, waypoints: pickWaypoints(game.state, id).map(x => ({ id: x, done: false, correct: false })) };
+  window.clearInterval(runTimer); runTimer = window.setInterval(runHud, 500);
+  runHud(); refresh();
+  hud.toast('배달 시작! 단서로 경유지를 찾고, 폐에서 산소를 실어 대동맥으로');
+}
+function stopRun(note: string | null): void {
+  if (!run) return;
+  run = null; window.clearInterval(runTimer); hud.setRun(null); refresh();
+  if (note) hud.toast(note);
+}
+/** One question about a recorded structure. null = closed without answering (nothing recorded). */
+async function fieldCheck(id: string, kind: QuizKind): Promise<boolean | null> {
+  const q = makeQuestion(id, kind, newRunId()), before = nextLocked(game.state), d = discoveries[id]!;
+  const pick = await dialog.show([{ who: '확인 문제', text: q.prompt, npc: null }], q.choices.map(c => ({ id: c.id, label: c.label, sub: '', disabled: false })));
+  if (pick === null) return null;
+  const correct = pick === q.answer, star = game.answerQuiz(id, kind, correct);
+  const answer = kind === 'room' ? roomNames[d.room]! : shortName(id);
+  if (correct) await say([{ who: '정답! · ' + d.name, text: (star ? '별 +1 (★' + starsOf(game.state, id) + '/3) · +5G' : '이 유형의 별은 이미 받았어요.') + NL + hints[id] + NL + MASTERY_DISCLAIMER, npc: null }]);
+  else await say([{ who: '아쉬워요 · 정답은 ' + answer, text: d.name + ' — ' + hints[id] + NL + '틀려도 잃는 건 없어요. 다음에 다시 와서 맞혀 봐요.', npc: null }]);
+  if (before && !nextLocked(game.state)?.ids.every(x => before.ids.includes(x))) hud.toast(before.title + '가 열렸어요! 새 구조가 반짝여요');
+  return correct;
+}
+async function runStep(t: Target): Promise<void> {
+  const r = run; if (!r) return;
+  const d = discoveries[t.id]!;
+  if (t.id === LOAD) {
+    if (r.oxygen) hud.toast('산소는 이미 실었어요 · 폐정맥을 따라 좌심방으로');
+    else { await say([{ who: d.name + ' · 산소 싣기', text: d.text, npc: null }]); game.discover(t.id); r.oxygen = true; hud.toast('산소를 실었어요! 적혈구가 밝은 붉은색이 됐어요'); }
+  } else if (t.id === DELIVER) {
+    if (!r.oxygen) { hud.toast('아직 산소를 싣지 않았어요 · 온몸을 돌아 우심방에서 다시 폐로'); return; }
+    const seconds = (performance.now() - r.start) / 1000;
+    game.discover(t.id);
+    const reward = game.finishRun({ runId: r.id, seconds, oxygen: true, waypoints: r.waypoints.map(x => ({ id: x.id, correct: x.done && x.correct })) });
+    stopRun(null);
+    if (reward) showRunResult(reward, seconds, r);
+  } else {
+    const wp = r.waypoints.find(x => x.id === t.id)!;
+    if (game.state.inspected.includes(hxKey(t.id))) {
+      const ok = await fieldCheck(t.id, 'name');
+      if (ok === null) return;
+      wp.done = true; wp.correct = ok;
+    } else {
+      await say([{ who: d.name + ' · 새 경유지', text: d.text, npc: null }]);
+      game.discover(t.id); wp.done = true; wp.correct = true;
+      hud.toast('단서만으로 새 구조를 찾았어요! 경유지 정답');
+    }
+  }
+  runHud();
+}
+function showRunResult(rw: RunReward, seconds: number, r: ActiveRun): void {
+  pauseInput();
+  const h = game.state.heartRun;
+  openSheet('혈류 배달 결과', (c, close) => {
+    const top = el('div', 'run-result');
+    top.append(el('div', 'run-grade grade-' + rw.grade, rw.grade), el('p', '', fmt(seconds) + (rw.best ? ' · 최고 기록!' : ' · 최고 ' + fmt(h.best ?? seconds)) + (rw.combo > 1 ? ' · 연속 ' + rw.combo + '판' : '')));
+    const lines = el('ul', 'run-lines'); for (const l of rw.lines) lines.append(el('li', '', l));
+    const wps = el('ul', 'run-lines'); for (const x of r.waypoints) wps.append(el('li', x.correct ? 'ok' : 'miss', (x.correct ? '✓ ' : '· ') + discoveries[x.id]!.name + ' — ' + hints[x.id]));
+    c.append(top, el('h3', '', '보상 +' + rw.gold + 'G · +' + rw.xp + 'XP'), lines, el('h3', '', '경유지'), wps);
+    if (rw.sighting) { const card = el('div', 'run-sighting'); card.append(el('b', '', (rw.sighting.first ? '새 목격 · ' : '다시 목격 · ') + rw.sighting.name), el('p', '', rw.sighting.text)); c.append(card); }
+    c.append(el('p', 'muted', '배달 ' + h.runs + '번째 · 목격 ' + h.seen.length + '종 · ' + MASTERY_DISCLAIMER));
+    const row = el('div', 'list');
+    row.append(button('row', '한 판 더 · 온몸을 돌아 우심방에서 출발', () => { close(); again(); }), button('row', '닫기', () => close()));
+    c.append(row);
+  });
+}
+function again(): void {
+  if (!world) return;
+  void travel({ to: 'heart', arrive: rooms.heart.spawn, facing: rooms.heart.spawnFacing, mode: 'flow', card: '대동맥 → 온몸 → 상대정맥 → 우심방' + NL + '다음 배달을 받으러 가요' });
+  let tries = 0;
+  const wait = () => { if (world && world.roomId === 'heart' && !traveling && !world.locked) startRun(); else if (++tries < 60) window.setTimeout(wait, 200); };
+  window.setTimeout(wait, 400);
 }
 
 async function say(lines: Line[]) { if (lines.length) await dialog.show(lines); }
@@ -454,6 +564,8 @@ async function interact(t: Target) {
         { id: 'lift4', label: '4층 · 라운지와 사무실', sub: '복도 안쪽에 내 자리', disabled: w.roomId === 'lift4' },
       ]);
       if (floor === 'lift1' || floor === 'lift4') void travel({ to: floor, arrive: rooms[floor].spawn, facing: 'down', mode: 'walk', card: floor === 'lift1' ? '1층' : '4층' });
+    } else if (run && (t.id === LOAD || t.id === DELIVER || run.waypoints.some(x => x.id === t.id && !x.done))) {
+      await runStep(t);
     } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q006.accepted && q6NormalDone(game.state)) {
       pauseInput(); openSupplyComparison(game);
     } else if (game.state.q006.accepted && supplyNote) {
@@ -516,11 +628,30 @@ async function interact(t: Target) {
       if (r.first) hud.toast('수첩에 적음 · ' + obs.note);
       if (r.done) window.setTimeout(() => hud.toast('관찰 2개 완료! +20XP · 귀환 장치로 돌아가거나 계속 탐험해요'), 1600);
     } else if (t.id.startsWith('hx-') && discoveries[t.id]) {
-      const d = discoveries[t.id]!;
-      await say([{ who: d.name, text: d.text, npc: null }]);
-      if (game.discover(t.id)) hud.toast('탐험 기록 · ' + d.name + ' (' + discovered(game.state).length + '/' + discoveryIds.length + ')');
+      const d = discoveries[t.id]!, known = game.state.inspected.includes(hxKey(t.id));
+      if (run) hud.toast('배달 중이에요 · 단서의 경유지를 찾아요 (구조 보기는 배달 뒤에)');
+      else if (!known && !isOpen(game.state, t.id)) { const tier = tierOf(t.id); hud.toast(tier.title + ' · 별 ' + totalStars(game.state) + '/' + tier.unlockStars + '개를 모으면 열려요'); }
+      else if (!known) {
+        await say([{ who: d.name, text: d.text, npc: null }]);
+        if (game.discover(t.id)) hud.toast('탐험 기록 · ' + d.name + ' (' + discovered(game.state).length + '/' + discoveryIds.length + ') · 다시 오면 확인 문제');
+      } else {
+        const stars = starsOf(game.state, t.id), done = stars >= 3;
+        const pick = await dialog.show([{ who: done ? d.name : '???', text: done ? '별 3개를 모은 구조예요. 연습 문제를 풀거나 설명을 다시 볼 수 있어요.' : '탐험 기록에 있는 구조예요. 이름표를 가려 두었어요. 기억나나요?', npc: null }], [
+          { id: 'quiz', label: done ? '연습 문제' : '확인 문제 풀기', sub: '별 ' + stars + '/3' + (done ? ' · 보상 없음' : ' · 맞히면 별 +1 · +5G · 틀려도 잃는 것 없음'), disabled: false },
+          { id: 'read', label: '설명 다시 읽기', sub: '이름과 설명을 봐요', disabled: false }]);
+        if (pick === 'quiz') await fieldCheck(t.id, nextKind(game.state, t.id, game.state.heartRun.runs + stars + game.state.revision));
+        else if (pick === 'read') await say([{ who: d.name, text: d.text, npc: null }]);
+      }
     } else if (t.id === 'guide') {
-      await say(talk('guide', game.state).lines);
+      if (w.roomId !== 'heart' || run || guideIntro) { const intro = guideIntro; guideIntro = false; await say(talk('guide', game.state).lines); if (intro) hud.toast('바디에게 다시 말을 걸면 혈류 배달 런을 할 수 있어요'); }
+      else {
+        const h = game.state.heartRun, lock = nextLocked(game.state);
+        const info = '배달 ' + h.runs + '번 · 최고 ' + (h.best !== null ? fmt(h.best) + ' (' + h.bestGrade + ')' : '없음') + ' · 구조 별 ' + totalStars(game.state) + '/' + maxStars() + (lock ? ' · 다음 해금: ' + lock.title + '(별 ' + lock.unlockStars + '개)' : '');
+        const pick = await dialog.show([{ who: '안내 로봇 바디', text: '삐빅! 혈류 배달 런을 해 볼래요? 적혈구를 싣고 폐에서 산소를 받아 대동맥까지 달려요. 이름 없이 단서만 보고 경유지 3곳을 찾을수록 보상이 커져요.' + NL + info, npc: null }], [
+          { id: 'run', label: '혈류 배달 런 시작', sub: '매번 골드·경험치 · 등급·연속·오늘 첫 배달 보너스 · 가끔 희귀 목격', disabled: false },
+          { id: 'talk', label: '안내 다시 듣기', sub: '심장 탐사 기본 안내', disabled: false }]);
+        if (pick === 'run') startRun(); else if (pick === 'talk') await say(talk('guide', game.state).lines);
+      }
     } else if (t.id === 'return-pad') {
       const go = await dialog.show([{ who: '귀환 장치', text: q1Text.returnPad, npc: null }],
         [{ id: 'go', label: q1Text.returnChoices.go, sub: q1Text.returnChoices.goSub, disabled: false }, { id: 'stay', label: q1Text.returnChoices.stay, sub: q1Text.returnChoices.staySub, disabled: false }]);
@@ -761,7 +892,7 @@ function importSave(close: () => void) {
   input.click();
 }
 
-if (import.meta.env.DEV) (window as unknown as Record<string, unknown>).__mq = { game, get world() { return world; } };
+if (import.meta.env.DEV) (window as unknown as Record<string, unknown>).__mq = { game, get world() { return world; }, get run() { return run; } };
 
 // ---------- Boot ----------
 void opening.ready(game.state.started).then(() => {

@@ -19,6 +19,8 @@ import { acceptQ2, observeQ2, reportQ2, selectQ2, checkQ2 } from '../domain/q002
 import type { ChamberId } from '../domain/q002-state';
 import type { ArticleSlot } from '../domain/article-state';
 import { discover } from '../domain/heart';
+import { answerQuiz, type QuizKind } from '../domain/mastery';
+import { finishRun, type RunResult, type RunReward } from '../domain/heart-run';
 import { Q1, acceptQ1, briefQ1, canEnterHeart, observeQ1 } from '../domain/quest';
 import { newState, validateState, type GameState } from '../domain/state';
 import { clearLunchPlan, drawLunch, orderLunch, planLunch, reportLunch, seeLunch, settleLunch, skipLunch, type Crave, type CraveChoice, type LunchPool } from '../domain/lunch';
@@ -118,6 +120,10 @@ export class Game {
   }
   order(itemId: string): void { this.commit(orderDrink(this.state, itemId, this.commandId())); }
   /** D103: buy one item at Jin-U (gold, bag and ledger change together). */
+  /** D106: a field check about a recorded heart structure. Returns whether a star was earned. */
+  answerQuiz(id: string, kind: QuizKind, correct: boolean): boolean { const r = answerQuiz(this.state, id, kind, correct); if (r.state === this.state) return false; this.commit(r.state); return r.star; }
+  /** D106: hands in a finished blood-delivery run (once per run id) and returns the reward breakdown. */
+  finishRun(res: RunResult): RunReward | null { const r = finishRun(this.state, res); if (r.state !== this.state) this.commit(r.state); return r.reward; }
   buyItem(itemId: string): void { this.commit(buyItem(this.state, itemId, this.commandId())); }
   /** D103: buy a piece of clothing at the Orbit Tailor, optionally wearing it at once. */
   buyOutfit(id: string, wear: boolean): void { const next = buyOutfit(this.state, id, wear); if (next !== this.state) this.commit(next); }

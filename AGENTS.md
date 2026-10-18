@@ -3,6 +3,7 @@
 ## 현재 상태와 다음 작업 (2026-10-15 D099 기준 · 새 작업을 시작하면 이 절부터 읽는다)
 
 - **동기화:** 다른 곳에서도 작업하므로 시작할 때 `git fetch` 후 원격 main을 fast-forward로 받아 로컬과 맞춘다. 로컬 변경이 있으면 보존하고 덮어쓰지 않는다.
+- **D106(2026-10-18):** 심장 학습 루프(설계 18 7절). 규칙 `src/domain/mastery.ts`(별·단계·문제), `src/domain/heart-run.ts`(배달 정산), 화면 main.ts `runStep/fieldCheck/showRunResult`, HUD `setRun`, 월드 `labelOverride/verbOverride/badges`. 단서·목격 `data/content/heart-mastery.v0.1.json`(초안), 수치 `data/balance/heart-run.v0.1.json`. 저장 `mastery`·`heartRun`(옛 저장은 빈 기록). 아침 브리핑은 사용자 결정으로 만들지 않는다.
 - **D105(2026-10-18):** 한강은 `areas` 분류 3(물, 충돌 막힘, 생성기 `river_from_bank` 근사). 간선도로를 건너는 연결은 지하보도(생성 zebra 5번째 값 1 → `underpasses`, 동네 문 `under-i-k` 쌍). 동네 저장 위치가 걸을 수 없게 되면 유로프라자 정문 앞으로 이행. 심장 학습 루프는 설계 18 제안(사용자 선택 대기, 구현 전).
 - **D104(2026-10-18):** 동네의 넓은 땅은 모두 유로프라자와 걸어서 이어져야 한다. 생성기 `connect_zebras`(자동 횡단보도 뒤 연결 검사, 3곳 추가·85곳)와 `tests/unit/district-reach.test.ts`가 지킨다. 지도를 다시 만들면 이 검사를 함께 돌린다. HUD 오른쪽 위 ‘유로프라자 복귀’(`.homebtn`, H 키, main.ts `returnToEuro` → `travel` → `exits.euroOut`)는 심장 밖에서만 보인다. 이어서 하기(D101)는 그대로.
 - **D103(2026-10-16):** 거리는 늘 낮(밤 그림·조명 없음, 점심 일정만 서울 시각). 걸음 84px/초. 진U 안(`jinu` 방, 점원 계산 7품목, `domain/shop.ts` `buyItem`)과 가상 옷가게 오비트 테일러(`tailor` 방, OSM 블록 `exits.tailorId`, 옷 판매 `buyOutfit`, 입어 보기 후 확정). 가격 원본 `data/balance/shops.v0.1.json`. 저장의 `shop`(가방·횟수)은 옛 저장에 없으면 빈 기록. 새 옷 id: denim·stripe·track·cardigan(+coat 판매). 확대·축소는 main.ts `setZoomStep`(±4단계, 기기 키 `medical-quest.view.zoom`). 탭 경로가 문을 스치면 들어가지 않는다(끝점이 문에서 24px 넘게 멀 때).

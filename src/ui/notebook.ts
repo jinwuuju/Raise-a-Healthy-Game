@@ -4,6 +4,8 @@ import { jinuItems, tailorItems } from '../domain/shop';
 import { notebookRecords } from '../application/notebook';
 import { heartText, inspectLabels, lookText, objective, q1Text } from '../application/story';
 import { discoveries, discoveryIds, roomProgress } from '../domain/heart';
+import { hints, maxStars, nextLocked, starsOf, totalStars } from '../domain/mastery';
+import { sightings } from '../domain/heart-run';
 import { Q1, Q1_OBSERVATIONS, q1Seen } from '../domain/quest';
 import { q2Text } from '../domain/q002-state';
 import { q3Text } from '../domain/q003-state';
@@ -161,19 +163,31 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
     const atlas = panels[3]!; atlas.append(el('h3', '', '인체 탐험'));
     if (!s.flags.includes(Q1.entered) && !Object.keys(records.anatomy).length) atlas.append(el('p', 'muted', '바디스코프로 들어가 발견한 구조를 여기에 기록해요.'));
     else {
-      fold(atlas, 'organ-heart', '심장 탐사 · ' + Object.values(records.anatomy).flat().length + '/' + discoveryIds.length, heart => {
+      fold(atlas, 'organ-heart', '심장 탐사 · ' + Object.values(records.anatomy).flat().length + '/' + discoveryIds.length + ' · 별 ' + totalStars(s) + '/' + maxStars(), heart => {
+        const lock = nextLocked(s);
+        heart.append(el('p', 'muted', '기록한 구조는 다시 가면 이름표가 가려진 확인 문제가 나와요. 유형마다 맞히면 별 1개(최대 3개).' + (lock ? ' 다음 해금: ' + lock.title + ' · 별 ' + totalStars(s) + '/' + lock.unlockStars : ' 모든 구조가 열렸어요.')));
         heart.append(el('p', 'muted', '필수 취재 관찰 A/B는 취재 파일에 있어요. 여기에는 별도로 발견한 구조만 모아요.'));
         for (const roomId of heartRoute) {
           const pr = roomProgress(s, roomId), title = rooms[roomId].title.split(' · ').pop()!;
           fold(heart, 'room-' + roomId, title + ' · ' + pr.found + '/' + pr.total, body => {
             for (const key of records.anatomy[roomId] ?? []) {
               const id = key.slice(3), d = discoveries[id]!;
-              fold(body, id, d.name, detail => { detail.append(el('p', '', d.text)); sources(detail, d.src); });
+              const st = starsOf(s, id);
+              fold(body, id, d.name + ' · ' + '★'.repeat(st) + '☆'.repeat(3 - st), detail => { detail.append(el('p', 'muted', '단서 · ' + hints[id]), el('p', '', d.text)); sources(detail, d.src); });
             }
             if (pr.total > pr.found) body.append(el('p', 'muted', '미발견 구조 ' + (pr.total - pr.found) + '곳 · 방을 걸으며 이름표를 찾아보세요.'));
           });
         }
       }, true);
+      const h = s.heartRun, mm = (n: number) => Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0');
+      fold(atlas, 'heart-run', '혈류 배달 런 · ' + h.runs + '번', body => {
+        body.append(el('p', '', h.runs ? '최고 기록 ' + (h.best !== null ? mm(h.best) : '-') + ' · 최고 등급 ' + (h.bestGrade ?? '-') + ' · 경유지 만점 ' + h.perfect + '번 · 지금까지 ' + h.goldEarned.toLocaleString('ko-KR') + 'G' : '우심방의 안내 로봇 바디에게 말을 걸면 배달을 시작해요. 매번 골드와 경험치를 받아요.'));
+        body.append(el('p', 'muted', '혈액 속 목격 · ' + h.seen.length + '/' + sightings.length + '종'));
+        for (const x of sightings) {
+          if (h.seen.includes(x.id)) fold(body, 'sight-' + x.id, x.name, d => d.append(el('p', '', x.text)));
+          else body.append(el('p', 'muted', '??? · 배달하다 보면 언젠가 지나가요'));
+        }
+      });
       atlas.append(el('p', 'muted', heartText.disclaimer));
       if (s.q003.accepted) fold(atlas, 'heart-disease-compare', '심장 · 질환 비교 (Q003 취재 초안)', body => {
         for (const mode of ['stenosis', 'regurgitation'] as const) if (s.q003.notes.includes(mode)) fold(body, 'compare-' + mode, q3Text.comparison[mode].label, detail => { detail.append(el('p', '', q3Text.comparison[mode].text), el('p', 'muted', q3Text.layerLimit)); sources(detail, ['nhlbi-valve-types'], q3Text.sources); });

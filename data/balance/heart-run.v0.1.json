@@ -1,0 +1,51 @@
+{
+ "schemaVersion": 1,
+ "balanceVersion": "heart-run-0.1",
+ "status": "prototype_rules",
+ "note": "D106 혈류 배달 런 보상 가설(설계 18). 반복 보상이라 판당 경험치를 작게 둔다(Lv.99까지 401,850XP 대비). 오답·느린 기록에 감점 없음.",
+ "parSeconds": 90,
+ "minSeconds": 20,
+ "gold": {
+  "base": 15,
+  "perCheckpoint": 10,
+  "grade": {
+   "S": 30,
+   "A": 15,
+   "B": 5,
+   "C": 0
+  },
+  "firstOfDay": 20,
+  "personalBest": 20,
+  "sightingNew": 30,
+  "sightingRepeat": 10
+ },
+ "xp": {
+  "base": 10,
+  "perCheckpoint": 5,
+  "gradeS": 10
+ },
+ "combo": [
+  1.0,
+  1.2,
+  1.4,
+  1.5
+ ],
+ "sightingChance": 0.12,
+ "star": {
+  "gold": 5
+ },
+ "grades": {
+  "S": {
+   "correct": 3,
+   "parRatio": 1.0
+  },
+  "A": {
+   "correct": 2,
+   "parRatio": 1.4
+  },
+  "B": {
+   "correct": 1,
+   "parRatio": 1.8
+  }
+ }
+}

@@ -88,6 +88,10 @@ export class World {
   heldAt: Valve | null = null;
   /** Undiscovered structures that sparkle faintly (heart rooms). */
   sparkTargets: string[] = [];
+  /** D106: tag text, action word and badge per target id (hidden names for field checks, locked deeper structures). */
+  labelOverride: Record<string, string> = {};
+  verbOverride: Record<string, string> = {};
+  badges: Record<string, string> = {};
   onValveWait: (v: Valve, seconds: number) => void = () => {};
   onBeat: (sound: 'S1' | 'S2') => void = () => {};
   private beatWord: { text: string; t: number } | null = null;
@@ -574,7 +578,8 @@ export class World {
       const aw = (isNear ? 8 : 6) * dpr;
       out.beginPath(); out.moveTo(ax - aw, ay - aw * 1.3); out.lineTo(ax + aw, ay - aw * 1.3); out.lineTo(ax, ay); out.closePath();
       out.fillStyle = isNear || quest ? '#f6d27a' : '#fff6e4'; out.fill(); out.lineWidth = 2 * dpr; out.strokeStyle = 'rgba(22,14,26,0.9)'; out.stroke();
-      const name = t.label, sub = isNear ? (this.touchHint ? '눌러서 ' + t.verb : 'E · ' + t.verb) : fresh ? '새 구조' : '';
+      const verb = this.verbOverride[t.id] ?? t.verb, name = this.labelOverride[t.id] ?? t.label;
+      const sub = isNear ? (this.touchHint ? '눌러서 ' + verb : 'E · ' + verb) : fresh ? '새 구조' : this.badges[t.id] ?? '';
       const fs1 = Math.round((isNear ? 16 : 14) * dpr), fs2 = Math.round(12 * dpr), pad = 9 * dpr;
       out.font = LABEL_FONT(fs1); const w1 = out.measureText(name).width;
       out.font = LABEL_FONT(fs2); const w2 = sub ? out.measureText(sub).width + 14 * dpr : 0;

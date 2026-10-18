@@ -1,0 +1,198 @@
+{
+ "id": "content.heart.mastery",
+ "status": "draft_unreviewed",
+ "review": null,
+ "updatedAt": "2026-10-18",
+ "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 학습용 단서입니다.",
+ "note": "D105/D106 심장 학습 루프(설계 18). 단서 문장은 data/content/heart-interior.v0.1.json의 출처 있는 본문을 줄여 쓴 것이며 구조 이름을 넣지 않는다. 새 사실을 더하지 않는다.",
+ "tiers": [
+  {
+   "id": "core",
+   "title": "핵심 구조",
+   "ids": [
+    "hx-svc",
+    "hx-sa",
+    "hx-tricuspid",
+    "hx-papillary-rv",
+    "hx-rvwall",
+    "hx-pa-branch",
+    "hx-exchange",
+    "hx-pv",
+    "hx-mitral",
+    "hx-lvwall",
+    "hx-av-below",
+    "hx-ascending"
+   ],
+   "unlockStars": 0
+  },
+  {
+   "id": "deep",
+   "title": "심화 구조",
+   "ids": [
+    "hx-avnode",
+    "hx-cs",
+    "hx-tv-below",
+    "hx-moderator",
+    "hx-crest",
+    "hx-capillary",
+    "hx-alveolus",
+    "hx-pv-start",
+    "hx-bachmann",
+    "hx-mv-below",
+    "hx-papillary-lv",
+    "hx-lbb",
+    "hx-sinus",
+    "hx-lca",
+    "hx-rca"
+   ],
+   "unlockStars": 12
+  },
+  {
+   "id": "detail",
+   "title": "세부 지형",
+   "ids": [
+    "hx-crista",
+    "hx-pectinate",
+    "hx-auricle",
+    "hx-fossa",
+    "hx-trabeculae",
+    "hx-infundibulum",
+    "hx-laa",
+    "hx-flap",
+    "hx-continuity",
+    "hx-apex",
+    "hx-stj"
+   ],
+   "unlockStars": 30
+  }
+ ],
+ "twins": [
+  [
+   "hx-tricuspid",
+   "hx-tv-below"
+  ],
+  [
+   "hx-mitral",
+   "hx-mv-below"
+  ],
+  [
+   "hx-fossa",
+   "hx-flap"
+  ],
+  [
+   "hx-papillary-rv",
+   "hx-tv-below"
+  ],
+  [
+   "hx-av-below",
+   "hx-sinus"
+  ]
+ ],
+ "hints": {
+  "hx-svc": "몸 위쪽(머리·목·팔)을 돈 피가 우심방으로 들어오는 큰 정맥의 입구",
+  "hx-crista": "우심방의 매끈한 뒤쪽 벽과 울퉁불퉁한 앞쪽 벽을 가르는 세로 근육 능선",
+  "hx-pectinate": "능선에서 빗살처럼 나란히 뻗은 우심방 앞벽의 근육 다발",
+  "hx-auricle": "우심방 앞쪽으로 튀어나온 귀 모양 주머니",
+  "hx-sa": "박동 신호가 시작되는 곳. 상대정맥과 우심방이 만나는 벽 속",
+  "hx-fossa": "태아 때 두 심방을 잇던 통로가 닫히고 남은 얕은 타원형 오목",
+  "hx-cs": "심장 근육을 거친 피가 모여 우심방으로 돌아오는 입구",
+  "hx-avnode": "심방에서 온 신호를 잠깐 늦춰 심실이 다 찬 뒤에 조이게 하는 곳",
+  "hx-tricuspid": "우심방과 우심실 사이, 판막잎 세 장짜리 문",
+  "hx-tv-below": "우심실 쪽에서 본 오른쪽 방실판막. 하얀 줄이 근육 기둥까지 뻗어 있다",
+  "hx-papillary-rv": "심실이 조일 때 함께 수축해 판막잎을 붙잡는 근육 기둥과 줄",
+  "hx-moderator": "심실중격에서 앞쪽 근육 기둥 밑동까지 공간을 가로지르는 근육 다리",
+  "hx-trabeculae": "우심실 안벽에 그물처럼 얽힌 굵은 근육 기둥",
+  "hx-crest": "우심실에서 들어오는 길과 나가는 길을 가르는 두툼한 능선",
+  "hx-infundibulum": "폐동맥판 바로 아래, 근육 기둥 없이 매끈한 출구 통로",
+  "hx-rvwall": "두께가 약 3~5mm로 반대쪽 펌프 벽의 3분의 1쯤인 얇은 벽",
+  "hx-pa-branch": "산소가 적은 피를 싣고 가지를 치며 가늘어지는 ‘동맥’",
+  "hx-alveolus": "숨 쉰 공기가 들어오는, 벽이 아주 얇은 작은 공기주머니",
+  "hx-capillary": "적혈구가 거의 한 줄로 지나가는 폐의 가장 가는 혈관",
+  "hx-exchange": "산소는 피로 들어가고 이산화탄소는 공기주머니로 나가는 일",
+  "hx-pv-start": "산소를 받은 피가 작은 정맥으로 모이기 시작하는 곳",
+  "hx-pv": "산소를 받은 피가 좌심방 뒤쪽으로 들어오는 보통 네 개의 입구",
+  "hx-laa": "좌심방에서 손가락처럼 튀어나온 좁고 긴 주머니",
+  "hx-flap": "태아 때 한쪽으로만 열려 피를 건너보내던 심방사이벽의 얇은 판",
+  "hx-mitral": "좌심방과 좌심실 사이, 판막잎 두 장짜리 문",
+  "hx-bachmann": "박동 신호가 우심방에서 좌심방으로 빠르게 건너오는 근육 통로",
+  "hx-mv-below": "좌심실 쪽에서 본 왼쪽 방실판막. 넓은 앞판막잎이 커튼처럼 걸려 있다",
+  "hx-papillary-lv": "좌심실의 크고 튼튼한 두 무리 근육 기둥",
+  "hx-continuity": "들어오는 문의 앞판막잎과 나가는 문이 섬유조직으로 맞붙은 곳",
+  "hx-lbb": "심실중격 왼쪽 면을 따라 부채처럼 퍼지는 신호 전도로",
+  "hx-apex": "심장의 뾰족한 끝",
+  "hx-lvwall": "온몸으로 피를 보내려고 반대쪽의 약 3배로 두꺼운 펌프 벽",
+  "hx-av-below": "좌심실의 출구. 반달 모양 판막잎 세 장",
+  "hx-sinus": "대동맥판막잎 바로 위의 불룩한 주머니 세 개",
+  "hx-lca": "왼쪽 주머니에서 시작해 심장 왼쪽 근육에 피를 보내는 혈관 입구",
+  "hx-rca": "오른쪽 주머니에서 시작해 우심방과 양쪽 심실 일부에 피를 보내는 혈관 입구",
+  "hx-stj": "불룩한 주머니 구간이 끝나고 매끈한 관이 시작되는 경계 능선",
+  "hx-ascending": "위로 오르다 활처럼 휘어 온몸으로 피를 보내는 큰 동맥의 시작"
+ },
+ "roomNames": {
+  "heart": "우심방",
+  "rv": "우심실",
+  "lung": "폐",
+  "la": "좌심방",
+  "lv": "좌심실",
+  "aorta": "대동맥 뿌리"
+ },
+ "sightings": [
+  {
+   "id": "neutrophil",
+   "name": "호중구",
+   "text": "백혈구 가운데 가장 흔하다. 핵이 여러 마디로 나뉘어 있고, 세균을 잡아먹는다. 염증이 생긴 곳에서는 혈관 벽을 빠져나간다.",
+   "weight": 30
+  },
+  {
+   "id": "lymphocyte",
+   "name": "림프구",
+   "text": "둥근 핵이 세포 대부분을 차지하는 작은 백혈구. 몸을 지키는 면역 반응을 이끈다.",
+   "weight": 25
+  },
+  {
+   "id": "monocyte",
+   "name": "단핵구",
+   "text": "백혈구 가운데 가장 크다. 혈관 밖 조직으로 나가 대식세포가 된다.",
+   "weight": 15
+  },
+  {
+   "id": "platelets",
+   "name": "혈소판 무리",
+   "text": "혈소판은 온전한 세포가 아니라 큰 세포(거핵세포)에서 떨어져 나온 조각이다. 피가 날 때 뭉쳐 구멍을 막는 데 앞장선다.",
+   "weight": 20
+  },
+  {
+   "id": "reticulocyte",
+   "name": "망상적혈구",
+   "text": "골수에서 갓 나온 어린 적혈구. 피 속에서 하루 이틀 지나면 다 자란 적혈구가 된다.",
+   "weight": 7
+  },
+  {
+   "id": "eosinophil",
+   "name": "호산구",
+   "text": "붉게 물드는 알갱이가 많은 백혈구. 기생충 감염과 알레르기 반응에 관여한다. 피 속에서는 드물다.",
+   "weight": 3
+  }
+ ],
+ "sources": [
+  {
+   "id": "heart-interior",
+   "title": "data/content/heart-interior.v0.1.json (단서의 원문)",
+   "url": null,
+   "checked": "2026-10-18"
+  },
+  {
+   "id": "medlineplus-blood",
+   "title": "MedlinePlus · Blood",
+   "url": "https://medlineplus.gov/blood.html",
+   "checked": null
+  },
+  {
+   "id": "ncbi-wbc",
+   "title": "NCBI Bookshelf · Clinical Methods, White Blood Cell Count and Differential",
+   "url": "https://www.ncbi.nlm.nih.gov/books/NBK261/",
+   "checked": null
+  }
+ ],
+ "sourceNote": "목격 카드 본문은 일반 혈액학 교과 수준의 사실만 쓰며 사용자 검수 전이다. checked가 null인 출처는 아직 본문을 대조하지 않았다."
+}

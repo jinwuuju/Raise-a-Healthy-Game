@@ -10,6 +10,8 @@ import { emptyQ5, validateQ5, type Q5State } from './q005-state';
 import { emptyQ6, validateQ6, type Q6State } from './q006-state';
 import { emptyLunch, validateLunch, type LunchState } from './lunch';
 import { emptyShop, validateShop, type ShopState } from './shop';
+import { emptyMastery, validateMastery, type Mastery } from './mastery';
+import { emptyHeartRun, validateHeartRun, type HeartRunState } from './heart-run';
 import { canStand, canStandIn, footRect } from '../world/collision';
 import { rooms, roomsD093, roomsD094 } from '../world/rooms';
 import { isHeartRoom, overlap, roomIds, type Dir, type RoomId } from '../world/types';
@@ -33,6 +35,10 @@ export type GameState = {
   lunch: LunchState;
   /** 진U 가방·오비트 테일러 구매 기록(D103). 옛 저장에는 없으며 빈 기록으로 읽는다. */
   shop: ShopState;
+  /** D106 heart learning: stars per recorded structure (old saves: empty). */
+  mastery: Mastery;
+  /** D106 blood-delivery run results (old saves: empty). */
+  heartRun: HeartRunState;
   // No `settings`: the in-game time-of-day setting was removed (D068, lunch step 5). The game follows the device clock in Asia/Seoul (domain/clock).
 };
 
@@ -56,6 +62,8 @@ export function newState(): GameState {
     cafe: { welcomeUsed: false, orderCount: 0, lastOrder: null, restedAt: null },
     lunch: emptyLunch(),
     shop: emptyShop(),
+    mastery: emptyMastery(),
+    heartRun: emptyHeartRun(),
   };
 }
 
@@ -143,6 +151,8 @@ export function validateState(value: unknown): GameState {
   if (!cafe || typeof cafe.welcomeUsed !== 'boolean' || !integer(cafe.orderCount) || (cafe.restedAt !== null && !date(cafe.restedAt))) throw new Error('카페 기록이 잘못되었습니다.');
   const lo = cafe.lastOrder as Record<string, unknown> | null;
   if (lo !== null && (!lo || typeof lo.itemId !== 'string' || !integer(lo.price) || !date(lo.orderedAt))) throw new Error('카페 주문 기록이 잘못되었습니다.');
+  const mastery = validateMastery(s.mastery);
+  if (Object.keys(mastery).some(id => !(s.inspected as string[]).includes('hx:' + id))) throw new Error('탐험 기록 없는 구조에 별이 있습니다.');
   // Older schema4 saves carry `settings.time` (낮/노을/밤/실제 시간). It is read and ignored, whatever its value, and is not written back.
   return {
     schemaVersion: 4, contentVersion: 'redesign-1', balanceVersion: 'cafe-0.1', saveId: s.saveId, revision: s.revision,
@@ -160,6 +170,8 @@ export function validateState(value: unknown): GameState {
     cafe: { welcomeUsed: cafe.welcomeUsed, orderCount: cafe.orderCount, restedAt: (cafe.restedAt as string | null), lastOrder: lo ? { itemId: lo.itemId as string, price: lo.price as number, orderedAt: lo.orderedAt as string } : null },
     lunch: validateLunch(s.lunch),
     shop: validateShop(s.shop),
+    mastery,
+    heartRun: validateHeartRun(s.heartRun),
   };
 }
 
