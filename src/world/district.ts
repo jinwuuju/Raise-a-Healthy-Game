@@ -22,6 +22,10 @@ export type Lane = { line: Polyline; axis: 'NS' | 'EW' | null; stop: number };
 export type Crosswalk = { id: string; road: 'NS' | 'EW'; poly: Point[]; core: Point[]; ends: [Point, Point] };
 /** Plain zebra crossing without signals (D098), where small roads meet big ones and along long stretches. */
 export type Zebra = { poly: Point[]; ends: [Point, Point] };
+/** D105: pedestrian underpass (나들목) under an expressway: two stair entrances joined by a tunnel (a pair of doors). */
+export type Underpass = { ends: [Point, Point]; dir: Point };
+/** Area classes of `dareas` (D105 adds the Han river, which is solid ground for walking purposes). */
+export const AREA_WATER = 3;
 type Chain = { axis: 'NS' | 'EW'; pts: Point[]; w: number };
 
 export let DISTRICT_SIZE = exits.size;
@@ -36,6 +40,7 @@ export let crossroads: Point = { x: 0, y: 0 };
 export let lanes: Lane[] = [];
 export let crosswalks: Crosswalk[] = [];
 export let zebras: Zebra[] = [];
+export let underpasses: Underpass[] = [];
 export let anchors: ReturnType<typeof computeAnchors> = null!;
 export const APPROACH = 70, BAND = 11;
 let loaded = false, loading: Promise<void> | null = null;
@@ -94,7 +99,11 @@ function init(raw: Raw): void {
       return { line, axis, stop: through ? s - APPROACH - BAND - 8 : -1 };
     });
   });
-  zebras = raw.zebras.map(z => {
+  underpasses = raw.zebras.filter(z => z[4] === 1).map(z => {
+    const A = { x: z[0]!, y: z[1]! }, B = { x: z[2]!, y: z[3]! }, L = Math.hypot(B.x - A.x, B.y - A.y) || 1;
+    return { ends: [A, B] as [Point, Point], dir: { x: (B.x - A.x) / L, y: (B.y - A.y) / L } };
+  });
+  zebras = raw.zebras.filter(z => z[4] !== 1).map(z => {
     const A = { x: z[0]!, y: z[1]! }, B = { x: z[2]!, y: z[3]! }, L = Math.hypot(B.x - A.x, B.y - A.y) || 1, u = { x: -(B.y - A.y) / L * 10, y: (B.x - A.x) / L * 10 };
     return { ends: [A, B] as [Point, Point], poly: [{ x: A.x - u.x, y: A.y - u.y }, { x: B.x - u.x, y: B.y - u.y }, { x: B.x + u.x, y: B.y + u.y }, { x: A.x + u.x, y: A.y + u.y }] };
   });
@@ -203,13 +212,14 @@ export function maskBlocked(m: CollisionMask, x: number, y: number): boolean {
   return (m.data[i >> 3]! & (1 << (i & 7))) !== 0;
 }
 
-/** Collision mask (1 = blocked) at 4 px cells: carriageways of the big roads except crosswalks (buildings are solid blocks). */
+/** Collision mask (1 = blocked) at 4 px cells: carriageways of the big roads except crosswalks, and the river (buildings are solid blocks). */
 export function buildMask(): CollisionMask {
   const w = Math.ceil(DISTRICT_SIZE / MASK_CELL), h = w, data = new Uint8Array(Math.ceil(w * h / 8)), s = 1 / MASK_CELL;
   const set = (v: number) => (x: number, y: number) => { const i = y * w + x; if (v) data[i >> 3]! |= 1 << (i & 7); else data[i >> 3]! &= ~(1 << (i & 7)); };
   for (const r of droads) if (r.kind === 0 && !r.bridge) for (const q of strokePolys(r.pts, r.w)) scanPoly(q, w, h, set(1), s);
   for (const c of crosswalks) scanPoly(c.poly, w, h, set(0), s);
   for (const z of zebras) scanPoly(z.poly, w, h, set(0), s);
+  for (const a of dareas) if (a.cls === AREA_WATER) scanPoly(a.pts, w, h, set(1), s);
   return { cell: MASK_CELL, w, h, data };
 }
 export function inPoly(p: Point, pts: Point[]): boolean {

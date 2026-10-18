@@ -126,6 +126,10 @@ def main():
             cls = ('green' if t.get('leisure') in ('park', 'garden', 'playground') or t.get('landuse') in ('grass', 'meadow') or t.get('natural') in ('grassland', 'wood', 'scrub')
                    else 'parking' if t.get('amenity') == 'parking' else 'school' if t.get('amenity') in ('school', 'kindergarten') else None)
             if cls and len(pts) > 3: areas.append({'id': e['id'], 'cls': cls, 'pts': [m2px(*p) for p in simplify_ring(pts, 0.5)]})
+    # D105: the Han river. The extract has no river-area polygon (only the centre line), so the water is everything north of
+    # the river edge of Jamwon Hangang Park (its northern boundary), clipped to the map. Approximate shoreline, game use only.
+    bank = next((e for e in els if e['type'] == 'way' and e.get('tags', {}).get('name') == '잠원한강공원' and 'geometry' in e), None)
+    if bank: areas.append({'id': bank['id'], 'cls': 'water', 'pts': river_from_bank([m2px(*local(p)) for p in bank['geometry']], round(2 * HALF * PX))})
     # Special buildings that already have game art / entrances.
     special = {}
     stations = [[e['tags']['name'], *m2px(*local(e))] for e in els if e['type'] == 'node' and e.get('tags', {}).get('railway') == 'station' and 'name' in e['tags'] and abs(local(e)[0]) < HALF and abs(local(e)[1]) < HALF]
@@ -144,7 +148,7 @@ def main():
     routes = make_routes(roads)
     zebras = make_zebras(roads, size, blocks, (2154, 2502 - 3840 // 2 + size // 2) if False else crossroads_px())
     ep = next(b for b in blocks if b['special'] == 'europlaza')
-    zebras += connect_zebras(roads, size, blocks, zebras, crossroads_px(), (ep['x'] + 100, ep['y'] + ep['d'] + 14))
+    zebras += connect_zebras(roads, size, blocks, zebras, crossroads_px(), (ep['x'] + 100, ep['y'] + ep['d'] + 14), [a['pts'] for a in areas if a['cls'] == 'water'])
     data = {'version': '0.1', 'licence': 'Map data (c) OpenStreetMap contributors, ODbL 1.0', 'mPerTile': 3, 'pxPerM': round(PX, 4),
             'halfMetres': HALF, 'radiusMetres': RADIUS, 'sizePx': size, 'centrePx': m2px(0, 0),
             'places': {k: m2px(*v) for k, v in PLACES.items()}, 'special': special,
@@ -174,7 +178,7 @@ def fit_line(pts, vertical):
 def write_game(data):
     K = {'major': 0, 'minor': 1, 'path': 2, 'link': 3}
     CL = ['general', 'commercial', 'office', 'home', 'apartment', 'hotel', 'school', 'religious', 'parking']
-    AC = ['green', 'parking', 'school']
+    AC = ['green', 'parking', 'school', 'water']
     fits = {}
     for name, key, vertical in (('논현로', 'ns', True), ('도산대로', 'ew', False)):
         ways = [r for r in data['roads'] if r['name'] == name and r['kind'] == 'major']
@@ -431,7 +435,7 @@ def make_zebras(roads, size, blocks, crossroads):
     return zebras
 
 # ---------- D104: every walkable area connects back to Euro Plaza ----------
-def connect_zebras(roads, size, blocks, zebras, crossroads, start, min_cells=150):
+def connect_zebras(roads, size, blocks, zebras, crossroads, start, water=(), min_cells=150):
     '''Extra plain zebra crossings so no sizeable walkable area is cut off from Euro Plaza by big roads.
     Mirrors the game's collision at 8 px: big non-bridge carriageways block (all of them, trunk included), zebras and the
     Eulji signal crossings open them, building blocks are solid. Areas that are not reachable get the shortest crossing
@@ -469,6 +473,7 @@ def connect_zebras(roads, size, blocks, zebras, crossroads, start, min_cells=150
         for j in range(max(0, (b['y'] - 4) // cell), min(n, (b['y'] + b['d'] + 4) // cell + 1)):
             for i in range(max(0, (b['x'] - 4) // cell), min(n, (b['x'] + b['w'] + 4) // cell + 1)):
                 if b['x'] - 4 <= i * cell + 4 <= b['x'] + b['w'] + 4 and b['y'] - 3 <= j * cell + 4 <= b['y'] + b['d'] + 4: g[j * n + i] = 2
+    for w in water: fill(w, 2)
     for k in range(n): g[k] = g[(n - 1) * n + k] = g[k * n] = g[k * n + n - 1] = 2
     lab = [-1] * (n * n); sizes = []
     for s in range(n * n):
@@ -523,12 +528,41 @@ def connect_zebras(roads, size, blocks, zebras, crossroads, start, min_cells=150
             if not best: continue
             t, x0, y0, dx, dy, via = best
             z = [round(x0 - dx * 2), round(y0 - dy * 2), round(x0 + dx * (t + 2)), round(y0 + dy * (t + 2))]
+            # D105: nobody paints a zebra across an expressway; under one the crossing is a pedestrian underpass (나들목).
+            along = [(z[0] + (z[2] - z[0]) * k / 8, z[1] + (z[3] - z[1]) * k / 8) for k in range(1, 8)]
+            if any(r['hw'] in ('trunk', 'motorway') and not r['bridge'] and any(dist_to(r['pts'], q) < r['w'] / 2 for q in along) for r in roads if r['kind'] == 'major'): z.append(1)
             added.append(z); fill(zpoly(z), 0)
             linked |= {C} | via; progress = True
         if not progress: break
     left = sorted((sizes[c] for c in range(len(sizes)) if sizes[c] >= min_cells and c not in linked), reverse=True)
     print('connect: added', len(added), 'zebras; unreachable areas left (8px cells):', left[:10])
     return added
+
+
+
+def dist_to(pts, p):
+    best = 1e18
+    for a, b in zip(pts, pts[1:]):
+        dx, dy = b[0] - a[0], b[1] - a[1]; L = dx * dx + dy * dy or 1
+        t = max(0, min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L))
+        best = min(best, math.hypot(a[0] + dx * t - p[0], a[1] + dy * t - p[1]))
+    return best
+
+
+def river_from_bank(ring, size, step=16):
+    """Water polygon north of a riverside park: for each x the park's northernmost boundary crossing is the shore."""
+    def north(x):
+        ys = [ay + (x - ax) / (bx - ax) * (by - ay) for (ax, ay), (bx, by) in zip(ring, ring[1:] + ring[:1]) if (ax > x) != (bx > x)]
+        return min(ys) if ys else None
+    shore = []
+    for x in range(0, size + 1, step):
+        y = north(x)
+        if y is None or y <= 0:
+            if shore: break
+            continue
+        shore.append((x, min(size, round(y))))
+    if not shore: return []
+    return [(shore[0][0], 0)] + shore + [(shore[-1][0], 0)]
 
 
 def m_w(r): return r['w']

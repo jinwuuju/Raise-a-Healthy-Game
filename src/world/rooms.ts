@@ -2,7 +2,7 @@ import { TILE, type Dir, type Point, type Rect, type RoomId } from './types';
 import type { Look } from '../domain/appearance';
 import { heartRooms } from './heart-rooms';
 import type { Organ } from './organ-types';
-import { DISTRICT_SIZE, anchors, buildMask, maskBlocked, type CollisionMask, crossroads, crosswalks, dblocks, districtLoaded, droads, dstations, exits, offset, pointAt, polyline, zebras } from './district';
+import { DISTRICT_SIZE, anchors, buildMask, maskBlocked, type CollisionMask, crossroads, crosswalks, dblocks, districtLoaded, droads, dstations, exits, offset, pointAt, polyline, underpasses, zebras } from './district';
 
 /*
  * Map geometry only (no rendering). Distances are game pixels, 1 tile = 16px.
@@ -42,7 +42,8 @@ export type Prop = { kind: PropKind; x: number; y: number; v: number; solid: Rec
 
 export type NpcSpec = { id: string; name: string; x: number; y: number; facing: Dir; look: Look; route: Point[] | null; speed: number };
 export type Target = { id: string; label: string; verb: string; x: number; y: number; r: number; npc: string | null };
-export type Door = { id: string; zone: Rect; to: RoomId; arrive: Point; facing: Dir; label: string; card?: string | null };
+export type Door = { id: string; zone: Rect; to: RoomId; arrive: Point; facing: Dir; label: string; card?: string | null;
+  /** Toast after arriving (D105 underpasses). */ note?: string };
 export type Marking = { kind: 'crossV' | 'crossH' | 'dashV' | 'dashH' | 'centerV' | 'centerH' | 'stop' | 'slow30' | 'stall' | 'edgeH' | 'edgeV'; x: number; y: number; w: number; h: number };
 export type WallDecor = { kind: 'window' | 'whiteboard' | 'clock' | 'elevator' | 'sign' | 'notice' | 'menu' | 'shelf' | 'poster' | 'mailbox' | 'neon' | 'jinu' | 'curtain'; x: number; w: number; text: string };
 export type Interior = { reference?: 'lobby' | 'lifthall' | 'floor4' | 'office' | 'lift' | 'lounge'; openings?: Rect[];
@@ -300,7 +301,8 @@ function district(): Room {
     for (let x = Math.max(0, Math.floor((b.x - 4) / 8)); x <= Math.min(occN - 1, Math.floor((b.x + b.w + 4) / 8)); x++) occ[y * occN + x] = 1;
   const mask = buildMask();
   const free = (p: Point) => p.x > 8 && p.y > 8 && p.x < size - 8 && p.y < size - 8 && !maskBlocked(mask, p.x, p.y) && occ[Math.floor(p.y / 8) * occN + Math.floor(p.x / 8)] === 0;
-  const nearCrossing = (p: Point) => Math.hypot(p.x - crossroads.x, p.y - crossroads.y) < 150 || zebras.some(z => Math.hypot(p.x - (z.ends[0].x + z.ends[1].x) / 2, p.y - (z.ends[0].y + z.ends[1].y) / 2) < 70);
+  const nearCrossing = (p: Point) => Math.hypot(p.x - crossroads.x, p.y - crossroads.y) < 150 || zebras.some(z => Math.hypot(p.x - (z.ends[0].x + z.ends[1].x) / 2, p.y - (z.ends[0].y + z.ends[1].y) / 2) < 70)
+    || underpasses.some(u => u.ends.some(e => Math.hypot(p.x - e.x, p.y - e.y) < 40));
   // Ginkgo trees and street lamps along the outer kerbs of every big road (one-way carriageways: their outer side only).
   const props: Prop[] = [];
   for (const r of droads) {
@@ -336,6 +338,14 @@ function district(): Room {
     npcs.push(npc('w' + (++k), '', route[0]!.x, route[0]!.y, 'down', walkerLooks[k % walkerLooks.length]!, route, 22 + (k % 6)));
   }
   const snapFree = (p: Point): Point => { for (let r = 0; r < 120; r += 4) for (let a = 0; a < 16; a++) { const q = { x: Math.round(p.x + Math.cos(a * Math.PI / 8) * r), y: Math.round(p.y + Math.sin(a * Math.PI / 8) * r) }; if (free(q)) return q; } return p; };
+  // D105: a pedestrian underpass (나들목) under an expressway is a pair of stair entrances; stepping in comes out on the far side.
+  const face = (v: Point): Dir => Math.abs(v.x) > Math.abs(v.y) ? (v.x > 0 ? 'right' : 'left') : (v.y > 0 ? 'down' : 'up');
+  const underDoors: Door[] = underpasses.flatMap((u, i) => ([0, 1] as const).map(k => {
+    // out: direction away from the road on the far side; the stair's own zone sits a little back from the kerb (at - out).
+    const at = u.ends[k], far = u.ends[1 - k]!, out = k === 0 ? u.dir : { x: -u.dir.x, y: -u.dir.y };
+    return { id: 'under-' + i + '-' + k, zone: { x: Math.round(at.x - out.x * 5 - 8), y: Math.round(at.y - out.y * 5 - 7), w: 16, h: 14 }, to: 'district' as RoomId,
+      arrive: snapFree({ x: far.x + out.x * 20, y: far.y + out.y * 20 }), facing: face(out), label: '나들목 지하보도', note: '나들목 지하보도로 길을 건넜어요.' };
+  }));
   const apgu = dstations.find(s => s.name === '압구정'), station = snapFree(apgu ?? { x: crossroads.x, y: 60 });
   return finish({
     id: 'district', title: '신사·압구정 일대 · 유로프라자 반경 1km (실제 축척)', cols, rows, tiles, buildings: [euro, ...blocks], props: safeProps, npcs, markings: [], interior: null,
@@ -354,6 +364,7 @@ function district(): Room {
       { id: 'cafe-door', zone: { x: A.cafeDoor.x - 8, y: A.cafeDoor.y - 6, w: 17, h: 12 }, to: 'cafe', arrive: { x: 240, y: 168 }, facing: 'up', label: '비투비씨 카페' },
       { id: 'jinu-door', zone: A.jinuDoor, to: 'jinu', arrive: { x: 128, y: 152 }, facing: 'up', label: '진U 편의점' },
       { id: 'tailor-door', zone: A.tailorDoor, to: 'tailor', arrive: { x: 128, y: 168 }, facing: 'up', label: '오비트 테일러' },
+      ...underDoors,
     ],
   });
 }

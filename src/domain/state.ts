@@ -107,7 +107,9 @@ export function validateState(value: unknown): GameState {
     const rebuiltLobby = place.room === 'lobby' && wasLegacyLobbyPosition(place);
     const d093 = place.room in roomsD093 && canStandIn(roomsD093[place.room as keyof typeof roomsD093], place);
     const d094 = place.room in roomsD094 && canStandIn(roomsD094[place.room as keyof typeof roomsD094], place);
-    if (!isHeartRoom(place.room) && !builtOver && !rebuiltLobby && !d093 && !d094 && !wasD092Position(place.room, place)) throw new Error('저장된 위치가 올바르지 않습니다.');
+    // D105: the district map is regenerated (the river, crossings): a spot that is now water or road reopens at Euro Plaza.
+    const regenerated = place.room === 'district' && place.x >= 0 && place.y >= 0;
+    if (!isHeartRoom(place.room) && !regenerated && !builtOver && !rebuiltLobby && !d093 && !d094 && !wasD092Position(place.room, place)) throw new Error('저장된 위치가 올바르지 않습니다.');
     const r = rooms[place.room];
     place = { room: place.room, x: r.spawn.x, y: r.spawn.y, facing: r.spawnFacing };
   }

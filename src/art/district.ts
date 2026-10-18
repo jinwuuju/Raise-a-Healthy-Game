@@ -1,6 +1,6 @@
 import { hash2, makeCanvas } from './pixel';
 import {
-  APPROACH, BAND, DISTRICT_SIZE, carriageways, exits, crossroads, crosswalks, dareas, dblocks, droads, nearestS, pointAt, polyline, scanPoly, strokePolys, zebras,
+  APPROACH, BAND, DISTRICT_SIZE, carriageways, exits, crossroads, crosswalks, dareas, dblocks, droads, nearestS, pointAt, polyline, scanPoly, strokePolys, zebras, underpasses, AREA_WATER,
 } from '../world/district';
 import type { Point } from '../world/types';
 
@@ -10,13 +10,14 @@ import type { Point } from '../world/types';
  * Polygons are filled by scanline so edges stay hard pixels (no anti-aliasing), matching the rest of the game.
  */
 const CHUNK = 256;
-const enum C { PAVE, GREEN, PARKING, SCHOOL, CURB, WALK, MAJOR, MINOR, PATH, MARK, TACTILE, ZEBRA }
+const enum C { PAVE, GREEN, PARKING, SCHOOL, CURB, WALK, MAJOR, MINOR, PATH, MARK, TACTILE, ZEBRA, WATER, SHORE, STAIR, STAIRWALL }
 type RGB = [number, number, number];
 const hex = (h: string): RGB => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
 const P = {
   pave: [hex('#cfc6b4'), hex('#d3cab8'), hex('#c9c0ae')], paveLine: hex('#bdb3a0'), walk: hex('#dcd3c2'), walkLine: hex('#c8bda9'), curb: hex('#9e9686'),
   major: [hex('#55595f'), hex('#5a5e64'), hex('#505459')], minor: [hex('#6a6d72'), hex('#6f7277'), hex('#66696e')], path: hex('#cbbfa3'),
   green: [hex('#86b15f'), hex('#7aa555'), hex('#93bc6a')], parking: hex('#aaa59b'), school: hex('#d8c79a'), mark: hex('#eeeae0'), tactile: hex('#e0b93e'), zebra: hex('#f1eee6'),
+  water: [hex('#4f86b8'), hex('#5b93c4'), hex('#4679ab')], ripple: hex('#8cb9de'), shore: hex('#b9ab8a'), stair: [hex('#3b3e45'), hex('#6d717a')], stairWall: hex('#8e8a80'),
 };
 function colour(c: number, x: number, y: number): RGB {
   const n = hash2(x, y, 3);
@@ -32,6 +33,13 @@ function colour(c: number, x: number, y: number): RGB {
     case C.MARK: return P.mark;
     case C.TACTILE: return P.tactile;
     case C.ZEBRA: return P.zebra;
+    case C.WATER: { // the Han river (D105): slow horizontal ripples on blue
+      const w = hash2(x >> 3, y >> 2, 7);
+      return w > 0.93 && (x & 7) < 5 ? P.ripple : P.water[n < 0.2 ? 1 : n > 0.9 ? 2 : 0]!;
+    }
+    case C.SHORE: return P.shore;
+    case C.STAIR: return (y % 3) === 0 ? P.stair[1]! : P.stair[0]!;
+    case C.STAIRWALL: return P.stairWall;
     default: return (x & 15) === 0 || (y & 15) === 0 ? P.paveLine : P.pave[n < 0.25 ? 1 : n > 0.9 ? 2 : 0]!;
   }
 }
@@ -42,7 +50,10 @@ let shapes: Shape[] | null = null;
 function groundShapes(): Shape[] {
   if (shapes) return shapes;
   const out: Shape[] = [];
-  for (const a of dareas) out.push({ cls: [C.GREEN, C.PARKING, C.SCHOOL][a.cls] ?? C.PAVE, pts: a.pts });
+  for (const a of dareas) {
+    if (a.cls === AREA_WATER) { out.push({ cls: C.SHORE, pts: a.pts.map(p => ({ x: p.x, y: p.y + (p.y > 0 ? 6 : 0) })) }); out.push({ cls: C.WATER, pts: a.pts }); }
+    else out.push({ cls: [C.GREEN, C.PARKING, C.SCHOOL][a.cls] ?? C.PAVE, pts: a.pts });
+  }
   for (const r of droads) if (r.kind === 0) for (const q of strokePolys(r.pts, r.w + 2 * r.sw + 4)) out.push({ cls: C.CURB, pts: q });
   for (const r of droads) if (r.kind === 0) for (const q of strokePolys(r.pts, r.w + 2 * r.sw)) out.push({ cls: C.WALK, pts: q });
   for (const r of droads) if (r.kind === 2) for (const q of strokePolys(r.pts, r.w)) out.push({ cls: C.PATH, pts: q });
@@ -68,6 +79,12 @@ function groundShapes(): Shape[] {
       out.push({ cls: C.ZEBRA, pts: [p0, p1, { x: p1.x + u.x, y: p1.y + u.y }, { x: p0.x + u.x, y: p0.y + u.y }] });
     }
     for (const e of c.ends) out.push({ cls: C.TACTILE, pts: [{ x: e.x - 5, y: e.y - 5 }, { x: e.x + 5, y: e.y - 5 }, { x: e.x + 5, y: e.y + 5 }, { x: e.x - 5, y: e.y + 5 }] });
+  }
+  // D105: underpass (나들목) stair entrances: a stone frame around a dark stairwell going down, at both kerbs.
+  for (const u of underpasses) for (const k of [0, 1] as const) {
+    const s = k === 0 ? -5 : 5, e = { x: u.ends[k].x + u.dir.x * s, y: u.ends[k].y + u.dir.y * s }; // a little back from the kerb
+    const sq = (r: number) => [{ x: e.x - r, y: e.y - r * 0.7 }, { x: e.x + r, y: e.y - r * 0.7 }, { x: e.x + r, y: e.y + r * 0.7 }, { x: e.x - r, y: e.y + r * 0.7 }];
+    out.push({ cls: C.STAIRWALL, pts: sq(10) }, { cls: C.STAIR, pts: sq(7) });
   }
   shapes = out.map(s => ({ ...s, box: 0 } as Shape));
   return shapes;
@@ -117,7 +134,7 @@ export function districtMinimap(): HTMLCanvasElement {
   const s = 1 / 8, { c, g } = makeCanvas(DISTRICT_SIZE * s, DISTRICT_SIZE * s);
   g.fillStyle = '#bdb5a5'; g.fillRect(0, 0, c.width, c.height);
   const path = (pts: Point[]) => { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p.x * s, p.y * s) : g.moveTo(p.x * s, p.y * s)); };
-  for (const a of dareas) { path(a.pts); g.closePath(); g.fillStyle = a.cls === 0 ? '#6faa4c' : '#a8a397'; g.fill(); }
+  for (const a of dareas) { path(a.pts); g.closePath(); g.fillStyle = a.cls === 0 ? '#6faa4c' : a.cls === AREA_WATER ? '#4f86b8' : '#a8a397'; g.fill(); }
   g.lineCap = g.lineJoin = 'round';
   for (const r of droads) { if (r.kind === 2) continue; path(r.pts); g.lineWidth = Math.max(1, r.w * s); g.strokeStyle = r.kind === 0 ? '#4b505b' : '#666a74'; g.stroke(); }
   for (const b of dblocks) { g.fillStyle = b.special === 'europlaza' ? '#e8c88a' : b.special === 'cafe' ? '#f08a6a' : b.special === 'jinu' ? '#2fa59a' : b.id === exits.tailorId ? '#b87a96' : '#8b8f9c'; g.fillRect(Math.floor(b.x * s), Math.floor((b.y - b.h * 0.3) * s), Math.ceil(b.w * s), Math.ceil((b.d + b.h * 0.3) * s)); }

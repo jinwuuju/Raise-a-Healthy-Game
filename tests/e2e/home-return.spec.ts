@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /** D104: continuing from a far, formerly cut-off corner of the district, and the Euro Plaza return button. */
-type Hook = { world: { roomId: string; player: { x: number; y: number } }; game: { state: { at: { room: string; x: number; y: number } }; importState(s: object): void } };
+type Hook = { world: { roomId: string; player: { x: number; y: number }; tap(p: { x: number; y: number }): void }; game: { state: { at: { room: string; x: number; y: number } }; importState(s: object): void } };
 const where = (p: Page) => p.evaluate(() => { const h = (window as unknown as { __mq: Hook }).__mq; return { room: h.world.roomId, x: Math.round(h.world.player.x), y: Math.round(h.world.player.y) }; });
 const ready = (p: Page) => p.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world);
 const FAR = { room: 'district', x: 3151, y: 175, facing: 'right' }; // a real save stood here (north of Olympic-daero)
@@ -12,7 +12,7 @@ async function startAt(p: Page, at: object) {
   await ready(p); await p.waitForTimeout(700);
 }
 
-for (const [width, height] of [[1280, 900], [360, 640]]) test(`far save continues in place; the return button brings the reporter to Euro Plaza ${width}x${height}`, async ({ page }) => {
+for (const [width, height] of [[1280, 900], [360, 640], [390, 844], [844, 390], [320, 568]]) test(`far save continues in place; the return button brings the reporter to Euro Plaza ${width}x${height}`, async ({ page }) => {
   test.setTimeout(60000);
   await page.setViewportSize({ width: width!, height: height! });
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
@@ -49,5 +49,24 @@ test('the return button is hidden inside the heart', async ({ page }) => {
   await expect(page.getByRole('button', { name: '유로프라자 앞으로 복귀' })).toBeHidden();
   await page.locator('#view').focus(); await page.keyboard.press('h'); await page.waitForTimeout(500);
   expect((await where(page)).room).toBe('heart');
+  expect(errors).toEqual([]);
+});
+
+test('the Olympic-daero underpass (나들목) takes the reporter across the expressway (D105)', async ({ page }) => {
+  test.setTimeout(60000);
+  const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
+  await startAt(page, FAR);
+  const u = await page.evaluate(async () => { const m = '/src/world/district.ts'; const d = await import(/* @vite-ignore */ m); return d.underpasses[0] as { ends: { x: number; y: number }[]; dir: { x: number; y: number } }; });
+  const A = u.ends[0]!, B = u.ends[1]!, start = { x: Math.round(A.x - u.dir.x * 22), y: Math.round(A.y - u.dir.y * 22) };
+  await Promise.all([page.waitForEvent('load'), page.evaluate(a => { const h = (window as unknown as { __mq: Hook }).__mq; h.game.importState({ ...h.game.state, at: a }); location.reload(); }, { room: 'district', ...start, facing: 'down' })]);
+  await ready(page); await page.waitForTimeout(700);
+  expect(await where(page)).toMatchObject({ room: 'district', x: start.x, y: start.y });
+  await page.evaluate(a => (window as unknown as { __mq: Hook }).__mq.world.tap(a), A);
+  await page.waitForTimeout(2500);
+  const after = await where(page);
+  expect(Math.hypot(after.x - B.x, after.y - B.y)).toBeLessThan(60); // came up on the far side of the expressway
+  expect((after.x - A.x) * u.dir.x + (after.y - A.y) * u.dir.y).toBeGreaterThan(0);
+  await expect(page.locator('.toast')).toHaveText('나들목 지하보도로 길을 건넜어요.');
+  await page.screenshot({ path: 'artifacts/d105-underpass.png' });
   expect(errors).toEqual([]);
 });

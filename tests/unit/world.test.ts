@@ -19,7 +19,9 @@ describe('map integrity', () => {
       });
       it(`${id}/${d.id}: door zone is reachable on foot from spawn`, () => {
         const goal = { x: d.zone.x + d.zone.w / 2, y: d.zone.y + d.zone.h - 2 };
-        const path = findPath(id, room.spawn, goal);
+        // D105: an underpass stair on the far side of an expressway is reached by coming out of its partner stair.
+        const pair = d.id.startsWith('under-') ? room.doors.find(o => o.id === d.id.slice(0, -1) + (d.id.endsWith('0') ? '1' : '0')) : undefined;
+        const path = findPath(id, pair ? pair.arrive : room.spawn, goal);
         expect(path.length).toBeGreaterThan(0);
         const end = path[path.length - 1]!;
         expect(Math.hypot(end.x - goal.x, end.y - goal.y)).toBeLessThan(8);

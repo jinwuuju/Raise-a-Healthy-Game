@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  DISTRICT_SIZE, MASK_CELL, buildMask, crosswalks, droads, lanes, loadDistrict, maskBlocked, pointAt, scanPoly, strokePolys, zebras,
+  AREA_WATER, DISTRICT_SIZE, MASK_CELL, buildMask, crosswalks, dareas, droads, lanes, loadDistrict, maskBlocked, pointAt, scanPoly, strokePolys, zebras,
   type Polyline,
 } from '../../src/world/district';
 import { buildSceneGrid, querySceneGrid } from '../../src/world/scene-index';
@@ -41,6 +41,7 @@ describe('D102 efficiency keeps results identical', () => {
     for (const r of droads) if (r.kind === 0 && !r.bridge) for (const q of strokePolys(r.pts, r.w)) scanPoly(q, w, w, set(1), s);
     for (const c of crosswalks) scanPoly(c.poly, w, w, set(0), s);
     for (const z of zebras) scanPoly(z.poly, w, w, set(0), s);
+    for (const a of dareas) if (a.cls === AREA_WATER) scanPoly(a.pts, w, w, set(1), s); // D105 river
     expect(m.data.length).toBe(Math.ceil(w * w / 8));
     let blocked = 0;
     for (let y = 0; y < w; y++) for (let x = 0; x < w; x++) {
