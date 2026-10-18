@@ -96,10 +96,11 @@ describe('D106 blood-delivery run', () => {
     expect(r1.reward!.firstOfDay).toBe(true);
     const g = RUN.gold, sightGold = r1.reward!.sighting ? (r1.reward!.sighting.first ? g.sightingNew : g.sightingRepeat) : 0;
     expect(r1.reward!.gold).toBe(Math.round((g.base + 3 * g.perCheckpoint + g.grade.S) * RUN.combo[1]!) + g.firstOfDay + sightGold);
-    expect(r1.state.totalXp).toBe(RUN.xp.base + 3 * RUN.xp.perCheckpoint + RUN.xp.gradeS);
+    expect(r1.state.totalXp).toBe(RUN.xp.firstRun + RUN.xp.firstS + (r1.reward!.sighting?.first ? RUN.xp.newSighting : 0));
     expect(finishRun(r1.state, { runId: 'a1', seconds: 80, oxygen: true, waypoints: wp(3) }, day).reward).toBeNull();
     const r2 = finishRun(r1.state, { runId: 'a2', seconds: 75, oxygen: true, waypoints: wp(3) }, day + 1000);
     expect(r2.reward!.firstOfDay).toBe(false); expect(r2.reward!.best).toBe(true); expect(r2.reward!.combo).toBe(2);
+    expect(r2.reward!.xp).toBe(r2.reward!.sighting?.first ? RUN.xp.newSighting : 0); // a repeat S run gives gold, not XP (design 02)
     const r3 = finishRun(r2.state, { runId: 'a3', seconds: 900, oxygen: true, waypoints: wp(0) }, day + 2000);
     expect(r3.reward!.grade).toBe('C'); expect(r3.reward!.gold).toBeGreaterThanOrEqual(g.base); expect(r3.state.heartRun.combo).toBe(0);
     expect(r3.state.gold).toBeGreaterThan(r2.state.gold);

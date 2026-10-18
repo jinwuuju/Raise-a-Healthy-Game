@@ -8,7 +8,7 @@ import type { GameState } from './state';
 /*
  * D106 blood-delivery run (design 18): carry one red cell from the right atrium through the lungs (load oxygen at the
  * gas exchange) to the ascending aorta, finding three clue-only waypoints on the way. Repeatable: every finished run
- * pays gold and a little XP, with grade, personal best, first-run-of-the-day and combo bonuses and a chance to sight a
+ * pays gold (XP only for firsts: first run, first S, a new sighting), with grade, best, first-of-day and combo bonuses and a chance to sight a
  * rarer blood cell. Nothing is ever taken away. The run itself lives in memory; only the result is saved.
  */
 export type Grade = 'S' | 'A' | 'B' | 'C';
@@ -91,8 +91,13 @@ export function finishRun(s: GameState, res: RunResult, now = Date.now()): { sta
     gold += g; lines.push((first ? '새 목격 · ' : '다시 목격 · ') + hit.name + ' +' + g + 'G');
     sighting = { ...hit, first };
   }
-  const xp = rules.xp.base + correct * rules.xp.perCheckpoint + (grade === 'S' ? rules.xp.gradeS : 0);
-  lines.push('경험치 +' + xp + 'XP');
+  // XP only for things done for the first time (design 02: an identical repeat gives 0%); gold is paid every run.
+  const xpParts: [number, string][] = [];
+  if (h.runs === 0) xpParts.push([rules.xp.firstRun, '첫 배달']);
+  if (grade === 'S' && h.bestGrade !== 'S') xpParts.push([rules.xp.firstS, '첫 S등급']);
+  if (sighting?.first) xpParts.push([rules.xp.newSighting, '새 목격']);
+  const xp = xpParts.reduce((n, [v]) => n + v, 0);
+  for (const [v, why] of xpParts) lines.push(why + ' 경험치 +' + v + 'XP');
   const next: HeartRunState = {
     runs: h.runs + 1, best: best ? seconds : h.best, bestGrade: !h.bestGrade || grades.indexOf(grade) < grades.indexOf(h.bestGrade) ? grade : h.bestGrade,
     combo, lastDay: day, lastRunId: res.runId, seen: sighting?.first ? [...h.seen, sighting.id] : h.seen, goldEarned: h.goldEarned + gold, perfect: h.perfect + (correct === 3 ? 1 : 0),

@@ -181,7 +181,7 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
       }, true);
       const h = s.heartRun, mm = (n: number) => Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0');
       fold(atlas, 'heart-run', '혈류 배달 런 · ' + h.runs + '번', body => {
-        body.append(el('p', '', h.runs ? '최고 기록 ' + (h.best !== null ? mm(h.best) : '-') + ' · 최고 등급 ' + (h.bestGrade ?? '-') + ' · 경유지 만점 ' + h.perfect + '번 · 지금까지 ' + h.goldEarned.toLocaleString('ko-KR') + 'G' : '우심방의 안내 로봇 바디에게 말을 걸면 배달을 시작해요. 매번 골드와 경험치를 받아요.'));
+        body.append(el('p', '', h.runs ? '최고 기록 ' + (h.best !== null ? mm(h.best) : '-') + ' · 최고 등급 ' + (h.bestGrade ?? '-') + ' · 경유지 만점 ' + h.perfect + '번 · 지금까지 ' + h.goldEarned.toLocaleString('ko-KR') + 'G' : '우심방의 안내 로봇 바디에게 말을 걸면 배달을 시작해요. 매번 골드를 받고, 처음 해낸 일(첫 배달·첫 S등급·새 목격)엔 경험치도 받아요.'));
         body.append(el('p', 'muted', '혈액 속 목격 · ' + h.seen.length + '/' + sightings.length + '종'));
         for (const x of sightings) {
           if (h.seen.includes(x.id)) fold(body, 'sight-' + x.id, x.name, d => d.append(el('p', '', x.text)));

@@ -420,12 +420,13 @@ async function travel(d: Trip) {
   window.setTimeout(() => {
     try { if (d.mode === 'scope-in') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
     catch (e) { hud.toast(e instanceof Error ? e.message : '이동하지 못했어요.', true); }
+    const fromRoom = w.roomId;
     w.setRoom(game.state.at.room, game.state.at.x, game.state.at.y, game.state.at.facing);
     if (run && !isHeartRoom(w.roomId)) stopRun('심장 밖으로 나와서 배달을 그만뒀어요.'); else runHud();
     hud.setRoom(w.roomId, () => w.miniMap(), mapCaption(w.roomId));
     refresh();
     fade.classList.remove('on', 'scope', 'flow'); fadeCard.classList.remove('show');
-    hud.showBanner(rooms[w.roomId].title);
+    if (w.roomId !== fromRoom) hud.showBanner(rooms[w.roomId].title); // underpass / return button inside the district: no banner
     if (d.mode === 'scope-in') hud.toast(heartText.disclaimer);
     else if (d.done && w.roomId === d.to) hud.toast(d.done);
     if (!game.persist()) hud.toast('저장하지 못했어요: ' + game.lastError, true);
@@ -495,12 +496,14 @@ async function fieldCheck(id: string, kind: QuizKind): Promise<boolean | null> {
   if (before && !nextLocked(game.state)?.ids.every(x => before.ids.includes(x))) hud.toast(before.title + '가 열렸어요! 새 구조가 반짝여요');
   return correct;
 }
-async function runStep(t: Target): Promise<void> {
+const runStop = (t: Target): boolean => !!run && (t.id === LOAD || t.id === DELIVER || run.waypoints.some(x => x.id === t.id && !x.done));
+/** One stop of the delivery run. fromQuest: a commission note already showed this place, so no text or quiz again. */
+async function runStep(t: Target, fromQuest: boolean): Promise<void> {
   const r = run; if (!r) return;
   const d = discoveries[t.id]!;
   if (t.id === LOAD) {
     if (r.oxygen) hud.toast('산소는 이미 실었어요 · 폐정맥을 따라 좌심방으로');
-    else { await say([{ who: d.name + ' · 산소 싣기', text: d.text, npc: null }]); game.discover(t.id); r.oxygen = true; hud.toast('산소를 실었어요! 적혈구가 밝은 붉은색이 됐어요'); }
+    else { if (!fromQuest) await say([{ who: d.name + ' · 산소 싣기', text: d.text, npc: null }]); game.discover(t.id); r.oxygen = true; hud.toast('산소를 실었어요! 적혈구가 밝은 붉은색이 됐어요'); }
   } else if (t.id === DELIVER) {
     if (!r.oxygen) { hud.toast('아직 산소를 싣지 않았어요 · 온몸을 돌아 우심방에서 다시 폐로'); return; }
     const seconds = (performance.now() - r.start) / 1000;
@@ -510,7 +513,8 @@ async function runStep(t: Target): Promise<void> {
     if (reward) showRunResult(reward, seconds, r);
   } else {
     const wp = r.waypoints.find(x => x.id === t.id)!;
-    if (game.state.inspected.includes(hxKey(t.id))) {
+    if (fromQuest) { game.discover(t.id); wp.done = true; wp.correct = true; hud.toast('취재 지점이 경유지이기도 했어요! 경유지 정답'); }
+    else if (game.state.inspected.includes(hxKey(t.id))) {
       const ok = await fieldCheck(t.id, 'name');
       if (ok === null) return;
       wp.done = true; wp.correct = ok;
@@ -530,7 +534,7 @@ function showRunResult(rw: RunReward, seconds: number, r: ActiveRun): void {
     top.append(el('div', 'run-grade grade-' + rw.grade, rw.grade), el('p', '', fmt(seconds) + (rw.best ? ' · 최고 기록!' : ' · 최고 ' + fmt(h.best ?? seconds)) + (rw.combo > 1 ? ' · 연속 ' + rw.combo + '판' : '')));
     const lines = el('ul', 'run-lines'); for (const l of rw.lines) lines.append(el('li', '', l));
     const wps = el('ul', 'run-lines'); for (const x of r.waypoints) wps.append(el('li', x.correct ? 'ok' : 'miss', (x.correct ? '✓ ' : '· ') + discoveries[x.id]!.name + ' — ' + hints[x.id]));
-    c.append(top, el('h3', '', '보상 +' + rw.gold + 'G · +' + rw.xp + 'XP'), lines, el('h3', '', '경유지'), wps);
+    c.append(top, el('h3', '', '보상 +' + rw.gold + 'G' + (rw.xp ? ' · +' + rw.xp + 'XP' : '')), lines, el('h3', '', '경유지'), wps);
     if (rw.sighting) { const card = el('div', 'run-sighting'); card.append(el('b', '', (rw.sighting.first ? '새 목격 · ' : '다시 목격 · ') + rw.sighting.name), el('p', '', rw.sighting.text)); c.append(card); }
     c.append(el('p', 'muted', '배달 ' + h.runs + '번째 · 목격 ' + h.seen.length + '종 · ' + MASTERY_DISCLAIMER));
     const row = el('div', 'list');
@@ -555,6 +559,7 @@ async function interact(t: Target) {
   w.stop(); w.locked = true; keys.clear(); pointer.id = -1;
   w.faceToward(t);
   try {
+    const wasQuestStop = w.questTargets.includes(t.id); // recording a note refreshes the list, so read it first
     const routeNote=q4Text.notes.find(n=>n.target===t.id&&n.room===w.roomId);
     const signalNote = q5Text.notes.find(n => n.target === t.id && n.room === w.roomId);
     const supplyNote = q6Text.notes.find(n => n.target === t.id && n.room === w.roomId);
@@ -564,8 +569,8 @@ async function interact(t: Target) {
         { id: 'lift4', label: '4층 · 라운지와 사무실', sub: '복도 안쪽에 내 자리', disabled: w.roomId === 'lift4' },
       ]);
       if (floor === 'lift1' || floor === 'lift4') void travel({ to: floor, arrive: rooms[floor].spawn, facing: 'down', mode: 'walk', card: floor === 'lift1' ? '1층' : '4층' });
-    } else if (run && (t.id === LOAD || t.id === DELIVER || run.waypoints.some(x => x.id === t.id && !x.done))) {
-      await runStep(t);
+    } else if (runStop(t) && !wasQuestStop) {
+      await runStep(t, false);
     } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q006.accepted && q6NormalDone(game.state)) {
       pauseInput(); openSupplyComparison(game);
     } else if (game.state.q006.accepted && supplyNote) {
@@ -629,7 +634,10 @@ async function interact(t: Target) {
       if (r.done) window.setTimeout(() => hud.toast('관찰 2개 완료! +20XP · 귀환 장치로 돌아가거나 계속 탐험해요'), 1600);
     } else if (t.id.startsWith('hx-') && discoveries[t.id]) {
       const d = discoveries[t.id]!, known = game.state.inspected.includes(hxKey(t.id));
-      if (run) hud.toast('배달 중이에요 · 단서의 경유지를 찾아요 (구조 보기는 배달 뒤에)');
+      // A stop of the current commission (Q002 rooms, Q003 normal valves) keeps its own note after this: no quiz, no lock.
+      const questStop = wasQuestStop;
+      if (questStop) { if (!known) { await say([{ who: d.name, text: d.text, npc: null }]); game.discover(t.id); } }
+      else if (run) hud.toast('배달 중이에요 · 단서의 경유지를 찾아요 (구조 보기는 배달 뒤에)');
       else if (!known && !isOpen(game.state, t.id)) { const tier = tierOf(t.id); hud.toast(tier.title + ' · 별 ' + totalStars(game.state) + '/' + tier.unlockStars + '개를 모으면 열려요'); }
       else if (!known) {
         await say([{ who: d.name, text: d.text, npc: null }]);
@@ -648,7 +656,7 @@ async function interact(t: Target) {
         const h = game.state.heartRun, lock = nextLocked(game.state);
         const info = '배달 ' + h.runs + '번 · 최고 ' + (h.best !== null ? fmt(h.best) + ' (' + h.bestGrade + ')' : '없음') + ' · 구조 별 ' + totalStars(game.state) + '/' + maxStars() + (lock ? ' · 다음 해금: ' + lock.title + '(별 ' + lock.unlockStars + '개)' : '');
         const pick = await dialog.show([{ who: '안내 로봇 바디', text: '삐빅! 혈류 배달 런을 해 볼래요? 적혈구를 싣고 폐에서 산소를 받아 대동맥까지 달려요. 이름 없이 단서만 보고 경유지 3곳을 찾을수록 보상이 커져요.' + NL + info, npc: null }], [
-          { id: 'run', label: '혈류 배달 런 시작', sub: '매번 골드·경험치 · 등급·연속·오늘 첫 배달 보너스 · 가끔 희귀 목격', disabled: false },
+          { id: 'run', label: '혈류 배달 런 시작', sub: '매번 골드 · 등급·연속·오늘 첫 배달 보너스 · 가끔 희귀 목격 · 처음 해낸 일엔 경험치', disabled: false },
           { id: 'talk', label: '안내 다시 듣기', sub: '심장 탐사 기본 안내', disabled: false }]);
         if (pick === 'run') startRun(); else if (pick === 'talk') await say(talk('guide', game.state).lines);
       }
@@ -676,6 +684,8 @@ async function interact(t: Target) {
       await say([{ who: normal.name, text: normal.text + '\n' + q3Text.disclaimer, npc: null }]);
       if (game.recordQ3(normal.id as 'tricuspid' | 'pulmonary')) hud.toast('정상 기준 기록 · ' + normal.name);
     }
+    // A commission stop that is also a delivery stop: the commission note ran above; the run counts it too (no second quiz).
+    if (runStop(t) && wasQuestStop) await runStep(t, true);
   } catch (e) { hud.toast(e instanceof Error ? e.message : '문제가 생겼어요.', true); }
   finally { w.locked = traveling; refresh(); }
 }

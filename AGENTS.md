@@ -1,8 +1,9 @@
 # 이 프로젝트에서 작업할 때
 
-## 현재 상태와 다음 작업 (2026-10-15 D099 기준 · 새 작업을 시작하면 이 절부터 읽는다)
+## 현재 상태와 다음 작업 (2026-10-18 D107 기준 · 새 작업을 시작하면 이 절부터 읽는다)
 
 - **동기화:** 다른 곳에서도 작업하므로 시작할 때 `git fetch` 후 원격 main을 fast-forward로 받아 로컬과 맞춘다. 로컬 변경이 있으면 보존하고 덮어쓰지 않는다.
+- **D107(2026-10-18, 전체 점검):** 배달 런 경험치는 처음 해낸 일에만(설계 02 반복 0%). 취재 의뢰 지점이 경유지·산소·배달 지점과 겹치면 의뢰 기록을 먼저 하고 배달은 문제 없이 인정(`wasQuestStop`, `runStep(t, true)`). 의뢰 지점은 확인 문제·잠금 대상이 아니다. 휴대폰 배달 칸은 조작볼 위로 높이 제한. 같은 방 이동(나들목·복귀)은 방 이름 띠를 다시 띄우지 않는다.
 - **D106(2026-10-18):** 심장 학습 루프(설계 18 7절). 규칙 `src/domain/mastery.ts`(별·단계·문제), `src/domain/heart-run.ts`(배달 정산), 화면 main.ts `runStep/fieldCheck/showRunResult`, HUD `setRun`, 월드 `labelOverride/verbOverride/badges`. 단서·목격 `data/content/heart-mastery.v0.1.json`(초안), 수치 `data/balance/heart-run.v0.1.json`. 저장 `mastery`·`heartRun`(옛 저장은 빈 기록). 아침 브리핑은 사용자 결정으로 만들지 않는다.
 - **D105(2026-10-18):** 한강은 `areas` 분류 3(물, 충돌 막힘, 생성기 `river_from_bank` 근사). 간선도로를 건너는 연결은 지하보도(생성 zebra 5번째 값 1 → `underpasses`, 동네 문 `under-i-k` 쌍). 동네 저장 위치가 걸을 수 없게 되면 유로프라자 정문 앞으로 이행. 심장 학습 루프는 설계 18 제안(사용자 선택 대기, 구현 전).
 - **D104(2026-10-18):** 동네의 넓은 땅은 모두 유로프라자와 걸어서 이어져야 한다. 생성기 `connect_zebras`(자동 횡단보도 뒤 연결 검사, 3곳 추가·85곳)와 `tests/unit/district-reach.test.ts`가 지킨다. 지도를 다시 만들면 이 검사를 함께 돌린다. HUD 오른쪽 위 ‘유로프라자 복귀’(`.homebtn`, H 키, main.ts `returnToEuro` → `travel` → `exits.euroOut`)는 심장 밖에서만 보인다. 이어서 하기(D101)는 그대로.
@@ -14,7 +15,7 @@
 - **실내(D092, 로컬 구현):** 사용자 1층 스케치(2026-10-14 16:29)가 영상에서 추정한 배치보다 우선한다. 아래 정문, 왼쪽 아래 벽의 TV·소파, 중앙 세로 데스크, 오른쪽 원형 탁자·유리창, 왼쪽 안쪽 엘리베이터. 4층은 입구·라운지·긴 복도·왼쪽 바깥 사무실·정사각형 안쪽 업무실(24×24칸)이다. 기존 3층 표기는 4층으로 정정했다. 승강기 층별 저장과 옛 로비 위치 호환을 유지한다. 상세·검증·미확인 범위는 docs/production/EUROPLAZA-INTERIOR.md와 STATUS의 D092를 따른다.
 - **오프닝·출근(D100):** 제목은 ‘건강 기자 키우기’(제작 진우주). `src/ui/opening.ts`·`src/art/opening.ts`가 index.html의 즉시 제목 위에 픽셀 장면·로딩·시작 버튼·숨은 녹차 6잔(별도 키, 보상 없음)을 붙인다. 새 기자만 편집국 편집장 앞(256,152)에서 시작하고 기존 기자는 언제나 저장 위치에서 이어 간다(D101, D100의 세션 출근 규칙 철회). 브라우저 테스트는 DEV+webdriver에서 오프닝을 건너뛰고 `?opening`으로 실제 흐름을 검사한다.
 - **공개된 게임:** Q001~Q006까지(D099 심장 근육 공급 취재: 관상정맥동 입구·두 심실 벽·두 관상동맥 입구 관찰, 대동맥굴 공급 관찰기의 쉴 때/더 일할 때 정상 조건 비교, 미끼 카드가 있는 배송 노선 도해, 합계 1,350XP/Lv.7). 정리 문서 docs/production/Q006-SUPPLY-REPORT.md, 이전 docs/production/Q005-SIGNAL-REPORT.md.
-- **다음 메인(D099 뒤):** Q007 ‘좁아진 모형 통로’ — 죽상동맥경화 기초 레이어·6단계 취재 동반(data/content/diseases/atherosclerosis.v0.1.json 계획), Q006 공급 관찰기(`src/ui/supply-comparison.ts`, `HeartView.supply`)를 기준 화면으로 재사용. 협심증·심근경색은 심화 게이트 전 런타임 금지(빌드 검사). 이어서 D076 EVT-01.
+- **다음 메인(D106 뒤 순서):** 설계 18 남은 단계(심장 투시 지도 별, 심장 근육 배달) → Q007 ‘좁아진 모형 통로’ — 죽상동맥경화 기초 레이어·6단계 취재 동반(data/content/diseases/atherosclerosis.v0.1.json 계획), Q006 공급 관찰기(`src/ui/supply-comparison.ts`, `HeartView.supply`)를 기준 화면으로 재사용. 협심증·심근경색은 심화 게이트 전 런타임 금지(빌드 검사). 이어서 D076 EVT-01.
 - **동네 1km(D098):** 지도는 2.1km 정사각형(11,200px). 데이터는 `src/world/district.generated.json` 별도 청크를 `loadDistrict()`(main.ts 시작, 테스트 setup)로 불러온 뒤 `rooms.district`가 처음 쓰일 때 만들어진다. 다른 방 문 도착점은 `district-exits.generated.json`. 신호 횡단보도는 을지병원 사거리 4곳, 나머지 큰길은 자동 얼룩말 횡단보도(`zebras`). 차량 경로는 생성기 `make_routes`. 큰 지도 길찾기는 창 탐색.
 - **동네 다듬기(D097):** 건물은 다각형이 아니라 실제 위치·크기 기반 8px 사각 블록(`dblocks`, 생성기 `make_blocks`)과 `src/art/buildings.ts` 거리 건물 그림(가게·small·석재·벽돌 모퉁이·사무·apartment). 간판은 `label`이 있을 때만. 이름 없는 서비스 도로·보도는 지도에서 뺀다. 장부는 게임 블록 기준.
 - **동네(D096, 실제 축척):** 거리 방은 `district`(OSM 기반, 1칸=3m, 720m 정사각형, 북쪽 위). 데이터 생성 `python3 tools/district/build_district.py`(원본 data/raw는 Git 제외) → `src/world/district.generated.json`(게임), `data/world/district-*.json`(전체·건물 장부, ODbL). 기하 `src/world/district.ts`, 그림 `src/art/district.ts`(청크 땅·윤곽 건물·미니맵), 차량 `src/game/traffic.ts`(실제 차도 차선). 수치를 손으로 고치지 말고 생성기를 고친다. 아래 D088 거리 설명과 `street` 방은 옛 저장 이행용 기록이다. docs/production/DISTRICT-1KM.md.

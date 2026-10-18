@@ -2,7 +2,7 @@
  "schemaVersion": 1,
  "balanceVersion": "heart-run-0.1",
  "status": "prototype_rules",
- "note": "D106 혈류 배달 런 보상 가설(설계 18). 반복 보상이라 판당 경험치를 작게 둔다(Lv.99까지 401,850XP 대비). 오답·느린 기록에 감점 없음.",
+ "note": "D106 혈류 배달 런 보상 가설(설계 18). 골드는 매 판 지급한다. 경험치는 설계 02(같은 반복은 0%)에 맞춰 처음 하는 일에만 준다: 첫 배달, 첫 S등급, 처음 보는 혈액 세포. 오답·느린 기록에 감점 없음.",
  "parSeconds": 90,
  "minSeconds": 20,
  "gold": {
@@ -20,9 +20,9 @@
   "sightingRepeat": 10
  },
  "xp": {
-  "base": 10,
-  "perCheckpoint": 5,
-  "gradeS": 10
+  "firstRun": 20,
+  "firstS": 30,
+  "newSighting": 10
  },
  "combo": [
   1.0,

@@ -17,8 +17,10 @@ async function goTo(p: Page, room: string, id: string) {
     let q = { x: t.x, y: t.y };
     outer: for (let r = 2; r <= t.r; r += 2) for (let a = 0; a < 16; a++) { const c = { x: Math.round(t.x + Math.cos(a / 16 * Math.PI * 2) * r), y: Math.round(t.y + Math.sin(a / 16 * Math.PI * 2) * r) }; if (canStand(room, c)) { q = c; break outer; } }
     const h = (window as unknown as { __mq: Hook }).__mq;
-    if (h.world.roomId !== room) h.game.enter(room, q.x, q.y, 'down');
+    // world first, then the state change, so the refresh that follows reads the new room (quest stops, labels)
+    const moved = h.world.roomId !== room;
     h.world.setRoom(room, q.x, q.y, 'down');
+    if (moved) h.game.enter(room, q.x, q.y, 'down');
   }, { room, id });
   await p.waitForTimeout(250);
 }
@@ -76,5 +78,50 @@ test('one blood-delivery run: start at the guide, three clue waypoints, oxygen i
   await page.waitForTimeout(2500);
   expect(await page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.world.roomId)).toBe('heart');
   await expect(page.locator('.quest .run-tag')).toHaveText('배달 런');
+  expect(errors).toEqual([]);
+});
+
+for (const [width, height] of [[360, 640], [844, 390], [390, 844]]) test(`run panel stays clear of the movement ball and confirm button on a phone ${width}x${height} (D106)`, async ({ page }) => {
+  await page.setViewportSize({ width: width!, height: height! });
+  const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
+  await boot(page, { at: { room: 'heart', x: 292, y: 254, facing: 'down' }, inspected: ['hx:hx-svc', 'hx:hx-pv', 'hx:hx-lvwall'] });
+  await page.evaluate(() => window.dispatchEvent(new Event('touchstart')));
+  await goTo(page, 'heart', 'guide');
+  await press(page);
+  await page.getByRole('button', { name: /^혈류 배달 런 시작/ }).click();
+  await page.waitForTimeout(700);
+  const r = await page.evaluate(() => ['.quest', '.joystick', '.mobile-confirm', '.topright'].map(s => { const e = document.querySelector(s); if (!e || (e as HTMLElement).offsetParent === null) return null; const b = e.getBoundingClientRect(); return { s, x: b.x, y: b.y, w: b.width, h: b.height }; }));
+  const q = r[0]!;
+  expect(q.y + q.h).toBeLessThanOrEqual(height!);
+  for (const o of r.slice(1)) if (o) expect(q.x < o.x + o.w && o.x < q.x + q.w && q.y < o.y + o.h && o.y < q.y + q.h, o.s).toBe(false);
+  await page.screenshot({ path: `artifacts/d106-run-panel-${width}.png` });
+  expect(errors).toEqual([]);
+});
+
+test('a commission stop that is also a waypoint records the commission note and counts for the run once (D106)', async ({ page }) => {
+  test.setTimeout(60000);
+  const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto('/'); await page.getByRole('button', { name: '첫 출근하기' }).click(); await page.waitForTimeout(300);
+  await Promise.all([page.waitForEvent('load'), page.evaluate(async () => {
+    const f = '/tests/helpers/q006-fixture.ts', { q6Fixture } = await import(/* @vite-ignore */ f);
+    const h = (window as unknown as { __mq: Hook }).__mq, s = q6Fixture();
+    h.game.importState({ ...s, saveId: (h.game.state as unknown as { saveId: string }).saveId, q006: { ...s.q006, accepted: true }, at: { room: 'heart', x: 292, y: 254, facing: 'down' },
+      inspected: [...s.inspected.filter((k: string) => !k.startsWith('hx:hx-') || ['hx:hx-svc', 'hx:hx-pv', 'hx:hx-lvwall'].includes(k)), ...['hx:hx-svc', 'hx:hx-pv', 'hx:hx-lvwall'].filter(k => !s.inspected.includes(k))] });
+    location.reload();
+  })]);
+  await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world); await page.waitForTimeout(600);
+  await goTo(page, 'heart', 'guide');
+  await press(page);
+  await page.getByRole('button', { name: /^혈류 배달 런 시작/ }).click();
+  await page.waitForTimeout(300);
+  const wps = await page.evaluate(() => (window as unknown as { __mq: Hook }).__mq.run!.waypoints.map(w => w.id));
+  expect(wps[2]).toBe('hx-lvwall'); // also the Q006 'left ventricle muscle' stop
+  await goTo(page, 'lv', 'hx-lvwall');
+  await press(page);
+  await advance(page);
+  const r = await page.evaluate(() => { const h = (window as unknown as { __mq: Hook }).__mq; return { notes: (h.game.state as unknown as { q006: { notes: string[] } }).q006.notes, wp: h.run!.waypoints[2] }; });
+  expect(r.notes).toContain('lv-muscle');
+  expect(r.wp).toMatchObject({ id: 'hx-lvwall', done: true, correct: true });
+  await expect(page.locator('.dialog')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
