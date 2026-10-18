@@ -54,7 +54,8 @@ describe('street rules', () => {
         }
       }
     }
-  }, 60000);
+    // D104: the north-west of the district is now connected, so its sample points find (long) paths instead of failing fast.
+  }, 180000);
   it('wide roads are crossed only on crosswalks', () => {
     expect(canStand('street', { x: 432, y: 300 })).toBe(false);
     expect(canStand('street', { x: 432, y: 432 })).toBe(true);
