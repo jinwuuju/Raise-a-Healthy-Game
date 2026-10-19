@@ -1,0 +1,12 @@
+{
+ "id": "Q007",
+ "publication": {
+  "key": "quest.Q007.first",
+  "xp": 400,
+  "gold": 260
+ },
+ "repeatXp": 0,
+ "repeatBaseGold": 0,
+ "reactionBalanceRef": "article-reactions.v0.1.json",
+ "note": "early-quests.v0.1.json의 기존 Q007 기본 보상 그대로(Lv.8). 정상 기준 관찰·통로 관찰기 비교·자료 취재·통로 비교 도해에는 보상을 추가하지 않는다. 명시적 재발행의 추가 골드만 D066 적용."
+}

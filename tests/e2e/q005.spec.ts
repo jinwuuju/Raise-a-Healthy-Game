@@ -88,7 +88,7 @@ for (const [width, height] of [[390, 844], [844, 390]] as const) test(`Q005 ${wi
   expect(await page.evaluate(() => ({ ...((window as unknown as { __mq: Hook }).__mq.world.player) }))).toEqual(pose);
   await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world); expect((await state(page)).q005.notes).toContain('af'); expect((await state(page)).q005.mode).toBe('normal');
   await page.keyboard.press('j'); await page.getByRole('tab', { name: '인체 탐험' }).click(); await page.locator('summary').filter({ hasText: '박자 비교 (Q005' }).click();
-  await expect(page.getByRole('tabpanel', { name: '인체 탐험' })).toContainText('합병증 연결 기관(뇌졸중·심부전) · 준비 중'); await page.keyboard.press('Escape');
+  await expect(page.getByRole('tabpanel', { name: '인체 탐험' })).toContainText('합병증 연결 · 심장 심화 과정(준비 중)'); await page.keyboard.press('Escape');
   await returnOffice(page); await tap(page, 160, 176); const f = file(page); await expect(f).toBeVisible({ timeout: 15000 });
   await f.getByRole('button', { name: '이 자료를 취재 메모로 남기기' }).tap(); await expect(f.locator('canvas.ecg-strip')).toHaveCount(2); await expect(f).toContainText('가상 심전도 모형 B');
   await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world); await tap(page, 160, 176); await expect(f).toBeVisible({ timeout: 15000 }); await expect(f).toContainText('4 · 검사');

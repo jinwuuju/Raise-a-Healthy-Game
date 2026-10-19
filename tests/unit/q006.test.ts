@@ -125,7 +125,7 @@ describe('Q006 heart-muscle supply reporting (D099)', () => {
     const r = ready(), p = publishQ6WithReaction(r, () => .5, '2026-10-15T10:00:00Z'), receipt = latestReaction(p)!;
     expect([p.totalXp, p.gold, receipt.questId, receipt.xp, receipt.baseGold]).toEqual([1350, 960 + receipt.bonusGold, 'Q006', q6Reward.xp, q6Reward.gold]);
     expect(levelOf(p.totalXp).level).toBe(7); expect(p.q006.mode).toBe('rest');
-    expect(objective(p, 'newsroom')).toContain('발행 완료');
+    expect(objective(p, 'newsroom')).toContain('좁아진 모형 통로'); // D108: the Q007 offer follows
     expect(publishQ6WithReaction(p, () => { throw new Error('must not draw'); })).toBe(p);
     const next = reprintArticle(p, p.reactions.count, () => .5, new Date().toISOString(), 'Q006'); expect(next.totalXp).toBe(1350); expect(next.gold).toBe(p.gold + latestReaction(next)!.bonusGold);
     expect(reprintArticle(next, p.reactions.count, () => { throw new Error('must not draw'); }, new Date().toISOString(), 'Q006')).toBe(next);

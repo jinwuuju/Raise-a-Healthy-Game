@@ -10,6 +10,7 @@ root = Path(__file__).resolve().parents[1]
 dist = root / 'dist'
 assert (dist / 'index.html').is_file(), 'Missing game entry'
 DISCLAIMER = '검수 전 모형'
+ADVANCED_ONLY = ('협심증', '심근경색', '심부전', '이상지질혈증', '만성폐쇄성폐질환', '폐암', '결핵', '수면무호흡')
 for path in dist.rglob('*'):
     if path.is_file():
         assert path.suffix not in ('.md', '.json', '.ts'), f'Unexpected source/data: {path}'
@@ -39,7 +40,11 @@ for path in dist.rglob('*'):
                 assert DISCLAIMER in text and 'draft_unreviewed' in text and '가상 심전도' in text, 'Q005 must remain a labelled draft with fictional ECG material inside the quest'
             if 'content.Q006' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text and '질환 레이어가 아니에요' in text, 'Q006 must remain a labelled normal-supply draft inside the quest'
-            assert '협심증' not in text, 'Angina is an advanced-gate disease (16 section 4, 17 slot table) and must not ship with Q006'
+            if 'content.Q007' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text and '질환 레이어' in text, 'Q007 must remain a labelled basic atherosclerosis draft inside the quest'
+            # D108 (design 19 section 4): advanced-only diseases never ship in the basic course runtime.
+            for word in ADVANCED_ONLY:
+                assert word not in text, 'Advanced-only disease in the basic runtime: ' + word
             assert 'disease.arrhythmia' not in text, 'Arrhythmia disease draft must stay outside the runtime/public atlas; Q005 is the labelled quest exception'
             assert 'disease.atherosclerosis' not in text, 'Planned atherosclerosis draft must not ship in runtime/public atlas'
             assert 'disease.valve' not in text, 'Standalone unreviewed disease atlas draft must stay outside the runtime; Q003 is the labelled quest exception'

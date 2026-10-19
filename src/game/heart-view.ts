@@ -7,6 +7,7 @@ import type { Point } from '../world/types';
 import { comparisonOpening, hasBackflow, type ValveMode } from '../domain/valve-model';
 import type { RhythmMode } from '../domain/rhythm-model';
 import type { SupplyMode } from '../domain/supply-model';
+import type { PassageMode } from '../domain/passage-model';
 
 /** Small integer hash for repeatable, seed-fixed patterns (no Math.random in rendering). */
 function hash(n: number): number {
@@ -73,6 +74,8 @@ export class HeartView {
   rhythm: RhythmMode = 'normal';
   /** D099 supply observer: 'work' widens and speeds the coronary blood marks only. The beat, valves and passage stay normal. */
   supply: SupplyMode = 'rest';
+  /** D108 Q007 passage observer: plaque on both coronary entrances and fewer, thinner coronary blood marks. Drawing only. */
+  passage: PassageMode = 'wide';
   readonly organ: Organ;
   private tracks: Track[];
   private motes: { x: number; y: number; r: number; v: number }[] = [];
@@ -137,6 +140,19 @@ export class HeartView {
       // Dotted ring around both coronary openings: the vessels downstream widen when the muscle needs more.
       g.fillStyle = 'rgba(255,214,150,0.85)';
       for (const f of o.features) if (f.kind === 'rim') for (let a = 0; a < Math.PI * 2; a += 0.45) g.fillRect(Math.round(f.x + Math.cos(a + this.time) * (f.r + 4) - cx), Math.round(f.y + Math.sin(a + this.time) * (f.r + 4) - cy), 1, 1);
+    }
+    if (this.passage !== 'wide' && o.kind === 'aorta') {
+      // Plaque inside the wall of both coronary entrances (qualitative; size is not a measurement).
+      const thick = this.passage === 'mild' ? 3 : 6, span = this.passage === 'mild' ? 1.8 : 3.6;
+      for (const f of o.features) if (f.kind === 'rim') {
+        for (let a = -span / 2; a <= span / 2; a += 0.08) for (let k = 0; k < thick; k++) {
+          const edge = Math.cos(a / (span / 2) * Math.PI / 2), depth = Math.max(1, Math.round(thick * (0.45 + 0.55 * edge)));
+          if (k >= depth) continue;
+          const rr = f.r - k, ang = a - Math.PI / 2;
+          g.fillStyle = k === depth - 1 ? '#7a5a2e' : k === 0 ? '#f3dc8c' : (k + Math.round(a * 10)) % 3 === 0 ? '#c9a24f' : '#e2c46c';
+          g.fillRect(Math.round(f.x + Math.cos(ang) * rr - cx), Math.round(f.y + Math.sin(ang) * rr - cy), 1, 1);
+        }
+      }
     }
     for (const v of o.valves) {
       const affected = this.room.id === 'heart' && v.kind === 'tricuspid';
@@ -204,9 +220,13 @@ export class HeartView {
   }
 
   private drawTrack(g: Ctx, t: Track, cx: number, cy: number, vw: number, vh: number): void {
-    const L = t.lane, boost = this.supply === 'work' && (L.when === 'coronary-left' || L.when === 'coronary-right'), half = (L.width / 2) * (boost ? 1.7 : 1);
+    const L = t.lane, coronary = L.when === 'coronary-left' || L.when === 'coronary-right';
+    const boost = this.supply === 'work' && coronary, squeeze = coronary ? (this.passage === 'mild' ? 0.6 : this.passage === 'narrow' ? 0.35 : 1) : 1;
+    const half = (L.width / 2) * (boost ? 1.7 : 1) * squeeze, keep = coronary ? (this.passage === 'mild' ? 6 : this.passage === 'narrow' ? 3 : 10) : 10;
     // With more demand the same lane carries a second, mirrored set of marks (qualitative, not a flow measurement).
+    // A narrowed entrance (Q007) keeps only some marks in a thinner band: less blood gets through the same open road.
     for (let j = 0; j < L.n * (boost ? 2 : 1); j++) {
+      if (keep < 10 && (j * 7) % 10 >= keep) continue;
       const i = j % L.n, extra = j >= L.n, d = extra ? (t.d[i]! + t.total / (2 * L.n)) % t.total : t.d[i]!, off = extra ? -t.off[i]! : t.off[i]!;
       const p = lanePoint(t, d);
       const wob = Math.sin(this.time * 2.1 + j * 1.7) * 1.5;

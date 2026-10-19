@@ -92,7 +92,7 @@ for (const [width, height] of [[390, 844], [844, 390]] as const) test(`Q006 ${wi
   expect(await page.evaluate(() => ({ ...((window as unknown as { __mq: Hook }).__mq.world.player) }))).toEqual(pose);
   await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world); expect((await state(page)).q006.notes).toContain('work'); expect((await state(page)).q006.mode).toBe('rest');
   await page.keyboard.press('j'); await page.getByRole('tab', { name: '인체 탐험' }).click(); await page.locator('summary').filter({ hasText: '공급 비교 (Q006' }).click();
-  await expect(page.getByRole('tabpanel', { name: '인체 탐험' })).toContainText('통로 조건 비교는 다음 취재(준비 중)'); await page.keyboard.press('Escape');
+  await expect(page.getByRole('tabpanel', { name: '인체 탐험' })).toContainText('통로 조건 비교는 Q007 통로 비교에서'); await page.keyboard.press('Escape');
   await returnOffice(page, 248, 168); await tap(page, 160, 176); const f = file(page); await expect(f).toBeVisible({ timeout: 15000 });
   await f.getByRole('button', { name: '이 자료를 취재 메모로 남기기' }).tap(); await expect(f).toContainText('4 · 언제 흘러들까');
   await page.reload(); await page.waitForFunction(() => !!(window as unknown as { __mq?: Hook }).__mq?.world); await tap(page, 160, 176); await expect(f).toBeVisible({ timeout: 15000 }); await expect(f).toContainText('4 · 언제');

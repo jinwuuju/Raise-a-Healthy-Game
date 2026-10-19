@@ -38,6 +38,10 @@ import { openRhythmComparison } from './ui/rhythm-comparison';
 import { canOfferQ6, q6CompareDone, q6NormalDone } from './domain/q006';
 import { q6Normal, q6Text, type SupplyCard } from './domain/q006-state';
 import { openQ6 } from './ui/q006';
+import { q7CompareDone, q7NormalDone } from './domain/q007';
+import { q7Normal, q7Text, type Q7Evidence } from './domain/q007-state';
+import { openQ7 } from './ui/q007';
+import { openPassageComparison } from './ui/passage-comparison';
 import { openSupplyComparison } from './ui/supply-comparison';
 import { openReaction } from './ui/reaction';
 import { showOrganEntry } from './ui/organ-entry';
@@ -341,6 +345,7 @@ function refresh() {
   if (world.roomId === 'newsroom' && s.q004.accepted && !s.q004.publishedAt) world.questTargets = q4Ready(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q005.accepted && !s.q005.publishedAt) world.questTargets = q5CompareDone(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q006.accepted && !s.q006.publishedAt) world.questTargets = q6CompareDone(s) ? ['my-desk'] : ['device'];
+  if (world.roomId === 'newsroom' && s.q007.accepted && !s.q007.publishedAt) world.questTargets = q7CompareDone(s) ? ['my-desk'] : ['device'];
   world.sparkTargets = []; world.labelOverride = {}; world.verbOverride = {}; world.badges = {};
   if (isHeartRoom(world.roomId)) {
     const here = world.roomId;
@@ -350,6 +355,7 @@ function refresh() {
     if(s.q004.accepted&&!s.q004.publishedAt)world.questTargets=q4Ready(s)?['return-pad']:q4Text.notes.filter(n=>n.room===here&&!s.q004.notes.includes(n.id as Q4Evidence)&&(n.id!=='systemic-return'||s.q004.crossedBody)).map(n=>n.target);
     if (s.q005.accepted && !s.q005.publishedAt) world.questTargets = !q5NormalDone(s) ? q5Text.notes.filter(n => n.room === here && !s.q005.notes.includes(n.id as SignalCard)).map(n => n.target) : !q5CompareDone(s) && here === 'heart' ? ['hx-sa'] : ['return-pad'];
     if (s.q006.accepted && !s.q006.publishedAt) world.questTargets = !q6NormalDone(s) ? q6Text.notes.filter(n => n.room === here && !s.q006.notes.includes(n.id as SupplyCard)).map(n => n.target) : !q6CompareDone(s) ? (here === 'aorta' ? ['hx-sinus'] : []) : ['return-pad'];
+    if (s.q007.accepted && !s.q007.publishedAt) world.questTargets = !q7NormalDone(s) ? q7Text.notes.filter(n => n.room === here && !s.q007.notes.includes(n.id as Q7Evidence)).map(n => n.target) : !q7CompareDone(s) ? (here === 'aorta' ? ['hx-sinus'] : []) : ['return-pad'];
     const found = discovered(s);
     world.sparkTargets = world.room.targets.filter(t => t.id.startsWith('hx-') && !found.includes(t.id)).map(t => t.id);
     // D106: recorded structures hide their names until mastered (field checks); deeper tiers stay locked until enough stars.
@@ -657,6 +663,7 @@ async function interact(t: Target) {
     const routeNote=q4Text.notes.find(n=>n.target===t.id&&n.room===w.roomId);
     const signalNote = q5Text.notes.find(n => n.target === t.id && n.room === w.roomId);
     const supplyNote = q6Text.notes.find(n => n.target === t.id && n.room === w.roomId);
+    const passageNote = q7Text.notes.find(n => n.target === t.id && n.room === w.roomId);
     if (t.id === 'lift-panel' && (w.roomId === 'lift1' || w.roomId === 'lift4')) {
       const floor = await dialog.show([{ who: '엘리베이터', text: '이동할 층을 선택하세요.', npc: null }], [
         { id: 'lift1', label: '1층 · 로비', sub: '정문과 논현로', disabled: w.roomId === 'lift1' },
@@ -665,6 +672,12 @@ async function interact(t: Target) {
       if (floor === 'lift1' || floor === 'lift4') void travel({ to: floor, arrive: rooms[floor].spawn, facing: 'down', mode: 'walk', card: floor === 'lift1' ? '1층' : '4층' });
     } else if (runStop(t) && !wasQuestStop) {
       await runStep(t, false);
+    } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q007.accepted && q7NormalDone(game.state)) {
+      pauseInput(); openPassageComparison(game);
+    } else if (game.state.q007.accepted && !game.state.q007.publishedAt && passageNote && !game.state.q007.notes.includes(passageNote.id as Q7Evidence)) {
+      await say([{ who: passageNote.name, text: passageNote.text + NL + q7Text.disclaimer, npc: null }]);
+      if (game.recordQ7(passageNote.id as Q7Evidence)) hud.toast('통로 취재 기록 · ' + passageNote.name + ' (' + q7Normal.filter(id => game.state.q007.notes.includes(id)).length + '/2)');
+      game.discover(t.id);
     } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q006.accepted && q6NormalDone(game.state)) {
       pauseInput(); openSupplyComparison(game);
     } else if (game.state.q006.accepted && supplyNote) {
@@ -706,6 +719,10 @@ async function interact(t: Target) {
         const choice = await dialog.show([{ who: '편집장', text: q6Text.question, npc: 'editor' }], [{ id: 'accept', label: '심장 근육 공급 취재 맡기', sub: '공급 노선을 걷고 쉴 때와 더 일할 때를 비교해요', disabled: false }]);
         if (choice === 'accept') { game.acceptQ6(); hud.toast('Q006 · 심장 근육 공급 취재를 맡았어요 · 공급 관찰기 무료 대여'); }
       }
+      if (script.action === 'offer-q7') {
+        const choice = await dialog.show([{ who: '편집장', text: q7Text.question, npc: 'editor' }], [{ id: 'accept', label: '통로 비교 취재 맡기', sub: '관상동맥 입구를 다시 보고 통로 폭 하나만 바꿔 비교해요', disabled: false }]);
+        if (choice === 'accept') { game.acceptQ7(); hud.toast('Q007 · 통로 비교 취재를 맡았어요 · 통로 관찰기 무료 대여'); }
+      }
       if(script.action==='offer-q4'){
         const choice=await dialog.show([{who:'편집장',text:q4Text.question,npc:'editor'}],[{id:'accept',label:'두 순환 취재 맡기',sub:'폐와 온몸 노선을 직접 따라가요',disabled:false}]);
         if(choice==='accept'){game.acceptQ4();hud.toast('Q004 · 두 순환 취재를 맡았어요');}
@@ -714,7 +731,7 @@ async function interact(t: Target) {
       if (t.npc === 'jinu-clerk') await jinuCounter();
       if (t.npc === 'tailor') await tailorFitting();
     } else if (t.id === 'my-desk' && game.has(Q1.briefed)) {
-      pauseInput(); if (game.state.q006.accepted) showQ6(); else if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
+      pauseInput(); if (game.state.q007.accepted) showQ7(); else if (game.state.q006.accepted) showQ6(); else if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
         [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
@@ -864,7 +881,8 @@ function showQ3() { openQ3(game, () => { const result = latestReaction(game.stat
 function showQ4() {openQ4(game,()=>{const result=latestReaction(game.state);if(result)showReaction(result);});}
 function showQ5() { openQ5(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
 function showQ6() { openQ6(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
-function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q006' ? showQ6 : result.questId === 'Q005' ? showQ5 : result.questId === 'Q004' ? showQ4 : result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
+function showQ7() { openQ7(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
+function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q007' ? showQ7 : result.questId === 'Q006' ? showQ6 : result.questId === 'Q005' ? showQ5 : result.questId === 'Q004' ? showQ4 : result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
 function saveFeedback(c: HTMLElement): () => void {
   const message = el('p', 'save-message'); message.setAttribute('role', 'status'); c.append(message);
   const update = () => { message.textContent = game.lastError ?? ''; message.classList.toggle('hidden', !game.lastError); };
@@ -873,7 +891,7 @@ function saveFeedback(c: HTMLElement): () => void {
 function openNotebook(tab?: number) {
   if (busy() || !world) return;
   pauseInput();
-  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, q006: showQ6, reaction: r => showReaction(r, true), map: openMap, lunch: date => openLunchSheet(date), lunchDex: target => { void loadLunch().then(m => { target.replaceChildren(); m.renderLunchDex(target, game.state); }).catch(() => target.replaceChildren(el('p', 'muted', '도감을 불러오지 못했어요. 네트워크를 확인해 주세요.'))); } }, tab);
+  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, q006: showQ6, q007: showQ7, reaction: r => showReaction(r, true), map: openMap, lunch: date => openLunchSheet(date), lunchDex: target => { void loadLunch().then(m => { target.replaceChildren(); m.renderLunchDex(target, game.state); }).catch(() => target.replaceChildren(el('p', 'muted', '도감을 불러오지 못했어요. 네트워크를 확인해 주세요.'))); } }, tab);
 }
 /** 오늘의 점심 화면·데이터·그림은 처음 열 때 따로 내려받는다(첫 로딩 크기 보호). */
 const loadLunch = () => import('./ui/lunch');

@@ -117,7 +117,7 @@ for disease in diseases['entries']:
         draft = load(disease['contentRef'])
         require(draft['id'] == disease['id'] and draft['status'] == 'draft_unreviewed' and draft['review'] is None and not draft['publicAtlas'], 'Disease draft must not masquerade as approved/public content')
         require(len(draft['reportingSteps']) == 6, 'Disease reporting plan needs six stages')
-        implemented = {'disease.valve': 'Q003', 'disease.arrhythmia': 'Q005'}
+        implemented = {'disease.valve': 'Q003', 'disease.arrhythmia': 'Q005', 'disease.atherosclerosis': 'Q007'}
         if draft['id'] in implemented:
             require(draft['layerPlan']['implemented'] and draft['runtimeQuest'] == implemented[draft['id']] == disease['questSlot'], 'Implemented disease module boundary mismatch')
         else:
@@ -135,6 +135,18 @@ require(q6['status'] == 'draft_unreviewed' and q6['review'] is None and len(q6['
 require(all(id in {s['id'] for s in q6['sources']} for n in q6['notes'] + q6['materials'] for id in n['src']), 'Q006 missing source reference')
 require(sorted(n['stage'] for n in q6['notes']) == [1, 1, 2, 2, 3] and all(str(s['stage']) in q6['board']['hints'] for s in q6['board']['stages']), 'Q006 supply stages mismatch')
 require('검수 전 모형' in q6['disclaimer'] and '질환 레이어가 아니에요' in q6['layerLimit'] and '심근경색' not in q6text and '협심증' not in q6text, 'Q006 must stay a labelled normal-supply draft without advanced-gate disease content (D099)')
+# D108 Q007: basic-course passage comparison (design 19 section 3) with the atherosclerosis basic layer.
+ADVANCED_ONLY = ['협심증', '심근경색', '심부전', '이상지질혈증', '만성폐쇄성폐질환', '폐암', '결핵', '수면무호흡']
+q7 = load('data/content/q007.v0.1.json')
+q7text = json.dumps(q7, ensure_ascii=False)
+require(q7['status'] == 'draft_unreviewed' and q7['review'] is None and q7['tier'] == 'basic' and len(q7['notes']) == 2 and len(q7['materials']) == 3, 'Q007 content boundary or evidence mismatch')
+require(all(id in {s['id'] for s in q7['sources']} for n in q7['notes'] + q7['materials'] for id in n['src']), 'Q007 missing source reference')
+require(set(q7['comparison']) == {'wide', 'mild', 'narrow'} and q7['board']['correctPair'] in {p['id'] for p in q7['board']['pairs']} and all(p.get('hint') for p in q7['board']['pairs'] if p['id'] != q7['board']['correctPair']), 'Q007 single-variable board mismatch')
+require(set(q7['board']['hints']) == {c['id'] for c in q7['board']['chain']} and q7['board']['decoy']['hint'], 'Q007 chain hints mismatch')
+require('검수 전 모형' in q7['disclaimer'] and '질환 레이어' in q7['layerLimit'] and not any(w in q7text for w in ADVANCED_ONLY), 'Q007 must stay a labelled basic draft without advanced-only diseases (D108)')
+require(not any(ch.isdigit() for m in q7['materials'] for ch in m['text'] + ''.join(c['text'] for c in m['cards'])), 'Q007 basic materials must not carry numbers (design 19 section 3)')
+q7b = load('data/balance/q007.v0.1.json')
+require(q7b['publication'] == {'key': quests[6]['completionKey'], 'xp': quests[6]['xp'], 'gold': quests[6]['gold']}, 'Q007 runtime reward mismatch')
 q6b = load('data/balance/q006.v0.1.json')
 require(q6b['publication'] == {'key': quests[5]['completionKey'], 'xp': quests[5]['xp'], 'gold': quests[5]['gold']}, 'Q006 runtime reward mismatch')
 q4 = load('data/content/q004.v0.1.json')

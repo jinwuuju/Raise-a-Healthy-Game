@@ -2,13 +2,16 @@ import { defaultAppearance, validateAppearance, type Appearance, type Preset } f
 import { orderDrink } from '../domain/cafe';
 import { buyItem, buyOutfit } from '../domain/shop';
 import { checkArticle, selectArticle } from '../domain/article';
-import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, publishQ4WithReaction, publishQ5WithReaction, publishQ6WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
+import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, publishQ4WithReaction, publishQ5WithReaction, publishQ6WithReaction, publishQ7WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
 import type { QuestId } from '../domain/reaction-state';
 import { acceptQ5, setQ5Mode, recordQ5, placeQ5, clearQ5Order, selectQ5, checkQ5 } from '../domain/q005';
 import type { Q5Evidence, SignalCard } from '../domain/q005-state';
 import type { RhythmMode } from '../domain/rhythm-model';
 import { acceptQ6, setQ6Mode, recordQ6, placeQ6, clearQ6Order, selectQ6, checkQ6 } from '../domain/q006';
 import type { BoardCard, Q6Evidence } from '../domain/q006-state';
+import { acceptQ7, setQ7Mode, recordQ7, pairQ7, chainQ7, clearQ7Board, selectQ7, checkQ7 } from '../domain/q007';
+import type { ChainCard, PairCard, Q7Evidence } from '../domain/q007-state';
+import type { PassageMode } from '../domain/passage-model';
 import type { SupplyMode } from '../domain/supply-model';
 import { acceptQ4, crossQ4Body, recordQ4, placeQ4Route, joinQ4, selectQ4, checkQ4 } from '../domain/q004';
 import type { Q4Evidence, RouteId } from '../domain/q004-state';
@@ -101,7 +104,7 @@ export class Game {
   enter(room: RoomId, x: number, y: number, facing: Dir): void {
     if (!rooms[room] || !canStand(room, { x, y })) throw new Error('이동할 수 없는 위치예요.');
     const next = crossQ4Body(this.state, room);
-    this.commit({ ...next, at: { room, x, y, facing }, q003: { ...next.q003, mode: 'normal' }, q005: { ...next.q005, mode: 'normal' }, q006: { ...next.q006, mode: 'rest' } });
+    this.commit({ ...next, at: { room, x, y, facing }, q003: { ...next.q003, mode: 'normal' }, q005: { ...next.q005, mode: 'normal' }, q006: { ...next.q006, mode: 'rest' }, q007: { ...next.q007, mode: 'wide' } });
   }
 
   inspect(id: string): void {
@@ -139,6 +142,15 @@ export class Game {
   selectQ6(slot: 'lead' | 'limit', id: string | null): void { const next = selectQ6(this.state, slot, id); if (next !== this.state) this.commit(next); }
   checkQ6(): void { const next = checkQ6(this.state); if (next !== this.state) this.commit(next); }
   publishQ6(): boolean { const next = publishQ6WithReaction(this.state); if (next === this.state) { this.persist(); return false; } this.commit(next); return true; }
+  acceptQ7(): void { const next = acceptQ7(this.state); if (next !== this.state) this.commit(next); }
+  setQ7Mode(mode: PassageMode): void { const next = setQ7Mode(this.state, mode); if (next !== this.state) this.commit(next); }
+  recordQ7(id: Q7Evidence): boolean { const next = recordQ7(this.state, id); if (next === this.state) return false; this.commit(next); return true; }
+  pairQ7(id: PairCard): void { const next = pairQ7(this.state, id); if (next !== this.state) this.commit(next); }
+  chainQ7(id: ChainCard | 'cut'): void { const next = chainQ7(this.state, id); if (next !== this.state) this.commit(next); }
+  clearQ7Board(): void { const next = clearQ7Board(this.state); if (next !== this.state) this.commit(next); }
+  selectQ7(slot: 'lead' | 'limit', id: string | null): void { const next = selectQ7(this.state, slot, id); if (next !== this.state) this.commit(next); }
+  checkQ7(): void { const next = checkQ7(this.state); if (next !== this.state) this.commit(next); }
+  publishQ7(): boolean { const next = publishQ7WithReaction(this.state); if (next === this.state) { this.persist(); return false; } this.commit(next); return true; }
   acceptQ5(): void { const next = acceptQ5(this.state); if (next !== this.state) this.commit(next); }
   setQ5Mode(mode: RhythmMode): void { const next = setQ5Mode(this.state, mode); if (next !== this.state) this.commit(next); }
   recordQ5(id: Q5Evidence): boolean { const next = recordQ5(this.state, id); if (next === this.state) return false; this.commit(next); return true; }
@@ -171,7 +183,7 @@ export class Game {
     if (why) throw new Error(why);
     const sp = rooms.heart.spawn;
     const s = this.state.flags.includes(Q1.entered) ? this.state : { ...this.state, flags: [...this.state.flags, Q1.entered] };
-    this.commit({ ...s, at: { room: 'heart', x: sp.x, y: sp.y, facing: rooms.heart.spawnFacing }, q003: { ...s.q003, mode: 'normal' }, q005: { ...s.q005, mode: 'normal' }, q006: { ...s.q006, mode: 'rest' } });
+    this.commit({ ...s, at: { room: 'heart', x: sp.x, y: sp.y, facing: rooms.heart.spawnFacing }, q003: { ...s.q003, mode: 'normal' }, q005: { ...s.q005, mode: 'normal' }, q006: { ...s.q006, mode: 'rest' }, q007: { ...s.q007, mode: 'wide' } });
   }
 
   /** Records an observation; returns whether it was new and whether it completed the checkpoint. */
