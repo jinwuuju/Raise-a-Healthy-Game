@@ -1,103 +1,103 @@
 {
   "version": "0.2",
   "status": "design_only",
-  "note": "해부 목록 초안. 실제 전체 구조의 총수나 검수 완료 콘텐츠가 아님.",
+  "note": "해부 목록 초안. 실제 전체 구조의 총수나 검수 완료 콘텐츠가 아님. D108: 허브 심화는 레벨이 아니라 그 허브 기본 졸업 뒤 열린다(deepGate).",
   "hubs": [
     {
       "id": "whole",
       "title": "전신·세포",
       "introMin": 1,
       "introMax": 30,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "circulation",
       "title": "가슴·순환",
       "introMin": 1,
       "introMax": 10,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "respiratory",
       "title": "호흡·기도",
       "introMin": 11,
       "introMax": 20,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "oral",
       "title": "입·치아·얼굴",
       "introMin": 21,
       "introMax": 24,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "digestive",
       "title": "소화·복부",
       "introMin": 21,
       "introMax": 30,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "endocrine",
       "title": "호르몬·대사",
       "introMin": 25,
       "introMax": 30,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "renal",
       "title": "신장·비뇨",
       "introMin": 31,
       "introMax": 40,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "neural",
       "title": "뇌·척수·말초",
       "introMin": 41,
       "introMax": 44,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "senses",
       "title": "눈·귀·감각",
       "introMin": 41,
       "introMax": 50,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "movement",
       "title": "뼈·관절·근육",
       "introMin": 45,
       "introMax": 50,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "barrier",
       "title": "피부·면역·림프",
       "introMin": 51,
       "introMax": 55,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     },
     {
       "id": "development",
       "title": "골반·생식·발달",
       "introMin": 56,
       "introMax": 60,
-      "deepMin": 61,
-      "status": "planned"
+      "status": "planned",
+      "deepGate": "basic_graduation"
     }
   ],
   "entries": [

@@ -190,9 +190,9 @@
       "cumulativeXp": 2700,
       "rankTarget": "수습 기자",
       "specialtyFocus": "cardiovascular",
-      "playBeat": "첫 기획 기사",
-      "playerAction": "구조·흐름·기능 종합",
-      "unlockProposal": "Q010 후 신입 승진·폐 초대",
+      "playBeat": "심장 졸업 특집호",
+      "playerAction": "특집 배달 런·핵심 구조 확인·쉬운 특집 기사",
+      "unlockProposal": "Q010 후 신입 승진·심장 심화 열림·폐 초대",
       "gatePolicy": "해금은 관련 취재 및 선수 개념 수행 증거로 판정; 레벨만으로 자동 해금하지 않음",
       "bandPlaytimeTarget": "90~150분",
       "status": "design_only",
@@ -217,7 +217,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "주민과 첫 인사",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -237,7 +237,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "가구 배치 실습",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -257,7 +257,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "상의/하의 조합",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -277,7 +277,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "집의 도감 책장",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -297,7 +297,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "골목 산책 의뢰",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -317,7 +317,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "기획 기사 액자",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -337,7 +337,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "무료 외형 변경",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -357,7 +357,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "첫 생활 세트",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -377,7 +377,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "집 초대 후일담",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -397,7 +397,7 @@
       "bandPlaytimeTarget": "2~3시간",
       "status": "design_only",
       "lifeBeat": "취재방 꾸미기",
-      "journalismFocus": "인터뷰·인용 맥락·출처 카드",
+      "journalismFocus": "독자 질문·쉬운 비유와 그 한계",
       "bodyHubIds": [
         "whole",
         "respiratory"
@@ -417,7 +417,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "시리즈 의상 수집",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "oral",
@@ -438,7 +438,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "주민 인터뷰 산책",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "oral",
@@ -459,7 +459,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "가구 제작자 이야기",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "oral",
@@ -480,7 +480,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "조명 분위기",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "oral",
@@ -501,7 +501,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "테마 벽지",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "digestive",
@@ -522,7 +522,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "신문 스크랩 벽",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "digestive",
@@ -543,7 +543,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "소품 조합",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "digestive",
@@ -564,7 +564,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "옷장 즐겨찾기",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "digestive",
@@ -585,7 +585,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "아파트 저축",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "digestive",
@@ -606,7 +606,7 @@
       "bandPlaytimeTarget": "3~4시간",
       "status": "design_only",
       "lifeBeat": "두 번째 집 미리보기",
-      "journalismFocus": "기전 설명·과장 제목·기사 구조",
+      "journalismFocus": "원인→결과 순서로 쉽게 설명",
       "bodyHubIds": [
         "whole",
         "digestive",
@@ -627,7 +627,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "아파트 구매 후보",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -646,7 +646,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "작업실 배치",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -665,7 +665,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "대형 책장",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -684,7 +684,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "창가 정원",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -703,7 +703,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "동료 기자 후일담",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -722,7 +722,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "가구 세트",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -741,7 +741,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "집 전시 구역",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -760,7 +760,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "테마 코트",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -779,7 +779,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "동네 기획전",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -798,7 +798,7 @@
       "bandPlaytimeTarget": "4~5시간",
       "status": "design_only",
       "lifeBeat": "생활 특집 전시",
-      "journalismFocus": "검사 해석 범위·측정 조건",
+      "journalismFocus": "검사가 보는 것을 한 줄로 설명",
       "bodyHubIds": [
         "renal"
       ],
@@ -817,7 +817,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "탐험 의상",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "neural",
         "senses"
@@ -837,7 +837,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "새 머리 장식",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "neural",
         "senses"
@@ -857,7 +857,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "동네 의뢰",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "neural",
         "senses"
@@ -877,7 +877,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "감각 테마 장식",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "neural",
         "senses"
@@ -897,7 +897,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "운동 테마 가구",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "senses",
         "movement"
@@ -917,7 +917,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "수집 선반",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "senses",
         "movement"
@@ -937,7 +937,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "주민 후일담",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "senses",
         "movement"
@@ -957,7 +957,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "옷장 확장 보기",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "senses",
         "movement"
@@ -977,7 +977,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "취재 노트 전시",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "senses",
         "movement"
@@ -997,7 +997,7 @@
       "bandPlaytimeTarget": "4~6시간",
       "status": "design_only",
       "lifeBeat": "생활 골목 축제",
-      "journalismFocus": "복합 취재·존중하는 환자 이야기",
+      "journalismFocus": "이야기 속 사람을 존중하는 쉬운 말",
       "bodyHubIds": [
         "senses",
         "movement"
@@ -1017,7 +1017,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "피부 테마 색상",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "barrier"
       ],
@@ -1036,7 +1036,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "조명 프리셋",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "barrier"
       ],
@@ -1055,7 +1055,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "정원 가구",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "barrier"
       ],
@@ -1074,7 +1074,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "면역 테마 소품",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "barrier"
       ],
@@ -1093,7 +1093,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "정원 집 저축",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "barrier"
       ],
@@ -1112,7 +1112,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "생활 기사 전시",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "development"
       ],
@@ -1131,7 +1131,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "가족 이야기 후일담",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "development"
       ],
@@ -1150,7 +1150,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "정원 집 미리보기",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "development"
       ],
@@ -1169,7 +1169,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "방 꾸미기 저장",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "development"
       ],
@@ -1188,7 +1188,7 @@
       "bandPlaytimeTarget": "5~7시간",
       "status": "design_only",
       "lifeBeat": "정원 있는 집 후보",
-      "journalismFocus": "연구 구조·광고와 기사·보건의료",
+      "journalismFocus": "광고와 기사 구분·짧은 리드",
       "bodyHubIds": [
         "development"
       ],
@@ -1936,5 +1936,5 @@
       "informationAccess": "검수된 기초 정보와 기자 가이드는 레벨과 무관하게 열람"
     }
   ],
-  "note": "XP 곡선은 v0.1 유지, 전신·기자·생활 경로 확장"
+  "note": "XP 곡선은 v0.1 유지, 전신·기자·생활 경로 확장 · D108: Lv.1~60은 장기 기본 장(일반인 수준, 기자 실습은 쉬운 4종의 변주), Lv.61~99는 모든 기본 졸업 뒤 다기관 종합. 장기별 심화는 레벨이 아니라 기본 졸업으로 열린다(설계 19)."
 }
