@@ -2,6 +2,7 @@ import bodyMap from '../../data/content/body-map.v0.1.json';
 import heart from '../../data/content/heart-interior.v0.1.json';
 import { organMinimap } from '../art/organ';
 import { discovered, discoveries, discoveryIds, roomProgress } from '../domain/heart';
+import { maxStars, roomStars, tiers, tierStars, totalStars } from '../domain/mastery';
 import { Q1_OBSERVATIONS, obsKey } from '../domain/quest';
 import type { GameState } from '../domain/state';
 import type { Room } from '../world/rooms';
@@ -57,7 +58,10 @@ function placeLine(ctx: Ctx, tab: AtlasTab): HTMLElement[] {
     const pr = roomProgress(ctx.state, ctx.roomId);
     return [el('h3', '', ctx.room.title.split(' · ').pop()!), el('span', 'meter', '이 방에서 찾은 구조 ' + pr.found + '/' + pr.total)];
   }
-  if (tab === 'heart') return [el('h3', '', '심장과 두 순환'), el('span', 'meter', '심장 탐험 기록 ' + found + '/' + total)];
+  if (tab === 'heart') {
+    const st = totalStars(ctx.state), mx = maxStars();
+    return [el('h3', '', '심장과 두 순환'), el('span', 'meter', '심장 탐험 기록 ' + found + '/' + total + ' · 숙련 ★' + st + '/' + mx + ' (' + Math.floor(st * 100 / mx) + '%)')];
+  }
   return [el('h3', '', '인체'), el('span', 'meter', '탐험할 수 있는 기관 ' + (bodyMap.organs as Organ[]).filter(o => o.state !== 'locked').length + '/' + bodyMap.organs.length)];
 }
 
@@ -204,6 +208,12 @@ function drawHeart(cv: HTMLCanvasElement, ctx: Ctx) {
       g.fillStyle = cur ? C.scope : color; g.beginPath(); g.roundRect(bx, by, Math.max(4, bw * (prog.found / Math.max(1, prog.total))), 4, 2); g.fill();
     }
     if (cur) tag(g, '지금 여기', x, y - h / 2 - 12, { color: '#062a2a', fill: C.scope, size: 11, W });
+    // D108 see-through map: this room's stars at the chip's corner, gold when the room's medal is earned.
+    const rs = roomStars(ctx.state, id);
+    if (rs.max) {
+      if (rs.medal) { g.beginPath(); g.roundRect(x - w / 2 - 3, y - h / 2 - 3, w + 6, h + 6, 14); g.lineWidth = 2; g.strokeStyle = C.gold; g.stroke(); }
+      tag(g, (rs.medal ? '메달 ★' : '★') + rs.stars + (rs.medal ? '' : '/' + rs.max), x + w / 2 - 8, y + h / 2, { color: '#2a1d05', fill: rs.stars ? C.gold : 'rgba(241,207,139,0.45)', size: 10, W });
+    }
   };
   const names: Record<string, string> = { heart: '우심방', rv: '우심실', la: '좌심방', lv: '좌심실' };
   for (const [id, [x, y]] of Object.entries(node)) chip(id, x, y, cw, ch, names[id]!, id === 'heart' || id === 'rv' ? '#b24a64' : '#e2445c', roomProgress(ctx.state, id as RoomId));
@@ -214,7 +224,10 @@ function drawHeart(cv: HTMLCanvasElement, ctx: Ctx) {
 
 function heartInfo(ctx: Ctx): HTMLElement[] {
   const p = roomProgress(ctx.state, 'aorta');
+  const medals = ['heart', 'rv', 'lung', 'la', 'lv', 'aorta'].filter(r => roomStars(ctx.state, r).medal).length;
+  const tierLine = tiers.map(t => { const ts = tierStars(ctx.state, t); return t.title + ' ★' + ts.stars + '/' + ts.max; }).join(' · ');
   return [legend([['poor', '산소가 적은 피'], ['rich', '산소가 많은 피'], ['you', '지금 있는 곳']]),
+    el('p', '', '방 모서리의 ★는 그 방 구조의 확인 문제 별이에요. 방의 별을 모두 모으면 금색 메달 테두리가 생겨요. ' + tierLine + ' · 메달 ' + medals + '/6'),
     el('p', '', '오른쪽 심장은 피를 폐로 보내고(폐순환), 왼쪽 심장은 온몸으로 보내요(온몸순환). 판막은 이 화살표 방향으로만 열려요.'),
     el('p', 'note', '대동맥 뿌리 기록 ' + p.found + '/' + p.total + '. 이 그림은 순서를 보여 주는 도식이라 실제 방의 위치·크기와 다릅니다. ' + heart.disclaimer)];
 }

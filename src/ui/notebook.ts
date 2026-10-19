@@ -4,7 +4,7 @@ import { jinuItems, tailorItems } from '../domain/shop';
 import { notebookRecords } from '../application/notebook';
 import { heartText, inspectLabels, lookText, objective, q1Text } from '../application/story';
 import { discoveries, discoveryIds, roomProgress } from '../domain/heart';
-import { hints, maxStars, nextLocked, starsOf, totalStars } from '../domain/mastery';
+import { hints, maxStars, nextLocked, roomStars, starsOf, totalStars } from '../domain/mastery';
 import { sightings } from '../domain/heart-run';
 import { Q1, Q1_OBSERVATIONS, q1Seen } from '../domain/quest';
 import { q2Text } from '../domain/q002-state';
@@ -169,7 +169,8 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
         heart.append(el('p', 'muted', '필수 취재 관찰 A/B는 취재 파일에 있어요. 여기에는 별도로 발견한 구조만 모아요.'));
         for (const roomId of heartRoute) {
           const pr = roomProgress(s, roomId), title = rooms[roomId].title.split(' · ').pop()!;
-          fold(heart, 'room-' + roomId, title + ' · ' + pr.found + '/' + pr.total, body => {
+          const rs = roomStars(s, roomId);
+          fold(heart, 'room-' + roomId, title + ' · ' + pr.found + '/' + pr.total + ' · ★' + rs.stars + '/' + rs.max + (rs.medal ? ' · 메달' : ''), body => {
             for (const key of records.anatomy[roomId] ?? []) {
               const id = key.slice(3), d = discoveries[id]!;
               const st = starsOf(s, id);
@@ -182,6 +183,8 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
       const h = s.heartRun, mm = (n: number) => Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0');
       fold(atlas, 'heart-run', '혈류 배달 런 · ' + h.runs + '번', body => {
         body.append(el('p', '', h.runs ? '최고 기록 ' + (h.best !== null ? mm(h.best) : '-') + ' · 최고 등급 ' + (h.bestGrade ?? '-') + ' · 경유지 만점 ' + h.perfect + '번 · 지금까지 ' + h.goldEarned.toLocaleString('ko-KR') + 'G' : '우심방의 안내 로봇 바디에게 말을 걸면 배달을 시작해요. 매번 골드를 받고, 처음 해낸 일(첫 배달·첫 S등급·새 목격)엔 경험치도 받아요.'));
+        body.append(el('p', '', h.muscle.runs ? '심장 근육 배달 ' + h.muscle.runs + '번 · 최고 기록 ' + (h.muscle.best !== null ? mm(h.muscle.best) : '-')
+          : s.q006.publishedAt ? '심장 근육 배달 · 바디에게서 시작해요. 대동맥 뿌리의 관상동맥 입구 → 심실 벽 근육 → 관상정맥동으로 돌아오는 Q006 노선이에요.' : '심장 근육 배달 · Q006 취재를 마치면 열려요.'));
         body.append(el('p', 'muted', '혈액 속 목격 · ' + h.seen.length + '/' + sightings.length + '종'));
         for (const x of sightings) {
           if (h.seen.includes(x.id)) fold(body, 'sight-' + x.id, x.name, d => d.append(el('p', '', x.text)));

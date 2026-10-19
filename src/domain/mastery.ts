@@ -46,6 +46,14 @@ export const tierOf = (id: string): Tier => tiers.find(t => t.ids.includes(id)) 
 export const starsOf = (s: GameState, id: string): number => s.mastery[id]?.stars ?? 0;
 export const totalStars = (s: GameState): number => Object.values(s.mastery).reduce((n, m) => n + m.stars, 0);
 export const maxStars = (): number => discoveryIds.length * 3;
+/** D108 heart see-through map: stars in one room (3 per structure there); a medal when every star of the room is in. */
+export function roomStars(s: GameState, room: string): { stars: number; max: number; medal: boolean } {
+  const ids = discoveryIds.filter(id => discoveries[id]!.room === room);
+  const stars = ids.reduce((n, id) => n + starsOf(s, id), 0), max = ids.length * 3;
+  return { stars, max, medal: max > 0 && stars === max };
+}
+/** Stars collected inside one tier (core / deep / detail) out of its maximum. */
+export const tierStars = (s: GameState, t: Tier): { stars: number; max: number } => ({ stars: t.ids.reduce((n, id) => n + starsOf(s, id), 0), max: t.ids.length * 3 });
 /** A tier is open when the stars collected so far reach its threshold. */
 export const tierOpen = (s: GameState, t: Tier): boolean => totalStars(s) >= t.unlockStars;
 /** Structures you may newly explore: open tiers. Already recorded structures always stay open. */
