@@ -76,6 +76,10 @@ export class HeartView {
   supply: SupplyMode = 'rest';
   /** D108 Q007 passage observer: plaque on both coronary entrances and fewer, thinner coronary blood marks. Drawing only. */
   passage: PassageMode = 'wide';
+  /** D108 Q008 blood-pressure observer: qualitative push (0..1) drawn as arrows on the ascending aortic wall; null = no layer. Drawing only. */
+  pressure: number | null = null;
+  /** Q008 ‘high while resting’ layer colour (hypertension basic layer). */
+  pressureHigh = false;
   readonly organ: Organ;
   private tracks: Track[];
   private motes: { x: number; y: number; r: number; v: number }[] = [];
@@ -152,6 +156,18 @@ export class HeartView {
           g.fillStyle = k === depth - 1 ? '#7a5a2e' : k === 0 ? '#f3dc8c' : (k + Math.round(a * 10)) % 3 === 0 ? '#c9a24f' : '#e2c46c';
           g.fillRect(Math.round(f.x + Math.cos(ang) * rr - cx), Math.round(f.y + Math.sin(ang) * rr - cy), 1, 1);
         }
+      }
+    }
+    if (this.pressure !== null && o.kind === 'aorta') {
+      // Arrows from the stream to both walls of the ascending aorta. Length shows the push qualitatively (not a measurement).
+      const len = Math.round(6 + 40 * Math.max(0, Math.min(1, this.pressure))), mid = 208;
+      const col = this.pressureHigh ? '#ff917c' : '#ffdca6', dark = this.pressureHigh ? '#7d1f1c' : '#6d3d18';
+      for (const y0 of [72, 112, 152, 192]) for (const dir of [-1, 1]) {
+        const x0 = mid + dir * 14, x1 = x0 + dir * len, y = y0 - cy, left = Math.min(x0, x1) - cx, w = Math.abs(x1 - x0);
+        g.fillStyle = dark; g.fillRect(left, y - 1, w, 3);
+        g.fillStyle = col; g.fillRect(left, y, w, 1);
+        for (let k = 0; k < 4; k++) { g.fillStyle = dark; g.fillRect(x1 - dir * k - cx, y - k - 1, 1, 2 * k + 3); g.fillStyle = col; g.fillRect(x1 - dir * k - cx, y - k, 1, 2 * k + 1); }
+        g.fillStyle = col; g.fillRect(x1 + dir * 3 - cx, y - 5, 1, 11);
       }
     }
     for (const v of o.valves) {

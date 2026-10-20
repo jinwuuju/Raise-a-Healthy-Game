@@ -1,0 +1,63 @@
+{
+  "id": "disease.hypertension",
+  "status": "draft_unreviewed",
+  "review": null,
+  "publicAtlas": false,
+  "questSlot": "Q008",
+  "prerequisiteQuest": "Q007",
+  "sources": [
+    {
+      "id": "nhlbi-hbp-what",
+      "title": "NHLBI · What Is High Blood Pressure?",
+      "url": "https://www.nhlbi.nih.gov/health/high-blood-pressure",
+      "updated": "2024-04-25",
+      "checked": "2026-10-19",
+      "section": "What Is High Blood Pressure? (two numbers, changes through the day, heart-healthy lifestyle)"
+    },
+    {
+      "id": "nhlbi-hbp-diagnosis",
+      "title": "NHLBI · High Blood Pressure Diagnosis",
+      "url": "https://www.nhlbi.nih.gov/health/high-blood-pressure/diagnosis",
+      "updated": "2025-06-26",
+      "checked": "2026-10-19",
+      "section": "Getting ready for a blood pressure measurement / Confirming high blood pressure"
+    }
+  ],
+  "summary": "고혈압은 피가 동맥 벽을 미는 힘(혈압)이 자주 높은 상태예요. 이번 파일은 Q008 혈압 기록 취재를 위한 기초 초안이며 공개 도감에 쓰지 않습니다.",
+  "misconception": {
+    "claim": "한 번 높게 나오면 고혈압이다.",
+    "correction": "혈압은 상황에 따라 오르내려서, 쉬고 바르게 잰 기록을 서로 다른 날 여러 번 모아 의료진이 판단해요.",
+    "src": [
+      "nhlbi-hbp-diagnosis"
+    ]
+  },
+  "layerPlan": {
+    "space": "Q007 뒤 같은 대동맥 뿌리(오름대동맥) 공간. 새 맵 없음. 오름대동맥 앞 혈압 관찰기로 비교한다.",
+    "normalFirst": "왼심실이 짤 때(대동맥판 아래)와 심장이 쉴 때(대동맥 벽이 되돌아오는 곳)의 정상 벽 미는 힘을 먼저 관찰한다.",
+    "change": "Q008(D108, 기본 과정): 오름대동맥 벽을 미는 피의 힘을 화살표와 막대로 보이고 쉴 때·막 움직인 뒤(잠깐 커졌다 돌아옴)·쉬어도 계속 높음(고혈압)을 비교한다. 기준 숫자는 쓰지 않는다.",
+    "movement": "질환 표식은 렌더링 전용이며 기자의 출입구·판막 통과·박동 규칙을 바꾸지 않는다. 화살표·막대는 측정값이 아니다.",
+    "implemented": true
+  },
+  "reportingSteps": [
+    "왼심실과 대동맥의 정상 벽 미는 힘 관찰",
+    "같은 오름대동맥에서 상황 하나씩 바꿔 비교",
+    "왜 높아지나: 잠깐의 변화와 평소 상태, 개인·환경 맥락",
+    "무엇을 보면 아나: 바르게 여러 번 재기(기준 숫자 없이)",
+    "몸을 돕는 원리의 출처 취재",
+    "한 번의 숫자와 평소 혈압을 구분하는 팩트체크 기사"
+  ],
+  "articleSlot": {
+    "quest": "Q008",
+    "type": "쉬운 설명·팩트체크",
+    "question": "한 번 잰 혈압 숫자로 고혈압이라고 할 수 있을까?"
+  },
+  "deferral": "진단 기준 숫자(판본·날짜 카드)·약 계열·위험 계산·합병증(뇌·콩팥·눈 등 기관 연결)은 심장 심화 과정(설계 19)으로 미룬다.",
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 초안",
+  "simplification": [
+    "고혈압의 기초만 다룹니다.",
+    "개인 진단·위험 계산·치료 추천·응급 행동 안내는 다루지 않습니다.",
+    "없는 합병증 기관은 준비 중 연결로 둡니다."
+  ],
+  "runtimeQuest": "Q008",
+  "tier": "basic"
+}

@@ -1,0 +1,257 @@
+{
+  "id": "content.Q008",
+  "status": "draft_unreviewed",
+  "review": null,
+  "updatedAt": "2026-10-19",
+  "tier": "basic",
+  "title": "하나의 숫자로 충분할까",
+  "question": "병원에서 혈압을 한 번 쟀더니 높게 나왔어요. 그럼 저는 고혈압인가요?",
+  "offer": [
+    "독자 편지가 왔어요. 병원에서 혈압을 한 번 쟀더니 높게 나왔다며, 그럼 고혈압이냐고 묻네요.",
+    "먼저 왼심실과 대동맥에서 피가 혈관 벽을 미는 모습을 직접 보고, 오름대동맥 앞 혈압 관찰기로 한 가지씩 바꿔 비교해 봐요. 그다음 내 자리에서 자료를 취재해 쉬운 설명 기사로 이어가요."
+  ],
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 혈압 취재 연습이에요. 실제 사람의 혈압 측정이나 진단이 아닙니다.",
+  "layerLimit": "혈압 관찰기 · 고혈압 기초의 질환 레이어예요. 화살표 크기와 ‘벽을 미는 힘’ 막대는 측정값이 아니에요. 기준 숫자는 이 취재에서 다루지 않아요. 기자가 걷는 판막 통과와 박동 규칙은 바꾸지 않았어요.",
+  "sources": [
+    {
+      "id": "nhlbi-hbp-what",
+      "title": "NHLBI · What Is High Blood Pressure?",
+      "url": "https://www.nhlbi.nih.gov/health/high-blood-pressure",
+      "updated": "2024-04-25",
+      "checked": "2026-10-19",
+      "section": "What Is High Blood Pressure? (two numbers, changes through the day, heart-healthy lifestyle)"
+    },
+    {
+      "id": "nhlbi-hbp-symptoms",
+      "title": "NHLBI · High Blood Pressure Symptoms",
+      "url": "https://www.nhlbi.nih.gov/health/high-blood-pressure/symptoms",
+      "updated": "2024-04-25",
+      "checked": "2026-10-19",
+      "section": "Symptoms (usually no symptoms; check readings regularly)"
+    },
+    {
+      "id": "nhlbi-hbp-diagnosis",
+      "title": "NHLBI · High Blood Pressure Diagnosis",
+      "url": "https://www.nhlbi.nih.gov/health/high-blood-pressure/diagnosis",
+      "updated": "2025-06-26",
+      "checked": "2026-10-19",
+      "section": "Getting ready for a blood pressure measurement / Confirming high blood pressure"
+    },
+    {
+      "id": "nhlbi-hbp-causes",
+      "title": "NHLBI · High Blood Pressure Causes and Risk Factors",
+      "url": "https://www.nhlbi.nih.gov/health/high-blood-pressure/causes",
+      "updated": "2024-04-30",
+      "checked": "2026-10-19",
+      "section": "What are the risk factors? / How to prevent high blood pressure"
+    },
+    {
+      "id": "nhlbi-hbp-treatment",
+      "title": "NHLBI · High Blood Pressure Treatment",
+      "url": "https://www.nhlbi.nih.gov/health/high-blood-pressure/treatment",
+      "updated": "2024-04-30",
+      "checked": "2026-10-19",
+      "section": "Healthy lifestyle changes / Medicines"
+    },
+    {
+      "id": "openstax-bp",
+      "title": "Rice University OpenStax · 20.2 Blood Flow, Blood Pressure, and Resistance",
+      "url": "https://openstax.org/books/anatomy-and-physiology/pages/20-2-blood-flow-blood-pressure-and-resistance",
+      "checked": "2026-10-19",
+      "section": "Systolic and Diastolic Pressures"
+    }
+  ],
+  "notes": [
+    {
+      "id": "squeeze",
+      "room": "lv",
+      "target": "hx-av-below",
+      "name": "정상 기준 · 심장이 짤 때",
+      "text": "왼심실이 힘껏 짜면 피가 대동맥판을 밀어 열고 대동맥으로 뿜어져 나가요. 이때 피가 혈관 벽을 미는 힘이 가장 세요. 피가 혈관 벽을 미는 이 힘을 혈압이라고 해요.",
+      "src": [
+        "nhlbi-hbp-what",
+        "openstax-bp"
+      ]
+    },
+    {
+      "id": "recoil",
+      "room": "aorta",
+      "target": "hx-stj",
+      "name": "정상 기준 · 심장이 쉴 때",
+      "text": "대동맥판이 닫혀 심장이 쉬는 사이에도, 늘어났던 대동맥 벽이 고무줄처럼 되돌아오며 피를 계속 밀어요. 그래서 혈압은 쉴 때도 사라지지 않아요. 혈압을 숫자 두 개로 적는 까닭이에요. 짤 때 가장 센 힘이 위 숫자, 쉴 때 가장 약한 힘이 아래 숫자예요.",
+      "src": [
+        "openstax-bp",
+        "nhlbi-hbp-what"
+      ]
+    }
+  ],
+  "comparison": {
+    "rest": {
+      "label": "쉴 때",
+      "text": "기준이에요. 편히 앉아 쉬고 있을 때예요. 심장이 짤 때는 벽을 세게, 쉴 때는 약하게 밀어요."
+    },
+    "moved": {
+      "label": "막 움직인 뒤",
+      "text": "계단을 뛰어 올라온 직후처럼 몸이 막 움직인 뒤에는 심장이 빠르고 세게 뛰어 벽을 미는 힘이 잠깐 커져요. 쉬면 다시 원래대로 돌아와요. 한 번 높게 나온 숫자는 이런 순간을 잰 것일 수도 있어요."
+    },
+    "high": {
+      "label": "쉬어도 계속 높음",
+      "text": "편히 쉬고 있는데도, 다른 날 다시 재도 벽을 미는 힘이 계속 커요. 이렇게 혈압이 자주 높은 상태를 고혈압이라고 해요. 오래 이어지면 혈관과 심장이 무리하게 돼요. 대개 아무 느낌이 없어서 재 봐야 알 수 있어요."
+    }
+  },
+  "singleVariable": "기준(쉴 때)과 비교할 때마다 한 가지만 달라요. ‘막 움직인 뒤’는 재는 순간의 상황이, ‘쉬어도 계속 높음’은 몸의 평소 상태가 달라요. 하나씩 바꿔야 숫자가 왜 높아졌는지 구분할 수 있어요.",
+  "materials": [
+    {
+      "id": "causes",
+      "title": "3 · 왜 높아질까",
+      "text": "혈압은 하루에도 오르내려요. 움직이거나 긴장하거나 말을 할 때, 커피를 마시거나 담배를 피운 뒤에는 잠깐 올라갔다가 쉬면 내려와요. 고혈압은 이런 잠깐의 변화가 아니라, 쉬고 있어도 혈압이 자주 높은 상태예요.",
+      "cards": [
+        {
+          "title": "바꾸기 어려운 것",
+          "text": "나이가 들면 혈관이 조금씩 두꺼워지고 뻣뻣해져 혈압이 오르기 쉬워요. 가족 중에 고혈압이 있으면 더 생기기 쉬워요."
+        },
+        {
+          "title": "관리할 수 있는 것",
+          "text": "짠 음식을 자주 먹는 것, 적게 움직이는 생활, 지나친 음주, 모자란 잠, 큰 스트레스가 혈압을 높일 수 있어요. 일하는 환경과 사는 형편도 영향을 줘요. 한 사람의 잘못만으로 생기는 게 아니에요."
+        }
+      ],
+      "src": [
+        "nhlbi-hbp-what",
+        "nhlbi-hbp-causes",
+        "nhlbi-hbp-diagnosis"
+      ]
+    },
+    {
+      "id": "tests",
+      "title": "4 · 무엇을 보면 알 수 있을까",
+      "text": "혈압은 팔에 감는 띠가 달린 혈압계로 재요. 아프지 않고 금방 끝나요. 고혈압인지는 한 번 잰 숫자로 정하지 않아요. 편히 쉰 뒤 바르게 잰 값을 서로 다른 날 여러 번 모아서 봐요. 병원에서 긴장하면 집에서보다 높게 나오기도 해서, 집이나 약국에서 잰 기록을 함께 보기도 해요.",
+      "cards": [
+        {
+          "title": "바르게 재는 법",
+          "text": "재기 전에는 운동과 커피, 담배를 피하고 의자에 앉아 잠시 편히 쉬어요. 발은 바닥에 붙이고, 팔은 탁자에 올려 심장 높이에 두고, 재는 동안 말하지 않아요."
+        },
+        {
+          "title": "게임과 실제",
+          "text": "혈압 관찰기처럼 혈관 속에 들어가 볼 수는 없어요. 기록을 보고 고혈압인지 판단하는 일은 의료진이 해요. 이 취재는 기준 숫자를 다루지 않아요."
+        }
+      ],
+      "src": [
+        "nhlbi-hbp-diagnosis",
+        "nhlbi-hbp-symptoms"
+      ]
+    },
+    {
+      "id": "care",
+      "title": "5 · 몸을 돕는 원리",
+      "text": "혈압을 높이는 조건을 줄이는 것이 기본이에요. 덜 짜게 먹고 채소와 과일을 챙기기, 꾸준히 움직이기, 술 줄이기, 담배 끊기, 충분한 잠과 스트레스 관리가 여기에 들어가요. 생활 관리만으로 부족하면 의료진과 함께 약으로 치료하기도 해요. 혈압을 꾸준히 재서 잘 관리되고 있는지 확인해요.",
+      "cards": [
+        {
+          "title": "하나씩 오래",
+          "text": "한꺼번에 다 바꾸기보다 하나씩 바꿔 오래 이어 가는 것이 도움이 돼요."
+        },
+        {
+          "title": "의료진과 함께",
+          "text": "어떤 관리와 치료가 맞는지는 사람마다 달라요. 개인의 혈압과 상태는 의료진과 상의해요."
+        }
+      ],
+      "src": [
+        "nhlbi-hbp-treatment",
+        "nhlbi-hbp-causes"
+      ]
+    }
+  ],
+  "board": {
+    "title": "혈압 기록 도해",
+    "person": "가상 인물 가온 씨의 혈압 기록 카드예요. 숫자 대신 ‘벽을 미는 힘’ 막대로 보여 줘요. 평소 혈압을 알려면 어떤 기록끼리 모아 봐야 할까요?",
+    "pickTitle": "1 · 평소 혈압을 볼 기록 고르기",
+    "records": [
+      {
+        "id": "home-1",
+        "card": "첫째 날 아침 · 집 · 앉아서 쉰 뒤",
+        "level": 2
+      },
+      {
+        "id": "stairs",
+        "card": "병원 · 계단을 뛰어 올라온 직후",
+        "level": 4,
+        "hint": "막 움직인 직후라 재는 조건이 달라요. 쉬고 잰 기록끼리 모아야 평소 혈압을 볼 수 있어요."
+      },
+      {
+        "id": "home-2",
+        "card": "둘째 날 아침 · 집 · 앉아서 쉰 뒤",
+        "level": 2
+      },
+      {
+        "id": "unknown",
+        "card": "언제·어디서 쟀는지 적히지 않은 기록",
+        "level": 4,
+        "hint": "언제, 어떤 상황에서 잰 건지 적혀 있지 않아 다른 기록과 비교할 수 없어요. 기록에는 재는 조건을 함께 적어요."
+      },
+      {
+        "id": "home-3",
+        "card": "셋째 날 아침 · 집 · 앉아서 쉰 뒤",
+        "level": 2
+      }
+    ],
+    "correctRecords": [
+      "home-1",
+      "home-2",
+      "home-3"
+    ],
+    "verdictTitle": "2 · 기사에 쓸 판단 고르기",
+    "verdicts": [
+      {
+        "id": "diagnose",
+        "card": "한 번 높게 나왔으니 고혈압이에요.",
+        "hint": "한 번 잰 숫자는 관찰이에요. 고혈압인지 정하는 판단은 서로 다른 날 여러 번 바르게 잰 기록을 보고 의료진이 해요."
+      },
+      {
+        "id": "repeat",
+        "card": "한 번 높게 나온 숫자만으로는 정할 수 없어요. 쉬고 바르게 잰 기록을 여러 날 모아 의료진과 함께 봐요."
+      },
+      {
+        "id": "ignore",
+        "card": "한 번 높은 건 신경 쓰지 않아도 돼요.",
+        "hint": "무시해도 된다는 뜻은 아니에요. 고혈압은 대개 느낌이 없어서, 높게 나왔다면 다시 재 보는 계기로 삼아요."
+      }
+    ],
+    "correctVerdict": "repeat",
+    "needPicks": "먼저 평소 혈압을 볼 기록 세 장을 골라 주세요."
+  },
+  "article": {
+    "leads": [
+      {
+        "id": "one-number",
+        "label": "독자 질문에 바로 답하며 시작",
+        "title": "혈압, 한 번 잰 숫자로는 정할 수 없다",
+        "text": "병원에서 한 번 높게 나왔다고 바로 고혈압이라고 하지 않아요. 혈압은 하루에도 오르내리기 때문에, 쉬고 바르게 잰 기록을 서로 다른 날 여러 번 모아서 봐요."
+      },
+      {
+        "id": "wall",
+        "label": "벽을 미는 힘으로 시작",
+        "title": "피가 혈관 벽을 미는 힘, 혈압",
+        "text": "심장이 짤 때마다 피가 혈관 벽을 밀어요. 이 힘이 혈압이에요. 막 움직인 뒤에는 잠깐 커지고 쉬면 돌아오기 때문에, 숫자 하나보다 같은 조건의 기록 여럿이 더 많은 것을 알려 줘요."
+      }
+    ],
+    "limitations": [
+      {
+        "id": "model",
+        "label": "모형의 한계로 마무리",
+        "text": "교육용 모형으로 개인의 혈압 상태·위험·치료를 판단할 수 없어요. 기준 숫자는 이 기사에서 다루지 않았어요. 자신의 혈압 기록은 의료진과 함께 봐요."
+      },
+      {
+        "id": "display",
+        "label": "표시 방식의 한계로 마무리",
+        "text": "게임 속 화살표와 막대는 벽을 미는 힘의 차이를 보여 주기 위한 표시이며 측정값이 아니에요. 실제 혈압은 팔에 감는 띠로 재요."
+      }
+    ],
+    "factcheck": "‘한 번 높게 나오면 고혈압이다’는 정확하지 않아요. 혈압은 움직임·긴장·말하기·커피 같은 상황에 따라 잠깐 오르내려서, 쉬고 바르게 잰 기록을 서로 다른 날 여러 번 모아 봐야 해요. 반대로 ‘아무 느낌이 없으니 괜찮다’도 사실이 아니에요. 고혈압은 대개 느낌이 없어서 재 봐야 알 수 있어요.",
+    "reply": "한 번 높게 나와서 걱정했는데, 쉬고 다시 재는 것부터 해 봐야겠어요. 느낌이 없어도 꾸준히 재 봐야 한다는 것도 처음 알았어요!"
+  },
+  "simplification": [
+    "고혈압의 기초만 다룹니다. 진단 기준 숫자(판본 카드), 약 계열, 위험 계산, 합병증은 심장 심화 과정에서 다룹니다(설계 19).",
+    "실제 혈압은 보통 팔의 동맥에서 재지만, 이 게임은 심장에서 바로 이어지는 오름대동맥에서 피가 벽을 미는 모습을 보여 줍니다.",
+    "화살표와 막대는 정성적 표시이며 혈압 값을 계산하지 않습니다. 가온 씨는 가상 인물입니다.",
+    "개인 진단·위험 계산·치료 추천·응급 행동 안내는 다루지 않습니다."
+  ]
+}

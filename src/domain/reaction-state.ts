@@ -6,11 +6,12 @@ import q4Balance from '../../data/balance/q004.v0.1.json';
 import q5Balance from '../../data/balance/q005.v0.1.json';
 import q6Balance from '../../data/balance/q006.v0.1.json';
 import q7Balance from '../../data/balance/q007.v0.1.json';
+import q8Balance from '../../data/balance/q008.v0.1.json';
 
 export const reactionBalance = balance;
 /** Quests whose articles have saved reader reactions. Q001 receipts may omit questId (older saves). */
-export type QuestId = 'Q001' | 'Q002' | 'Q003' | 'Q004' | 'Q005' | 'Q006' | 'Q007';
-export const questIds: QuestId[] = ['Q001', 'Q002', 'Q003', 'Q004', 'Q005', 'Q006', 'Q007'];
+export type QuestId = 'Q001' | 'Q002' | 'Q003' | 'Q004' | 'Q005' | 'Q006' | 'Q007' | 'Q008';
+export const questIds: QuestId[] = ['Q001', 'Q002', 'Q003', 'Q004', 'Q005', 'Q006', 'Q007', 'Q008'];
 export const reactionText = content;
 export type Reaction = {
   questId?: QuestId;
@@ -38,7 +39,7 @@ export function validateReactions(value: unknown): Reactions {
         typeof r.at !== 'string' || !Number.isFinite(Date.parse(r.at)) || !int(r.score) || r.score < balance.scoreMin || r.score > balance.scoreMax ||
         typeof r.windfall !== 'boolean' || ![r.bonusGold, r.baseGold, r.xp, r.xpBefore, r.xpAfter, r.goldBefore, r.goldAfter].every(int)) return fail();
     const range = r.windfall ? balance.windfallGold : balance.normalGold, band = bandFor(r.score);
-    const reward = r.questId === 'Q007' ? q7Balance.publication : r.questId === 'Q006' ? q6Balance.publication : r.questId === 'Q005' ? q5Balance.publication : r.questId === 'Q004' ? q4Balance.publication : r.questId === 'Q003' ? q3Balance.publication : r.questId === 'Q002' ? q2Balance.publication : { xp: 80, gold: 100 };
+    const reward = r.questId === 'Q008' ? q8Balance.publication : r.questId === 'Q007' ? q7Balance.publication : r.questId === 'Q006' ? q6Balance.publication : r.questId === 'Q005' ? q5Balance.publication : r.questId === 'Q004' ? q4Balance.publication : r.questId === 'Q003' ? q3Balance.publication : r.questId === 'Q002' ? q2Balance.publication : { xp: 80, gold: 100 };
     if (r.bonusGold < range.min || r.bonusGold > range.max || r.xp !== (r.kind === 'first' ? reward.xp : 0) || r.baseGold !== (r.kind === 'first' ? reward.gold : 0) ||
         (r.kind === 'first' && (r.questId === undefined || r.questId === 'Q001' ? r.round !== 1 : results.some(p => p.questId === r.questId && p.kind === 'first'))) || r.xpAfter !== r.xpBefore + r.xp || r.goldAfter !== r.goldBefore + r.baseGold + r.bonusGold ||
         !content.scenes.includes(r.scene) || !int(r.headline) || r.headline >= band.headlines.length || !Array.isArray(r.voices) || r.voices.length !== 3) return fail();

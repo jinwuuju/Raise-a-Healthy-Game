@@ -117,7 +117,7 @@ for disease in diseases['entries']:
         draft = load(disease['contentRef'])
         require(draft['id'] == disease['id'] and draft['status'] == 'draft_unreviewed' and draft['review'] is None and not draft['publicAtlas'], 'Disease draft must not masquerade as approved/public content')
         require(len(draft['reportingSteps']) == 6, 'Disease reporting plan needs six stages')
-        implemented = {'disease.valve': 'Q003', 'disease.arrhythmia': 'Q005', 'disease.atherosclerosis': 'Q007'}
+        implemented = {'disease.valve': 'Q003', 'disease.arrhythmia': 'Q005', 'disease.atherosclerosis': 'Q007', 'disease.hypertension': 'Q008'}
         if draft['id'] in implemented:
             require(draft['layerPlan']['implemented'] and draft['runtimeQuest'] == implemented[draft['id']] == disease['questSlot'], 'Implemented disease module boundary mismatch')
         else:
@@ -145,6 +145,19 @@ require(set(q7['comparison']) == {'wide', 'mild', 'narrow'} and q7['board']['cor
 require(set(q7['board']['hints']) == {c['id'] for c in q7['board']['chain']} and q7['board']['decoy']['hint'], 'Q007 chain hints mismatch')
 require('검수 전 모형' in q7['disclaimer'] and '질환 레이어' in q7['layerLimit'] and not any(w in q7text for w in ADVANCED_ONLY), 'Q007 must stay a labelled basic draft without advanced-only diseases (D108)')
 require(not any(ch.isdigit() for m in q7['materials'] for ch in m['text'] + ''.join(c['text'] for c in m['cards'])), 'Q007 basic materials must not carry numbers (design 19 section 3)')
+# D108 Q008: basic-course blood-pressure records (design 19 section 3) with the hypertension basic layer, no threshold numbers.
+q8 = load('data/content/q008.v0.1.json')
+q8text = json.dumps(q8, ensure_ascii=False)
+require(q8['status'] == 'draft_unreviewed' and q8['review'] is None and q8['tier'] == 'basic' and len(q8['notes']) == 2 and len(q8['materials']) == 3, 'Q008 content boundary or evidence mismatch')
+require(all(id in {s['id'] for s in q8['sources']} for n in q8['notes'] + q8['materials'] for id in n['src']), 'Q008 missing source reference')
+q8records = {r['id']: r for r in q8['board']['records']}
+require(set(q8['comparison']) == {'rest', 'moved', 'high'} and len(q8['board']['correctRecords']) == 3 and all(r in q8records and 'hint' not in q8records[r] for r in q8['board']['correctRecords']) and all(r.get('hint') for k, r in q8records.items() if k not in q8['board']['correctRecords']), 'Q008 record board mismatch')
+require(q8['board']['correctVerdict'] in {v['id'] for v in q8['board']['verdicts']} and all(v.get('hint') for v in q8['board']['verdicts'] if v['id'] != q8['board']['correctVerdict']), 'Q008 verdict board mismatch')
+require('검수 전 모형' in q8['disclaimer'] and '질환 레이어' in q8['layerLimit'] and not any(w in q8text for w in ADVANCED_ONLY), 'Q008 must stay a labelled basic draft without advanced-only diseases (D108)')
+q8screen = ''.join([q8['question'], *q8['offer'], *(n['text'] for n in q8['notes']), *(m['text'] for m in q8['comparison'].values()), q8['singleVariable'], *(m['text'] + ''.join(c['text'] for c in m['cards']) for m in q8['materials']), *(r['card'] + r.get('hint', '') for r in q8['board']['records']), *(v['card'] + v.get('hint', '') for v in q8['board']['verdicts']), *(l['text'] for l in q8['article']['leads'] + q8['article']['limitations']), q8['article']['factcheck'], q8['article']['reply']])
+require(not any(ch.isdigit() for ch in q8screen) and 'mmHg' not in q8text and 'mm Hg' not in q8text, 'Q008 basic screens must not carry numbers or blood-pressure thresholds (design 19 section 3)')
+q8b = load('data/balance/q008.v0.1.json')
+require(q8b['publication'] == {'key': quests[7]['completionKey'], 'xp': quests[7]['xp'], 'gold': quests[7]['gold']}, 'Q008 runtime reward mismatch')
 q7b = load('data/balance/q007.v0.1.json')
 require(q7b['publication'] == {'key': quests[6]['completionKey'], 'xp': quests[6]['xp'], 'gold': quests[6]['gold']}, 'Q007 runtime reward mismatch')
 q6b = load('data/balance/q006.v0.1.json')

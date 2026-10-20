@@ -5,7 +5,7 @@
   "coverageHubs": [
     "circulation"
   ],
-  "note": "D073/Q002 작업 단위의 순환 허브 장부 시작. 다른 허브는 아직 미배정이며 전체 질환 장부 완료가 아님. D077/Q005: 부정맥(심방세동) 기초 모듈 추가.",
+  "note": "D073/Q002 작업 단위의 순환 허브 장부 시작. 다른 허브는 아직 미배정이며 전체 질환 장부 완료가 아님. D077/Q005: 부정맥(심방세동) 기초 모듈 추가. D108/Q008: 고혈압 기초 모듈 추가.",
   "entries": [
     {
       "id": "disease.valve",
@@ -87,7 +87,7 @@
       ],
       "status": "planned",
       "review": null,
-      "contentRef": null,
+      "contentRef": "data/content/diseases/hypertension.v0.1.json",
       "questSlot": "Q008"
     },
     {

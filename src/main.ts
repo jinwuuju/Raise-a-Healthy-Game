@@ -38,7 +38,11 @@ import { openRhythmComparison } from './ui/rhythm-comparison';
 import { canOfferQ6, q6CompareDone, q6NormalDone } from './domain/q006';
 import { q6Normal, q6Text, type SupplyCard } from './domain/q006-state';
 import { openQ6 } from './ui/q006';
-import { q7CompareDone, q7NormalDone } from './domain/q007';
+import { canOfferQ7, q7CompareDone, q7NormalDone } from './domain/q007';
+import { canOfferQ8, OBSERVER as Q8_OBSERVER, q8CompareDone, q8NormalDone } from './domain/q008';
+import { q8Normal, q8Text, type Q8Evidence } from './domain/q008-state';
+import { openQ8 } from './ui/q008';
+import { openPressureComparison } from './ui/pressure-comparison';
 import { q7Normal, q7Text, type Q7Evidence } from './domain/q007-state';
 import { openQ7 } from './ui/q007';
 import { openPassageComparison } from './ui/passage-comparison';
@@ -331,11 +335,11 @@ function refresh() {
   hud.setLunch(world ? lunchHudText(s, Date.now()) : null);
   if (!world) return;
   world.player.look = s.avatar.look; world.player.name = s.avatar.name;
-  const layer = world.roomId === 'aorta' && s.q006.mode !== 'rest' ? q6Text.comparison[s.q006.mode].label : world.roomId !== 'heart' ? '' : s.q003.mode !== 'normal' ? q3Text.comparison[s.q003.mode].label : s.q005.mode !== 'normal' ? q5Text.comparison[s.q005.mode].label : '';
+  const layer = world.roomId === 'aorta' && s.q008.mode !== 'rest' ? q8Text.comparison[s.q008.mode].label : world.roomId === 'aorta' && s.q006.mode !== 'rest' ? q6Text.comparison[s.q006.mode].label : world.roomId !== 'heart' ? '' : s.q003.mode !== 'normal' ? q3Text.comparison[s.q003.mode].label : s.q005.mode !== 'normal' ? q5Text.comparison[s.q005.mode].label : '';
   hud.setObjective((layer ? '검수 전 모형 · ' + layer + ' 비교 · ' : '') + objective(s, world.roomId));
   if (world.heart) { world.heart.comparison = world.roomId === 'heart' ? s.q003.mode : 'normal'; world.heart.rhythm = world.roomId === 'heart' ? s.q005.mode : 'normal'; world.heart.supply = world.roomId === 'aorta' ? s.q006.mode : 'rest'; }
   const has = (f: string) => s.flags.includes(f);
-  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed)) || canOfferQ2(s) || canOfferQ3(s) || canOfferQ4(s) || canOfferQ5(s) || canOfferQ6(s) || (s.q002.accepted && !s.q002.reported && q2Seen(s).length === 4);
+  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed)) || canOfferQ2(s) || canOfferQ3(s) || canOfferQ4(s) || canOfferQ5(s) || canOfferQ6(s) || canOfferQ7(s) || canOfferQ8(s) || (s.q002.accepted && !s.q002.reported && q2Seen(s).length === 4);
   world.questNpc = world.roomId === 'newsroom' && needEditor ? 'editor' : null;
   world.questTargets = [];
   if (world.roomId === 'newsroom' && has(Q1.accepted) && !has(Q1.observed)) world.questTargets = ['device'];
@@ -346,6 +350,7 @@ function refresh() {
   if (world.roomId === 'newsroom' && s.q005.accepted && !s.q005.publishedAt) world.questTargets = q5CompareDone(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q006.accepted && !s.q006.publishedAt) world.questTargets = q6CompareDone(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q007.accepted && !s.q007.publishedAt) world.questTargets = q7CompareDone(s) ? ['my-desk'] : ['device'];
+  if (world.roomId === 'newsroom' && s.q008.accepted && !s.q008.publishedAt) world.questTargets = q8CompareDone(s) ? ['my-desk'] : ['device'];
   world.sparkTargets = []; world.labelOverride = {}; world.verbOverride = {}; world.badges = {};
   if (isHeartRoom(world.roomId)) {
     const here = world.roomId;
@@ -356,6 +361,7 @@ function refresh() {
     if (s.q005.accepted && !s.q005.publishedAt) world.questTargets = !q5NormalDone(s) ? q5Text.notes.filter(n => n.room === here && !s.q005.notes.includes(n.id as SignalCard)).map(n => n.target) : !q5CompareDone(s) && here === 'heart' ? ['hx-sa'] : ['return-pad'];
     if (s.q006.accepted && !s.q006.publishedAt) world.questTargets = !q6NormalDone(s) ? q6Text.notes.filter(n => n.room === here && !s.q006.notes.includes(n.id as SupplyCard)).map(n => n.target) : !q6CompareDone(s) ? (here === 'aorta' ? ['hx-sinus'] : []) : ['return-pad'];
     if (s.q007.accepted && !s.q007.publishedAt) world.questTargets = !q7NormalDone(s) ? q7Text.notes.filter(n => n.room === here && !s.q007.notes.includes(n.id as Q7Evidence)).map(n => n.target) : !q7CompareDone(s) ? (here === 'aorta' ? ['hx-sinus'] : []) : ['return-pad'];
+    if (s.q008.accepted && !s.q008.publishedAt) world.questTargets = !q8NormalDone(s) ? q8Text.notes.filter(n => n.room === here && !s.q008.notes.includes(n.id as Q8Evidence)).map(n => n.target) : !q8CompareDone(s) ? (here === Q8_OBSERVER.room ? [Q8_OBSERVER.target] : []) : ['return-pad'];
     const found = discovered(s);
     world.sparkTargets = world.room.targets.filter(t => t.id.startsWith('hx-') && !found.includes(t.id)).map(t => t.id);
     // D106: recorded structures hide their names until mastered (field checks); deeper tiers stay locked until enough stars.
@@ -664,6 +670,8 @@ async function interact(t: Target) {
     const signalNote = q5Text.notes.find(n => n.target === t.id && n.room === w.roomId);
     const supplyNote = q6Text.notes.find(n => n.target === t.id && n.room === w.roomId);
     const passageNote = q7Text.notes.find(n => n.target === t.id && n.room === w.roomId);
+    const pressureNote = q8Text.notes.find(n => n.target === t.id && n.room === w.roomId);
+    const q8Open = game.state.q008.accepted && !game.state.q008.publishedAt;
     if (t.id === 'lift-panel' && (w.roomId === 'lift1' || w.roomId === 'lift4')) {
       const floor = await dialog.show([{ who: '엘리베이터', text: '이동할 층을 선택하세요.', npc: null }], [
         { id: 'lift1', label: '1층 · 로비', sub: '정문과 논현로', disabled: w.roomId === 'lift1' },
@@ -672,6 +680,14 @@ async function interact(t: Target) {
       if (floor === 'lift1' || floor === 'lift4') void travel({ to: floor, arrive: rooms[floor].spawn, facing: 'down', mode: 'walk', card: floor === 'lift1' ? '1층' : '4층' });
     } else if (runStop(t) && !wasQuestStop) {
       await runStep(t, false);
+    } else if (q8Open && t.id === Q8_OBSERVER.target && w.roomId === Q8_OBSERVER.room && q8NormalDone(game.state) && runStop(t)) {
+      hud.toast('배달을 먼저 마쳐요 · 혈압 관찰기는 배달 뒤에 다시 눌러 열어요'); // the run step below counts this stop (D107)
+    } else if (q8Open && t.id === Q8_OBSERVER.target && w.roomId === Q8_OBSERVER.room && q8NormalDone(game.state)) {
+      pauseInput(); openPressureComparison(game);
+    } else if (q8Open && pressureNote && !game.state.q008.notes.includes(pressureNote.id as Q8Evidence)) {
+      await say([{ who: pressureNote.name, text: pressureNote.text + NL + q8Text.disclaimer, npc: null }]);
+      if (game.recordQ8(pressureNote.id as Q8Evidence)) hud.toast('혈압 취재 기록 · ' + pressureNote.name + ' (' + q8Normal.filter(id => game.state.q008.notes.includes(id)).length + '/2)');
+      game.discover(t.id);
     } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q007.accepted && q7NormalDone(game.state)) {
       pauseInput(); openPassageComparison(game);
     } else if (game.state.q007.accepted && !game.state.q007.publishedAt && passageNote && !game.state.q007.notes.includes(passageNote.id as Q7Evidence)) {
@@ -719,6 +735,10 @@ async function interact(t: Target) {
         const choice = await dialog.show([{ who: '편집장', text: q6Text.question, npc: 'editor' }], [{ id: 'accept', label: '심장 근육 공급 취재 맡기', sub: '공급 노선을 걷고 쉴 때와 더 일할 때를 비교해요', disabled: false }]);
         if (choice === 'accept') { game.acceptQ6(); hud.toast('Q006 · 심장 근육 공급 취재를 맡았어요 · 공급 관찰기 무료 대여'); }
       }
+      if (script.action === 'offer-q8') {
+        const choice = await dialog.show([{ who: '편집장', text: q8Text.question, npc: 'editor' }], [{ id: 'accept', label: '혈압 기록 취재 맡기', sub: '벽을 미는 힘을 보고 한 가지씩 바꿔 비교해요', disabled: false }]);
+        if (choice === 'accept') { game.acceptQ8(); hud.toast('Q008 · 혈압 기록 취재를 맡았어요 · 혈압 관찰기 무료 대여'); }
+      }
       if (script.action === 'offer-q7') {
         const choice = await dialog.show([{ who: '편집장', text: q7Text.question, npc: 'editor' }], [{ id: 'accept', label: '통로 비교 취재 맡기', sub: '관상동맥 입구를 다시 보고 통로 폭 하나만 바꿔 비교해요', disabled: false }]);
         if (choice === 'accept') { game.acceptQ7(); hud.toast('Q007 · 통로 비교 취재를 맡았어요 · 통로 관찰기 무료 대여'); }
@@ -731,7 +751,7 @@ async function interact(t: Target) {
       if (t.npc === 'jinu-clerk') await jinuCounter();
       if (t.npc === 'tailor') await tailorFitting();
     } else if (t.id === 'my-desk' && game.has(Q1.briefed)) {
-      pauseInput(); if (game.state.q007.accepted) showQ7(); else if (game.state.q006.accepted) showQ6(); else if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
+      pauseInput(); if (game.state.q008.accepted) showQ8(); else if (game.state.q007.accepted) showQ7(); else if (game.state.q006.accepted) showQ6(); else if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
         [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
@@ -882,7 +902,8 @@ function showQ4() {openQ4(game,()=>{const result=latestReaction(game.state);if(r
 function showQ5() { openQ5(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
 function showQ6() { openQ6(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
 function showQ7() { openQ7(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
-function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q007' ? showQ7 : result.questId === 'Q006' ? showQ6 : result.questId === 'Q005' ? showQ5 : result.questId === 'Q004' ? showQ4 : result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
+function showQ8() { openQ8(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
+function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q008' ? showQ8 : result.questId === 'Q007' ? showQ7 : result.questId === 'Q006' ? showQ6 : result.questId === 'Q005' ? showQ5 : result.questId === 'Q004' ? showQ4 : result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
 function saveFeedback(c: HTMLElement): () => void {
   const message = el('p', 'save-message'); message.setAttribute('role', 'status'); c.append(message);
   const update = () => { message.textContent = game.lastError ?? ''; message.classList.toggle('hidden', !game.lastError); };
@@ -891,7 +912,7 @@ function saveFeedback(c: HTMLElement): () => void {
 function openNotebook(tab?: number) {
   if (busy() || !world) return;
   pauseInput();
-  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, q006: showQ6, q007: showQ7, reaction: r => showReaction(r, true), map: openMap, lunch: date => openLunchSheet(date), lunchDex: target => { void loadLunch().then(m => { target.replaceChildren(); m.renderLunchDex(target, game.state); }).catch(() => target.replaceChildren(el('p', 'muted', '도감을 불러오지 못했어요. 네트워크를 확인해 주세요.'))); } }, tab);
+  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, q006: showQ6, q007: showQ7, q008: showQ8, reaction: r => showReaction(r, true), map: openMap, lunch: date => openLunchSheet(date), lunchDex: target => { void loadLunch().then(m => { target.replaceChildren(); m.renderLunchDex(target, game.state); }).catch(() => target.replaceChildren(el('p', 'muted', '도감을 불러오지 못했어요. 네트워크를 확인해 주세요.'))); } }, tab);
 }
 /** 오늘의 점심 화면·데이터·그림은 처음 열 때 따로 내려받는다(첫 로딩 크기 보호). */
 const loadLunch = () => import('./ui/lunch');
