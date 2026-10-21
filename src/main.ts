@@ -654,7 +654,7 @@ function showRunResult(rw: RunReward, seconds: number, r: ActiveRun): void {
         : discoveries[x.id]!.name + ' — ' + hints[x.id];
       wps.append(el('li', x.correct ? 'ok' : 'miss', (x.correct ? '✓ ' : '· ') + text));
     });
-    c.append(top, el('h3', '', '보상 +' + rw.gold + 'G' + (rw.xp ? ' · +' + rw.xp + 'XP' : '')), lines, el('h3', '', muscle ? '길 찾기' : '경유지'), wps);
+    c.append(top, el('h3', '', '보상 +' + rw.gold + 'G' + (rw.xp ? ' · +' + rw.xp + 'XP' + (levelOf(game.state.totalXp).need === 0 ? ' (출시 상한 레벨이라 다음 장이 열리면 반영)' : '') : '')), lines, el('h3', '', muscle ? '길 찾기' : '경유지'), wps);
     if (rw.sighting) { const card = el('div', 'run-sighting'); card.append(el('b', '', (rw.sighting.first ? '새 목격 · ' : '다시 목격 · ') + rw.sighting.name), el('p', '', rw.sighting.text)); c.append(card); }
     c.append(el('p', 'muted', '배달 ' + h.runs + '번째' + (muscle ? ' (근육 배달 ' + h.muscle.runs + '번째)' : '') + ' · 목격 ' + h.seen.length + '종 · ' + MASTERY_DISCLAIMER));
     const row = el('div', 'list');
@@ -672,6 +672,17 @@ function again(kind: RunKind): void {
 }
 
 async function say(lines: Line[]) { if (lines.length) await dialog.show(lines); }
+
+/** D110: a published commission keeps its observer as an extra choice on the structure; the field check stays the default (D106). */
+function observerReplay(id: string, room: RoomId): { label: string; open: () => void } | null {
+  const s = game.state;
+  if (id === 'hx-tricuspid' && room === 'heart' && s.q003.publishedAt) return { label: 'Q003 판막 비교', open: () => openValveComparison(game) };
+  if (id === 'hx-sa' && room === 'heart' && s.q005.publishedAt) return { label: 'Q005 박자 비교', open: () => openRhythmComparison(game) };
+  if (id === 'hx-sinus' && room === 'aorta' && s.q007.publishedAt) return { label: 'Q007 통로 비교', open: () => openPassageComparison(game) };
+  if (id === 'hx-sinus' && room === 'aorta' && s.q006.publishedAt) return { label: 'Q006 공급 비교', open: () => openSupplyComparison(game) };
+  if (id === 'hx-ascending' && room === 'aorta' && s.q008.publishedAt) return { label: 'Q008 혈압 비교', open: () => openPressureComparison(game) };
+  return null;
+}
 
 async function interact(t: Target) {
   if (!world || world.locked || dialog.open) return;
@@ -714,29 +725,29 @@ async function interact(t: Target) {
       await say([{ who: pressureNote.name, text: pressureNote.text + NL + q8Text.disclaimer, npc: null }]);
       if (game.recordQ8(pressureNote.id as Q8Evidence)) hud.toast('혈압 취재 기록 · ' + pressureNote.name + ' (' + q8Normal.filter(id => game.state.q008.notes.includes(id)).length + '/2)');
       game.discover(t.id);
-    } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q007.accepted && q7NormalDone(game.state)) {
+    } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q007.accepted && !game.state.q007.publishedAt && q7NormalDone(game.state)) {
       pauseInput(); openPassageComparison(game);
     } else if (game.state.q007.accepted && !game.state.q007.publishedAt && passageNote && !game.state.q007.notes.includes(passageNote.id as Q7Evidence)) {
       await say([{ who: passageNote.name, text: passageNote.text + NL + q7Text.disclaimer, npc: null }]);
       if (game.recordQ7(passageNote.id as Q7Evidence)) hud.toast('통로 취재 기록 · ' + passageNote.name + ' (' + q7Normal.filter(id => game.state.q007.notes.includes(id)).length + '/2)');
       game.discover(t.id);
-    } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q006.accepted && q6NormalDone(game.state)) {
+    } else if (t.id === 'hx-sinus' && w.roomId === 'aorta' && game.state.q006.accepted && !game.state.q006.publishedAt && q6NormalDone(game.state)) {
       pauseInput(); openSupplyComparison(game);
-    } else if (game.state.q006.accepted && supplyNote) {
+    } else if (game.state.q006.accepted && !game.state.q006.publishedAt && supplyNote) {
       await say([{ who: supplyNote.name, text: supplyNote.text + '\n' + q6Text.disclaimer, npc: null }]);
       if (game.recordQ6(supplyNote.id as SupplyCard)) hud.toast('공급 취재 기록 · ' + supplyNote.name + ' (' + q6Normal.filter(id => game.state.q006.notes.includes(id)).length + '/5)');
       game.discover(t.id);
-    } else if (t.id === 'hx-sa' && w.roomId === 'heart' && game.state.q005.accepted && q5NormalDone(game.state)) {
+    } else if (t.id === 'hx-sa' && w.roomId === 'heart' && game.state.q005.accepted && !game.state.q005.publishedAt && q5NormalDone(game.state)) {
       pauseInput(); openRhythmComparison(game);
-    } else if (game.state.q005.accepted && signalNote) {
+    } else if (game.state.q005.accepted && !game.state.q005.publishedAt && signalNote) {
       await say([{ who: signalNote.name, text: signalNote.text + '\n' + q5Text.disclaimer, npc: null }]);
       if (game.recordQ5(signalNote.id as SignalCard)) hud.toast('신호 취재 기록 · ' + signalNote.name + ' (' + q5Normal.filter(id => game.state.q005.notes.includes(id)).length + '/5)');
       game.discover(t.id);
-    } else if(game.state.q004.accepted&&routeNote){
+    } else if (game.state.q004.accepted && !game.state.q004.publishedAt && routeNote) {
       await say([{who:routeNote.name,text:routeNote.text+'\n'+q4Text.disclaimer,npc:null}]);
       if(game.recordQ4(routeNote.id as Q4Evidence))hud.toast('순환 취재 기록 · '+routeNote.name+' ('+game.state.q004.notes.length+'/6)');
       if(t.id.startsWith('hx-'))game.discover(t.id);
-    } else if (t.id === 'hx-tricuspid' && game.state.q003.accepted && q3NormalDone(game.state)) {
+    } else if (t.id === 'hx-tricuspid' && game.state.q003.accepted && !game.state.q003.publishedAt && q3NormalDone(game.state)) {
       pauseInput(); openValveComparison(game);
     } else if (t.npc) {
       const script = talk(t.npc, game.state);
@@ -808,12 +819,14 @@ async function interact(t: Target) {
         await say([{ who: d.name, text: d.text, npc: null }]);
         if (game.discover(t.id)) hud.toast('탐험 기록 · ' + d.name + ' (' + discovered(game.state).length + '/' + discoveryIds.length + ') · 다시 오면 확인 문제');
       } else {
-        const stars = starsOf(game.state, t.id), done = stars >= 3;
+        const stars = starsOf(game.state, t.id), done = stars >= 3, replay = observerReplay(t.id, w.roomId);
         const pick = await dialog.show([{ who: done ? d.name : '???', text: done ? '별 3개를 모은 구조예요. 연습 문제를 풀거나 설명을 다시 볼 수 있어요.' : '탐험 기록에 있는 구조예요. 이름표를 가려 두었어요. 기억나나요?', npc: null }], [
           { id: 'quiz', label: done ? '연습 문제' : '확인 문제 풀기', sub: '별 ' + stars + '/3' + (done ? ' · 보상 없음' : ' · 맞히면 별 +1 · +5G · 틀려도 잃는 것 없음'), disabled: false },
-          { id: 'read', label: '설명 다시 읽기', sub: '이름과 설명을 봐요', disabled: false }]);
+          { id: 'read', label: '설명 다시 읽기', sub: '이름과 설명을 봐요', disabled: false },
+          ...(replay ? [{ id: 'replay', label: '관찰기 다시 보기', sub: replay.label + ' · 기록과 보상은 바뀌지 않아요', disabled: false }] : [])]);
         if (pick === 'quiz') await fieldCheck(t.id, nextKind(game.state, t.id, game.state.heartRun.runs + stars + game.state.revision));
         else if (pick === 'read') await say([{ who: d.name, text: d.text, npc: null }]);
+        else if (pick === 'replay' && replay) { pauseInput(); replay.open(); }
       }
     } else if (t.id === 'guide') {
       if (w.roomId !== 'heart' || run || guideIntro) { const intro = guideIntro; guideIntro = false; await say(talk('guide', game.state).lines); if (intro) hud.toast('바디에게 다시 말을 걸면 혈류 배달 런을 할 수 있어요'); }
