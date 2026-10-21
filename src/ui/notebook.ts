@@ -4,7 +4,7 @@ import { jinuItems, tailorItems } from '../domain/shop';
 import { notebookRecords } from '../application/notebook';
 import { heartText, inspectLabels, lookText, objective, q1Text } from '../application/story';
 import { discoveries, discoveryIds, roomProgress } from '../domain/heart';
-import { hints, maxStars, nextLocked, roomStars, starsOf, totalStars } from '../domain/mastery';
+import { hintOf, hints, maxStars, nextLocked, roomStars, starsOf, totalStars } from '../domain/mastery';
 import { sightings } from '../domain/heart-run';
 import { Q1, Q1_OBSERVATIONS, q1Seen } from '../domain/quest';
 import { q2Text } from '../domain/q002-state';
@@ -26,7 +26,9 @@ import { latestReaction, type Reaction } from '../domain/reaction-state';
 import { CRAVE_NAMES, lunchDate, lunchHudText } from '../domain/lunch';
 import { heartRoute } from '../world/heart-rooms';
 import { rooms } from '../world/rooms';
-import { isHeartRoom, type RoomId } from '../world/types';
+import { airwayRoomIds, isHeartRoom, type RoomId } from '../world/types';
+import airContent from '../../data/content/respiratory-interior.v0.1.json';
+import { RX_DISCLAIMER, airwayOpen, rxDiscovered, rxDiscoveries, rxIds, rxKey, rxMaxStars, rxNextLocked, rxRoomProgress, rxRoomStars, rxTotalStars } from '../domain/airway';
 import { button, el } from './dom';
 import { openSheet } from './sheet';
 
@@ -74,7 +76,7 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
     current.append(el('h3', '', '지금 할 일'), el('p', 'notebook-goal', objective(s, room)));
     const overview = el('div', 'notebook-overview');
     overview.append(el('span', '', '취재 근거 ' + records.evidence.length + '/2' + (s.q002.accepted ? ' · Q002 ' + records.q2Evidence.length + '/4' : '') + (s.q004.accepted ? ' · Q004 '+s.q004.notes.length+'/6' : '') + (s.q005.accepted ? ' · Q005 ' + q5Normal.filter(id => s.q005.notes.includes(id)).length + '/5' : '') + (s.q006.accepted ? ' · Q006 ' + q6Normal.filter(id => s.q006.notes.includes(id)).length + '/5' : '') + (s.q007.accepted ? ' · Q007 ' + q7Normal.filter(id => s.q007.notes.includes(id)).length + '/2' : '') + (s.q008.accepted ? ' · Q008 ' + q8Normal.filter(id => s.q008.notes.includes(id)).length + '/2' : '') + (s.q009.accepted ? ' · Q009 ' + q9Evidence.filter(id => s.q009.notes.includes(id)).length + '/4' : '') + (s.q010.accepted && !s.q010.publishedAt ? ' · 졸업 특집 ' + (Number(s.q010.runDone) + Number(!q10CoreLeft(s).length)) + '/2' : '')), el('span', '', '탐험 구조 ' + Object.values(records.anatomy).flat().length + '/' + discoveryIds.length), el('span', '', '발행 기사 ' + (Number(!!s.article.publishedAt) + Number(!!s.q002.publishedAt) + Number(!!s.q003.publishedAt) + Number(!!s.q004.publishedAt) + Number(!!s.q005.publishedAt) + Number(!!s.q006.publishedAt) + Number(!!s.q007.publishedAt) + Number(!!s.q008.publishedAt) + Number(!!s.q009.publishedAt) + Number(!!s.q010.publishedAt)) + '편'));
-    current.append(overview, el('p', 'muted', '직급 · ' + rankOf(s) + (heartGraduated(s) ? ' · 심장 졸업 · 심장 심화 과정(준비 중) · 다음 장기: 폐(준비 중)' : '')));
+    current.append(overview, el('p', 'muted', '직급 · ' + rankOf(s) + (heartGraduated(s) ? ' · 심장 졸업 · 심장 심화 과정(준비 중) · 다음 장기: 호흡기(바디스코프에서 자유 탐험, 취재 준비 중)' : '')));
     if (s.flags.includes(Q1.briefed)) current.append(action(s.article.publishedAt ? '첫 기사와 독자 답장 읽기' : '첫 기사 쓰기 · 초안 이어서', actions.article));
     else current.append(button('row notebook-link', '취재 파일 확인하기', () => choose(1)));
     if (s.q002.reported) current.append(action(s.q002.publishedAt ? '네 방의 도해 기사 읽기' : '네 방의 도해 기사 쓰기 · 초안 이어서', actions.q002));
@@ -227,6 +229,22 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
           });
         }
       }, true);
+      // D111: the airway exploration record, room by room in the order air comes in (same star rules as the heart).
+      if (airwayOpen(s) || rxDiscovered(s).length) fold(atlas, 'organ-airway', '호흡기 탐사 · ' + rxDiscovered(s).length + '/' + rxIds.length + ' · 별 ' + rxTotalStars(s) + '/' + rxMaxStars(), air => {
+        const lock = rxNextLocked(s);
+        air.append(el('p', 'muted', '바디스코프에서 호흡기를 고르면 콧구멍으로 들어가요. 공기 길을 따라 기록하고, 다시 가면 확인 문제로 별을 모아요.' + (lock ? ' 다음 해금: ' + lock.title + ' · 별 ' + rxTotalStars(s) + '/' + lock.unlockStars : ' 모든 구조가 열렸어요.')));
+        for (const roomId of airwayRoomIds) {
+          const pr = rxRoomProgress(s, roomId), rs = rxRoomStars(s, roomId);
+          fold(air, 'room-' + roomId, rooms[roomId].title + ' · ' + pr.found + '/' + pr.total + ' · ★' + rs.stars + '/' + rs.max + (rs.medal ? ' · 메달' : ''), body => {
+            for (const id of rxIds.filter(i => rxDiscoveries[i]!.room === roomId && s.inspected.includes(rxKey(i)))) {
+              const d = rxDiscoveries[id]!, st = starsOf(s, id);
+              fold(body, id, d.name + ' · ' + '★'.repeat(st) + '☆'.repeat(3 - st), detail => { detail.append(el('p', 'muted', '단서 · ' + hintOf(id)), el('p', '', d.text)); sources(detail, d.src, airContent.sources); });
+            }
+            if (pr.total > pr.found) body.append(el('p', 'muted', '미발견 구조 ' + (pr.total - pr.found) + '곳 · 방을 걸으며 이름표를 찾아보세요.'));
+          });
+        }
+        air.append(el('p', 'muted', RX_DISCLAIMER));
+      });
       const h = s.heartRun, mm = (n: number) => Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0');
       fold(atlas, 'heart-run', '혈류 배달 런 · ' + h.runs + '번', body => {
         body.append(el('p', '', h.runs ? '최고 기록 ' + (h.best !== null ? mm(h.best) : '-') + ' · 최고 등급 ' + (h.bestGrade ?? '-') + ' · 경유지 만점 ' + h.perfect + '번 · 지금까지 ' + h.goldEarned.toLocaleString('ko-KR') + 'G' : '우심방의 안내 로봇 바디에게 말을 걸면 배달을 시작해요. 매번 골드를 받고, 처음 해낸 일(첫 배달·첫 S등급·새 목격)엔 경험치도 받아요.'));

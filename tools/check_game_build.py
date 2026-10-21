@@ -56,6 +56,12 @@ for path in dist.rglob('*'):
             assert 'disease.arrhythmia' not in text, 'Arrhythmia disease draft must stay outside the runtime/public atlas; Q005 is the labelled quest exception'
             assert 'disease.atherosclerosis' not in text, 'Planned atherosclerosis draft must not ship in runtime/public atlas'
             assert 'disease.valve' not in text, 'Standalone unreviewed disease atlas draft must stay outside the runtime; Q003 is the labelled quest exception'
+            # D111 airway space (design 20 section 7 step 2): records, clues and screen lines ship as labelled drafts.
+            if 'content.respiratory' in text or 'rx-carina' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Airway space content must stay a labelled draft'
+                assert 'medical_reviewed' not in text, 'Airway content must not claim review'
+            for did in ('disease.respiratory-virus', 'disease.asthma', 'disease.pneumonia'):
+                assert did not in text, 'Respiratory disease drafts stay outside the runtime until their quest (design 20 section 6)'
             if 'content.heart.mastery' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Heart field-check clues and blood sightings (D106) must stay labelled drafts'
                 assert 'medical_reviewed' not in text, 'Heart mastery content must not claim review'

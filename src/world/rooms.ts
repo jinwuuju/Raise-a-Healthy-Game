@@ -1,6 +1,8 @@
 import { TILE, type Dir, type Point, type Rect, type RoomId } from './types';
 import type { Look } from '../domain/appearance';
 import { heartRooms } from './heart-rooms';
+import { airwayRooms } from './airway-rooms';
+import type { Airway } from './airway-types';
 import type { Organ } from './organ-types';
 import { DISTRICT_SIZE, anchors, buildMask, maskBlocked, type CollisionMask, crossroads, crosswalks, dblocks, districtLoaded, droads, dstations, exits, offset, pointAt, polyline, underpasses, zebras } from './district';
 
@@ -60,6 +62,8 @@ export type Room = {
   crossings: Crossing[];
   /** Bodyscope organ rooms (heart chambers, vessels, lung): smooth walls, valves, blood flow. */
   organ: Organ | null;
+  /** D111 Bodyscope airway rooms (nose to alveoli): two-way air, swallow gates, cilia and mucus. */
+  airway?: Airway | null;
   /** Fine collision mask (1 = blocked) replacing tile walkability for the real-scale district. */
   mask?: CollisionMask;
 };
@@ -869,7 +873,7 @@ function tailorShop(): Room {
   });
 }
 
-export const rooms: Record<RoomId, Room> = { lounge: lounge(), lifthall: lifthall(), district: null as unknown as Room, lift1: lift(1), lift4: lift(4), floor4: floor4(), outeroffice: outeroffice(), newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), jinu: jinuStore(), tailor: tailorShop(), ...heartRooms() };
+export const rooms: Record<RoomId, Room> = { lounge: lounge(), lifthall: lifthall(), district: null as unknown as Room, lift1: lift(1), lift4: lift(4), floor4: floor4(), outeroffice: outeroffice(), newsroom: newsroom(), lobby: lobby(), street: street(), cafe: cafe(), jinu: jinuStore(), tailor: tailorShop(), ...heartRooms(), ...airwayRooms() };
 // The district needs the separately loaded map chunk: build it on first use (after loadDistrict()).
 let districtRoom: Room | null = null;
 Object.defineProperty(rooms, 'district', { enumerable: true, get: () => {

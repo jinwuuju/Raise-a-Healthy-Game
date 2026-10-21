@@ -8,6 +8,10 @@ import { inspectLabels, lookText } from '../../src/application/story';
 describe('map integrity', () => {
   for (const id of roomIds) {
     const room = rooms[id];
+    // D111: a room may be entered at several doors (the two main bronchi meet only at the carina in the trachea, so the
+    // left bronchus is walked into from the trachea's left opening). Reachability counts from the spawn or any arrival.
+    const entries = [room.spawn, ...roomIds.flatMap(o => rooms[o].doors.filter(x => x.to === id).map(x => x.arrive))];
+    const reach = (goal: { x: number; y: number }) => entries.map(e => findPath(id, e, goal)).find(p => p.length) ?? [];
     it(`${id}: spawn is standable and not inside a door`, () => {
       expect(canStand(id, room.spawn)).toBe(true);
       expect(doorAt(id, room.spawn)).toBeUndefined();
@@ -21,7 +25,7 @@ describe('map integrity', () => {
         const goal = { x: d.zone.x + d.zone.w / 2, y: d.zone.y + d.zone.h - 2 };
         // D105: an underpass stair on the far side of an expressway is reached by coming out of its partner stair.
         const pair = d.id.startsWith('under-') ? room.doors.find(o => o.id === d.id.slice(0, -1) + (d.id.endsWith('0') ? '1' : '0')) : undefined;
-        const path = findPath(id, pair ? pair.arrive : room.spawn, goal);
+        const path = pair ? findPath(id, pair.arrive, goal) : reach(goal);
         expect(path.length).toBeGreaterThan(0);
         const end = path[path.length - 1]!;
         expect(Math.hypot(end.x - goal.x, end.y - goal.y)).toBeLessThan(8);
@@ -32,7 +36,7 @@ describe('map integrity', () => {
         let ok = false;
         for (let r = 0; r <= t.r - 2 && !ok; r += 2) for (let a = 0; a < 16 && !ok; a++) {
           const q = { x: t.x + Math.cos(a / 16 * Math.PI * 2) * r, y: t.y + Math.sin(a / 16 * Math.PI * 2) * r };
-          if (canStand(id, q) && findPath(id, room.spawn, q).length) ok = true;
+          if (canStand(id, q) && reach(q).length) ok = true;
         }
         expect(ok).toBe(true);
       });

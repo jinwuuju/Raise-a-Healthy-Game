@@ -34,6 +34,7 @@ export function canStandIn(room: Room, p: Point): boolean {
   const xs = [f.x, f.x + f.w - 0.01], ys = [f.y, f.y + f.h - 0.01];
   const organ = room.organ;
   if (organ) { for (const x of xs) for (const y of ys) if (!organ.walk(x, y)) return false; }
+  else if (room.airway) { const a = room.airway; for (const x of xs) for (const y of ys) if (!a.walk(x, y)) return false; }
   else if (room.mask) { const m = room.mask; for (const x of xs) for (const y of ys) if (maskBlocked(m, x, y)) return false; }
   else for (const x of xs) for (const y of ys) if (!walkableTile(tileAt(room, Math.floor(x / TILE), Math.floor(y / TILE)))) return false;
   const index = solidsByTile(room);

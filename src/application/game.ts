@@ -28,6 +28,7 @@ import { acceptQ2, observeQ2, reportQ2, selectQ2, checkQ2 } from '../domain/q002
 import type { ChamberId } from '../domain/q002-state';
 import type { ArticleSlot } from '../domain/article-state';
 import { discover } from '../domain/heart';
+import { canEnterAirway, discoverRx } from '../domain/airway';
 import { answerQuiz, type QuizKind } from '../domain/mastery';
 import { finishRun, type RunResult, type RunReward } from '../domain/heart-run';
 import { Q1, acceptQ1, briefQ1, canEnterHeart, observeQ1 } from '../domain/quest';
@@ -216,6 +217,20 @@ export class Game {
     this.commit({ ...s, at: { room: 'heart', x: sp.x, y: sp.y, facing: rooms.heart.spawnFacing }, q003: { ...s.q003, mode: 'normal' }, q005: { ...s.q005, mode: 'normal' }, q006: { ...s.q006, mode: 'rest' }, q007: { ...s.q007, mode: 'wide' }, q008: { ...s.q008, mode: 'rest' } });
   }
 
+  /** D111: moves into the Bodyscope airway through a nostril (after the heart graduation). Air modes are not saved. */
+  enterAirway(): void {
+    const why = canEnterAirway(this.state);
+    if (why) throw new Error(why);
+    const r = rooms.nose;
+    this.commit({ ...this.state, at: { room: 'nose', x: r.spawn.x, y: r.spawn.y, facing: r.spawnFacing } });
+  }
+  /** Records an airway structure (rx:); returns true the first time. No XP or gold. */
+  discoverRx(id: string): boolean {
+    const before = this.state, next = discoverRx(before, id);
+    if (next === before) { this.persist(); return false; }
+    this.commit(next);
+    return true;
+  }
   /** Records an observation; returns whether it was new and whether it completed the checkpoint. */
   observe(id: string): { first: boolean; done: boolean } {
     const before = this.state, next = observeQ1(before, id);

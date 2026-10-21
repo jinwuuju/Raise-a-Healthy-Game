@@ -3,7 +3,7 @@ import motion from '../data/balance/movement.v0.2.json';
 import { Game } from './application/game';
 import { heartText, lookText, objective, q1Text, talk, type Line } from './application/story';
 import { discovered, discoveries, discoveryIds, hxKey } from './domain/heart';
-import { MASTERY_DISCLAIMER, hints, isOpen, makeQuestion, maxStars, nextKind, nextLocked, roomNames, shortName, starsOf, tierOf, totalStars, type QuizKind } from './domain/mastery';
+import { MASTERY_DISCLAIMER, hints, hintOf, roomNameOf, isOpen, makeQuestion, maxStars, nextKind, nextLocked, roomNames, shortName, starsOf, tierOf, totalStars, type QuizKind } from './domain/mastery';
 import { DELIVER, LOAD, MUSCLE, muscleOpen, pickMuscle, pickWaypoints, type RunKind, type RunReward, type Wall } from './domain/heart-run';
 import { outfits, presetNames, type Look } from './domain/appearance';
 import { cafeMenu, canOrder } from './domain/cafe';
@@ -55,12 +55,14 @@ import { openPassageComparison } from './ui/passage-comparison';
 import { openSupplyComparison } from './ui/supply-comparison';
 import { openReaction } from './ui/reaction';
 import { showOrganEntry } from './ui/organ-entry';
+import airSpace from '../data/content/respiratory-space.v0.1.json';
+import { RX_MASTERY_DISCLAIMER, airwayOpen, isRx, rxCore, rxDiscovered, rxDiscoveries, rxIds, rxIsOpen, rxKey, rxNextLocked, rxTierOf, rxTotalStars } from './domain/airway';
 import { openNotebook as showNotebook } from './ui/notebook';
 import { latestReaction } from './domain/reaction-state';
 import { closeSheet, openSheet, sheetOpen } from './ui/sheet';
 import { rooms, type Target } from './world/rooms';
 import { anchors, crossroads, districtLoaded, dlabels, dstations, exits, loadDistrict, specialBlock } from './world/district';
-import { isHeartRoom, type Dir, type Point, type RoomId } from './world/types';
+import { isAirwayRoom, isBodyRoom, isHeartRoom, type Dir, type Point, type RoomId } from './world/types';
 
 class MemoryStorage implements Storage {
   private m = new Map<string, string>();
@@ -392,6 +394,20 @@ function refresh() {
     world.labelOverride = lab; world.verbOverride = verb; world.badges = badge;
     world.sparkTargets = world.sparkTargets.filter(id => isOpen(s, id) && !wps.includes(id));
   }
+  if (isAirwayRoom(world.roomId)) {
+    // D111: airway records follow the heart rules (core first, names hidden for field checks, deeper tiers by airway stars).
+    const found = rxDiscovered(s), lab: Record<string, string> = {}, verb: Record<string, string> = {}, badge: Record<string, string> = {};
+    for (const t of world.room.targets) {
+      if (!isRx(t.id)) continue;
+      const known = s.inspected.includes(rxKey(t.id)), stars = starsOf(s, t.id);
+      if (!known && !rxIsOpen(s, t.id)) { lab[t.id] = rxTierOf(t.id).title; verb[t.id] = '잠김'; badge[t.id] = '잠김'; continue; }
+      if (known && stars < 3) { lab[t.id] = '???'; verb[t.id] = '확인 문제'; badge[t.id] = '★' + stars + '/3'; }
+      else if (known) badge[t.id] = '★★★';
+      else if (rxCore.includes(t.id)) badge[t.id] = '핵심';
+    }
+    world.labelOverride = lab; world.verbOverride = verb; world.badges = badge;
+    world.sparkTargets = world.room.targets.filter(t => isRx(t.id) && !found.includes(t.id) && rxIsOpen(s, t.id)).map(t => t.id);
+  }
 }
 game.subscribe(refresh);
 
@@ -401,9 +417,11 @@ function mapCaption(room: RoomId): string { const t = rooms[room].title; return 
 function startWorld() {
   const s = game.state;
   world = new World(s.at.room, s.at.x, s.at.y, s.at.facing, s.avatar.look, s.avatar.name);
-  world.onDoor = d => travel({ to: d.to, arrive: d.arrive, facing: d.facing, mode: isHeartRoom(d.to) || isHeartRoom(world!.roomId) ? 'flow' : 'walk', card: d.card ?? null, ...(d.note ? { done: d.note } : {}) });
+  world.onDoor = d => travel({ to: d.to, arrive: d.arrive, facing: d.facing, mode: isBodyRoom(d.to) || isBodyRoom(world!.roomId) ? 'flow' : 'walk', card: d.card ?? null, ...(d.note ? { done: d.note } : {}) });
   world.onValveWait = (v, sec) => hud.toast(sec < 0 ? '판막은 거꾸로 열리지 않아요. 피는 한 방향으로만 흘러요.' : (heartText.valves as Record<string, { wait: string }>)[v.kind]!.wait + ' · 약 ' + Math.max(1, Math.ceil(sec)) + '초');
   world.onBeat = snd => { if (world && world.roomId !== 'lung') world.showBeat(heartText.sounds[snd]); };
+  world.onGateWait = () => hud.toast(airSpace.swallowWait);
+  world.onBreath = w => { if (world && isAirwayRoom(world.roomId)) world.showBeat(w === 'swallow' ? '꿀꺽' : airSpace.breath[w]); };
   world.onSignalWait = (_c, sec) => hud.toast(sec > 0 ? '빨간불이에요. 초록불이 켜지면 건너요 · 약 ' + Math.ceil(sec) + '초' : '보행 신호가 곧 바뀌어요. 다음 초록불을 기다려요.');
   world.onTarget = t => interact(t);
   world.touchHint = touchUI;
@@ -419,7 +437,7 @@ function startWorld() {
 }
 
 /** walk: ordinary doors · scope-in/out: the Bodyscope · flow: following the blood between heart rooms. */
-type Trip = { to: RoomId; arrive: Point; facing: Dir; mode: 'walk' | 'scope-in' | 'scope-out' | 'flow'; card?: string | null; done?: string };
+type Trip = { to: RoomId; arrive: Point; facing: Dir; mode: 'walk' | 'scope-in' | 'scope-out' | 'flow'; card?: string | null; done?: string; organ?: 'heart' | 'airway' };
 let traveling = false;
 async function travel(d: Trip) {
   if (!world || traveling) return;
@@ -432,18 +450,18 @@ async function travel(d: Trip) {
   const w = world;
   traveling = true;
   w.locked = true; pauseInput();
-  if (d.mode === 'scope-in') {
+  if (d.mode === 'scope-in' && d.organ !== 'airway') {
     try { await showOrganEntry(canvas); }
     catch (e) { w.locked = false; traveling = false; hud.toast(e instanceof Error ? e.message : '입장 연출을 열지 못했어요.', true); return; }
   }
   fade.classList.add('on');
   if (d.mode === 'flow') fade.classList.add('flow'); else if (d.mode !== 'walk') fade.classList.add('scope');
-  const card = d.mode === 'scope-in' ? null : d.mode === 'flow' && w.roomId === 'aorta' && d.to === 'heart' && game.state.q004.accepted ? q4Text.bodyTransit : d.card;
+  const card = d.mode === 'scope-in' ? (d.organ === 'airway' ? airSpace.entryCard : null) : d.mode === 'flow' && w.roomId === 'aorta' && d.to === 'heart' && game.state.q004.accepted ? q4Text.bodyTransit : d.card;
   fadeCard.textContent = card ?? '';
   fadeCard.classList.toggle('show', !!card);
-  const wait = d.mode === 'walk' ? 210 : d.mode === 'scope-in' ? 80 : card ? 1700 : d.mode === 'flow' ? 600 : 560;
+  const wait = d.mode === 'walk' ? 210 : d.mode === 'scope-in' ? (card ? 1700 : 80) : card ? 1700 : d.mode === 'flow' ? 600 : 560;
   window.setTimeout(() => {
-    try { if (d.mode === 'scope-in') game.enterHeart(); else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
+    try { if (d.mode === 'scope-in') { if (d.organ === 'airway') game.enterAirway(); else game.enterHeart(); } else game.enter(d.to, d.arrive.x, d.arrive.y, d.facing); }
     catch (e) { hud.toast(e instanceof Error ? e.message : '이동하지 못했어요.', true); }
     const fromRoom = w.roomId;
     w.setRoom(game.state.at.room, game.state.at.x, game.state.at.y, game.state.at.facing);
@@ -452,13 +470,17 @@ async function travel(d: Trip) {
     refresh();
     fade.classList.remove('on', 'scope', 'flow'); fadeCard.classList.remove('show');
     if (w.roomId !== fromRoom) hud.showBanner(rooms[w.roomId].title); // underpass / return button inside the district: no banner
-    if (d.mode === 'scope-in') hud.toast(heartText.disclaimer);
+    if (d.mode === 'scope-in') hud.toast(d.organ === 'airway' ? airSpace.entryToast : heartText.disclaimer);
     else if (d.done && w.roomId === d.to) hud.toast(d.done);
     if (!game.persist()) hud.toast('저장하지 못했어요: ' + game.lastError, true);
     window.setTimeout(() => {
       w.locked = false; traveling = false;
       // First time inside the heart: the guide robot explains valves and the cycle panel once.
-      if (d.mode === 'scope-in' && !game.has('heart-guided')) {
+      if (d.mode === 'scope-in' && d.organ === 'airway' && !game.has('airway-guided')) {
+        game.flag('airway-guided');
+        window.setTimeout(() => { if (!busy()) void say(airSpace.guideOnce.map(text => ({ who: '바디스코프 안내', text, npc: null }))); }, 500);
+      }
+      if (d.mode === 'scope-in' && d.organ !== 'airway' && !game.has('heart-guided')) {
         const guide = w.room.targets.find(t => t.id === 'guide');
         game.flag('heart-guided');
         if (guide) window.setTimeout(() => { if (!busy()) { guideIntro = true; void interact(guide); } }, 500);
@@ -473,7 +495,7 @@ async function travel(d: Trip) {
  */
 function returnToEuro(): void {
   if (!world || busy() || traveling) return;
-  if (isHeartRoom(world.roomId)) { hud.toast('심장 속에서는 바디스코프로 먼저 나와 주세요.', true); return; }
+  if (isBodyRoom(world.roomId)) { hud.toast(isHeartRoom(world.roomId) ? '심장 속에서는 바디스코프로 먼저 나와 주세요.' : '호흡기 속에서는 귀환 장치로 먼저 나와 주세요.', true); return; }
   const to = exits.euroOut;
   if (world.roomId === 'district' && Math.hypot(world.player.x - to.x, world.player.y - to.y) < 24) { hud.toast('이미 유로프라자 앞이에요.'); return; }
   void travel({ to: 'district', arrive: to, facing: 'down', mode: 'walk', done: '유로프라자 앞으로 돌아왔어요.' });
@@ -552,14 +574,15 @@ function runDecor(id: string): { label?: string; verb: string; badge?: string } 
 
 /** One question about a recorded structure. null = closed without answering (nothing recorded). */
 async function fieldCheck(id: string, kind: QuizKind): Promise<boolean | null> {
-  const q = makeQuestion(id, kind, newRunId()), before = nextLocked(game.state), d = discoveries[id]!;
+  const air = isRx(id), locked = () => (air ? rxNextLocked(game.state) : nextLocked(game.state));
+  const q = makeQuestion(id, kind, newRunId()), before = locked(), d = discoveries[id] ?? rxDiscoveries[id]!;
   const pick = await dialog.show([{ who: '확인 문제', text: q.prompt, npc: null }], q.choices.map(c => ({ id: c.id, label: c.label, sub: '', disabled: false })));
   if (pick === null) return null;
   const correct = pick === q.answer, star = game.answerQuiz(id, kind, correct);
-  const answer = kind === 'room' ? roomNames[d.room]! : shortName(id);
-  if (correct) await say([{ who: '정답! · ' + d.name, text: (star ? '별 +1 (★' + starsOf(game.state, id) + '/3) · +5G' : '이 유형의 별은 이미 받았어요.') + NL + hints[id] + NL + MASTERY_DISCLAIMER, npc: null }]);
-  else await say([{ who: '아쉬워요 · 정답은 ' + answer, text: d.name + ' — ' + hints[id] + NL + '틀려도 잃는 건 없어요. 다음에 다시 와서 맞혀 봐요.', npc: null }]);
-  if (before && !nextLocked(game.state)?.ids.every(x => before.ids.includes(x))) hud.toast(before.title + '가 열렸어요! 새 구조가 반짝여요');
+  const answer = kind === 'room' ? roomNameOf(id) : shortName(id);
+  if (correct) await say([{ who: '정답! · ' + d.name, text: (star ? '별 +1 (★' + starsOf(game.state, id) + '/3) · +5G' : '이 유형의 별은 이미 받았어요.') + NL + hintOf(id) + NL + (air ? RX_MASTERY_DISCLAIMER : MASTERY_DISCLAIMER), npc: null }]);
+  else await say([{ who: '아쉬워요 · 정답은 ' + answer, text: d.name + ' — ' + hintOf(id) + NL + '틀려도 잃는 건 없어요. 다음에 다시 와서 맞혀 봐요.', npc: null }]);
+  if (before && !locked()?.ids.every(x => before.ids.includes(x))) hud.toast(before.title + '가 열렸어요! 새 구조가 반짝여요');
   return correct;
 }
 const runStop = (t: Target): boolean => {
@@ -797,6 +820,15 @@ async function interact(t: Target) {
       if (t.npc === 'tailor') await tailorFitting();
     } else if (t.id === 'my-desk' && game.has(Q1.briefed)) {
       pauseInput(); if (game.state.q010.accepted) showQ10(); else if (game.state.q009.accepted) showQ9(); else if (game.state.q008.accepted) showQ8(); else if (game.state.q007.accepted) showQ7(); else if (game.state.q006.accepted) showQ6(); else if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
+    } else if (t.id === 'device' && !canEnterHeart(game.state) && airwayOpen(game.state)) {
+      // D111: after the heart graduation the Bodyscope asks which organ to enter (design 20 section 2).
+      const dv = airSpace.device;
+      const go = await dialog.show([{ who: '바디스코프', text: dv.text, npc: null }], [
+        { id: 'enter', label: dv.heart, sub: dv.heartSub, disabled: false },
+        { id: 'airway', label: dv.airway, sub: dv.airwaySub, disabled: false }]);
+      game.inspect(t.id);
+      if (go === 'enter') travel({ to: 'heart', arrive: rooms.heart.spawn, facing: rooms.heart.spawnFacing, mode: 'scope-in', card: heartText.entryCard });
+      else if (go === 'airway') travel({ to: 'nose', arrive: rooms.nose.spawn, facing: rooms.nose.spawnFacing, mode: 'scope-in', organ: 'airway' });
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
         [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
@@ -828,6 +860,26 @@ async function interact(t: Target) {
         else if (pick === 'read') await say([{ who: d.name, text: d.text, npc: null }]);
         else if (pick === 'replay' && replay) { pauseInput(); replay.open(); }
       }
+    } else if (isRx(t.id) && isAirwayRoom(w.roomId)) {
+      // D111 airway records: same core-first tiers and field checks as the heart (design 18), counted per organ.
+      const d = rxDiscoveries[t.id]!, known = game.state.inspected.includes(rxKey(t.id));
+      const more = t.id === 'rx-membrane' ? NL + airSpace.membraneCross : '';
+      if (!known && !rxIsOpen(game.state, t.id)) { const tier = rxTierOf(t.id); hud.toast(tier.title + ' · 호흡기 별 ' + rxTotalStars(game.state) + '/' + tier.unlockStars + '개를 모으면 열려요'); }
+      else if (!known) {
+        await say([{ who: d.name, text: d.text + more, npc: null }]);
+        if (game.discoverRx(t.id)) hud.toast('호흡기 탐험 기록 · ' + d.name + ' (' + rxDiscovered(game.state).length + '/' + rxIds.length + ') · 다시 오면 확인 문제');
+      } else {
+        const stars = starsOf(game.state, t.id), done = stars >= 3;
+        const pick = await dialog.show([{ who: done ? d.name : '???', text: done ? '별 3개를 모은 구조예요. 연습 문제를 풀거나 설명을 다시 볼 수 있어요.' : '탐험 기록에 있는 구조예요. 이름표를 가려 두었어요. 기억나나요?', npc: null }], [
+          { id: 'quiz', label: done ? '연습 문제' : '확인 문제 풀기', sub: '별 ' + stars + '/3' + (done ? ' · 보상 없음' : ' · 맞히면 별 +1 · +5G · 틀려도 잃는 것 없음'), disabled: false },
+          { id: 'read', label: '설명 다시 읽기', sub: '이름과 설명을 봐요', disabled: false }]);
+        if (pick === 'quiz') await fieldCheck(t.id, nextKind(game.state, t.id, game.state.revision + stars));
+        else if (pick === 'read') await say([{ who: d.name, text: d.text + more, npc: null }]);
+      }
+    } else if (t.id === 'mouth' && isAirwayRoom(w.roomId)) {
+      await say([{ who: t.label, text: airSpace.mouth, npc: null }]);
+    } else if (t.id.startsWith('deadend-') && isAirwayRoom(w.roomId)) {
+      await say([{ who: t.label, text: airSpace.deadEnd, npc: null }]);
     } else if (t.id === 'guide') {
       if (w.roomId !== 'heart' || run || guideIntro) { const intro = guideIntro; guideIntro = false; await say(talk('guide', game.state).lines); if (intro) hud.toast('바디에게 다시 말을 걸면 혈류 배달 런을 할 수 있어요'); }
       else {

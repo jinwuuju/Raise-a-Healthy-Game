@@ -16,6 +16,10 @@ import { T, rooms, tileAt, type Building, type Crossing, type Door, type Prop, t
 import { TILE, overlap, type Dir, type Point, type RoomId } from '../world/types';
 import { buildSceneGrid, querySceneGrid, type SceneGrid } from '../world/scene-index';
 import { HeartView, valveSet } from './heart-view';
+import { AirwayView } from './airway-view';
+import { airwayMinimap } from '../art/airway';
+import { gateShut, secondsUntilGateOpen, type BreathWord } from '../domain/breath';
+import type { Gate } from '../world/airway-types';
 import { Traffic } from './traffic';
 
 export type Actor = { id: string; name: string; look: Look; x: number; y: number; facing: Dir; homeFacing: Dir; walk: number; moving: boolean; route: Point[] | null; leg: number; step: number; speed: number; wait: number };
@@ -86,6 +90,13 @@ export class World {
   heart: HeartView | null = null;
   heartClock = 0;
   heldAt: Valve | null = null;
+  /** D111 Bodyscope airway: live layer, the breathing clock (game seconds) and a swallow gate being waited at. */
+  air: AirwayView | null = null;
+  airClock = 0;
+  gateAt: Gate | null = null;
+  onGateWait: (g: Gate, seconds: number) => void = () => {};
+  onBreath: (w: BreathWord) => void = () => {};
+  private breath: BreathWord | null = null;
   /** Undiscovered structures that sparkle faintly (heart rooms). */
   sparkTargets: string[] = [];
   /** D106: tag text, action word and badge per target id (hidden names for field checks, locked deeper structures). */
@@ -117,6 +128,7 @@ export class World {
     this.player = { id: 'player', name, look, x, y, facing, homeFacing: facing, walk: 0, moving: false, route: null, leg: 0, step: 1, speed: 0, wait: 0 };
     this.loadNpcs();
     this.heart = this.room.organ ? new HeartView(this.room) : null;
+    this.air = this.room.airway ? new AirwayView(this.room) : null;
     const d = doorAt(roomId, { x, y }); this.doorLatch = d ? d.id : null;
   }
 
@@ -134,6 +146,7 @@ export class World {
     const d = doorAt(roomId, { x, y }); this.doorLatch = d ? d.id : null;
     this.loadNpcs();
     this.heart = this.room.organ ? new HeartView(this.room) : null;
+    this.air = this.room.airway ? new AirwayView(this.room) : null; this.gateAt = null; this.breath = null;
     this.near = null; this.onNear(null);
   }
 
@@ -199,6 +212,13 @@ export class World {
       if (snd) this.onBeat(snd);
       if (this.beatWord) { this.beatWord.t += dt; if (this.beatWord.t > 1.1) this.beatWord = null; }
     }
+    if (this.air) {
+      this.airClock += dt;
+      this.air.update(dt, this.airClock);
+      const w = this.air.word();
+      if (w !== this.breath) { this.breath = w; this.onBreath(w); }
+      if (this.beatWord) { this.beatWord.t += dt; if (this.beatWord.t > 1.1) this.beatWord = null; }
+    }
     const p = this.player;
     const locked = this.locked || !inputEnabled;
     if (locked) this.stop();
@@ -225,25 +245,29 @@ export class World {
       const wp = this.path[0]!, rem = Math.hypot(wp.x - p.x, wp.y - p.y), st = Math.hypot(mx, my);
       if (st > rem && st > 0) { mx *= rem / st; my *= rem / st; }
     }
-    let waiting: Crossing | null = null, held: { valve: Valve; backward: boolean } | null = null;
+    let waiting: Crossing | null = null, held: { valve: Valve; backward: boolean } | null = null, gate: Gate | null = null;
     if (mx || my) {
       const r = moveWithCollision(this.roomId, p, mx, my);
       waiting = this.lightBlocks(p, r);
       held = waiting ? null : this.valveBlocks(p, r);
-      if (waiting || held) { r.x = p.x; r.y = p.y; this.vel = { x: 0, y: 0 }; }
+      gate = waiting || held ? null : this.gateBlocks(p, r);
+      if (waiting || held || gate) { r.x = p.x; r.y = p.y; this.vel = { x: 0, y: 0 }; }
       const moved = Math.hypot(r.x - p.x, r.y - p.y);
       p.x = r.x; p.y = r.y; p.walk += moved; p.moving = moved > 0.02;
       if (r.blockedX) this.vel.x = 0;
       if (r.blockedY) this.vel.y = 0;
       const fx = dx || this.vel.x, fy = dy || this.vel.y;
       if (Math.abs(fx) > 0.05 || Math.abs(fy) > 0.05) p.facing = Math.abs(fx) > Math.abs(fy) * 1.08 ? (fx > 0 ? 'right' : 'left') : (fy > 0 ? 'down' : 'up');
-      this.stuck = moved < 0.05 && this.path.length && !waiting && !held ? this.stuck + dt : 0;
+      this.stuck = moved < 0.05 && this.path.length && !waiting && !held && !gate ? this.stuck + dt : 0;
       if (this.stuck > 0.5) { this.path = []; this.pendingTarget = null; this.stuck = 0; }
       if (held?.backward) { this.path = []; this.pendingTarget = null; this.marker = null; }
     } else p.moving = false;
     if (held && held.valve.id !== this.heldAt?.id) this.onValveWait(held.valve, held.backward ? -1 : secondsUntilOpen(valveSet(held.valve), this.real));
     this.heldAt = held && !held.backward ? held.valve : this.heldAt && (input.vx || input.vy || input.steer || this.path.length) ? this.heldAt : null;
     if (this.heldAt && passable(valveSet(this.heldAt), this.real)) this.heldAt = null;
+    if (gate && gate.id !== this.gateAt?.id) this.onGateWait(gate, secondsUntilGateOpen(gate.kind, this.airClock));
+    this.gateAt = gate ?? (this.gateAt && (input.vx || input.vy || input.steer || this.path.length) ? this.gateAt : null);
+    if (this.gateAt && !gateShut(this.gateAt.kind, this.airClock)) this.gateAt = null;
     if (waiting && waiting.id !== this.waitingAt?.id) this.onSignalWait(waiting, this.traffic.waitFor(waiting.road));
     this.waitingAt = waiting ?? (this.waitingAt && (input.vx || input.vy || input.steer || this.path.length) ? this.waitingAt : null);
     if (this.waitingAt && this.traffic.walk(this.waitingAt.road) === 'walk') this.waitingAt = null;
@@ -258,7 +282,7 @@ export class World {
 
     const near = locked ? null : nearestTarget(this.roomId, p) ?? null;
     if ((near?.id ?? null) !== (this.near?.id ?? null)) { this.near = near; this.onNear(near); }
-    const reach = this.room.organ ? 84 : 44;
+    const reach = this.room.organ || this.room.airway ? 84 : 44;
     this.aware = locked ? [] : this.room.targets
       .map(t => ({ t, d: Math.hypot(t.x - p.x, t.y - p.y) }))
       .filter(({ t, d }) => !t.npc && d <= Math.max(t.r, reach))
@@ -296,6 +320,19 @@ export class World {
       const backward = v.toward === 1 ? from.y > v.y : from.y < v.y;
       if (backward) return { valve: v, backward: true };
       if (!passable(valveSet(v), this.real)) return { valve: v, backward: false };
+    }
+    return null;
+  }
+
+  /** D111 swallow gates: while swallowing the soft palate or the epiglottis covers the way (both directions); wait it out. */
+  private gateBlocks(from: Point, to: Point): Gate | null {
+    const a = this.room.airway;
+    if (!a) return null;
+    const fa = footRect(from), fb = footRect(to);
+    for (const gt of a.gates) {
+      const band = { x: gt.x, y: gt.y - 5, w: gt.w, h: 10 };
+      if (!overlap(fb, band) || overlap(fa, band)) continue;
+      if (gateShut(gt.kind, this.airClock)) return gt;
     }
     return null;
   }
@@ -376,8 +413,9 @@ export class World {
     this.view = { x: cx, y: cy, w: vw, h: vh, zoom };
     const g = buf.g;
     g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
-    g.fillStyle = room.organ ? '#170a12' : room.interior ? '#17141f' : '#2a2e3a'; g.fillRect(0, 0, vw, vh);
+    g.fillStyle = room.organ || room.airway ? '#170a12' : room.interior ? '#17141f' : '#2a2e3a'; g.fillRect(0, 0, vw, vh);
     if (this.heart) this.heart.drawFloor(g, cx, cy, vw, vh, this.real);
+    else if (this.air) this.air.drawFloor(g, cx, cy, vw, vh);
     else if (this.roomId === 'district') drawDistrictGround(g, cx, cy, vw, vh);
     else g.drawImage(this.ground(this.roomId), -cx, -cy);
 
@@ -386,7 +424,7 @@ export class World {
       ellipse(g, this.marker.x - cx, this.marker.y - cy, r + 1, Math.max(1, Math.round((r + 1) / 2)), 'rgba(255,240,190,0.55)');
     }
 
-    if (this.heart) ellipse(g, Math.round(p.x - cx), Math.round(p.y - cy), 8, 3, `rgba(127,240,242,${(0.25 + 0.15 * Math.sin(this.time * 3)).toFixed(3)})`);
+    if (this.heart || this.air) ellipse(g, Math.round(p.x - cx), Math.round(p.y - cy), 8, 3, `rgba(127,240,242,${(0.25 + 0.15 * Math.sin(this.time * 3)).toFixed(3)})`);
     const items: Drawable[] = [];
     const inView = (x: number, y: number, w: number, h: number) => x + w > cx - 8 && x < cx + vw + 8 && y + h > cy - 8 && y < cy + vh + 8;
     const nearBuildings = sceneryIn(room, 'buildings', cx - 8, cy - 8, vw + 16, vh + 16), nearProps = sceneryIn(room, 'props', cx - 8, cy - 8, vw + 16, vh + 16);
@@ -428,6 +466,7 @@ export class World {
     for (const l of this.leaves) { g.fillStyle = l.c; g.fillRect(Math.round(l.x - cx), Math.round(l.y - cy), 2, 1); }
     if (room.interior) for (const pd of room.interior.pendants) this.drawPendant(g, pd.x - cx, pd.y - cy);
     if (this.heart) this.heart.drawOverlay(g, cx, cy, vw, vh, this.real);
+    if (this.air) this.air.drawOverlay(g, cx, cy, vw, vh);
 
     out.imageSmoothingEnabled = false;
     const shake = this.beatWord && this.beatWord.t < 0.12 ? (this.beatWord.text === '쿵' ? zoom : -zoom) : 0;
@@ -558,6 +597,7 @@ export class World {
   /** HUD minimap for the current room: the street, or a heart room (null indoors at the office and cafe). */
   miniMap(): MiniMap | null {
     if (this.roomId === 'district') return { c: this.minimapBase(), s: 1 / 8, ox: 0, oy: 0, view: 220 };
+    if (this.room.airway) return airwayMinimap(this.room, 1 / 4);
     return this.room.organ ? organMinimap(this.room, 1 / 4) : null;
   }
 
@@ -568,7 +608,7 @@ export class World {
    */
   private drawAware(out: CanvasRenderingContext2D, cx: number, cy: number, zoom: number, dpr: number, bob: number): void {
     const placed: { x: number; y: number; w: number; h: number }[] = [];
-    const p = this.player, reach = this.room.organ ? 84 : 44;
+    const p = this.player, reach = this.room.organ || this.room.airway ? 84 : 44;
     for (const t of this.aware) {
       const isNear = this.near?.id === t.id, d = Math.hypot(t.x - p.x, t.y - p.y);
       const a = isNear ? 1 : Math.max(0.55, 1 - (d - t.r) / (reach * 1.4));

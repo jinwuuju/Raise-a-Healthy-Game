@@ -184,6 +184,15 @@ heartdisc = load('data/content/heart-interior.v0.1.json')['discoveries']
 j = rx['joinsHeartRoom']
 require(j['target'] in rx['discoveries'] and rx['discoveries'][j['target']]['room'] == j['room'] and heartdisc.get(j['heartTarget'], {}).get('room') == j['heartRoom'] == 'lung', 'Alveolus must join the existing heart lung room as the same alveolus (design 19 section 5)')
 require(not any(w in rxtext for w in ADVANCED_ONLY), 'Respiratory basic records must not carry advanced-only diseases')
+# D111 airway space: clues for every record without the record's own name, screen lines without numbers (design 19 section 3).
+rxm = load('data/content/respiratory-mastery.v0.1.json')
+rxs = load('data/content/respiratory-space.v0.1.json')
+require(rxm['status'] == rxs['status'] == 'draft_unreviewed' and '검수 전 모형' in rxm['disclaimer'] and '검수 전 모형' in rxs['disclaimer'], 'Airway clues and screen lines must stay labelled drafts')
+require(set(rxm['hints']) == set(rx['discoveries']) and all(rx['discoveries'][k]['name'] not in v for k, v in rxm['hints'].items()), 'Every airway record needs a clue that does not give away its name')
+require(set(rxm['roomNames']) == set(rxrooms) and all(a in rx['discoveries'] and b in rx['discoveries'] for a, b in rxm['twins']), 'Airway quiz rooms and confusable pairs must match the records')
+rxscreen = ''.join([*rxm['hints'].values(), *rxs['guideOnce'], rxs['swallowWait'], rxs['swallowOpen'], rxs['esophagus'], rxs['mouth'], rxs['deadEnd'], rxs['membraneCross'], rxs['entryToast']])
+require(not any(ch.isdigit() for ch in rxscreen), 'Airway basic screens must not carry numbers (design 19 section 3)')
+require(not any(w in json.dumps([rxm, rxs], ensure_ascii=False) for w in ADVANCED_ONLY), 'Airway space must not carry advanced-only diseases')
 for did in ('disease.respiratory-virus', 'disease.asthma', 'disease.pneumonia'):
     entry = next(e for e in diseases['entries'] if e['id'] == did)
     require(entry['primaryHubId'] == 'respiratory' and entry['depth'] == 'intro' and entry['contentRef'], 'Respiratory basic disease must be planned with a draft (design 20 section 6)')

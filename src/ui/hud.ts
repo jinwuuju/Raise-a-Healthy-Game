@@ -3,7 +3,7 @@ import type { MiniMap } from '../art/organ';
 import { levelOf } from '../domain/quest';
 import type { GameState } from '../domain/state';
 import { REAL_CYCLE, SLOW, beat, ecg, openness, phaseAt } from '../domain/cardiac';
-import { isHeartRoom, type RoomId } from '../world/types';
+import { isBodyRoom, isHeartRoom, type RoomId } from '../world/types';
 import { ICONS, button, el } from './dom';
 
 export type HudActions = { onChip: () => void; onNote: () => void; onMenu: () => void; onMap: () => void; onLunch: () => void; onHome: () => void };
@@ -159,17 +159,17 @@ export class Hud {
   }
 
   setRoom(room: RoomId, make: () => MiniMap | null, caption = ''): void {
-    const street = room === 'district', heart = isHeartRoom(room);
+    const street = room === 'district', heart = isHeartRoom(room), body = isBodyRoom(room);
     let m = this.miniCache.get(room) ?? null;
-    if (!m && (street || heart)) { m = make(); if (m) this.miniCache.set(room, m); }
+    if (!m && (street || body)) { m = make(); if (m) this.miniCache.set(room, m); }
     this.miniCur = m;
     this.mini.classList.toggle('hidden', !m);
     if (m) { this.miniCanvas.width = m.view ?? m.c.width; this.miniCanvas.height = m.view ?? m.c.height; }
     this.miniCap.textContent = caption;
-    this.mini.classList.toggle('organ', heart);
+    this.mini.classList.toggle('organ', body);
     this.cycle.classList.toggle('hidden', !heart);
-    this.root.classList.toggle('in-heart', heart);
-    this.homeBtn.hidden = heart;
+    this.root.classList.toggle('in-heart', body);
+    this.homeBtn.hidden = body;
     this.cycle.classList.toggle('lung', room === 'lung');
     this.lastPhase = '';
   }

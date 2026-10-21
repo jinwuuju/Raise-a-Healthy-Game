@@ -1,6 +1,6 @@
 # 호흡기 속 탐사 · 정확성과 그림 정밀도 계약 (D109 준비)
 
-2026-10-21 · [설계 20](../design/20-RESPIRATORY-BASIC.md)의 준비 단계. [심장 속 탐사](HEART-INTERIOR.md)와 같은 형식이다. **게임에는 아직 구현되지 않았다.** 이 문서와 `data/content/respiratory-interior.v0.1.json`(탐험 기록 44개 초안, 핵심 12 · 심화 21 · 세부 11)이 공간 제작의 기준이다.
+2026-10-21 · [설계 20](../design/20-RESPIRATORY-BASIC.md)의 준비 단계. [심장 속 탐사](HEART-INTERIOR.md)와 같은 형식이다. **D111(2026-10-21)에 공간 1차를 구현했다**(방 6개·숨과 삼킴·섬모와 점액·기록과 확인 문제, `tests/unit/airway.test.ts`가 아래 계약 1~8과 그림 기하를 검사). 콧구멍 진입 연출과 Q011 이후 취재는 아직이다. 이 문서와 `data/content/respiratory-interior.v0.1.json`(탐험 기록 44개 초안, 핵심 12 · 심화 21 · 세부 11)이 공간 제작의 기준이다.
 
 ## 공간과 순서
 

@@ -13,7 +13,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 **Q008~Q010(D108 기본 과정):** [Q008 하나의 숫자로 충분할까](docs/production/Q008-PRESSURE-REPORT.md)(고혈압 기초, 화면에 기준 숫자 없음, 450XP·300G) · [Q009 독자에게 설명하는 순환](docs/production/Q009-CIRCULATION-EXPLAINER-REPORT.md)(마주 보고 그린 그림 읽기, 500XP·350G, Lv.10) · [Q010 심장 졸업 특집호](docs/production/Q010-GRADUATION-REPORT.md)(특집 배달 런·핵심 구조 확인·내 기록을 근거로 한 특집 기사, 0XP·400G). 명성·편집국 확장권은 해당 기능이 생기면 졸업 기록으로 소급한다.
 
-**호흡기 기본 장(D109, 준비 완료 · 게임 구현 전):** [설계 20](docs/design/20-RESPIRATORY-BASIC.md) · [정확성·그림 정밀도 계약](docs/production/RESPIRATORY-INTERIOR.md). 코안·인두·후두·기관·기관지 나무·폐포를 걷고, 천식·폐렴·호흡기 바이러스(감기·독감·코로나19 구분)를 기본 과정으로 취재한다. 다음 작업은 공간 제작이다.
+**호흡기 기본 장(D109 준비 · D111 공간 1차 구현):** [설계 20](docs/design/20-RESPIRATORY-BASIC.md) · [정확성·그림 정밀도 계약](docs/production/RESPIRATORY-INTERIOR.md). 코안·인두·후두·기관·기관지 나무·폐포를 걷고, 천식·폐렴·호흡기 바이러스(감기·독감·코로나19 구분)를 기본 과정으로 취재한다. 심장 졸업 뒤 바디스코프에서 호흡기를 골라 콧구멍부터 폐포까지 걸을 수 있다(숨·삼킴·섬모와 점액, 탐험 기록 44개와 확인 문제). 다음 작업은 Q011 공기 항구다.
 
 **기본·심화 과정(D108):** [장기마다 일반인도 이해할 만큼 쉬운 기본을 먼저 하고, 졸업하면 다음 장기로 가며 졸업한 장기는 언제든 다시 골라 심화를 배운다](docs/design/19-BASIC-AND-ADVANCED.md). 심장은 Q010 졸업 특집호까지, 다음은 호흡기(코부터). 기본 과정 Q007~Q010과 심장 졸업 표시는 구현됐고, 심화 내용과 바디스코프 장기 고르기는 아직이다.
 
@@ -56,7 +56,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 ## 작업을 이어갈 때
 
-[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 맨 앞 ‘현재 상태와 다음 작업’을 따른다(심장 기본 Q001~Q010 완료 → 호흡기 기본 장 공간 제작(D109) · 점심 그림 확인 대기). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
+[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 맨 앞 ‘현재 상태와 다음 작업’을 따른다(심장 기본 Q001~Q010 완료 → 호흡기 기본 장 Q011(공간은 D111 1차 완료) · 점심 그림 확인 대기). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
 
 - 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 이 Mac의 셸에 Node가 없으면 `bash tools/npm-local.sh run dev`.
 - 검증: `npm run typecheck`, `npm test`, `npm run test:e2e`, `npm run build`. 최신 실행 결과는 [현재 상태](docs/production/STATUS.md)와 [첫 기사 기록](docs/production/Q001-ARTICLE.md)에 남긴다. [기존 오류 점검](docs/production/CODE-AUDIT-2026-10-11.md) · [뒷모습·모바일 생성 화면](docs/production/MOBILE-CREATOR-AND-REAR-WALK.md).

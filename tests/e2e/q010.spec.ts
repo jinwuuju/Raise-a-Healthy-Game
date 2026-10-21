@@ -72,7 +72,7 @@ test('Q010: offer, special delivery run, core check on the spot, claim and evide
   await result.getByRole('button', { name: '월드로 돌아가기' }).click();
   await page.keyboard.press('j');
   await expect(page.getByRole('tabpanel', { name: '지금 할 일' })).toContainText('직급 · 신입 기자 · 심장 졸업');
-  await expect(page.getByRole('tabpanel', { name: '지금 할 일' })).toContainText('폐 초대장');
+  await expect(page.getByRole('tabpanel', { name: '지금 할 일' })).toContainText('바디스코프에서 호흡기를 골라');
   await page.keyboard.press('Escape');
   expect(errors).toEqual([]);
 });

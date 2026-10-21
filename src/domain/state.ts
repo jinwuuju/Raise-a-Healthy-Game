@@ -14,11 +14,11 @@ import { emptyQ9, validateQ9, type Q9State } from './q009-state';
 import { emptyQ10, validateQ10, type Q10State } from './q010-state';
 import { emptyLunch, validateLunch, type LunchState } from './lunch';
 import { emptyShop, validateShop, type ShopState } from './shop';
-import { emptyMastery, tiers, validateMastery, type Mastery } from './mastery';
+import { emptyMastery, recordKey, tiers, validateMastery, type Mastery } from './mastery';
 import { emptyHeartRun, validateHeartRun, type HeartRunState } from './heart-run';
 import { canStand, canStandIn, footRect } from '../world/collision';
 import { rooms, roomsD093, roomsD094 } from '../world/rooms';
-import { isHeartRoom, overlap, roomIds, type Dir, type RoomId } from '../world/types';
+import { isBodyRoom, overlap, roomIds, type Dir, type RoomId } from '../world/types';
 
 export type GameState = {
   schemaVersion: 4; contentVersion: 'redesign-1'; balanceVersion: 'cafe-0.1';
@@ -133,7 +133,7 @@ export function validateState(value: unknown): GameState {
     const d094 = place.room in roomsD094 && canStandIn(roomsD094[place.room as keyof typeof roomsD094], place);
     // D105: the district map is regenerated (the river, crossings): a spot that is now water or road reopens at Euro Plaza.
     const regenerated = place.room === 'district' && place.x >= 0 && place.y >= 0;
-    if (!isHeartRoom(place.room) && !regenerated && !builtOver && !rebuiltLobby && !d093 && !d094 && !wasD092Position(place.room, place)) throw new Error('저장된 위치가 올바르지 않습니다.');
+    if (!isBodyRoom(place.room) && !regenerated && !builtOver && !rebuiltLobby && !d093 && !d094 && !wasD092Position(place.room, place)) throw new Error('저장된 위치가 올바르지 않습니다.');
     const r = rooms[place.room];
     place = { room: place.room, x: r.spawn.x, y: r.spawn.y, facing: r.spawnFacing };
   }
@@ -181,7 +181,7 @@ export function validateState(value: unknown): GameState {
   const lo = cafe.lastOrder as Record<string, unknown> | null;
   if (lo !== null && (!lo || typeof lo.itemId !== 'string' || !integer(lo.price) || !date(lo.orderedAt))) throw new Error('카페 주문 기록이 잘못되었습니다.');
   const mastery = validateMastery(s.mastery);
-  if (Object.keys(mastery).some(id => !(s.inspected as string[]).includes('hx:' + id))) throw new Error('탐험 기록 없는 구조에 별이 있습니다.');
+  if (Object.keys(mastery).some(id => !(s.inspected as string[]).includes(recordKey(id)))) throw new Error('탐험 기록 없는 구조에 별이 있습니다.');
   // Older schema4 saves carry `settings.time` (낮/노을/밤/실제 시간). It is read and ignored, whatever its value, and is not written back.
   return {
     schemaVersion: 4, contentVersion: 'redesign-1', balanceVersion: 'cafe-0.1', saveId: s.saveId, revision: s.revision,
