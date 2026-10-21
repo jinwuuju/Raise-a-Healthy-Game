@@ -1,0 +1,12 @@
+{
+ "id": "Q010",
+ "publication": {
+  "key": "quest.Q010.first",
+  "xp": 0,
+  "gold": 400
+ },
+ "repeatXp": 0,
+ "repeatBaseGold": 0,
+ "reactionBalanceRef": "article-reactions.v0.1.json",
+ "note": "early-quests의 기존 Q010 보상 그대로(0XP·400G, Lv.10 출시 상한). 특집 배달 런은 평소 런 보상만, 핵심 구조 확인은 평소 별 보상만 받는다. 명성(reputation 3)·편집국 확장권은 명성·확장 기능이 아직 없어(Q001~Q009 명성도 미구현) 졸업 기록(quest.Q010.first)에서 나중에 파생한다. 명시적 재발행의 추가 골드만 D066 적용."
+}

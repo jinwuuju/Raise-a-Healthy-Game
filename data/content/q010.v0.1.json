@@ -1,0 +1,202 @@
+{
+  "id": "content.Q010",
+  "status": "draft_unreviewed",
+  "review": null,
+  "updatedAt": "2026-10-21",
+  "tier": "basic",
+  "title": "심장 졸업 특집호",
+  "question": "심장은 우리 몸에서 무슨 일을 하나요? 어려운 말 없이 알려 주세요.",
+  "offer": [
+    "심장 취재를 마무리할 때가 됐어요. 독자 질문 하나로 심장 졸업 특집호를 만들어요. 질문은 이거예요. ‘심장은 우리 몸에서 무슨 일을 하나요? 어려운 말 없이 알려 주세요.’",
+    "특집호에는 세 가지가 필요해요. 바디스코프로 들어가 바디와 혈류 배달 런을 한 판 완주하고, 별이 하나도 없는 핵심 구조를 그 자리에서 확인하고, 그동안 쓴 기록을 근거로 쉬운 특집 기사를 써요. 해내면 심장을 졸업하고 다음 장기로 초대받아요."
+  ],
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 특집 기사 연습이에요. 실제 사람의 심장 검사나 진단이 아닙니다.",
+  "sources": [
+    {
+      "id": "nhlbi-flow",
+      "title": "NHLBI · How Blood Flows through the Heart",
+      "url": "https://www.nhlbi.nih.gov/health/heart/blood-flow",
+      "updated": "2025-06-25",
+      "checked": "2026-10-21",
+      "section": "Heart chambers and valves / Adding oxygen to blood"
+    },
+    {
+      "id": "openstax-cycle",
+      "title": "OpenStax · Cardiac Cycle",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/19-3-cardiac-cycle",
+      "checked": "2026-10-21",
+      "section": "Cardiac Cycle"
+    },
+    {
+      "id": "nhlbi-beats",
+      "title": "NHLBI · How the Heart Beats",
+      "url": "https://www.nhlbi.nih.gov/health/heart/heart-beats",
+      "updated": "2025-06-25",
+      "checked": "2026-10-21",
+      "section": "Electrical activity"
+    },
+    {
+      "id": "openstax-coronary",
+      "title": "Rice University OpenStax · 19.1 Heart Anatomy",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/19-1-heart-anatomy",
+      "checked": "2026-10-21",
+      "section": "Layers / Right Atrium / Coronary Circulation / Coronary Arteries / Coronary Veins"
+    },
+    {
+      "id": "openstax-bp",
+      "title": "Rice University OpenStax · 20.2 Blood Flow, Blood Pressure, and Resistance",
+      "url": "https://openstax.org/books/anatomy-and-physiology/pages/20-2-blood-flow-blood-pressure-and-resistance",
+      "checked": "2026-10-21",
+      "section": "Systolic and Diastolic Pressures"
+    },
+    {
+      "id": "nhlbi-gas",
+      "title": "NHLBI · The Respiratory System",
+      "url": "https://www.nhlbi.nih.gov/health/lungs/respiratory-system",
+      "updated": "2022-03-24",
+      "checked": "2026-10-21",
+      "section": "Oxygen flows into your blood / carbon dioxide leaves"
+    }
+  ],
+  "special": {
+    "runTitle": "특집 배달 런 한 판 완주",
+    "runText": "우심방의 안내 로봇 바디에게서 혈류 배달 런을 시작해 대동맥까지 배달을 마치면 돼요. 등급은 상관없어요. 보상은 평소 배달 런 그대로예요.",
+    "coreTitle": "핵심 구조 확인",
+    "coreText": "확인 문제 별이 하나도 없는 핵심 구조만 그 자리에서 한 문제씩 풀어요. 틀려도 잃는 건 없고, 맞힐 때까지 다시 와서 풀 수 있어요."
+  },
+  "board": {
+    "title": "특집 기사 근거 고르기",
+    "claimTitle": "1 · 독자 질문에 답할 한 문장 고르기",
+    "claims": [
+      {
+        "id": "two-pumps",
+        "card": "심장은 피를 한 방향으로 돌려 폐와 온몸에 보내는 펌프 두 대예요.",
+        "supports": [
+          "valves",
+          "two-loops",
+          "pressure"
+        ]
+      },
+      {
+        "id": "beat",
+        "card": "심장은 스스로 만든 박자에 맞춰 짜고 쉬기를 되풀이하며 피를 밀어 보내요.",
+        "supports": [
+          "signal",
+          "pressure",
+          "valves"
+        ]
+      },
+      {
+        "id": "self-fed",
+        "card": "심장도 피를 받아야 일하는 근육 펌프라서, 자기에게 피를 보내는 길이 따로 있어요.",
+        "supports": [
+          "supply",
+          "passage"
+        ]
+      },
+      {
+        "id": "filter",
+        "card": "심장은 피를 만들고 깨끗하게 걸러요.",
+        "hint": "그동안 본 기록 어디에도 심장이 피를 만들거나 거르는 모습은 없었어요. 내가 본 것은 피를 밀어 보내는 모습이었어요."
+      }
+    ],
+    "evidenceTitle": "2 · 그 문장을 받칠 내 기록 두 장 고르기",
+    "need": 2,
+    "evidence": [
+      {
+        "id": "valves",
+        "card": "판막은 한쪽으로만 열려 피가 거꾸로 가지 않아요",
+        "quest": "Q003"
+      },
+      {
+        "id": "two-loops",
+        "card": "오른쪽은 폐로, 왼쪽은 온몸으로 피를 보내요",
+        "quest": "Q004"
+      },
+      {
+        "id": "signal",
+        "card": "전기 신호가 정해진 길로 퍼져 박자를 맞춰요",
+        "quest": "Q005"
+      },
+      {
+        "id": "supply",
+        "card": "관상동맥이 심장 근육에 피를 보내요",
+        "quest": "Q006"
+      },
+      {
+        "id": "passage",
+        "card": "통로가 좁아지면 지나가는 피가 줄어요",
+        "quest": "Q007"
+      },
+      {
+        "id": "pressure",
+        "card": "짤 때는 세게, 쉴 때는 약하게 벽을 밀어요",
+        "quest": "Q008"
+      }
+    ],
+    "needClaim": "먼저 독자 질문에 답할 한 문장을 골라 주세요.",
+    "wrongEvidence": "이 문장을 받치는 기록이 아니에요. 필요한 기록 · {need}"
+  },
+  "article": {
+    "leads": [
+      {
+        "id": "one-line",
+        "label": "한 문장 답으로 시작",
+        "title": "심장은 쉬지 않는 펌프예요",
+        "text": "심장은 주먹만 한 근육 펌프예요. 쉬지 않고 짜고 쉬기를 되풀이하며 피를 폐와 온몸으로 보내요."
+      },
+      {
+        "id": "tour",
+        "label": "심장 속 여행으로 시작",
+        "title": "기자가 심장 속을 걸어 보니",
+        "text": "심장 속을 피와 함께 걸어 보면 문은 한쪽으로만 열리고, 오른쪽 방은 폐로, 왼쪽 방은 온몸으로 피를 보내요."
+      }
+    ],
+    "analogies": [
+      {
+        "id": "two-pumps",
+        "label": "나란히 붙은 펌프 두 대",
+        "text": "심장은 펌프 두 대가 나란히 붙은 집 같아요. 오른쪽 펌프는 폐로, 왼쪽 펌프는 온몸으로 피를 보내요."
+      },
+      {
+        "id": "delivery",
+        "label": "쉬지 않는 배달 회사",
+        "text": "심장은 쉬지 않는 배달 회사 같아요. 피가 폐에서 산소를 싣고 와서 온몸에 내려놓도록 계속 밀어 보내요."
+      },
+      {
+        "id": "tank",
+        "label": "피를 모아 두는 물탱크",
+        "text": "심장은 피를 모아 두는 물탱크 같아요.",
+        "hint": "심장은 피를 모아 두지 않아요. 방에 들어온 피는 곧 판막을 지나 다음 곳으로 밀려 나갔어요."
+      }
+    ],
+    "limitations": [
+      {
+        "id": "analogy",
+        "label": "비유의 한계로 마무리",
+        "text": "펌프와 배달은 비유예요. 실제 심장은 오른쪽과 왼쪽이 함께 뛰고, 피는 멈추지 않고 계속 흘러요."
+      },
+      {
+        "id": "model",
+        "label": "모형의 한계로 마무리",
+        "text": "이 특집은 교육용 모형으로 취재했어요. 실제 심장의 크기나 모양과 다르고, 개인의 심장 상태는 이 기사로 판단할 수 없어요."
+      }
+    ],
+    "seen": "내가 본 것",
+    "explained": "쉽게 풀어 쓴 설명",
+    "factcheck": "‘심장은 피를 만든다’는 사실이 아니에요. 심장은 피를 밀어 보내는 근육 펌프예요. ‘심장은 쉬지 않으니 피를 받을 필요가 없다’도 사실이 아니에요. 심장 근육도 관상동맥으로 피를 받아야 일할 수 있어요.",
+    "reply": "심장이 펌프 두 대라는 말이 쏙 들어왔어요. 심장도 자기 몫의 피를 받는다는 건 처음 알았어요. 다음 특집도 기다릴게요!"
+  },
+  "graduation": {
+    "title": "심장 졸업!",
+    "rank": "수습 기자에서 신입 기자로 승진했어요.",
+    "advanced": "심장 심화 과정이 열렸어요. 어려운 질환과 기자 실습은 심화 과정에서 다뤄요(준비 중).",
+    "invite": "폐로 초대장이 왔어요. 콧구멍부터 폐포까지 숨이 지나는 길을 걷는 호흡기 기본 장이 다음이에요(준비 중).",
+    "later": "명성과 편집국 확장권은 해당 기능이 생기면 이 졸업 기록으로 받아요."
+  },
+  "simplification": [
+    "새 질환은 다루지 않습니다. 지금까지의 심장 취재 기록을 근거로 독자 질문 하나에 답하는 특집 기사 연습입니다.",
+    "심장의 크기를 주먹에 빗댄 것은 어림한 비유입니다.",
+    "개인 진단·위험 계산·치료 추천은 다루지 않습니다."
+  ]
+}

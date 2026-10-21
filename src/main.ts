@@ -46,6 +46,9 @@ import { openPressureComparison } from './ui/pressure-comparison';
 import { canOfferQ9, q9Ready } from './domain/q009';
 import { q9Evidence, q9Text, type Q9Evidence } from './domain/q009-state';
 import { openQ9 } from './ui/q009';
+import { canOfferQ10, coreIds, q10CoreLeft, q10Ready } from './domain/q010';
+import { q10Text } from './domain/q010-state';
+import { openQ10 } from './ui/q010';
 import { q7Normal, q7Text, type Q7Evidence } from './domain/q007-state';
 import { openQ7 } from './ui/q007';
 import { openPassageComparison } from './ui/passage-comparison';
@@ -342,7 +345,7 @@ function refresh() {
   hud.setObjective((layer ? '검수 전 모형 · ' + layer + ' 비교 · ' : '') + objective(s, world.roomId));
   if (world.heart) { world.heart.comparison = world.roomId === 'heart' ? s.q003.mode : 'normal'; world.heart.rhythm = world.roomId === 'heart' ? s.q005.mode : 'normal'; world.heart.supply = world.roomId === 'aorta' ? s.q006.mode : 'rest'; }
   const has = (f: string) => s.flags.includes(f);
-  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed)) || canOfferQ2(s) || canOfferQ3(s) || canOfferQ4(s) || canOfferQ5(s) || canOfferQ6(s) || canOfferQ7(s) || canOfferQ8(s) || canOfferQ9(s) || (s.q002.accepted && !s.q002.reported && q2Seen(s).length === 4);
+  const needEditor = !has('met-editor') || (s.cafe.welcomeUsed && !has('reported-back')) || q1CanOffer(s) || (has(Q1.observed) && !has(Q1.briefed)) || canOfferQ2(s) || canOfferQ3(s) || canOfferQ4(s) || canOfferQ5(s) || canOfferQ6(s) || canOfferQ7(s) || canOfferQ8(s) || canOfferQ9(s) || canOfferQ10(s) || (s.q002.accepted && !s.q002.reported && q2Seen(s).length === 4);
   world.questNpc = world.roomId === 'newsroom' && needEditor ? 'editor' : null;
   world.questTargets = [];
   if (world.roomId === 'newsroom' && has(Q1.accepted) && !has(Q1.observed)) world.questTargets = ['device'];
@@ -355,6 +358,7 @@ function refresh() {
   if (world.roomId === 'newsroom' && s.q007.accepted && !s.q007.publishedAt) world.questTargets = q7CompareDone(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q008.accepted && !s.q008.publishedAt) world.questTargets = q8CompareDone(s) ? ['my-desk'] : ['device'];
   if (world.roomId === 'newsroom' && s.q009.accepted && !s.q009.publishedAt) world.questTargets = q9Ready(s) ? ['my-desk'] : ['device'];
+  if (world.roomId === 'newsroom' && s.q010.accepted && !s.q010.publishedAt) world.questTargets = q10Ready(s) ? ['my-desk'] : ['device'];
   world.sparkTargets = []; world.labelOverride = {}; world.verbOverride = {}; world.badges = {};
   if (isHeartRoom(world.roomId)) {
     const here = world.roomId;
@@ -367,6 +371,8 @@ function refresh() {
     if (s.q007.accepted && !s.q007.publishedAt) world.questTargets = !q7NormalDone(s) ? q7Text.notes.filter(n => n.room === here && !s.q007.notes.includes(n.id as Q7Evidence)).map(n => n.target) : !q7CompareDone(s) ? (here === 'aorta' ? ['hx-sinus'] : []) : ['return-pad'];
     if (s.q008.accepted && !s.q008.publishedAt) world.questTargets = !q8NormalDone(s) ? q8Text.notes.filter(n => n.room === here && !s.q008.notes.includes(n.id as Q8Evidence)).map(n => n.target) : !q8CompareDone(s) ? (here === Q8_OBSERVER.room ? [Q8_OBSERVER.target] : []) : ['return-pad'];
     if (s.q009.accepted && !s.q009.publishedAt) world.questTargets = !q9Ready(s) ? q9Text.notes.filter(n => n.room === here && !s.q009.notes.includes(n.id as Q9Evidence)).map(n => n.target) : ['return-pad'];
+    const q10Open = s.q010.accepted && !s.q010.publishedAt;
+    if (q10Open) world.questTargets = !s.q010.runDone ? (here === 'heart' && !run ? ['guide'] : []) : q10CoreLeft(s).length ? [] : ['return-pad'];
     const found = discovered(s);
     world.sparkTargets = world.room.targets.filter(t => t.id.startsWith('hx-') && !found.includes(t.id)).map(t => t.id);
     // D106: recorded structures hide their names until mastered (field checks); deeper tiers stay locked until enough stars.
@@ -381,6 +387,8 @@ function refresh() {
       if (known && stars < 3) { lab[t.id] = '???'; verb[t.id] = '확인 문제'; badge[t.id] = '★' + stars + '/3'; }
       else if (known) badge[t.id] = '★★★';
     }
+    // D108 Q010: core structures without a star wear the special-issue badge; their names stay hidden for the question.
+    if (q10Open && s.q010.runDone && !run) for (const id of q10CoreLeft(s)) if (world.room.targets.some(t => t.id === id)) { badge[id] = '특집 확인'; verb[id] = '특집 확인 문제'; }
     world.labelOverride = lab; world.verbOverride = verb; world.badges = badge;
     world.sparkTargets = world.sparkTargets.filter(id => isOpen(s, id) && !wps.includes(id));
   }
@@ -565,8 +573,10 @@ const runStop = (t: Target): boolean => {
 /** Settles a finished run (blood at the ascending aorta, muscle at the coronary sinus opening) and shows the result. */
 function completeRun(r: ActiveRun): void {
   const seconds = (performance.now() - r.start) / 1000;
+  const special = game.state.q010.runDone;
   const reward = game.finishRun({ runId: r.id, seconds, oxygen: true, kind: r.kind, waypoints: r.waypoints.map(x => ({ id: x.id, correct: x.done && x.correct })) });
   stopRun(null);
+  if (!special && game.state.q010.runDone) hud.toast('특집 배달 런 완주 · 졸업 특집 1/3 · 이제 별 없는 핵심 구조를 확인해요');
   if (reward) showRunResult(reward, seconds, r);
 }
 const WRONG_ENTRY: Record<Wall, string> = {
@@ -687,6 +697,11 @@ async function interact(t: Target) {
       if (floor === 'lift1' || floor === 'lift4') void travel({ to: floor, arrive: rooms[floor].spawn, facing: 'down', mode: 'walk', card: floor === 'lift1' ? '1층' : '4층' });
     } else if (runStop(t) && !wasQuestStop) {
       await runStep(t, false);
+    } else if (game.state.q010.accepted && !game.state.q010.publishedAt && game.state.q010.runDone && !run && q10CoreLeft(game.state).includes(t.id) && discoveries[t.id]?.room === w.roomId) {
+      const d = discoveries[t.id]!;
+      if (!game.state.inspected.includes(hxKey(t.id))) { await say([{ who: d.name, text: d.text, npc: null }]); game.discover(t.id); }
+      const ok = await fieldCheck(t.id, nextKind(game.state, t.id, game.state.heartRun.runs + game.state.revision));
+      if (ok) { const left = q10CoreLeft(game.state).length; hud.toast(left ? '특집 핵심 구조 확인 · ' + (coreIds.length - left) + '/' + coreIds.length : '핵심 구조 확인 완료! 편집국 내 자리에서 졸업 특집 기사를 써요'); }
     } else if (q9Open && evidenceNote && !game.state.q009.notes.includes(evidenceNote.id as Q9Evidence)) {
       await say([{ who: evidenceNote.name, text: evidenceNote.text + NL + q9Text.disclaimer, npc: null }]);
       if (game.recordQ9(evidenceNote.id as Q9Evidence)) hud.toast('순환 설명 근거 · ' + evidenceNote.name.replace('근거 · ', '') + ' (' + q9Evidence.filter(id => game.state.q009.notes.includes(id)).length + '/4)');
@@ -746,6 +761,10 @@ async function interact(t: Target) {
         const choice = await dialog.show([{ who: '편집장', text: q6Text.question, npc: 'editor' }], [{ id: 'accept', label: '심장 근육 공급 취재 맡기', sub: '공급 노선을 걷고 쉴 때와 더 일할 때를 비교해요', disabled: false }]);
         if (choice === 'accept') { game.acceptQ6(); hud.toast('Q006 · 심장 근육 공급 취재를 맡았어요 · 공급 관찰기 무료 대여'); }
       }
+      if (script.action === 'offer-q10') {
+        const choice = await dialog.show([{ who: '편집장', text: q10Text.question, npc: 'editor' }], [{ id: 'accept', label: '심장 졸업 특집호 맡기', sub: '특집 배달 런 · 핵심 구조 확인 · 쉬운 특집 기사', disabled: false }]);
+        if (choice === 'accept') { game.acceptQ10(); hud.toast('Q010 · 심장 졸업 특집호를 맡았어요 · 바디스코프로 들어가 바디에게'); }
+      }
       if (script.action === 'offer-q9') {
         const choice = await dialog.show([{ who: '편집장', text: q9Text.question, npc: 'editor' }], [{ id: 'accept', label: '순환 설명 취재 맡기', sub: '심장 속 근거 네 곳을 다시 보고 처음 보는 그림을 읽어요', disabled: false }]);
         if (choice === 'accept') { game.acceptQ9(); hud.toast('Q009 · 순환 설명 취재를 맡았어요 · 바디스코프로 근거 다시 보기'); }
@@ -766,7 +785,7 @@ async function interact(t: Target) {
       if (t.npc === 'jinu-clerk') await jinuCounter();
       if (t.npc === 'tailor') await tailorFitting();
     } else if (t.id === 'my-desk' && game.has(Q1.briefed)) {
-      pauseInput(); if (game.state.q009.accepted) showQ9(); else if (game.state.q008.accepted) showQ8(); else if (game.state.q007.accepted) showQ7(); else if (game.state.q006.accepted) showQ6(); else if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
+      pauseInput(); if (game.state.q010.accepted) showQ10(); else if (game.state.q009.accepted) showQ9(); else if (game.state.q008.accepted) showQ8(); else if (game.state.q007.accepted) showQ7(); else if (game.state.q006.accepted) showQ6(); else if (game.state.q005.accepted) showQ5(); else if(game.state.q004.accepted)showQ4(); else if (game.state.q003.accepted) showQ3(); else if (game.state.q002.reported) showQ2Article(); else showArticle();
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
         [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
@@ -918,8 +937,9 @@ function showQ5() { openQ5(game, () => { const result = latestReaction(game.stat
 function showQ6() { openQ6(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
 function showQ7() { openQ7(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
 function showQ8() { openQ8(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
+function showQ10() { openQ10(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
 function showQ9() { openQ9(game, () => { const result = latestReaction(game.state); if (result) showReaction(result); }); }
-function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q009' ? showQ9 : result.questId === 'Q008' ? showQ8 : result.questId === 'Q007' ? showQ7 : result.questId === 'Q006' ? showQ6 : result.questId === 'Q005' ? showQ5 : result.questId === 'Q004' ? showQ4 : result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
+function showReaction(result: NonNullable<ReturnType<typeof latestReaction>>, replay = false) { openReaction(game, result, { readArticle: result.questId === 'Q010' ? showQ10 : result.questId === 'Q009' ? showQ9 : result.questId === 'Q008' ? showQ8 : result.questId === 'Q007' ? showQ7 : result.questId === 'Q006' ? showQ6 : result.questId === 'Q005' ? showQ5 : result.questId === 'Q004' ? showQ4 : result.questId === 'Q003' ? showQ3 : result.questId === 'Q002' ? showQ2Article : showArticle, exportSave }, replay); }
 function saveFeedback(c: HTMLElement): () => void {
   const message = el('p', 'save-message'); message.setAttribute('role', 'status'); c.append(message);
   const update = () => { message.textContent = game.lastError ?? ''; message.classList.toggle('hidden', !game.lastError); };
@@ -928,7 +948,7 @@ function saveFeedback(c: HTMLElement): () => void {
 function openNotebook(tab?: number) {
   if (busy() || !world) return;
   pauseInput();
-  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, q006: showQ6, q007: showQ7, q008: showQ8, q009: showQ9, reaction: r => showReaction(r, true), map: openMap, lunch: date => openLunchSheet(date), lunchDex: target => { void loadLunch().then(m => { target.replaceChildren(); m.renderLunchDex(target, game.state); }).catch(() => target.replaceChildren(el('p', 'muted', '도감을 불러오지 못했어요. 네트워크를 확인해 주세요.'))); } }, tab);
+  showNotebook(game, world.roomId, { article: showArticle, q002: showQ2Article, q003: showQ3, q004:showQ4, q005: showQ5, q006: showQ6, q007: showQ7, q008: showQ8, q009: showQ9, q010: showQ10, reaction: r => showReaction(r, true), map: openMap, lunch: date => openLunchSheet(date), lunchDex: target => { void loadLunch().then(m => { target.replaceChildren(); m.renderLunchDex(target, game.state); }).catch(() => target.replaceChildren(el('p', 'muted', '도감을 불러오지 못했어요. 네트워크를 확인해 주세요.'))); } }, tab);
 }
 /** 오늘의 점심 화면·데이터·그림은 처음 열 때 따로 내려받는다(첫 로딩 크기 보호). */
 const loadLunch = () => import('./ui/lunch');

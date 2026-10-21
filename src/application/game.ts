@@ -2,7 +2,7 @@ import { defaultAppearance, validateAppearance, type Appearance, type Preset } f
 import { orderDrink } from '../domain/cafe';
 import { buyItem, buyOutfit } from '../domain/shop';
 import { checkArticle, selectArticle } from '../domain/article';
-import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, publishQ4WithReaction, publishQ5WithReaction, publishQ6WithReaction, publishQ7WithReaction, publishQ8WithReaction, publishQ9WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
+import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, publishQ4WithReaction, publishQ5WithReaction, publishQ6WithReaction, publishQ7WithReaction, publishQ8WithReaction, publishQ9WithReaction, publishQ10WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
 import type { QuestId } from '../domain/reaction-state';
 import { acceptQ5, setQ5Mode, recordQ5, placeQ5, clearQ5Order, selectQ5, checkQ5 } from '../domain/q005';
 import type { Q5Evidence, SignalCard } from '../domain/q005-state';
@@ -15,6 +15,7 @@ import type { PassageMode } from '../domain/passage-model';
 import { acceptQ8, setQ8Mode, recordQ8, pickQ8, verdictQ8, clearQ8Board, selectQ8, checkQ8 } from '../domain/q008';
 import type { Q8Evidence, RecordCard, VerdictCard } from '../domain/q008-state';
 import type { PressureMode } from '../domain/pressure-model';
+import { acceptQ10, runQ10, claimQ10, evidenceQ10, clearQ10Board, selectQ10, checkQ10 } from '../domain/q010';
 import { acceptQ9, recordQ9, slotQ9, chainQ9, clearQ9Board, selectQ9, checkQ9 } from '../domain/q009';
 import type { ChainCard as Q9ChainCard, DecoyCard as Q9DecoyCard, Q9Evidence, RoomCard as Q9RoomCard } from '../domain/q009-state';
 import type { SupplyMode } from '../domain/supply-model';
@@ -131,7 +132,7 @@ export class Game {
   /** D106: a field check about a recorded heart structure. Returns whether a star was earned. */
   answerQuiz(id: string, kind: QuizKind, correct: boolean): boolean { const r = answerQuiz(this.state, id, kind, correct); if (r.state === this.state) return false; this.commit(r.state); return r.star; }
   /** D106: hands in a finished blood-delivery run (once per run id) and returns the reward breakdown. */
-  finishRun(res: RunResult): RunReward | null { const r = finishRun(this.state, res); if (r.state !== this.state) this.commit(r.state); return r.reward; }
+  finishRun(res: RunResult): RunReward | null { const r = finishRun(this.state, res); const next = r.reward ? runQ10(r.state, res.kind ?? 'blood') : r.state; if (next !== this.state) this.commit(next); return r.reward; }
   buyItem(itemId: string): void { this.commit(buyItem(this.state, itemId, this.commandId())); }
   /** D103: buy a piece of clothing at the Orbit Tailor, optionally wearing it at once. */
   buyOutfit(id: string, wear: boolean): void { const next = buyOutfit(this.state, id, wear); if (next !== this.state) this.commit(next); }
@@ -147,6 +148,13 @@ export class Game {
   selectQ6(slot: 'lead' | 'limit', id: string | null): void { const next = selectQ6(this.state, slot, id); if (next !== this.state) this.commit(next); }
   checkQ6(): void { const next = checkQ6(this.state); if (next !== this.state) this.commit(next); }
   publishQ6(): boolean { const next = publishQ6WithReaction(this.state); if (next === this.state) { this.persist(); return false; } this.commit(next); return true; }
+  acceptQ10(): void { const next = acceptQ10(this.state); if (next !== this.state) this.commit(next); }
+  claimQ10(id: string): void { const next = claimQ10(this.state, id); if (next !== this.state) this.commit(next); }
+  evidenceQ10(id: string): void { const next = evidenceQ10(this.state, id); if (next !== this.state) this.commit(next); }
+  clearQ10Board(): void { const next = clearQ10Board(this.state); if (next !== this.state) this.commit(next); }
+  selectQ10(slot: 'lead' | 'analogy' | 'limit', id: string | null): void { const next = selectQ10(this.state, slot, id); if (next !== this.state) this.commit(next); }
+  checkQ10(): void { const next = checkQ10(this.state); if (next !== this.state) this.commit(next); }
+  publishQ10(): boolean { const next = publishQ10WithReaction(this.state); if (next === this.state) { this.persist(); return false; } this.commit(next); return true; }
   acceptQ9(): void { const next = acceptQ9(this.state); if (next !== this.state) this.commit(next); }
   recordQ9(id: Q9Evidence): boolean { const next = recordQ9(this.state, id); if (next === this.state) return false; this.commit(next); return true; }
   slotQ9(id: Q9RoomCard): void { const next = slotQ9(this.state, id); if (next !== this.state) this.commit(next); }

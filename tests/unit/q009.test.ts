@@ -101,7 +101,7 @@ describe('D108 Q009 circulation explained to readers', () => {
     const again = reprintArticle(p, p.reactions.count, () => 0.5, '2026-10-21T04:00:00Z', 'Q009');
     expect(again.totalXp).toBe(p.totalXp); expect(again.gold).toBeGreaterThan(p.gold);
     expect(() => reprintArticle(r, r.reactions.count, () => 0.5, '2026-10-21T04:00:00Z', 'Q009')).toThrow();
-    expect(objective(p, 'newsroom')).toContain('준비 중');
+    expect(objective(p, 'newsroom')).toContain('심장 졸업 특집호'); // Q010 is offered next
   });
 
   it('validates saves: old saves read empty, forged pictures, loops and analogies are refused', () => {

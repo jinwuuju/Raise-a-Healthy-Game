@@ -18,12 +18,15 @@ import { q7Normal, q7Text, type Q7Evidence } from '../domain/q007-state';
 import { canOfferQ8, q8CompareDone, q8NormalDone, q8Ready } from '../domain/q008';
 import { q8Normal, q8Text, type Q8Evidence } from '../domain/q008-state';
 import { canOfferQ9, q9Ready } from '../domain/q009';
+import { canOfferQ10, coreIds, q10CoreLeft } from '../domain/q010';
+import { q10Text } from '../domain/q010-state';
+import { discoveries } from '../domain/heart';
 import { q9Evidence, q9Text, type Q9Evidence } from '../domain/q009-state';
 import type { GameState } from '../domain/state';
 import { isHeartRoom, type RoomId } from '../world/types';
 
 export type Line = { who: string; text: string; npc: string | null };
-export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' | 'offer-q5' | 'offer-q6' | 'offer-q7' | 'offer-q8' | 'offer-q9' };
+export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' | 'offer-q5' | 'offer-q6' | 'offer-q7' | 'offer-q8' | 'offer-q9' | 'offer-q10' };
 export const q1Text = q1;
 export const heartText = heart;
 
@@ -42,9 +45,20 @@ export function objective(s: GameState, room: RoomId): string {
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
+  if (canOfferQ10(s)) return '편집장에게 ‘심장 졸업 특집호’ 받기';
+  if (s.q010.accepted) {
+    if (s.q010.publishedAt) return '심장 졸업! 신입 기자 승진 · 심장 심화 과정(준비 중) · 폐 초대장: 호흡기 기본 장 준비 중';
+    if (!s.q010.runDone) return room === 'heart' ? '우심방의 안내 로봇 바디에게서 특집 배달 런 한 판 (특집 1/3)' : isHeartRoom(room) ? '우심방의 바디에게 가서 특집 배달 런 한 판 (특집 1/3)' : '바디스코프로 들어가 바디와 특집 배달 런 한 판 (특집 1/3)';
+    const left = q10CoreLeft(s);
+    if (left.length) {
+      const where = roomNames[discoveries[left[0]!]!.room]!, count = (coreIds.length - left.length) + '/' + coreIds.length;
+      return (isHeartRoom(room) ? '' : '바디스코프로 들어가 ') + '별 없는 핵심 구조 확인 · ' + where + ' (특집 2/3 · ' + count + ')';
+    }
+    return (room === 'newsroom' ? '내 자리에서' : '편집국 내 자리로 돌아가') + ' 졸업 특집 기사 쓰기 (특집 3/3)';
+  }
   if (canOfferQ9(s)) return '편집장에게 순환 설명 취재 ‘독자에게 설명하는 순환’ 받기';
   if (s.q009.accepted) {
-    if (s.q009.publishedAt) return '순환 설명 기사 발행 완료! 수첩에서 기사·독자 반응 읽기 · 다음 Q010 심장 졸업 특집호는 준비 중';
+    if (s.q009.publishedAt) return '순환 설명 기사 발행 완료! 수첩에서 기사·독자 반응 읽기 · 다음 졸업 특집호는 편집장에게';
     if (!q9Ready(s)) {
       const note = q9Text.notes.find(n => !s.q009.notes.includes(n.id as Q9Evidence))!;
       const count = q9Evidence.filter(id => s.q009.notes.includes(id)).length + '/4';
@@ -184,6 +198,8 @@ export function talk(id: string, s: GameState): Talk {
   const has = (f: string) => s.flags.includes(f);
   switch (id) {
     case 'editor':
+      if (canOfferQ10(s)) return { flag: null, action: 'offer-q10', lines: say('편집장', 'editor', ...q10Text.offer) };
+      if (s.q010.accepted) return { flag: null, lines: say('편집장', 'editor', objective(s, s.at.room)) };
       if (canOfferQ9(s)) return { flag: null, action: 'offer-q9', lines: say('편집장', 'editor', ...q9Text.offer) };
       if (s.q009.accepted) return { flag: null, lines: say('편집장', 'editor', objective(s, s.at.room)) };
       if (canOfferQ8(s)) return { flag: null, action: 'offer-q8', lines: say('편집장', 'editor', ...q8Text.offer) };

@@ -169,6 +169,20 @@ require(len([a for a in q9['article']['analogies'] if a.get('hint')]) == 1 and l
 require('검수 전 모형' in q9['disclaimer'] and not any(w in q9text for w in ADVANCED_ONLY) and '고혈압' not in q9text, 'Q009 must stay a labelled basic draft without new or advanced-only diseases (D108)')
 q9screen = ''.join([q9['question'], *q9['offer'], *(n['text'] for n in q9['notes']), q9b_['picture'], q9b_['sideHint'], q9b_['levelHint'], q9b_['startHint'], q9b_['nextHint'], q9b_['twice'], *(c['card'] for c in q9b_['chain']), *(d['card'] + d['hint'] for d in q9b_['decoys']), *(x['text'] for x in q9['article']['leads'] + q9['article']['analogies'] + q9['article']['limitations']), q9['article']['factcheck'], q9['article']['reply']])
 require(not any(ch.isdigit() for ch in q9screen), 'Q009 basic screens must not carry numbers (design 19 section 3)')
+# D108 Q010: heart graduation special issue (design 19 section 6). Several valid claim-evidence pairs (design 03), no new disease.
+q10 = load('data/content/q010.v0.1.json')
+q10text = json.dumps(q10, ensure_ascii=False)
+q10ev = {e['id'] for e in q10['board']['evidence']}
+q10claims = q10['board']['claims']
+require(q10['status'] == 'draft_unreviewed' and q10['review'] is None and q10['tier'] == 'basic' and q10['board']['need'] == 2, 'Q010 content boundary mismatch')
+require(len([c for c in q10claims if c.get('hint')]) == 1 and all(set(c['supports']) <= q10ev and len(c['supports']) >= q10['board']['need'] for c in q10claims if not c.get('hint')), 'Q010 claims need supporting records (several valid pairs)')
+require(all(e['quest'] in {'Q003', 'Q004', 'Q005', 'Q006', 'Q007', 'Q008'} for e in q10['board']['evidence']) and '{need}' in q10['board']['wrongEvidence'], 'Q010 evidence must come from earlier heart reporting and point to the missing record')
+require(len([a for a in q10['article']['analogies'] if a.get('hint')]) == 1, 'Q010 analogy choices mismatch')
+require('검수 전 모형' in q10['disclaimer'] and not any(w in q10text for w in ADVANCED_ONLY) and '고혈압' not in q10text, 'Q010 must stay a labelled basic draft without new or advanced-only diseases (D108)')
+q10screen = ''.join([q10['question'], *q10['offer'], *q10['special'].values(), *(c['card'] + c.get('hint', '') for c in q10claims), *(e['card'] for e in q10['board']['evidence']), *(x['text'] + x.get('hint', '') for x in q10['article']['leads'] + q10['article']['analogies'] + q10['article']['limitations']), q10['article']['factcheck'], q10['article']['reply'], *q10['graduation'].values()])
+require(not any(ch.isdigit() for ch in q10screen), 'Q010 basic screens must not carry numbers (design 19 section 3)')
+q10b = load('data/balance/q010.v0.1.json')
+require(q10b['publication'] == {'key': quests[9]['completionKey'], 'xp': quests[9]['xp'], 'gold': quests[9]['gold']} and quests[9]['xp'] == 0, 'Q010 runtime reward mismatch')
 q9b = load('data/balance/q009.v0.1.json')
 require(q9b['publication'] == {'key': quests[8]['completionKey'], 'xp': quests[8]['xp'], 'gold': quests[8]['gold']}, 'Q009 runtime reward mismatch')
 q8b = load('data/balance/q008.v0.1.json')
