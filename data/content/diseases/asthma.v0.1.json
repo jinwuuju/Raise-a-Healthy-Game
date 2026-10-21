@@ -1,0 +1,60 @@
+{
+  "id": "disease.asthma",
+  "status": "draft_unreviewed",
+  "review": null,
+  "publicAtlas": false,
+  "questSlot": "Q016",
+  "prerequisiteQuest": "Q015",
+  "sources": [
+    {
+      "id": "openstax-resp",
+      "title": "OpenStax Anatomy and Physiology 2e · 22.1 Organs and Structures of the Respiratory System",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system",
+      "checked": "2026-10-21",
+      "section": "Conducting zone defenses (mucus, cilia, tonsils) / Diseases of the respiratory system: asthma"
+    },
+    {
+      "id": "nhlbi-resp",
+      "title": "NHLBI · The Respiratory System",
+      "url": "https://www.nhlbi.nih.gov/health/lungs/respiratory-system",
+      "updated": "2022-03-24",
+      "checked": "2026-10-21",
+      "section": "Air fills your lung air sacs / Oxygen flows into your blood"
+    }
+  ],
+  "summary": "천식은 기도 벽에 오래 이어지는 염증이 있어, 자극을 받으면 세기관지를 감싼 근육이 조이고 벽이 붓고 점액이 늘어 숨길이 좁아지는 병이에요. Q016 취재를 위한 기초 초안이며 공개 도감에 쓰지 않습니다.",
+  "misconception": {
+    "claim": "천식은 숨이 찰 때만 있는 병이다.",
+    "correction": "천식은 기도에 오래 이어지는 염증이 있는 병이라, 숨이 차지 않을 때도 관리가 필요해요.",
+    "src": [
+      "openstax-resp"
+    ]
+  },
+  "layerPlan": {
+    "space": "Q012~Q013 뒤 기관지 나무의 세기관지. 새 맵 없음.",
+    "normalFirst": "세기관지 근육이 풀린 정상 굵기와 얇은 점액 층을 먼저 본다.",
+    "change": "근육이 조임 · 벽이 부음 · 점액이 많아짐을 하나씩 바꿔 비교하고, 셋이 함께 일어난 상태를 천식 기초 레이어로 보인다.",
+    "movement": "레이어는 렌더링 전용이며 기자의 이동·호흡 주기 규칙을 바꾸지 않는다.",
+    "implemented": false
+  },
+  "reportingSteps": [
+    "정상 세기관지 굵기 관찰",
+    "같은 세기관지에서 근육·붓기·점액을 하나씩 바꿔 비교",
+    "왜 생기나: 먼지·꽃가루·동물 털·담배 연기·찬 공기·호흡기 감염·운동 같은 자극(개인 탓만이 아님)",
+    "무엇을 보면 아나: 숨을 내쉬는 힘을 재는 검사가 무엇을 보는지(숫자 없이)",
+    "몸을 돕는 원리: 자극 줄이기, 의료진과 함께 꾸준히 관리, 흡입기로 약을 기도에 바로 보내는 원리(약 이름 없음)",
+    "‘숨찰 때만 병’ 오해 팩트체크 기사"
+  ],
+  "articleSlot": {
+    "quest": "Q016",
+    "type": "쉬운 설명·팩트체크",
+    "question": "천식은 숨이 찰 때만 조심하면 될까?"
+  },
+  "deferral": "진단 기준 수치, 약 계열과 작용, 중증 천식, 응급 행동 안내는 호흡기 심화 과정과 임상 출처 검수 뒤로 미룬다.",
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 초안",
+  "simplification": [
+    "기본 과정 범위만 다룹니다(설계 19·20).",
+    "개인 진단·위험 계산·치료 추천·응급 행동 안내는 다루지 않습니다."
+  ],
+  "tier": "basic"
+}

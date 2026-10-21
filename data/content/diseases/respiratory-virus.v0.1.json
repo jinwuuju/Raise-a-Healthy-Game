@@ -1,0 +1,74 @@
+{
+  "id": "disease.respiratory-virus",
+  "status": "draft_unreviewed",
+  "review": null,
+  "publicAtlas": false,
+  "questSlot": "Q018",
+  "prerequisiteQuest": "Q017",
+  "sources": [
+    {
+      "id": "openstax-resp",
+      "title": "OpenStax Anatomy and Physiology 2e · 22.1 Organs and Structures of the Respiratory System",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system",
+      "checked": "2026-10-21",
+      "section": "Conducting zone defenses (mucus, cilia, tonsils) / Diseases of the respiratory system: asthma"
+    },
+    {
+      "id": "cdc-flu-covid",
+      "title": "CDC · Similarities and Differences between Flu and COVID-19",
+      "url": "https://www.cdc.gov/flu/symptoms/flu-vs-covid19.htm",
+      "checked": "2026-10-21",
+      "section": "Symptoms alone cannot tell them apart; testing confirms / spread without symptoms"
+    },
+    {
+      "id": "kdca-covid-2026",
+      "title": "질병관리청 · 2026-2027절기 코로나19 국가예방접종 시행계획(보도자료, 2026-09-17)",
+      "url": "https://www.kdca.go.kr/kdca/2848/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGa2RjYSUyRjQyJTJGMzEyNjQ0JTJGYXJ0Y2xWaWV3LmRvJTNG",
+      "updated": "2026-09-17",
+      "checked": "2026-10-21",
+      "section": "새 변이가 해마다 유행해 고위험군은 해마다 접종 / 필수예방접종 전환"
+    },
+    {
+      "id": "nhlbi-pneumonia",
+      "title": "NHLBI · Pneumonia",
+      "url": "https://www.nhlbi.nih.gov/health/pneumonia",
+      "checked": "2026-10-21",
+      "section": "What Is Pneumonia? (air sacs fill with fluid or pus; bacteria, viruses or fungi)"
+    }
+  ],
+  "summary": "감기·독감·코로나19는 모두 바이러스가 코·목·기도 안쪽 세포에 들어가 생기는 호흡기 감염이에요. 증상이 겹쳐 증상만으로는 구분할 수 없고 검사로 확인해요. Q018 취재를 위한 기초 초안이며 공개 도감에 쓰지 않습니다.",
+  "misconception": {
+    "claim": "감기가 심해지면 독감이 된다.",
+    "correction": "감기와 독감, 코로나19는 서로 다른 바이러스가 일으켜요. 증상이 겹쳐 증상만으로는 구분할 수 없고 검사로 확인해요.",
+    "src": [
+      "cdc-flu-covid"
+    ]
+  },
+  "layerPlan": {
+    "space": "Q011~Q013의 코안·인두·기관을 그대로 쓴다. 새 맵 없음.",
+    "normalFirst": "점액이 알갱이를 붙잡고 섬모가 쓸어 올리는 정상 방어를 먼저 본다(Q011·Q013).",
+    "change": "바이러스 알갱이가 점막 세포에 붙어 들어가 복제되고, 방어 반응으로 점액이 늘고 점막이 붓는 모습을 레이어로 비교한다. 세 바이러스는 같은 화면에서 구분되지 않음을 보여 주고 검사 카드로 확인한다.",
+    "movement": "레이어는 렌더링 전용이며 공기 길·삼킴·호흡 주기 규칙을 바꾸지 않는다.",
+    "implemented": false
+  },
+  "reportingSteps": [
+    "정상 방어(점액·섬모·편도) 관찰",
+    "같은 코·목 공간에서 바이러스가 들어간 세포와 방어 반응 비교",
+    "왜 퍼지나: 침방울과 작은 알갱이, 손, 환기 안 된 실내, 증상 없는 전파",
+    "무엇을 보면 아나: 증상만으로는 구분 불가, 검사가 바이러스를 찾음(숫자 없이)",
+    "몸을 돕는 원리: 손 씻기·기침 예절·아플 때 마스크와 쉬기·환기·예방접종 원리, 해마다 새 변이",
+    "같은 표현 다른 원인을 구분하는 팩트체크 기사"
+  ],
+  "articleSlot": {
+    "quest": "Q018",
+    "type": "쉬운 설명·팩트체크",
+    "question": "목이 아프고 열이 나는데, 감기인지 독감인지 코로나19인지 어떻게 알 수 있을까?"
+  },
+  "deferral": "바이러스 변이 계통, 백신 종류와 효과 수치, 항바이러스제와 용량, 코로나19 후유증, 유행 통계 읽기(수치 전달), 검사 정확도는 호흡기 심화 과정으로 미룬다.",
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 초안",
+  "simplification": [
+    "기본 과정 범위만 다룹니다(설계 19·20).",
+    "개인 진단·위험 계산·치료 추천·응급 행동 안내는 다루지 않습니다."
+  ],
+  "tier": "basic"
+}

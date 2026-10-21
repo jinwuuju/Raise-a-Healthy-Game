@@ -170,6 +170,24 @@ require('검수 전 모형' in q9['disclaimer'] and not any(w in q9text for w in
 q9screen = ''.join([q9['question'], *q9['offer'], *(n['text'] for n in q9['notes']), q9b_['picture'], q9b_['sideHint'], q9b_['levelHint'], q9b_['startHint'], q9b_['nextHint'], q9b_['twice'], *(c['card'] for c in q9b_['chain']), *(d['card'] + d['hint'] for d in q9b_['decoys']), *(x['text'] for x in q9['article']['leads'] + q9['article']['analogies'] + q9['article']['limitations']), q9['article']['factcheck'], q9['article']['reply']])
 require(not any(ch.isdigit() for ch in q9screen), 'Q009 basic screens must not carry numbers (design 19 section 3)')
 # D108 Q010: heart graduation special issue (design 19 section 6). Several valid claim-evidence pairs (design 03), no new disease.
+# D109 respiratory preparation (design 20): accuracy contract data for the air path, before any runtime use.
+rx = load('data/content/respiratory-interior.v0.1.json')
+rxtext = json.dumps(rx, ensure_ascii=False)
+rxsrc = {s['id'] for s in rx['sources']}
+rxrooms = [r['id'] for r in rx['rooms']]
+require(rx['status'] == 'draft_unreviewed' and rx['review'] is None and '검수 전 모형' in rx['disclaimer'], 'Respiratory interior must stay a labelled draft')
+require(rx['airPath'] == ['nose', 'pharynx', 'larynx', 'trachea', 'bronchi', 'alveoli'] == rxrooms, 'Respiratory air path order must follow the airway (design 20 section 2)')
+require(all(d['room'] in rxrooms and d['src'] and set(d['src']) <= rxsrc and d['text'] for d in rx['discoveries'].values()), 'Every respiratory record needs a room and existing sources')
+rxtiered = [i for t in rx['tiers'] for i in t['ids']]
+require(sorted(rxtiered) == sorted(rx['discoveries']) and len(rxtiered) == len(set(rxtiered)) and len(rx['tiers'][0]['ids']) == 12 and rx['tiers'][0]['unlockStars'] == 0, 'Respiratory tiers must cover every record once with twelve core structures')
+heartdisc = load('data/content/heart-interior.v0.1.json')['discoveries']
+j = rx['joinsHeartRoom']
+require(j['target'] in rx['discoveries'] and rx['discoveries'][j['target']]['room'] == j['room'] and heartdisc.get(j['heartTarget'], {}).get('room') == j['heartRoom'] == 'lung', 'Alveolus must join the existing heart lung room as the same alveolus (design 19 section 5)')
+require(not any(w in rxtext for w in ADVANCED_ONLY), 'Respiratory basic records must not carry advanced-only diseases')
+for did in ('disease.respiratory-virus', 'disease.asthma', 'disease.pneumonia'):
+    entry = next(e for e in diseases['entries'] if e['id'] == did)
+    require(entry['primaryHubId'] == 'respiratory' and entry['depth'] == 'intro' and entry['contentRef'], 'Respiratory basic disease must be planned with a draft (design 20 section 6)')
+    require(not any(w in json.dumps(load(entry['contentRef']), ensure_ascii=False) for w in ADVANCED_ONLY), 'Respiratory basic disease draft must not carry advanced-only diseases')
 q10 = load('data/content/q010.v0.1.json')
 q10text = json.dumps(q10, ensure_ascii=False)
 q10ev = {e['id'] for e in q10['board']['evidence']}

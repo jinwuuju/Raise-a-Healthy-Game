@@ -3,9 +3,10 @@
   "status": "planned",
   "review": null,
   "coverageHubs": [
-    "circulation"
+    "circulation",
+    "respiratory"
   ],
-  "note": "D073/Q002 작업 단위의 순환 허브 장부 시작. 다른 허브는 아직 미배정이며 전체 질환 장부 완료가 아님. D077/Q005: 부정맥(심방세동) 기초 모듈 추가. D108/Q008: 고혈압 기초 모듈 추가.",
+  "note": "D073/Q002 작업 단위의 순환 허브 장부 시작. 다른 허브는 아직 미배정이며 전체 질환 장부 완료가 아님. D077/Q005: 부정맥(심방세동) 기초 모듈 추가. D108/Q008: 고혈압 기초 모듈 추가. D109: 호흡·기도 허브 기본 질환 3개(호흡기 바이러스 감염·천식·폐렴) 계획·초안 추가, 구현 전.",
   "entries": [
     {
       "id": "disease.valve",
@@ -119,6 +120,94 @@
       "review": null,
       "contentRef": "data/content/diseases/atherosclerosis.v0.1.json",
       "questSlot": "Q007"
+    },
+    {
+      "id": "disease.respiratory-virus",
+      "name": "호흡기 바이러스 감염 (감기·독감·코로나19 구분)",
+      "english": "Viral respiratory infections: common cold, influenza, COVID-19",
+      "tags": [
+        "감염"
+      ],
+      "primaryHubId": "respiratory",
+      "anatomyIds": [
+        "anatomy.respiratory.01",
+        "anatomy.respiratory.03",
+        "anatomy.respiratory.05"
+      ],
+      "relatedSystemIds": [
+        "respiratory"
+      ],
+      "prerequisiteConcepts": [
+        "Q011.mucus-filter",
+        "Q013.mucociliary-flow"
+      ],
+      "depth": "intro",
+      "levelRange": [
+        18,
+        18
+      ],
+      "status": "planned",
+      "review": null,
+      "contentRef": "data/content/diseases/respiratory-virus.v0.1.json",
+      "questSlot": "Q018"
+    },
+    {
+      "id": "disease.asthma",
+      "name": "천식 기초",
+      "english": "Asthma",
+      "tags": [
+        "염증",
+        "알레르기"
+      ],
+      "primaryHubId": "respiratory",
+      "anatomyIds": [
+        "anatomy.respiratory.06",
+        "anatomy.respiratory.07"
+      ],
+      "relatedSystemIds": [
+        "respiratory"
+      ],
+      "prerequisiteConcepts": [
+        "Q012.airway-branching",
+        "Q013.mucociliary-flow"
+      ],
+      "depth": "intro",
+      "levelRange": [
+        16,
+        16
+      ],
+      "status": "planned",
+      "review": null,
+      "contentRef": "data/content/diseases/asthma.v0.1.json",
+      "questSlot": "Q016"
+    },
+    {
+      "id": "disease.pneumonia",
+      "name": "폐렴 기초",
+      "english": "Pneumonia",
+      "tags": [
+        "감염"
+      ],
+      "primaryHubId": "respiratory",
+      "anatomyIds": [
+        "anatomy.respiratory.09"
+      ],
+      "relatedSystemIds": [
+        "respiratory",
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "Q014.gas-exchange"
+      ],
+      "depth": "intro",
+      "levelRange": [
+        17,
+        17
+      ],
+      "status": "planned",
+      "review": null,
+      "contentRef": "data/content/diseases/pneumonia.v0.1.json",
+      "questSlot": "Q017"
     }
   ]
 }

@@ -1,0 +1,522 @@
+{
+  "id": "content.respiratory-interior",
+  "status": "draft_unreviewed",
+  "review": null,
+  "updatedAt": "2026-10-21",
+  "tier": "basic",
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 호흡기 탐사 초안이에요.",
+  "sources": [
+    {
+      "id": "nhlbi-resp",
+      "title": "NHLBI · The Respiratory System",
+      "url": "https://www.nhlbi.nih.gov/health/lungs/respiratory-system",
+      "updated": "2022-03-24",
+      "checked": "2026-10-21",
+      "section": "Airways / Air comes into your body / Air fills your lung air sacs / Oxygen flows into your blood / The pleura"
+    },
+    {
+      "id": "nhlbi-breathing",
+      "title": "NHLBI · How Your Body Controls Breathing",
+      "url": "https://www.nhlbi.nih.gov/health/lungs/body-controls-breathing",
+      "checked": "2026-10-21",
+      "section": "Muscles and the diaphragm in breathing"
+    },
+    {
+      "id": "openstax-resp",
+      "title": "OpenStax Anatomy and Physiology 2e · 22.1 Organs and Structures of the Respiratory System",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system",
+      "checked": "2026-10-21",
+      "section": "Nose / Pharynx / Larynx / Trachea / Bronchial Tree / Respiratory Zone / Alveoli"
+    },
+    {
+      "id": "openstax-lungs",
+      "title": "OpenStax Anatomy and Physiology 2e · 22.2 The Lungs",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-2-the-lungs",
+      "checked": "2026-10-21",
+      "section": "Gross anatomy of the lungs (lobes) / Pleura"
+    },
+    {
+      "id": "imaios-rmb",
+      "title": "IMAIOS e-Anatomy · Right main bronchus",
+      "url": "https://www.imaios.cn/en/e-anatomy/anatomical-structures/bronchus-principalis-dexter-1541212876",
+      "checked": "2026-10-21",
+      "section": "Shorter, wider and more vertical than the left; common site of aspiration"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "nose",
+      "name": "코안"
+    },
+    {
+      "id": "pharynx",
+      "name": "인두"
+    },
+    {
+      "id": "larynx",
+      "name": "후두"
+    },
+    {
+      "id": "trachea",
+      "name": "기관"
+    },
+    {
+      "id": "bronchi",
+      "name": "기관지 나무"
+    },
+    {
+      "id": "alveoli",
+      "name": "폐포 (공기 쪽)"
+    }
+  ],
+  "airPath": [
+    "nose",
+    "pharynx",
+    "larynx",
+    "trachea",
+    "bronchi",
+    "alveoli"
+  ],
+  "joinsHeartRoom": {
+    "room": "alveoli",
+    "target": "rx-membrane",
+    "heartRoom": "lung",
+    "heartTarget": "hx-exchange",
+    "rule": "같은 폐포의 반대쪽 면. 두 장기가 열린 뒤에만 걸어서 오간다."
+  },
+  "tiers": [
+    {
+      "id": "core",
+      "title": "핵심 구조",
+      "unlockStars": 0,
+      "ids": [
+        "rx-nostril",
+        "rx-inferior-concha",
+        "rx-choana",
+        "rx-soft-palate",
+        "rx-epiglottis",
+        "rx-vocal-fold",
+        "rx-c-ring",
+        "rx-escalator",
+        "rx-carina",
+        "rx-bronchiole",
+        "rx-alveolar-sac",
+        "rx-membrane"
+      ]
+    },
+    {
+      "id": "deep",
+      "title": "심화 구조",
+      "unlockStars": 12,
+      "ids": [
+        "rx-vestibule",
+        "rx-septum",
+        "rx-middle-concha",
+        "rx-meatus",
+        "rx-mucosa",
+        "rx-cilia-nose",
+        "rx-adenoid",
+        "rx-eustachian",
+        "rx-palatine-tonsil",
+        "rx-fork",
+        "rx-glottis",
+        "rx-trachealis",
+        "rx-goblet",
+        "rx-right-main",
+        "rx-left-main",
+        "rx-lobar",
+        "rx-terminal",
+        "rx-respiratory-bronchiole",
+        "rx-type1",
+        "rx-type2",
+        "rx-macrophage"
+      ]
+    },
+    {
+      "id": "detail",
+      "title": "세부 지형",
+      "unlockStars": 30,
+      "ids": [
+        "rx-superior-concha",
+        "rx-olfactory",
+        "rx-sinus",
+        "rx-oropharynx",
+        "rx-esophagus",
+        "rx-vestibular-fold",
+        "rx-thyroid-cartilage",
+        "rx-cricoid",
+        "rx-cartilage-plate",
+        "rx-alveolar-duct",
+        "rx-pore"
+      ]
+    }
+  ],
+  "discoveries": {
+    "rx-nostril": {
+      "room": "nose",
+      "name": "콧구멍",
+      "text": "공기가 들어오고 나가는 입구예요. 콧구멍 옆을 둘러싼 콧방울은 뼈가 아니라 말랑한 연골이라 누르면 휘어져요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-vestibule": {
+      "room": "nose",
+      "name": "코앞뜰과 코털",
+      "text": "콧구멍 바로 안쪽은 피부와 코털이 있는 앞뜰이에요. 코털과 기름기 있는 분비물이 큰 먼지를 먼저 걸러요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-septum": {
+      "room": "nose",
+      "name": "코중격",
+      "text": "코안을 왼쪽과 오른쪽으로 나누는 가운데 벽이에요. 앞쪽은 손으로 만질 수 있는 연골, 뒤쪽은 얇은 뼈로 되어 있어요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-inferior-concha": {
+      "room": "nose",
+      "name": "아래코선반",
+      "text": "바깥 벽에서 안쪽으로 말려 나온 세 겹 선반 가운데 가장 아래에 있는 큰 선반이에요. 위의 두 선반과 달리 따로 떨어진 뼈예요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-middle-concha": {
+      "room": "nose",
+      "name": "중간코선반",
+      "text": "가운데 선반이에요. 선반들은 코안의 겉넓이를 넓히고, 들어온 공기를 이리저리 부딪히게 해서 점막에 닿게 해요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-superior-concha": {
+      "room": "nose",
+      "name": "위코선반",
+      "text": "가장 위의 작은 선반이에요. 이 근처 깊은 천장 쪽에 냄새를 느끼는 점막이 있어요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-meatus": {
+      "room": "nose",
+      "name": "콧길",
+      "text": "선반 아래로 생긴 좁은 공기 길이에요. 공기가 이 길을 지나며 점막에 부딪혀 데워지고 젖고 걸러져요. 날숨 때는 물기를 붙잡아 코안이 마르지 않게 해요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-mucosa": {
+      "room": "nose",
+      "name": "코 점막과 혈관",
+      "text": "선반을 덮은 점막 바로 아래에 가는 혈관이 촘촘해요. 혈관의 온기가 차가운 공기를 데우고, 점막의 술잔세포가 만든 점액이 먼지와 병원체를 붙잡아요.",
+      "src": [
+        "openstax-resp",
+        "nhlbi-resp"
+      ]
+    },
+    "rx-cilia-nose": {
+      "room": "nose",
+      "name": "코의 섬모",
+      "text": "점막 세포 위의 가는 털(섬모)이 쉬지 않고 흔들려 점액을 목 쪽으로 쓸어 보내고, 이 점액은 삼켜져요. 찬 공기에는 섬모가 느려져 콧물이 고이기도 해요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-olfactory": {
+      "room": "nose",
+      "name": "냄새 맡는 곳",
+      "text": "코안 깊은 천장 쪽에 냄새를 느끼는 특별한 점막이 있어요. 숨을 크게 들이쉴 때 공기가 이곳까지 올라와요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-sinus": {
+      "room": "nose",
+      "name": "부비동 입구",
+      "text": "코 주변 머리뼈 속에는 공기가 찬 방(부비동)이 있고 작은 입구로 코안과 이어져요. 부비동도 점막으로 덮여 점액을 만들고 머리뼈를 가볍게 해요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-choana": {
+      "room": "nose",
+      "name": "뒤콧구멍",
+      "text": "코안의 맨 뒤 출구예요. 여기를 지나면 목구멍 윗부분(인두)으로 이어져요. 코안의 바닥은 입천장이라 입과 코는 이 벽으로 나뉘어 있어요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-adenoid": {
+      "room": "pharynx",
+      "name": "인두편도",
+      "text": "인두 천장의 면역 조직 덩어리예요. 숨과 함께 들어온 병원체를 붙잡아요. 어릴 때 크고 자라면서 작아져요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-eustachian": {
+      "room": "pharynx",
+      "name": "귀관 입구",
+      "text": "인두 옆벽에 가운데귀로 이어지는 관의 입구가 있어요. 그래서 감기 뒤에 귀가 아파지는 일이 생기기도 해요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-soft-palate": {
+      "room": "pharynx",
+      "name": "물렁입천장과 목젖",
+      "text": "입천장 뒤쪽의 말랑한 부분과 끝에 매달린 목젖이에요. 삼킬 때 위로 올라가 코 쪽 길을 막아 음식이 코로 올라가지 않게 해요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-palatine-tonsil": {
+      "room": "pharynx",
+      "name": "구개편도",
+      "text": "입 쪽 문 양옆의 면역 조직으로, 흔히 편도라고 불러요. 입이나 코로 들어온 병원체를 붙잡아요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-oropharynx": {
+      "room": "pharynx",
+      "name": "입 쪽 인두",
+      "text": "입과 이어지는 인두 가운데 부분이에요. 여기부터는 공기와 음식이 같은 길을 써서, 벽이 마찰에 강한 여러 겹 세포로 바뀌어요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-fork": {
+      "room": "pharynx",
+      "name": "공기 길과 음식 길의 갈림",
+      "text": "인두 맨 아래에서 길이 둘로 나뉘어요. 앞쪽은 공기가 가는 후두, 뒤쪽은 음식이 가는 식도예요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-esophagus": {
+      "room": "pharynx",
+      "name": "식도 입구",
+      "text": "음식이 내려가는 길의 입구예요. 평소에는 닫혀 있다가 삼킬 때 열려요. 기자는 이쪽으로 들어가지 않아요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-epiglottis": {
+      "room": "larynx",
+      "name": "후두덮개",
+      "text": "후두 입구 위에 선 나뭇잎 모양의 말랑한 연골이에요. 삼킬 때 후두가 위로 들리며 덮개가 아래로 젖혀져 기관 입구를 덮어요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-vestibular-fold": {
+      "room": "larynx",
+      "name": "가성대",
+      "text": "성대 위에 있는 한 쌍의 주름이에요. 소리를 내지는 않고 아래 성대를 보호해요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-vocal-fold": {
+      "room": "larynx",
+      "name": "성대",
+      "text": "하얀 한 쌍의 주름이에요. 안쪽 가장자리가 자유롭게 떨리며 소리를 만들고, 주름의 크기에 따라 목소리 높낮이가 달라져요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-glottis": {
+      "room": "larynx",
+      "name": "성문",
+      "text": "두 성대 사이의 틈이에요. 숨 쉴 때는 넓게 열리고, 말할 때는 좁아지며 성대가 떨려요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-thyroid-cartilage": {
+      "room": "larynx",
+      "name": "갑상연골",
+      "text": "후두 앞을 감싸는 가장 큰 연골이에요. 목 앞에 튀어나온 울대뼈가 바로 이 연골이에요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-cricoid": {
+      "room": "larynx",
+      "name": "반지연골",
+      "text": "후두 아래를 둘러싼 완전한 고리 모양 연골이에요. 뒤쪽이 넓고 앞쪽이 좁은 반지 같아요. 이 아래부터 기관이에요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-c-ring": {
+      "room": "trachea",
+      "name": "C자 연골 고리",
+      "text": "기관 앞과 옆을 받치는 C자 모양 연골이 층층이 쌓여 있어요. 숨을 쉴 때 관이 찌그러지지 않게 받쳐요.",
+      "src": [
+        "openstax-resp",
+        "nhlbi-resp"
+      ]
+    },
+    "rx-trachealis": {
+      "room": "trachea",
+      "name": "뒤쪽 막과 기관근",
+      "text": "C자 고리의 열린 뒤쪽은 근육과 탄력 있는 막으로 이어져 있어요. 그 바로 뒤에 식도가 맞닿아 있어요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-escalator": {
+      "room": "trachea",
+      "name": "점액 에스컬레이터",
+      "text": "기관 안쪽은 섬모 세포가 카펫처럼 덮고 있어요. 섬모가 점액을 늘 위로, 목 쪽으로 쓸어 올려요. 공기는 들어왔다 나가지만 점액은 위로만 가요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-goblet": {
+      "room": "trachea",
+      "name": "술잔세포",
+      "text": "섬모 세포 사이사이에 점액을 만드는 술잔 모양 세포가 있어요. 점액은 먼지와 병원체를 붙잡는 끈끈한 그물이에요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-carina": {
+      "room": "trachea",
+      "name": "기관용골",
+      "text": "기관이 좌우로 갈라지는 곳의 날 선 능선이에요. 이물질이 닿으면 강한 기침이 나게 하는 신경이 모여 있어요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-right-main": {
+      "room": "bronchi",
+      "name": "오른 주기관지",
+      "text": "기관에서 오른쪽으로 갈라진 굵은 관이에요. 왼쪽보다 짧고 굵고 곧게 내려가서, 잘못 들어간 음식이나 작은 물건이 오른쪽으로 더 잘 들어가요.",
+      "src": [
+        "imaios-rmb",
+        "openstax-resp"
+      ]
+    },
+    "rx-left-main": {
+      "room": "bronchi",
+      "name": "왼 주기관지",
+      "text": "왼쪽으로 갈라진 관이에요. 오른쪽보다 길고 가늘며 더 비스듬히 누워 있어요. 심장이 왼쪽 가슴의 자리를 차지하기 때문이에요.",
+      "src": [
+        "imaios-rmb",
+        "nhlbi-resp"
+      ]
+    },
+    "rx-lobar": {
+      "room": "bronchi",
+      "name": "엽기관지",
+      "text": "주기관지는 폐의 엽마다 다시 갈라져요. 오른쪽 폐는 세 엽, 왼쪽 폐는 두 엽이라 오른쪽은 셋, 왼쪽은 둘로 나뉘어요.",
+      "src": [
+        "nhlbi-resp",
+        "openstax-lungs"
+      ]
+    },
+    "rx-cartilage-plate": {
+      "room": "bronchi",
+      "name": "연골 판",
+      "text": "기관지가 갈라질수록 고리였던 연골이 조각난 판으로 바뀌어요. 관을 열어 두는 받침 역할은 같아요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-bronchiole": {
+      "room": "bronchi",
+      "name": "세기관지",
+      "text": "연골이 사라지고, 둥글게 감싼 근육이 관의 굵기를 바꿔요. 근육이 조이면 길이 좁아지고 풀리면 넓어져요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-terminal": {
+      "room": "bronchi",
+      "name": "종말세기관지",
+      "text": "공기를 나르기만 하는 길의 마지막 가지예요. 이 너머부터 교환이 시작돼요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-respiratory-bronchiole": {
+      "room": "alveoli",
+      "name": "호흡세기관지",
+      "text": "벽 군데군데에 폐포가 붙기 시작한 가장 가는 세기관지예요. 여기서부터 공기와 피 사이의 교환이 일어나요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-alveolar-duct": {
+      "room": "alveoli",
+      "name": "폐포관",
+      "text": "폐포가 줄지어 열린 복도예요. 끝에서 포도송이 같은 폐포 무리로 이어져요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-alveolar-sac": {
+      "room": "alveoli",
+      "name": "폐포낭",
+      "text": "작은 공기 주머니(폐포)가 포도송이처럼 모인 곳이에요. 폐포 벽은 탄력이 있어 들숨에 늘어나고 날숨에 줄어들어요.",
+      "src": [
+        "openstax-resp",
+        "nhlbi-resp"
+      ]
+    },
+    "rx-type1": {
+      "room": "alveoli",
+      "name": "얇은 벽 세포",
+      "text": "폐포 벽 대부분을 덮은 아주 얇고 납작한 세포(1형 폐포세포)예요. 기체가 이 벽을 쉽게 지나가요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-type2": {
+      "room": "alveoli",
+      "name": "계면활성제를 만드는 세포",
+      "text": "얇은 벽 세포 사이에 박힌 둥근 세포(2형 폐포세포)예요. 계면활성제를 내어 폐포가 쉽게 부풀고 날숨 때 납작하게 붙지 않게 해요.",
+      "src": [
+        "openstax-resp",
+        "nhlbi-resp"
+      ]
+    },
+    "rx-macrophage": {
+      "room": "alveoli",
+      "name": "폐포 청소 세포",
+      "text": "폐포 벽을 돌아다니는 면역 세포(대식세포)예요. 폐포까지 내려온 먼지나 병원체를 삼켜 치워요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-pore": {
+      "room": "alveoli",
+      "name": "폐포 사이 구멍",
+      "text": "이웃한 폐포를 잇는 작은 구멍이에요. 폐포들의 공기 압력을 고르게 맞춰요.",
+      "src": [
+        "openstax-resp"
+      ]
+    },
+    "rx-membrane": {
+      "room": "alveoli",
+      "name": "호흡막",
+      "text": "얇은 폐포 벽과 모세혈관 벽이 맞붙은 창이에요. 산소는 공기에서 피로, 이산화탄소는 피에서 공기로 건너가고, 공기와 피가 섞이지는 않아요. 이 창 너머가 심장 탐사에서 걸었던 폐 모세혈관이에요.",
+      "src": [
+        "openstax-resp",
+        "nhlbi-resp"
+      ]
+    }
+  },
+  "simplification": [
+    "코안·인두·후두·기관·기관지·폐포를 걸을 수 있게 크게 넓히고 한 평면에 펼쳤습니다.",
+    "기관지 나무는 수많은 갈래 가운데 한 갈래만 걸어가게 줄였습니다.",
+    "들숨·날숨과 삼킴의 빠르기는 관찰하기 좋게 늦췄습니다.",
+    "먼지·꽃가루·바이러스 알갱이와 세포는 실제 크기 비율보다 크게 그렸습니다."
+  ]
+}

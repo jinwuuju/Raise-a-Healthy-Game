@@ -1,0 +1,60 @@
+{
+  "id": "disease.pneumonia",
+  "status": "draft_unreviewed",
+  "review": null,
+  "publicAtlas": false,
+  "questSlot": "Q017",
+  "prerequisiteQuest": "Q016",
+  "sources": [
+    {
+      "id": "nhlbi-pneumonia",
+      "title": "NHLBI · Pneumonia",
+      "url": "https://www.nhlbi.nih.gov/health/pneumonia",
+      "checked": "2026-10-21",
+      "section": "What Is Pneumonia? (air sacs fill with fluid or pus; bacteria, viruses or fungi)"
+    },
+    {
+      "id": "nhlbi-resp",
+      "title": "NHLBI · The Respiratory System",
+      "url": "https://www.nhlbi.nih.gov/health/lungs/respiratory-system",
+      "updated": "2022-03-24",
+      "checked": "2026-10-21",
+      "section": "Air fills your lung air sacs / Oxygen flows into your blood"
+    }
+  ],
+  "summary": "폐렴은 폐포에 액체나 고름이 차서 산소가 피로 건너가기 어려워지는 폐의 감염이에요. 세균·바이러스·곰팡이가 원인이 될 수 있어요. Q017 취재를 위한 기초 초안이며 공개 도감에 쓰지 않습니다.",
+  "misconception": {
+    "claim": "폐렴은 세균 때문에만 생긴다.",
+    "correction": "세균뿐 아니라 바이러스와 곰팡이도 폐렴을 일으켜요. 원인에 따라 치료가 달라요.",
+    "src": [
+      "nhlbi-pneumonia"
+    ]
+  },
+  "layerPlan": {
+    "space": "Q014의 폐포(공기 쪽)와 호흡막. 새 맵 없음.",
+    "normalFirst": "공기로 찬 폐포와 얇은 호흡막의 정상 교환을 먼저 본다(Q014).",
+    "change": "폐포 하나만 액체가 찬 상태로 바꿔 산소가 건너가는 표시가 줄어드는 것을 비교한다(정성적).",
+    "movement": "레이어는 렌더링 전용이며 폐 모세혈관 방의 혈류·판막 규칙을 바꾸지 않는다.",
+    "implemented": false
+  },
+  "reportingSteps": [
+    "정상 폐포 교환 관찰",
+    "같은 폐포에서 액체가 찬 상태 비교",
+    "왜 생기나: 세균·바이러스·곰팡이, 바이러스 감염 뒤에 이어지기도 함",
+    "무엇을 보면 아나: 가슴 사진 같은 검사가 무엇을 보는지(숫자 없이)",
+    "몸을 돕는 원리: 원인에 맞는 치료가 있다는 사실, 예방접종·손 씻기의 원리",
+    "‘세균만 원인’ 오해 팩트체크 기사"
+  ],
+  "articleSlot": {
+    "quest": "Q017",
+    "type": "쉬운 설명·팩트체크",
+    "question": "폐렴은 세균이 있어야만 생길까?"
+  },
+  "deferral": "항생제·항바이러스제 등 약 계열, 중증도 판정 기준, 입원 기준, 흡인성 폐렴의 세부는 호흡기 심화 과정으로 미룬다.",
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 초안",
+  "simplification": [
+    "기본 과정 범위만 다룹니다(설계 19·20).",
+    "개인 진단·위험 계산·치료 추천·응급 행동 안내는 다루지 않습니다."
+  ],
+  "tier": "basic"
+}
