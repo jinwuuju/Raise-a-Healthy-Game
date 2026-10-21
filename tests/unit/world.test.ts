@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { canStand, doorAt, moveWithCollision } from '../../src/world/collision';
 import { clearLine, findPath } from '../../src/world/path';
 import { rooms } from '../../src/world/rooms';
-import { inRect, overlap, roomIds } from '../../src/world/types';
+import { inRect, isAirwayRoom, overlap, roomIds } from '../../src/world/types';
 import { inspectLabels, lookText } from '../../src/application/story';
 
 describe('map integrity', () => {
@@ -10,8 +10,9 @@ describe('map integrity', () => {
     const room = rooms[id];
     // D111: a room may be entered at several doors (the two main bronchi meet only at the carina in the trachea, so the
     // left bronchus is walked into from the trachea's left opening). Reachability counts from the spawn or any arrival.
-    const entries = [room.spawn, ...roomIds.flatMap(o => rooms[o].doors.filter(x => x.to === id).map(x => x.arrive))];
-    const reach = (goal: { x: number; y: number }) => entries.map(e => findPath(id, e, goal)).find(p => p.length) ?? [];
+    // Only airway rooms use the extra entries: the large district keeps the single spawn search (CI time limit).
+    const entries = [room.spawn, ...(isAirwayRoom(id) ? roomIds.flatMap(o => rooms[o].doors.filter(x => x.to === id).map(x => x.arrive)) : [])];
+    const reach = (goal: { x: number; y: number }) => { for (const e of entries) { const p = findPath(id, e, goal); if (p.length) return p; } return []; };
     it(`${id}: spawn is standable and not inside a door`, () => {
       expect(canStand(id, room.spawn)).toBe(true);
       expect(doorAt(id, room.spawn)).toBeUndefined();
