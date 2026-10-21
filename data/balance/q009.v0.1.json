@@ -1,0 +1,12 @@
+{
+ "id": "Q009",
+ "publication": {
+  "key": "quest.Q009.first",
+  "xp": 500,
+  "gold": 350
+ },
+ "repeatXp": 0,
+ "repeatBaseGold": 0,
+ "reactionBalanceRef": "article-reactions.v0.1.json",
+ "note": "early-quests의 기존 Q009 기본 보상 그대로(Lv.10). 근거 다시 보기·그림 읽기·한 바퀴 잇기에는 보상을 추가하지 않는다. 명시적 재발행의 추가 골드만 D066 적용."
+}

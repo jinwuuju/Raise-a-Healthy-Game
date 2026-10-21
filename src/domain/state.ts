@@ -10,6 +10,7 @@ import { emptyQ5, validateQ5, type Q5State } from './q005-state';
 import { emptyQ6, validateQ6, type Q6State } from './q006-state';
 import { emptyQ7, validateQ7, type Q7State } from './q007-state';
 import { emptyQ8, validateQ8, type Q8State } from './q008-state';
+import { emptyQ9, validateQ9, type Q9State } from './q009-state';
 import { emptyLunch, validateLunch, type LunchState } from './lunch';
 import { emptyShop, validateShop, type ShopState } from './shop';
 import { emptyMastery, validateMastery, type Mastery } from './mastery';
@@ -35,6 +36,8 @@ export type GameState = {
   q007: Q7State;
   /** D108 Q008 blood-pressure records (older saves: empty commission). */
   q008: Q8State;
+  /** D108 Q009 circulation explained to readers (older saves: empty commission). */
+  q009: Q9State;
   reactions: Reactions;
   cafe: { welcomeUsed: boolean; orderCount: number; lastOrder: { itemId: string; price: number; orderedAt: string } | null; restedAt: string | null };
   /** 오늘의 점심(D085). schema4 옛 저장에는 없으며 빈 기록으로 읽는다. */
@@ -66,6 +69,7 @@ export function newState(): GameState {
     q006: emptyQ6(),
     q007: emptyQ7(),
     q008: emptyQ8(),
+    q009: emptyQ9(),
     reactions: emptyReactions(),
     cafe: { welcomeUsed: false, orderCount: 0, lastOrder: null, restedAt: null },
     lunch: emptyLunch(),
@@ -154,6 +158,8 @@ export function validateState(value: unknown): GameState {
   if ((q007.accepted && !q006.publishedAt) || (q007.mode !== 'wide' && place.room !== 'aorta') || (!!q007.publishedAt !== s.ledger.includes('quest.Q007.first'))) throw new Error('Q007 의뢰와 기사 발행 기록이 맞지 않습니다.');
   const q008 = validateQ8(s.q008);
   if ((q008.accepted && !q007.publishedAt) || (q008.mode !== 'rest' && place.room !== 'aorta') || (!!q008.publishedAt !== s.ledger.includes('quest.Q008.first'))) throw new Error('Q008 의뢰와 기사 발행 기록이 맞지 않습니다.');
+  const q009 = validateQ9(s.q009);
+  if ((q009.accepted && !q008.publishedAt) || (!!q009.publishedAt !== s.ledger.includes('quest.Q009.first'))) throw new Error('Q009 의뢰와 기사 발행 기록이 맞지 않습니다.');
   if (reactions.count && (!article.publishedAt || !s.ledger.includes('quest.Q001.first') || (lastReaction && lastReaction.xpAfter > s.totalXp))) throw new Error('발행과 독자 반응 기록이 맞지 않습니다.');
   if (reactions.results.some(r => r.questId === 'Q002' && !q002.publishedAt)) throw new Error('Q002 독자 반응의 발행 기사가 없습니다.');
   if (reactions.results.some(r => r.questId === 'Q003' && !q003.publishedAt)) throw new Error('Q003 독자 반응의 발행 기사가 없습니다.');
@@ -162,6 +168,7 @@ export function validateState(value: unknown): GameState {
   if (reactions.results.some(r => r.questId === 'Q006' && !q006.publishedAt)) throw new Error('Q006 독자 반응의 발행 기사가 없습니다.');
   if (reactions.results.some(r => r.questId === 'Q007' && !q007.publishedAt)) throw new Error('Q007 독자 반응의 발행 기사가 없습니다.');
   if (reactions.results.some(r => r.questId === 'Q008' && !q008.publishedAt)) throw new Error('Q008 독자 반응의 발행 기사가 없습니다.');
+  if (reactions.results.some(r => r.questId === 'Q009' && !q009.publishedAt)) throw new Error('Q009 독자 반응의 발행 기사가 없습니다.');
   if (!cafe || typeof cafe.welcomeUsed !== 'boolean' || !integer(cafe.orderCount) || (cafe.restedAt !== null && !date(cafe.restedAt))) throw new Error('카페 기록이 잘못되었습니다.');
   const lo = cafe.lastOrder as Record<string, unknown> | null;
   if (lo !== null && (!lo || typeof lo.itemId !== 'string' || !integer(lo.price) || !date(lo.orderedAt))) throw new Error('카페 주문 기록이 잘못되었습니다.');
@@ -182,6 +189,7 @@ export function validateState(value: unknown): GameState {
     q006,
     q007,
     q008,
+    q009,
     reactions,
     cafe: { welcomeUsed: cafe.welcomeUsed, orderCount: cafe.orderCount, restedAt: (cafe.restedAt as string | null), lastOrder: lo ? { itemId: lo.itemId as string, price: lo.price as number, orderedAt: lo.orderedAt as string } : null },
     lunch: validateLunch(s.lunch),

@@ -114,7 +114,7 @@ describe('D108 Q008 blood-pressure records', () => {
     const again = reprintArticle(p, p.reactions.count, () => 0.5, '2026-10-19T07:00:00Z', 'Q008');
     expect(again.totalXp).toBe(p.totalXp); expect(again.gold).toBeGreaterThan(p.gold);
     expect(() => reprintArticle(r, r.reactions.count, () => 0.5, '2026-10-19T07:00:00Z', 'Q008')).toThrow();
-    expect(objective(p, 'newsroom')).toContain('준비 중');
+    expect(objective(p, 'newsroom')).toContain('독자에게 설명하는 순환'); // Q009 is offered next
   });
 
   it('validates saves: old saves read empty, forged boards and out-of-order notes are refused', () => {

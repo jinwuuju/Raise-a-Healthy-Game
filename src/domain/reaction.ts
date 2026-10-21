@@ -6,6 +6,7 @@ import { publishQ5 } from './q005';
 import { publishQ6 } from './q006';
 import { publishQ7 } from './q007';
 import { publishQ8 } from './q008';
+import { publishQ9 } from './q009';
 import { bandFor, reactionBalance as b, reactionText as text, type QuestId, type Reaction } from './reaction-state';
 import type { GameState } from './state';
 
@@ -49,6 +50,10 @@ export function publishQ6WithReaction(s: GameState, random: Random = randomReact
   const next = publishQ6(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q006');
 }
 
+export function publishQ9WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
+  const next = publishQ9(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q009');
+}
+
 export function publishQ8WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
   const next = publishQ8(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q008');
 }
@@ -67,6 +72,7 @@ export function reprintArticle(s: GameState, expectedCount: number, random: Rand
   if (questId === 'Q004' && (!s.q004.publishedAt || !s.ledger.includes('quest.Q004.first'))) throw new Error('Q004 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q005' && (!s.q005.publishedAt || !s.ledger.includes('quest.Q005.first'))) throw new Error('Q005 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q006' && (!s.q006.publishedAt || !s.ledger.includes('quest.Q006.first'))) throw new Error('Q006 기사 발행을 먼저 마쳐 주세요.');
+  if (questId === 'Q009' && (!s.q009.publishedAt || !s.ledger.includes('quest.Q009.first'))) throw new Error('Q009 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q008' && (!s.q008.publishedAt || !s.ledger.includes('quest.Q008.first'))) throw new Error('Q008 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q007' && (!s.q007.publishedAt || !s.ledger.includes('quest.Q007.first'))) throw new Error('Q007 기사 발행을 먼저 마쳐 주세요.');
   return appendReaction(s, s, false, random, now, questId);

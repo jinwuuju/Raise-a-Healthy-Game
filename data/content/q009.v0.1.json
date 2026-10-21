@@ -1,0 +1,253 @@
+{
+  "id": "content.Q009",
+  "status": "draft_unreviewed",
+  "review": null,
+  "updatedAt": "2026-10-21",
+  "tier": "basic",
+  "title": "독자에게 설명하는 순환",
+  "question": "교과서 심장 그림에서는 왼쪽 심장이 그림 오른쪽에 있어요. 피는 심장에서 어떤 순서로 한 바퀴 도나요?",
+  "offer": [
+    "초등학생 자녀를 둔 독자가 편지를 보냈어요. 아이 교과서의 심장 그림을 보니 ‘왼쪽’ 방이 그림 오른쪽에 그려져 있어서 둘 다 헷갈린대요.",
+    "이번엔 처음 보는 그림이에요. 지금까지 심장 속에서 직접 본 것을 근거로 그림을 읽고, 아이도 알아듣게 설명하는 기사를 써 봐요. 먼저 바디스코프로 들어가 근거 네 곳을 다시 확인하고 와요."
+  ],
+  "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 설명 기사 연습이에요. 실제 사람의 심장 검사나 진단이 아닙니다.",
+  "sources": [
+    {
+      "id": "nhlbi-flow",
+      "title": "NHLBI · How Blood Flows through the Heart",
+      "url": "https://www.nhlbi.nih.gov/health/heart/blood-flow",
+      "updated": "2025-06-25",
+      "checked": "2026-10-21",
+      "section": "Heart chambers and valves / Adding oxygen to blood"
+    },
+    {
+      "id": "nhlbi-gas",
+      "title": "NHLBI · The Respiratory System",
+      "url": "https://www.nhlbi.nih.gov/health/lungs/respiratory-system",
+      "updated": "2022-03-24",
+      "checked": "2026-10-21",
+      "section": "Oxygen flows into your blood / carbon dioxide leaves"
+    },
+    {
+      "id": "openstax-heart",
+      "title": "OpenStax Anatomy and Physiology 2e · 19.1 Heart Anatomy",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/19-1-heart-anatomy",
+      "checked": "2026-10-21",
+      "section": "Dual system of the human blood circulation / Septa of the heart (fossa ovalis, foramen ovale)"
+    },
+    {
+      "id": "openstax-terms",
+      "title": "OpenStax Anatomy and Physiology 2e · 1.6 Anatomical Terminology",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/1-6-anatomical-terminology",
+      "checked": "2026-10-21",
+      "section": "Anatomical position (right and left are the subject’s right and left)"
+    }
+  ],
+  "notes": [
+    {
+      "id": "wall",
+      "room": "heart",
+      "target": "hx-fossa",
+      "name": "근거 · 오른쪽과 왼쪽 사이 벽",
+      "place": "우심방",
+      "text": "우심방과 좌심방 사이 벽에 얕게 파인 자리가 있어요. 태어나기 전에는 이곳의 작은 길로 피가 건너갔지만, 태어난 뒤에는 대개 닫혀요. 그래서 오른쪽 피와 왼쪽 피는 심장 안에서 바로 오가지 않아요.",
+      "src": [
+        "openstax-heart"
+      ]
+    },
+    {
+      "id": "right-pump",
+      "room": "rv",
+      "target": "heart-out",
+      "name": "근거 · 오른쪽 펌프의 출구",
+      "place": "우심실",
+      "text": "우심실은 피를 폐동맥으로 밀어 폐로 보내요. 오른쪽 심장은 폐로 가는 펌프예요.",
+      "src": [
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "lung",
+      "room": "lung",
+      "target": "hx-exchange",
+      "name": "근거 · 폐에서 바뀌는 것",
+      "place": "폐",
+      "text": "폐에서 피는 산소를 싣고 이산화탄소를 내려놓아요. 피와 공기가 섞이지는 않아요. 산소를 실은 피는 좌심방으로 돌아가요.",
+      "src": [
+        "nhlbi-gas",
+        "nhlbi-flow"
+      ]
+    },
+    {
+      "id": "left-pump",
+      "room": "lv",
+      "target": "hx-av-below",
+      "name": "근거 · 왼쪽 펌프의 출구",
+      "place": "좌심실",
+      "text": "좌심실은 피를 대동맥으로 힘껏 밀어 온몸으로 보내요. 왼쪽 심장은 온몸으로 가는 펌프예요.",
+      "src": [
+        "nhlbi-flow"
+      ]
+    }
+  ],
+  "board": {
+    "title": "처음 보는 그림 읽기",
+    "picture": "독자가 보낸 그림이에요. 사람을 마주 보고 심장의 네 방을 한 장에 펼쳐 그렸어요. 그림 위쪽 두 칸과 아래쪽 두 칸에 방 이름이 지워져 있어요.",
+    "slotTitle": "1 · 그림의 네 칸에 방 이름 붙이기",
+    "slots": [
+      {
+        "id": "pic-lt",
+        "label": "그림 왼쪽 위",
+        "room": "ra"
+      },
+      {
+        "id": "pic-lb",
+        "label": "그림 왼쪽 아래",
+        "room": "rv"
+      },
+      {
+        "id": "pic-rt",
+        "label": "그림 오른쪽 위",
+        "room": "la"
+      },
+      {
+        "id": "pic-rb",
+        "label": "그림 오른쪽 아래",
+        "room": "lv"
+      }
+    ],
+    "rooms": [
+      {
+        "id": "ra",
+        "name": "우심방",
+        "side": "right",
+        "level": "top"
+      },
+      {
+        "id": "rv",
+        "name": "우심실",
+        "side": "right",
+        "level": "bottom"
+      },
+      {
+        "id": "la",
+        "name": "좌심방",
+        "side": "left",
+        "level": "top"
+      },
+      {
+        "id": "lv",
+        "name": "좌심실",
+        "side": "left",
+        "level": "bottom"
+      }
+    ],
+    "sideHint": "그림은 사람을 마주 보고 그렸어요. 그 사람의 오른쪽은 그림의 왼쪽에 와요.",
+    "levelHint": "피를 받아들이는 심방은 위, 밀어 내보내는 심실은 아래에 있어요.",
+    "chainTitle": "2 · 그림 위에 한 바퀴 잇기",
+    "chain": [
+      {
+        "id": "ra",
+        "card": "우심방 · 온몸에서 돌아온 피가 들어와요",
+        "evidence": "wall"
+      },
+      {
+        "id": "rv",
+        "card": "우심실 · 폐로 밀어 보내요",
+        "evidence": "right-pump"
+      },
+      {
+        "id": "lung",
+        "card": "폐 · 산소를 싣고 이산화탄소를 내려놓아요",
+        "evidence": "lung"
+      },
+      {
+        "id": "la",
+        "card": "좌심방 · 폐에서 온 피가 들어와요",
+        "evidence": "lung"
+      },
+      {
+        "id": "lv",
+        "card": "좌심실 · 온몸으로 힘껏 밀어 보내요",
+        "evidence": "left-pump"
+      },
+      {
+        "id": "body",
+        "card": "온몸 · 산소를 내려놓고 다시 우심방으로",
+        "evidence": "left-pump"
+      }
+    ],
+    "decoys": [
+      {
+        "id": "cross",
+        "card": "좌심실에서 우심실로 바로 건너가요",
+        "hint": "근거가 없는 연결이에요. 오른쪽과 왼쪽 사이는 벽으로 나뉘어 있었어요."
+      },
+      {
+        "id": "skip",
+        "card": "우심실에서 바로 온몸으로 가요",
+        "hint": "근거가 없는 연결이에요. 오른쪽 펌프의 출구는 폐로 가는 길이었어요."
+      }
+    ],
+    "startHint": "빠진 연결 · 온몸에서 돌아온 피가 처음 들어오는 방부터 놓아요.",
+    "nextHint": "빠진 연결 · ‘{last}’ 다음에 피가 가는 곳을 먼저 찾아요.",
+    "needSlots": "먼저 그림의 네 칸에 방 이름을 붙여 주세요.",
+    "twice": "한 바퀴를 도는 동안 피는 심장을 두 번 지나요. 한 번은 오른쪽(폐로), 한 번은 왼쪽(온몸으로)이에요."
+  },
+  "article": {
+    "leads": [
+      {
+        "id": "mirror",
+        "label": "그림의 좌우부터 풀며 시작",
+        "title": "심장 그림의 왼쪽이 오른쪽에 있는 까닭",
+        "text": "교과서 심장 그림은 그 사람을 마주 보고 그려요. 그래서 그 사람의 왼쪽 심장이 그림에서는 오른쪽에 와요. 좌우만 바로 읽으면 피가 도는 길은 늘 같아요."
+      },
+      {
+        "id": "loop",
+        "label": "한 바퀴 길로 시작",
+        "title": "피는 한 바퀴에 심장을 두 번 지나요",
+        "text": "온몸을 돈 피는 오른쪽 심장을 지나 폐에 들러 산소를 싣고, 왼쪽 심장을 지나 다시 온몸으로 가요. 그래서 한 바퀴에 심장을 두 번 지나요."
+      }
+    ],
+    "analogies": [
+      {
+        "id": "two-pumps",
+        "label": "나란히 붙은 펌프 두 대",
+        "text": "심장은 펌프 두 대가 나란히 붙은 집 같아요. 오른쪽 펌프는 폐로, 왼쪽 펌프는 온몸으로 피를 보내요."
+      },
+      {
+        "id": "figure-eight",
+        "label": "고리 두 개가 이어진 길",
+        "text": "피가 도는 길은 고리 두 개가 가운데에서 이어진 모양 같아요. 위 고리는 폐를, 아래 고리는 온몸을 돌고, 두 고리가 만나는 가운데에 심장이 있어요."
+      },
+      {
+        "id": "filter",
+        "label": "피를 거르는 정수기",
+        "text": "심장은 피를 깨끗하게 거르는 정수기 같아요.",
+        "hint": "심장은 피를 거르지 않고 밀어 보내요. 내가 본 근거는 모두 ‘밀어 보내는’ 출구였어요."
+      }
+    ],
+    "limitations": [
+      {
+        "id": "analogy",
+        "label": "비유의 한계로 마무리",
+        "text": "펌프와 두 고리 길은 비유예요. 실제 심장은 오른쪽과 왼쪽이 함께 뛰고, 피는 정류장에서 멈추지 않고 계속 흘러요."
+      },
+      {
+        "id": "model",
+        "label": "모형의 한계로 마무리",
+        "text": "게임 속 심장은 교육용 모형이라 실제 심장의 크기나 모양과 달라요. 개인의 심장 상태는 이 기사로 판단할 수 없어요."
+      }
+    ],
+    "seen": "내가 본 것",
+    "explained": "쉽게 풀어 쓴 설명",
+    "factcheck": "‘그림 왼쪽에 있으니 왼쪽 심장이다’는 정확하지 않아요. 몸 그림은 대개 그 사람을 마주 보고 그려서, 좌우를 그 사람 기준으로 읽어요. ‘피가 왼쪽에서 오른쪽으로 바로 건너간다’도 사실이 아니에요. 태어난 뒤 심장은 대개 가운데 벽으로 나뉘어, 피는 폐를 거쳐 오른쪽에서 왼쪽으로 가요.",
+    "reply": "아이와 그림을 돌려 보며 ‘이 사람의 오른쪽’부터 찾았더니 금방 이해했어요. 한 바퀴에 심장을 두 번 지난다는 말이 제일 신기했대요!"
+  },
+  "simplification": [
+    "새 질환은 다루지 않습니다. 지금까지 심장 속에서 본 구조를 처음 보는 그림에 적용하는 설명 기사 연습입니다.",
+    "그림은 네 방을 한 장에 펼친 단순한 모식도입니다. 실제 심장에서 좌심방은 뒤쪽에 있고 방들은 비스듬히 겹쳐 있습니다.",
+    "태어나기 전의 통로(난원공)가 어른에게 조금 남아 있는 경우가 있지만 기본 과정에서는 다루지 않습니다.",
+    "개인 진단·위험 계산·치료 추천은 다루지 않습니다."
+  ]
+}
