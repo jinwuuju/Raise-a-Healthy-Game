@@ -2,7 +2,7 @@ import { defaultAppearance, validateAppearance, type Appearance, type Preset } f
 import { orderDrink } from '../domain/cafe';
 import { buyItem, buyOutfit } from '../domain/shop';
 import { checkArticle, selectArticle } from '../domain/article';
-import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, publishQ4WithReaction, publishQ5WithReaction, publishQ6WithReaction, publishQ7WithReaction, publishQ8WithReaction, publishQ9WithReaction, publishQ10WithReaction, publishQ11WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
+import { publishWithReaction, publishQ2WithReaction, publishQ3WithReaction, publishQ4WithReaction, publishQ5WithReaction, publishQ6WithReaction, publishQ7WithReaction, publishQ8WithReaction, publishQ9WithReaction, publishQ10WithReaction, publishQ11WithReaction, publishQ12WithReaction, randomReactionValue, reprintArticle, seeReaction } from '../domain/reaction';
 import type { QuestId } from '../domain/reaction-state';
 import { acceptQ5, setQ5Mode, recordQ5, placeQ5, clearQ5Order, selectQ5, checkQ5 } from '../domain/q005';
 import type { Q5Evidence, SignalCard } from '../domain/q005-state';
@@ -18,6 +18,8 @@ import type { PressureMode } from '../domain/pressure-model';
 import { acceptQ10, runQ10, claimQ10, evidenceQ10, clearQ10Board, selectQ10, checkQ10 } from '../domain/q010';
 import { acceptQ11, recordQ11, compareQ11, pairQ11, clearQ11Board, selectQ11, checkQ11 } from '../domain/q011';
 import type { AirMode, DecoyCard as Q11DecoyCard, Q11Evidence } from '../domain/q011-state';
+import { acceptQ12, recordQ12, compareQ12, placeQ12, clearQ12Board, selectQ12, checkQ12 } from '../domain/q012';
+import type { Q12Decoy, Q12Evidence, SwallowStep, ThroatMode } from '../domain/q012-state';
 import { acceptQ9, recordQ9, slotQ9, chainQ9, clearQ9Board, selectQ9, checkQ9 } from '../domain/q009';
 import type { ChainCard as Q9ChainCard, DecoyCard as Q9DecoyCard, Q9Evidence, RoomCard as Q9RoomCard } from '../domain/q009-state';
 import type { SupplyMode } from '../domain/supply-model';
@@ -167,6 +169,14 @@ export class Game {
   selectQ11(slot: 'lead' | 'analogy' | 'limit', id: string | null): void { const next = selectQ11(this.state, slot, id); if (next !== this.state) this.commit(next); }
   checkQ11(): void { const next = checkQ11(this.state); if (next !== this.state) this.commit(next); }
   publishQ11(): boolean { const next = publishQ11WithReaction(this.state); if (next === this.state) { this.persist(); return false; } this.commit(next); return true; }
+  acceptQ12(): void { const next = acceptQ12(this.state); if (next !== this.state) this.commit(next); }
+  recordQ12(id: Q12Evidence): boolean { const next = recordQ12(this.state, id); if (next === this.state) return false; this.commit(next); return true; }
+  compareQ12(mode: ThroatMode): boolean { const next = compareQ12(this.state, mode); if (next === this.state) return false; this.commit(next); return true; }
+  placeQ12(id: SwallowStep | Q12Decoy): void { const next = placeQ12(this.state, id); if (next !== this.state) this.commit(next); }
+  clearQ12Board(): void { const next = clearQ12Board(this.state); if (next !== this.state) this.commit(next); }
+  selectQ12(slot: 'lead' | 'analogy' | 'limit', id: string | null): void { const next = selectQ12(this.state, slot, id); if (next !== this.state) this.commit(next); }
+  checkQ12(): void { const next = checkQ12(this.state); if (next !== this.state) this.commit(next); }
+  publishQ12(): boolean { const next = publishQ12WithReaction(this.state); if (next === this.state) { this.persist(); return false; } this.commit(next); return true; }
   recordQ9(id: Q9Evidence): boolean { const next = recordQ9(this.state, id); if (next === this.state) return false; this.commit(next); return true; }
   slotQ9(id: Q9RoomCard): void { const next = slotQ9(this.state, id); if (next !== this.state) this.commit(next); }
   chainQ9(id: Q9ChainCard | Q9DecoyCard): void { const next = chainQ9(this.state, id); if (next !== this.state) this.commit(next); }

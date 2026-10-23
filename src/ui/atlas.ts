@@ -6,6 +6,8 @@ import airContent from '../../data/content/respiratory-interior.v0.1.json';
 import { airwayOpen, rxDiscovered, rxDiscoveries, rxIds, rxMaxStars, rxNextLocked, rxRoomProgress, rxRoomStars, rxTotalStars } from '../domain/airway';
 import { Q11_OBSERVER, q11NotesDone } from '../domain/q011';
 import { q11Text } from '../domain/q011-state';
+import { Q12_OBSERVER, q12NotesDone } from '../domain/q012';
+import { q12Text } from '../domain/q012-state';
 import { airwayRoomIds } from '../world/types';
 import { discovered, discoveries, discoveryIds, roomProgress } from '../domain/heart';
 import { maxStars, roomStars, tiers, tierStars, totalStars } from '../domain/mastery';
@@ -156,6 +158,15 @@ function drawRoom(cv: HTMLCanvasElement, ctx: Ctx) {
     if ((scene && !q11.notes.includes(scene.id as never)) || observer) {
       g.beginPath(); g.arc(x, y, 7, 0, Math.PI * 2); g.lineWidth = 2.5; g.strokeStyle = C.gold; g.stroke();
       place('취재 · ' + (observer ? q11Text.observer.title : scene!.name.replace('장면 · ', '')), x, y, { color: C.gold, stroke: 'rgba(241,207,139,0.55)' });
+      continue;
+    }
+    // D113: the same for the open fork commission (throat scenes, then the fork observer).
+    const q12 = ctx.state.q012, q12Open = air && q12.accepted && !q12.publishedAt;
+    const throat = q12Open ? q12Text.notes.find(n => n.target === t.id && n.room === ctx.roomId) : undefined;
+    const fork = q12Open && q12NotesDone(ctx.state) && t.id === Q12_OBSERVER.target && ctx.roomId === Q12_OBSERVER.room && q12.compared.length < 3;
+    if ((throat && !q12.notes.includes(throat.id as never)) || fork) {
+      g.beginPath(); g.arc(x, y, 7, 0, Math.PI * 2); g.lineWidth = 2.5; g.strokeStyle = C.gold; g.stroke();
+      place('취재 · ' + (fork ? q12Text.observer.title : throat!.name.replace('장면 · ', '')), x, y, { color: C.gold, stroke: 'rgba(241,207,139,0.55)' });
       continue;
     }
     if (!t.id.startsWith(air ? 'rx-' : 'hx-')) continue;
@@ -368,6 +379,8 @@ function airwayInfo(ctx: Ctx): HTMLElement[] {
   const out = [legend([['you', '지금 있는 곳'], ['got', '별을 모두 모은 방 = 금색 테두리']]),
     el('p', '', '공기는 콧구멍에서 폐포까지 한 길을 들숨과 날숨으로 오가요. 삼킬 때만 목젖과 후두덮개가 길을 덮고, 점액은 숨과 상관없이 섬모를 타고 한쪽으로만 가요.' + (lock ? ' 다음 해금: ' + lock.title + ' · 호흡기 별 ' + rxTotalStars(ctx.state) + '/' + lock.unlockStars : ''))];
   if (q.accepted && !q.publishedAt) out.push(el('p', '', 'Q011 공기 항구 · 코안의 장면 ' + q.notes.length + '/4 · 관찰기 공기 ' + q.compared.length + '/3'));
+  const q12 = ctx.state.q012;
+  if (q12.accepted && !q12.publishedAt) out.push(el('p', '', 'Q012 갈라지는 길 · 목구멍과 공기 길 입구의 장면 ' + q12.notes.length + '/4 · 관찰기 ' + q12.compared.length + '/3'));
   out.push(el('p', 'note', airContent.disclaimer + ' ' + airContent.simplification[0]));
   return out;
 }

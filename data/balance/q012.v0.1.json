@@ -1,0 +1,12 @@
+{
+ "id": "Q012",
+ "publication": {
+  "key": "quest.Q012.first",
+  "xp": 600,
+  "gold": 400
+ },
+ "repeatXp": 0,
+ "repeatBaseGold": 0,
+ "reactionBalanceRef": "article-reactions.v0.1.json",
+ "note": "D113: 호흡기 두 번째 취재. XP는 설계 02 E(11)=600(Lv.11→12), 골드는 Q011 380G 위 400G. 네 장면·관찰기·순서 카드에는 보상을 추가하지 않는다. 명시적 재발행의 추가 골드만 D066 적용."
+}

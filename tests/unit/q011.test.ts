@@ -114,7 +114,7 @@ describe('D112 Q011 the air port (basic course)', () => {
     expect(again.totalXp).toBe(p.totalXp); expect(again.gold).toBeGreaterThan(p.gold);
     expect(() => validateState(JSON.parse(JSON.stringify(again)))).not.toThrow();
     expect(objective(p, 'newsroom')).toContain('발행 완료');
-    expect(talk('editor', p).action).toBeUndefined();
+    expect(talk('editor', p).action).toBe('offer-q12'); // D113: the next respiratory quest follows
   });
 
   it('rejects forged saves and keeps the fixture after publication valid', () => {

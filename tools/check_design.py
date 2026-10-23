@@ -214,6 +214,25 @@ q11screen = ''.join([q11['question'], *q11['offer'], *(n['text'] + n['card'] + n
 require(not any(ch.isdigit() for ch in q11screen), 'Q011 basic screens must not carry numbers (design 19 section 3)')
 q11b = load('data/balance/q011.v0.1.json')
 require(q11b['publication']['key'] == 'quest.Q011.first' and q11b['publication']['xp'] == rows[9]['xpToNext'] and 0 < q11b['publication']['gold'] and q11b['repeatXp'] == 0 and q11b['repeatBaseGold'] == 0, 'Q011 reward must be E(10) XP once (Lv.10 to 11) with repeat XP 0')
+# D113 Q012: the fork in the throat (design 20 section 3). Scenes in the pharynx and larynx, a single-variable observer,
+# the steps of one swallow in order, no disease yet (no respiratory disease words; swallowing problems are not this quest).
+q12 = load('data/content/q012.v0.1.json')
+q12text = json.dumps(q12, ensure_ascii=False)
+q12src = {s['id'] for s in q12['sources']}
+q12notes = {n['id'] for n in q12['notes']}
+q12modes = q12['observer']['modes']
+require(q12['status'] == 'draft_unreviewed' and q12['review'] is None and q12['tier'] == 'basic' and len(q12['notes']) == 4 and len(q12['newNames']) <= 3, 'Q012 content boundary mismatch (basic course: at most three new names)')
+require(all(n['room'] in ('pharynx', 'larynx') and rx['discoveries'].get(n['target'], {}).get('room') == n['room'] and n['src'] and set(n['src']) <= q12src for n in q12['notes']) and {n['room'] for n in q12['notes']} == {'pharynx', 'larynx'}, 'Q012 scenes must stand in the pharynx and the larynx and carry sources')
+require(rx['discoveries'].get(q12['observer']['target'], {}).get('room') == q12['observer']['room'] == 'pharynx' and set(q12modes) == {'breath', 'swallow', 'slip'} and all(m['src'] and set(m['src']) <= q12src for m in q12modes.values()), 'Q012 observer must sit in the throat with three things passing it')
+require(q12modes['breath']['route'] == 'front' and q12modes['swallow']['route'] == 'back' and q12modes['slip']['route'] == 'cough' and '기침' in q12modes['slip']['text'] and '멈' in q12modes['swallow']['gates']['breath'] and all(set(m['gates']) == {'palate', 'lid', 'cords', 'food', 'breath'} for m in q12modes.values()), 'Q012 observer: air goes front, a swallow goes back with the breath paused, a slipped crumb is coughed up')
+steps = q12['board']['steps']
+require([s['id'] for s in steps] == ['arrive', 'close', 'down', 'open'] and all(s['scenes'] and set(s['scenes']) <= q12notes for s in steps) and all(d.get('hint') for d in q12['board']['decoys']) and '{scene}' in q12['board']['wrong'], 'Q012 board: the swallow steps in order rest on recorded scenes; decoys need hints')
+require(len([a for a in q12['article']['analogies'] if a.get('hint')]) == 1 and len([l for l in q12['article']['leads'] if l.get('hint')]) == 1, 'Q012 lead and analogy choices mismatch')
+require('검수 전 모형' in q12['disclaimer'] and not any(w in q12text for w in ADVANCED_ONLY) and not any(w in q12text for w in ('감기', '독감', '코로나', '폐렴', '천식', '연하곤란', '삼킴장애', '흡인성')), 'Q012 must stay a labelled basic draft; respiratory diseases come in their own quests (design 20)')
+q12screen = ''.join([q12['question'], *q12['offer'], *(n['text'] + n['card'] + n['name'] + n['place'] for n in q12['notes']), q12['observer']['intro'], q12['observer']['singleVariable'], q12['observer']['limit'], *q12['observer']['views'].values(), *q12['observer']['gateNames'].values(), *(m['label'] + m['text'] + m['result'] + ''.join(m['gates'].values()) for m in q12modes.values()), q12['board']['intro'], q12['board']['wrong'], q12['board']['placed'], *(d['card'] + d['hint'] for d in q12['board']['decoys']), *(s['card'] for s in steps), *(x['text'] + x.get('hint', '') for x in q12['article']['leads'] + q12['article']['analogies'] + q12['article']['limitations']), q12['article']['factcheck'], q12['article']['next'], q12['article']['reply']])
+require(not any(ch.isdigit() for ch in q12screen), 'Q012 basic screens must not carry numbers (design 19 section 3)')
+q12b = load('data/balance/q012.v0.1.json')
+require(q12b['publication']['key'] == 'quest.Q012.first' and q12b['publication']['xp'] == rows[10]['xpToNext'] and 0 < q12b['publication']['gold'] and q12b['repeatXp'] == 0 and q12b['repeatBaseGold'] == 0, 'Q012 reward must be E(11) XP once (Lv.11 to 12) with repeat XP 0')
 q10 = load('data/content/q010.v0.1.json')
 q10text = json.dumps(q10, ensure_ascii=False)
 q10ev = {e['id'] for e in q10['board']['evidence']}
