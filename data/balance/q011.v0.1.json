@@ -1,0 +1,12 @@
+{
+ "id": "Q011",
+ "publication": {
+  "key": "quest.Q011.first",
+  "xp": 550,
+  "gold": 380
+ },
+ "repeatXp": 0,
+ "repeatBaseGold": 0,
+ "reactionBalanceRef": "article-reactions.v0.1.json",
+ "note": "D112: 호흡기 첫 취재. XP는 설계 02 E(10)=550(Lv.10→11, 출시 상한 30과 함께 공개), 골드는 Q010 400G 아래 380G(새 장의 첫 기본 취재). 네 장면·관찰기·도해에는 보상을 추가하지 않는다. 명시적 재발행의 추가 골드만 D066 적용."
+}

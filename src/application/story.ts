@@ -20,6 +20,8 @@ import { q8Normal, q8Text, type Q8Evidence } from '../domain/q008-state';
 import { canOfferQ9, q9Ready } from '../domain/q009';
 import { canOfferQ10, coreIds, q10CoreLeft } from '../domain/q010';
 import { q10Text } from '../domain/q010-state';
+import { canOfferQ11, q11CompareDone, q11NotesDone } from '../domain/q011';
+import { airModes, q11Evidence, q11Text, type Q11Evidence } from '../domain/q011-state';
 import { discoveries } from '../domain/heart';
 import { q9Evidence, q9Text, type Q9Evidence } from '../domain/q009-state';
 import type { GameState } from '../domain/state';
@@ -28,7 +30,7 @@ import space from '../../data/content/respiratory-space.v0.1.json';
 import { rxCore, rxKey } from '../domain/airway';
 
 export type Line = { who: string; text: string; npc: string | null };
-export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' | 'offer-q5' | 'offer-q6' | 'offer-q7' | 'offer-q8' | 'offer-q9' | 'offer-q10' };
+export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' | 'offer-q5' | 'offer-q6' | 'offer-q7' | 'offer-q8' | 'offer-q9' | 'offer-q10' | 'offer-q11' };
 export const q1Text = q1;
 export const heartText = heart;
 
@@ -53,6 +55,23 @@ export function objective(s: GameState, room: RoomId): string {
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
+  // D112 Q011 (design 20 section 3): the first respiratory quest, offered right after the heart graduation.
+  if (canOfferQ11(s)) return isAirwayRoom(room) ? airwayObjective(s) + ' · 편집국 편집장에게 호흡기 첫 취재 받기' : '심장 졸업! 신입 기자 승진 · 편집장에게 호흡기 첫 취재 ‘공기 항구’ 받기 · 바디스코프에서 호흡기를 골라 미리 둘러볼 수도 있어요';
+  if (s.q011.accepted) {
+    if (s.q011.publishedAt) return isAirwayRoom(room) ? airwayObjective(s) + ' · 다음 호흡기 취재는 준비 중' : '공기 항구 기사 발행 완료! 수첩에서 기사·반응 읽기 · 바디스코프에서 호흡기를 골라 자유 탐험 · 다음 호흡기 취재는 준비 중';
+    if (!q11NotesDone(s)) {
+      const note = q11Text.notes.find(n => !s.q011.notes.includes(n.id as Q11Evidence))!;
+      const count = q11Evidence.filter(id => s.q011.notes.includes(id)).length + '/' + q11Evidence.length;
+      if (room === 'nose') return note.name.replace('장면 · ', '') + ' 살펴보기 · ' + note.place + ' (' + count + ')';
+      return isAirwayRoom(room) ? '코안으로 돌아가 네 장면 보기 (' + count + ')' : '바디스코프에서 호흡기를 골라 콧구멍으로 · 코안의 네 장면 보기 (' + count + ')';
+    }
+    if (!q11CompareDone(s)) {
+      const count = s.q011.compared.length + '/' + airModes.length;
+      if (room === 'nose') return '맨 뒤 뒤콧구멍 앞 공기 항구 관찰기에서 들어오는 공기를 하나씩 바꿔 보기 (' + count + ')';
+      return isAirwayRoom(room) ? '코안 맨 뒤 뒤콧구멍 앞 관찰기로 (' + count + ')' : '바디스코프로 들어가 뒤콧구멍 앞 공기 항구 관찰기에서 비교하기 (' + count + ')';
+    }
+    return room === 'newsroom' ? '내 자리에서 본 것과 코가 하는 일을 잇고 공기 항구 기사 쓰기' : '편집국 내 자리로 돌아가 공기 항구 기사 쓰기';
+  }
   if (canOfferQ10(s)) return '편집장에게 ‘심장 졸업 특집호’ 받기';
   if (s.q010.accepted) {
     if (s.q010.publishedAt) return isAirwayRoom(room) ? airwayObjective(s) : '심장 졸업! 신입 기자 승진 · 바디스코프에서 호흡기를 골라 자유 탐험 · 호흡기 취재 Q011 준비 중';
@@ -206,6 +225,8 @@ export function talk(id: string, s: GameState): Talk {
   const has = (f: string) => s.flags.includes(f);
   switch (id) {
     case 'editor':
+      if (canOfferQ11(s)) return { flag: null, action: 'offer-q11', lines: say('편집장', 'editor', ...q11Text.offer) };
+      if (s.q011.accepted) return { flag: null, lines: say('편집장', 'editor', s.q011.publishedAt ? '공기 항구 기사, 독자 반응이 좋아요. 다음 호흡기 취재는 준비하고 있어요. 그동안 호흡기를 자유롭게 둘러봐도 좋아요.' : objective(s, s.at.room)) };
       if (canOfferQ10(s)) return { flag: null, action: 'offer-q10', lines: say('편집장', 'editor', ...q10Text.offer) };
       if (s.q010.accepted) return { flag: null, lines: say('편집장', 'editor', objective(s, s.at.room)) };
       if (canOfferQ9(s)) return { flag: null, action: 'offer-q9', lines: say('편집장', 'editor', ...q9Text.offer) };

@@ -197,6 +197,23 @@ for did in ('disease.respiratory-virus', 'disease.asthma', 'disease.pneumonia'):
     entry = next(e for e in diseases['entries'] if e['id'] == did)
     require(entry['primaryHubId'] == 'respiratory' and entry['depth'] == 'intro' and entry['contentRef'], 'Respiratory basic disease must be planned with a draft (design 20 section 6)')
     require(not any(w in json.dumps(load(entry['contentRef']), ensure_ascii=False) for w in ADVANCED_ONLY), 'Respiratory basic disease draft must not carry advanced-only diseases')
+# D112 Q011: first respiratory basic quest (design 20 section 3). Scenes in the nose, a single-variable observer, no disease yet.
+q11 = load('data/content/q011.v0.1.json')
+q11text = json.dumps(q11, ensure_ascii=False)
+q11src = {s['id'] for s in q11['sources']}
+q11notes = {n['id'] for n in q11['notes']}
+q11modes = q11['observer']['modes']
+require(q11['status'] == 'draft_unreviewed' and q11['review'] is None and q11['tier'] == 'basic' and len(q11['notes']) == 4 and len(q11['newNames']) <= 3, 'Q011 content boundary mismatch (basic course: at most three new names)')
+require(all(n['room'] == 'nose' and rx['discoveries'].get(n['target'], {}).get('room') == 'nose' and n['src'] and set(n['src']) <= q11src for n in q11['notes']), 'Q011 scenes must stand in the nose and carry sources')
+require(rx['discoveries'].get(q11['observer']['target'], {}).get('room') == q11['observer']['room'] == 'nose' and set(q11modes) == {'cold', 'dust', 'virus'} and all(m['src'] and set(m['src']) <= q11src for m in q11modes.values()), 'Q011 observer must sit at the back of the nose with three kinds of incoming air')
+require(all(m['back'][k] >= m['front'][k] for m in q11modes.values() for k in ('warm', 'wet')) and all(m['back']['bits'] <= m['front']['bits'] for m in q11modes.values()) and q11modes['virus']['back']['bits'] > 0 and '모두 막지는 못' in q11modes['virus']['text'], 'Q011 observer must not overclaim: the nose catches many particles but not all')
+require(len(q11['board']['jobs']) == 3 and all(j['supports'] and set(j['supports']) <= q11notes for j in q11['board']['jobs']) and all(d.get('hint') for d in q11['board']['decoys']) and '{job}' in q11['board']['wrong'] and '{need}' in q11['board']['wrong'], 'Q011 board: every job rests on recorded scenes; decoys need hints')
+require(len([a for a in q11['article']['analogies'] if a.get('hint')]) == 1 and len([l for l in q11['article']['leads'] if l.get('hint')]) == 1, 'Q011 lead and analogy choices mismatch')
+require('검수 전 모형' in q11['disclaimer'] and not any(w in q11text for w in ADVANCED_ONLY) and not any(w in q11text for w in ('감기', '독감', '코로나', '폐렴', '천식')), 'Q011 must stay a labelled basic draft; respiratory diseases come in their own quests (design 20)')
+q11screen = ''.join([q11['question'], *q11['offer'], *(n['text'] + n['card'] + n['name'] for n in q11['notes']), q11['observer']['intro'], q11['observer']['singleVariable'], q11['observer']['limit'], *(m['label'] + m['text'] for m in q11modes.values()), q11['board']['intro'], q11['board']['wrong'], *(d['card'] + d['hint'] for d in q11['board']['decoys']), *(j['claim'] for j in q11['board']['jobs']), *(x['text'] + x.get('hint', '') for x in q11['article']['leads'] + q11['article']['analogies'] + q11['article']['limitations']), q11['article']['factcheck'], q11['article']['next'], q11['article']['reply']])
+require(not any(ch.isdigit() for ch in q11screen), 'Q011 basic screens must not carry numbers (design 19 section 3)')
+q11b = load('data/balance/q011.v0.1.json')
+require(q11b['publication']['key'] == 'quest.Q011.first' and q11b['publication']['xp'] == rows[9]['xpToNext'] and 0 < q11b['publication']['gold'] and q11b['repeatXp'] == 0 and q11b['repeatBaseGold'] == 0, 'Q011 reward must be E(10) XP once (Lv.10 to 11) with repeat XP 0')
 q10 = load('data/content/q010.v0.1.json')
 q10text = json.dumps(q10, ensure_ascii=False)
 q10ev = {e['id'] for e in q10['board']['evidence']}

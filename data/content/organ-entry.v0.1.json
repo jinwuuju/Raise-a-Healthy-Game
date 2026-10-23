@@ -18,6 +18,13 @@
       "updated": "2025-06-25",
       "checked": "2026-10-11",
       "section": "Heart valves / Adding oxygen to blood"
+    },
+    {
+      "id": "openstax-resp",
+      "title": "OpenStax Anatomy and Physiology 2e · 22.1 Organs and Structures of the Respiratory System",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system",
+      "checked": "2026-10-23",
+      "section": "The Nose and its Adjacent Structures (nares, alae, nasal hairs)"
     }
   ],
   "captions": {
@@ -27,5 +34,15 @@
     "enter": "상대정맥을 따라 우심방으로"
   },
   "route": "인체 › 심장 › 상대정맥 › 우심방",
-  "limit": "박동은 위치와 움직임을 보여 주는 단순화 연출이에요"
+  "limit": "박동은 위치와 움직임을 보여 주는 단순화 연출이에요",
+  "airway": {
+    "captions": {
+      "face": "얼굴에서, 공기가 들어오는 곳을 찾아요",
+      "zoom": "코끝 양옆에 열린 콧구멍 두 개",
+      "nostril": "들숨을 타고 콧구멍 안으로, 입구의 코털",
+      "enter": "콧구멍을 지나 코안으로"
+    },
+    "route": "인체 › 호흡기 › 콧구멍 › 코안",
+    "limit": "얼굴과 콧구멍은 위치를 보여 주는 단순화 연출이에요"
+  }
 }

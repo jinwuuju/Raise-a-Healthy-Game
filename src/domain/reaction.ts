@@ -8,6 +8,7 @@ import { publishQ7 } from './q007';
 import { publishQ8 } from './q008';
 import { publishQ9 } from './q009';
 import { publishQ10 } from './q010';
+import { publishQ11 } from './q011';
 import { bandFor, reactionBalance as b, reactionText as text, type QuestId, type Reaction } from './reaction-state';
 import type { GameState } from './state';
 
@@ -55,6 +56,9 @@ export function publishQ10WithReaction(s: GameState, random: Random = randomReac
   const next = publishQ10(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q010');
 }
 
+export function publishQ11WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
+  const next = publishQ11(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q011');
+}
 export function publishQ9WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
   const next = publishQ9(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q009');
 }
@@ -77,6 +81,7 @@ export function reprintArticle(s: GameState, expectedCount: number, random: Rand
   if (questId === 'Q004' && (!s.q004.publishedAt || !s.ledger.includes('quest.Q004.first'))) throw new Error('Q004 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q005' && (!s.q005.publishedAt || !s.ledger.includes('quest.Q005.first'))) throw new Error('Q005 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q006' && (!s.q006.publishedAt || !s.ledger.includes('quest.Q006.first'))) throw new Error('Q006 기사 발행을 먼저 마쳐 주세요.');
+  if (questId === 'Q011' && (!s.q011.publishedAt || !s.ledger.includes('quest.Q011.first'))) throw new Error('Q011 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q010' && (!s.q010.publishedAt || !s.ledger.includes('quest.Q010.first'))) throw new Error('Q010 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q009' && (!s.q009.publishedAt || !s.ledger.includes('quest.Q009.first'))) throw new Error('Q009 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q008' && (!s.q008.publishedAt || !s.ledger.includes('quest.Q008.first'))) throw new Error('Q008 기사 발행을 먼저 마쳐 주세요.');

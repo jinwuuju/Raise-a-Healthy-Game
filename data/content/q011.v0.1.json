@@ -1,0 +1,262 @@
+{
+ "id": "content.Q011",
+ "status": "draft_unreviewed",
+ "review": null,
+ "updatedAt": "2026-10-23",
+ "tier": "basic",
+ "title": "공기 항구",
+ "question": "추운 날엔 코로 숨 쉬라는 말을 자주 들어요. 코는 들어오는 공기에 무슨 일을 하나요?",
+ "offer": [
+  "심장 졸업 축하해요. 이제 호흡기로 가 봐요. 독자 한 분이 물었어요. 추운 날엔 코로 숨 쉬라는 말을 자주 듣는데, 코가 들어오는 공기에 대체 무슨 일을 하느냐고요.",
+  "코안은 숨이 처음 들어오는 항구예요. 바디스코프에서 호흡기를 골라 콧구멍으로 들어가, 뒤콧구멍까지 걸으며 네 장면을 보고 와요. 맨 뒤에 공기 항구 관찰기도 무료로 빌려 둘게요."
+ ],
+ "newNames": [
+  "코선반",
+  "점액",
+  "섬모"
+ ],
+ "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 코안 취재 연습이에요. 실제 사람의 코나 병을 진단하지 않아요.",
+ "sources": [
+  {
+   "id": "openstax-resp",
+   "title": "OpenStax Anatomy and Physiology 2e · 22.1 Organs and Structures of the Respiratory System",
+   "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system",
+   "checked": "2026-10-23",
+   "section": "Conducting Zone / The Nose and its Adjacent Structures (hairs stop large debris; conchae make air bounce along the epithelium where it is cleaned and warmed; capillaries warm the air; moist epithelium humidifies; goblet-cell mucus traps debris; cilia sweep it to the throat to be swallowed; cold slows cilia)"
+  },
+  {
+   "id": "cdc-flu-covid",
+   "title": "CDC · Similarities and Differences between Flu and COVID-19",
+   "url": "https://www.cdc.gov/flu/about/flu-vs-covid19.html",
+   "checked": "2026-10-23",
+   "section": "How it spreads (large and small particles containing virus can land in noses and be inhaled into the respiratory tract)"
+  }
+ ],
+ "notes": [
+  {
+   "id": "hairs",
+   "room": "nose",
+   "target": "rx-vestibule",
+   "name": "장면 · 입구의 코털",
+   "place": "콧구멍 바로 안쪽",
+   "card": "입구의 굵은 털에 큰 먼지가 걸려요",
+   "text": "콧구멍 바로 안쪽 피부에 굵은 털(코털)이 나 있어요. 바람에 실려 온 큰 먼지가 여기에 먼저 걸려요. 아주 작은 알갱이는 털 사이를 그냥 지나가요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "shelves",
+   "room": "nose",
+   "target": "rx-inferior-concha",
+   "name": "장면 · 선반에 부딪히는 바람",
+   "place": "코안 바깥 벽의 선반",
+   "card": "선반 세 겹에 바람이 부딪혀 벽에 넓게 닿아요",
+   "text": "바깥 벽에서 안쪽으로 말려 나온 선반 세 겹(코선반)이 바람길을 좁고 구불구불하게 만들어요. 공기는 곧장 빠져나가지 못하고 선반과 벽에 부딪히며 촉촉한 벽에 넓게 닿아요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "wall",
+   "room": "nose",
+   "target": "rx-mucosa",
+   "name": "장면 · 따뜻하고 젖은 벽",
+   "place": "선반을 덮은 벽",
+   "card": "늘 젖은 벽 바로 아래 가는 핏줄이 촘촘해요",
+   "text": "선반을 덮은 벽은 늘 젖어 있고, 바로 아래에 가는 핏줄이 촘촘해요. 벽에 닿은 찬 공기는 핏줄의 온기로 데워지고, 젖은 벽에서 물기를 머금어요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "mucus",
+   "room": "nose",
+   "target": "rx-cilia-nose",
+   "name": "장면 · 붙잡는 점액",
+   "place": "뒤콧구멍 가까운 바닥",
+   "card": "끈끈한 막에 알갱이가 붙어 목 쪽으로 흘러가요",
+   "text": "벽을 덮은 끈끈한 막(점액)에 먼지와 꽃가루, 바이러스가 든 작은 알갱이가 달라붙어요. 벽의 아주 가는 털(섬모)이 쉬지 않고 흔들려 점액을 목 쪽으로 보내고, 점액은 삼켜져요.",
+   "src": [
+    "openstax-resp"
+   ]
+  }
+ ],
+ "observer": {
+  "room": "nose",
+  "target": "rx-choana",
+  "title": "공기 항구 관찰기",
+  "intro": "콧구멍으로 들어온 공기 한 덩이를 들숨 한 번 동안 따라가, 뒤콧구멍에서 다시 살펴봐요. 들어오는 공기만 하나씩 바꿔요.",
+  "singleVariable": "코는 그대로 두고, 들어오는 공기만 바꿔 비교해요.",
+  "gauges": {
+   "warm": "따뜻함",
+   "wet": "촉촉함",
+   "bits": "떠다니는 알갱이"
+  },
+  "ends": {
+   "front": "콧구멍 앞",
+   "back": "뒤콧구멍"
+  },
+  "modes": {
+   "cold": {
+    "label": "차고 마른 겨울 공기",
+    "text": "차고 마른 공기도 뒤콧구멍에 닿을 즈음엔 훨씬 따뜻하고 촉촉해져요. 선반에 부딪히며 따뜻하고 젖은 벽에 넓게 닿았기 때문이에요.",
+    "front": {
+     "warm": 1,
+     "wet": 1,
+     "bits": 1
+    },
+    "back": {
+     "warm": 4,
+     "wet": 4,
+     "bits": 1
+    },
+    "src": [
+     "openstax-resp"
+    ]
+   },
+   "dust": {
+    "label": "먼지와 꽃가루가 많은 공기",
+    "text": "큰 먼지는 입구의 코털에, 꽃가루는 선반 사이 젖은 벽의 점액에 대부분 붙잡혀요. 뒤콧구멍까지 가는 알갱이는 훨씬 적어요.",
+    "front": {
+     "warm": 2,
+     "wet": 2,
+     "bits": 4
+    },
+    "back": {
+     "warm": 4,
+     "wet": 4,
+     "bits": 1
+    },
+    "src": [
+     "openstax-resp"
+    ]
+   },
+   "virus": {
+    "label": "바이러스가 든 작은 알갱이가 섞인 공기",
+    "text": "바이러스가 든 작은 알갱이는 코털 사이를 지나가지만, 많은 수가 선반 사이 젖은 벽의 점액에 붙잡혀 목 쪽으로 실려 가요. 그래도 모두 막지는 못해서 일부는 더 안쪽 기도까지 들어갈 수 있어요.",
+    "front": {
+     "warm": 2,
+     "wet": 2,
+     "bits": 4
+    },
+    "back": {
+     "warm": 4,
+     "wet": 4,
+     "bits": 2
+    },
+    "src": [
+     "openstax-resp",
+     "cdc-flu-covid"
+    ]
+   }
+  },
+  "limit": "관찰기의 막대와 알갱이는 많고 적음을 보여 주는 그림이에요. 측정값이 아니에요."
+ },
+ "board": {
+  "title": "본 것과 코가 하는 일 잇기",
+  "intro": "코가 하는 일 세 가지마다, 그 일을 보여 준 내 장면을 한 장씩 붙여요. 본 것과 설명을 나눠 쓰는 연습이에요.",
+  "jobs": [
+   {
+    "id": "warm",
+    "name": "데우기",
+    "claim": "코는 찬 공기를 데워요.",
+    "supports": [
+     "wall",
+     "shelves"
+    ]
+   },
+   {
+    "id": "wet",
+    "name": "적시기",
+    "claim": "코는 마른 공기를 촉촉하게 해요.",
+    "supports": [
+     "wall",
+     "mucus",
+     "shelves"
+    ]
+   },
+   {
+    "id": "filter",
+    "name": "거르기",
+    "claim": "코는 공기 속 알갱이를 걸러요.",
+    "supports": [
+     "hairs",
+     "mucus",
+     "shelves"
+    ]
+   }
+  ],
+  "decoys": [
+   {
+    "id": "oxygen",
+    "card": "콧구멍에서 산소가 바로 피로 들어가요",
+    "hint": "산소가 피로 건너가는 곳은 코가 아니라 폐 깊은 곳의 작은 공기주머니예요. 코안에서는 그런 장면을 보지 않았어요."
+   }
+  ],
+  "wrong": "그 장면으로는 ‘{job}’ 설명을 받칠 수 없어요. ‘{need}’ 장면을 떠올려 봐요.",
+  "seen": "내가 본 것",
+  "explained": "그래서 코가 하는 일"
+ },
+ "article": {
+  "leads": [
+   {
+    "id": "harbor",
+    "label": "숨의 항구로 시작",
+    "title": "숨이 처음 닿는 항구, 코",
+    "text": "숨을 들이쉬면 공기는 먼저 코안이라는 항구에 들어와요. 이곳에서 공기는 데워지고, 촉촉해지고, 걸러진 뒤에 목으로 넘어가요."
+   },
+   {
+    "id": "winter",
+    "label": "독자 질문으로 시작",
+    "title": "추운 날 코로 숨 쉬라는 까닭",
+    "text": "추운 날 코로 숨 쉬라는 말에는 까닭이 있어요. 코안을 지나는 동안 차고 마른 공기가 따뜻하고 촉촉해지고, 먼지도 많이 걸러지기 때문이에요."
+   },
+   {
+    "id": "shield",
+    "label": "완벽한 방패로 시작",
+    "title": "코는 바이러스를 완벽히 막는 방패",
+    "text": "코만 있으면 바이러스는 하나도 몸에 들어오지 못해요.",
+    "hint": "관찰기에서 바이러스가 든 작은 알갱이 일부가 뒤콧구멍을 지나가는 걸 봤어요. 본 것보다 크게 말하는 첫 문장은 쓰지 않아요."
+   }
+  ],
+  "analogies": [
+   {
+    "id": "harbor",
+    "label": "데우고 적시고 검사하는 항구",
+    "text": "코안은 항구 같아요. 들어온 공기를 데우고 촉촉하게 한 뒤, 큰 짐은 입구에서, 작은 짐은 끈끈한 바닥에서 붙잡아요."
+   },
+   {
+    "id": "belt",
+    "label": "천천히 도는 끈끈이 띠",
+    "text": "벽의 점액은 천천히 움직이는 끈끈이 띠 같아요. 알갱이가 붙으면 띠가 목 쪽으로 실어 가요."
+   },
+   {
+    "id": "filter",
+    "label": "균을 모두 거르는 정수기 필터",
+    "text": "코는 정수기 필터처럼 공기 속 균을 모두 걸러 내요.",
+    "hint": "점액은 많이 붙잡지만 모두 막지는 못해요. 관찰기에서 작은 알갱이 일부가 더 안쪽으로 가는 걸 봤죠."
+   }
+  ],
+  "limitations": [
+   {
+    "id": "analogy",
+    "label": "비유의 한계로 마무리",
+    "text": "항구와 끈끈이 띠는 비유예요. 실제 코는 알갱이를 하나하나 골라 검사하지 않아요. 크기와 바람길에 따라 붙거나 지나가고, 바이러스가 든 작은 알갱이를 모두 막지는 못해요."
+   },
+   {
+    "id": "model",
+    "label": "모형의 한계로 마무리",
+    "text": "게임 속 코안은 걸을 수 있게 넓히고 숨을 늦춘 모형이에요. 관찰기의 막대는 많고 적음을 보여 주는 그림이지 측정값이 아니에요."
+   }
+  ],
+  "factcheck": "‘콧물은 쓸모없는 더러운 물’은 정확하지 않아요. 코안의 벽은 늘 조금씩 점액을 만들어 먼지와 병을 일으키는 알갱이를 붙잡고, 섬모가 이것을 목 쪽으로 보내 삼키게 해요. 찬 공기에서는 섬모가 느려져 점액이 고이면 콧물이 흐르기도 해요.",
+  "next": "붙잡힌 알갱이가 기도 안쪽에서 어떻게 밀려 올라오는지, 놓친 바이러스는 어떻게 되는지는 다음 호흡기 취재에서 이어서 봐요.",
+  "reply": "추운 날 코로 숨 쉬라는 말이 그냥 잔소리가 아니었네요. 코털이랑 끈끈한 점액이 그렇게 일하는 줄 몰랐어요. 아이들한테도 코로 숨 쉬자고 말해 줄게요!"
+ },
+ "simplification": [
+  "코안은 왼쪽과 오른쪽 두 칸이지만 모형은 한쪽 칸만 옆에서 잘라 걸어요.",
+  "관찰기는 들숨 한 번을 늦춰 공기 한 덩이만 따라가요. 막대와 알갱이 수는 많고 적음을 보여 주는 그림이에요.",
+  "먼지·꽃가루·바이러스가 든 알갱이는 실제 크기 비율보다 크게 그렸어요."
+ ]
+}

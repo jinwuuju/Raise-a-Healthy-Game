@@ -50,10 +50,16 @@ export function briefQ1(s: GameState): GameState {
   return addFlag(s, Q1.briefed);
 }
 
-/** Reporter level from total XP (Lv.2 at 100 XP; mirrors data/balance/levels.v0.2.json xpToNext for Lv.1-9; early access caps at Lv.10). */
+/**
+ * Release level cap (design 02: 10/30/60/99). D112 raised it from 10 to 30 together with the first respiratory quest
+ * (design 19 section 7, design 20 section 5). XP above the cap is kept in totalXp and counts when the next cap opens.
+ */
+export const RELEASE_CAP = 30;
+/** XP from level L to L+1 (design 02 formula; mirrors data/balance/levels.v0.2.json xpToNext, checked by a unit test). */
+export const xpToNext = (lv: number): number => (lv <= 10 ? 100 + 50 * (lv - 1) : lv <= 60 ? 600 + 80 * (lv - 11) : lv <= 90 ? 4800 + 120 * (lv - 61) : 8600 + 200 * (lv - 91));
+/** Reporter level from total XP (Lv.2 at 100 XP), up to the release cap. */
 export function levelOf(totalXp: number): { level: number; into: number; need: number } {
-  const steps = [100, 150, 200, 250, 300, 350, 400, 450, 500];
   let level = 1, rest = totalXp;
-  for (const need of steps) { if (rest < need) return { level, into: rest, need }; rest -= need; level++; }
+  while (level < RELEASE_CAP) { const need = xpToNext(level); if (rest < need) return { level, into: rest, need }; rest -= need; level++; }
   return { level, into: 0, need: 0 };
 }
