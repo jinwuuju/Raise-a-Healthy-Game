@@ -1,7 +1,7 @@
 import entry from '../../data/content/organ-entry.v0.1.json';
 import space from '../../data/content/respiratory-space.v0.1.json';
 import { entryFace, entryNostril, NOSE_POSITION, NOSTRIL_POSITION } from '../art/airway-entry';
-import { bakeAirway } from '../art/airway';
+import { airwayGround } from '../game/airway-view';
 import { rooms } from '../world/rooms';
 import { button, el } from './dom';
 import { openSheet } from './sheet';
@@ -75,7 +75,7 @@ export function showAirwayEntry(returnFocus: HTMLElement): Promise<void> {
             // The nasal cavity the reporter arrives in (the real room art), faded in at the end.
             const show = still ? 1 : Math.max(0, (dive - 0.55) / 0.45);
             if (show > 0) {
-              inside ??= bakeAirway(rooms.nose).ground;
+              inside ??= airwayGround(rooms.nose);
               const k = Math.max(1, Math.floor(Math.min(W / inside.width, H / inside.height) * 2) / 2);
               g.globalAlpha = show; g.drawImage(inside, Math.round(W / 2 - inside.width * k / 2), Math.round(H / 2 - inside.height * k / 2), inside.width * k, inside.height * k); g.globalAlpha = 1;
             }

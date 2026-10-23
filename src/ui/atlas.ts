@@ -1,6 +1,12 @@
 import bodyMap from '../../data/content/body-map.v0.1.json';
 import heart from '../../data/content/heart-interior.v0.1.json';
 import { organMinimap } from '../art/organ';
+import { airwayMinimap } from '../art/airway';
+import airContent from '../../data/content/respiratory-interior.v0.1.json';
+import { airwayOpen, rxDiscovered, rxDiscoveries, rxIds, rxMaxStars, rxNextLocked, rxRoomProgress, rxRoomStars, rxTotalStars } from '../domain/airway';
+import { Q11_OBSERVER, q11NotesDone } from '../domain/q011';
+import { q11Text } from '../domain/q011-state';
+import { airwayRoomIds } from '../world/types';
 import { discovered, discoveries, discoveryIds, roomProgress } from '../domain/heart';
 import { maxStars, roomStars, tiers, tierStars, totalStars } from '../domain/mastery';
 import { Q1_OBSERVATIONS, obsKey } from '../domain/quest';
@@ -15,9 +21,11 @@ import { openSheet } from './sheet';
  * the body, the heart's two circuits, and the room the reporter stands in. Canvases are drawn at the
  * real screen resolution so every label stays sharp; nothing here changes game progress.
  */
-export type AtlasTab = 'body' | 'heart' | 'room';
+export type AtlasTab = 'body' | 'heart' | 'airway' | 'room';
 type Ctx = { room: Room; roomId: RoomId; player: Point; state: GameState };
-type Organ = { id: string; name: string; x: number; y: number; rx: number; ry: number; state: string; rooms: string[]; note?: string };
+type Organ = { id: string; name: string; x: number; y: number; rx: number; ry: number; state: string; rooms: string[]; note?: string; opensWith?: string };
+/** D112: organs whose state follows the game (the airway opens with the heart graduation). */
+const stateOf = (o: Organ, s: GameState): string => (o.opensWith === 'airway' && airwayOpen(s) ? 'open' : o.state);
 
 const C = {
   panel: '#1a1322', deep: '#120c18', scope: '#7ff0f2', gold: '#f1cf8b', ivory: '#f7ecdd', muted: '#a99fb8',
@@ -34,14 +42,15 @@ export function openAtlas(ctx: Ctx, start: AtlasTab): void {
     const head = el('div', 'place');
     const stage = el('div', 'stage');
     const info = el('div', 'info');
-    const tabs: [AtlasTab, string][] = [['body', '인체'], ['heart', '심장'], ['room', '이 방']];
+    // D112: inside the airway the middle scale is the air path instead of the heart's two circuits.
+    const tabs: [AtlasTab, string][] = ctx.room.airway ? [['body', '인체'], ['airway', '호흡기'], ['room', '이 방']] : [['body', '인체'], ['heart', '심장'], ['room', '이 방']];
     const show = (tab: AtlasTab) => {
       scale.querySelectorAll('button').forEach((b, i) => { const on = tabs[i]![0] === tab; b.setAttribute('aria-pressed', String(on)); b.classList.toggle('on', on); });
       const cv = el('canvas'); cv.className = 'scope-canvas';
       stage.replaceChildren(cv);
       head.replaceChildren(...placeLine(ctx, tab));
-      info.replaceChildren(...(tab === 'room' ? roomInfo(ctx) : tab === 'heart' ? heartInfo(ctx) : bodyInfo(ctx)));
-      requestAnimationFrame(() => (tab === 'room' ? drawRoom : tab === 'heart' ? drawHeart : drawBody)(cv, ctx));
+      info.replaceChildren(...(tab === 'room' ? roomInfo(ctx) : tab === 'heart' ? heartInfo(ctx) : tab === 'airway' ? airwayInfo(ctx) : bodyInfo(ctx)));
+      requestAnimationFrame(() => (tab === 'room' ? drawRoom : tab === 'heart' ? drawHeart : tab === 'airway' ? drawAirway : drawBody)(cv, ctx));
     };
     tabs.forEach(([id, label], i) => {
       if (i) scale.append(el('span', 'step', '›'));
@@ -55,14 +64,18 @@ export function openAtlas(ctx: Ctx, start: AtlasTab): void {
 function placeLine(ctx: Ctx, tab: AtlasTab): HTMLElement[] {
   const total = discoveryIds.length, found = discovered(ctx.state).length;
   if (tab === 'room') {
-    const pr = roomProgress(ctx.state, ctx.roomId);
+    const pr = ctx.room.airway ? rxRoomProgress(ctx.state, ctx.roomId) : roomProgress(ctx.state, ctx.roomId);
     return [el('h3', '', ctx.room.title.split(' · ').pop()!), el('span', 'meter', '이 방에서 찾은 구조 ' + pr.found + '/' + pr.total)];
   }
   if (tab === 'heart') {
     const st = totalStars(ctx.state), mx = maxStars();
     return [el('h3', '', '심장과 두 순환'), el('span', 'meter', '심장 탐험 기록 ' + found + '/' + total + ' · 숙련 ★' + st + '/' + mx + ' (' + Math.floor(st * 100 / mx) + '%)')];
   }
-  return [el('h3', '', '인체'), el('span', 'meter', '탐험할 수 있는 기관 ' + (bodyMap.organs as Organ[]).filter(o => o.state !== 'locked').length + '/' + bodyMap.organs.length)];
+  if (tab === 'airway') {
+    const st = rxTotalStars(ctx.state), mx = rxMaxStars();
+    return [el('h3', '', '공기 길 · 콧구멍에서 폐포까지'), el('span', 'meter', '호흡기 탐험 기록 ' + rxDiscovered(ctx.state).length + '/' + rxIds.length + ' · 숙련 ★' + st + '/' + mx + ' (' + Math.floor(st * 100 / mx) + '%)')];
+  }
+  return [el('h3', '', '인체'), el('span', 'meter', '탐험할 수 있는 기관 ' + (bodyMap.organs as Organ[]).filter(o => stateOf(o, ctx.state) !== 'locked').length + '/' + bodyMap.organs.length)];
 }
 
 /** Canvas sized to its box at device resolution; returns a context in CSS pixels. */
@@ -109,13 +122,13 @@ function you(g: CanvasRenderingContext2D, x: number, y: number) {
 // ------------------------------------------------------------------ this room
 function drawRoom(cv: HTMLCanvasElement, ctx: Ctx) {
   const { g, W, H } = prepare(cv, 1, Math.round(window.innerHeight * 0.52));
-  const m = organMinimap(ctx.room, 0.5);
+  const air = !!ctx.room.airway, m = air ? airwayMinimap(ctx.room, 0.5) : organMinimap(ctx.room, 0.5);
   const pad = 20, k = Math.min((W - pad * 2) / m.c.width, (H - pad * 2) / m.c.height);
   const ox = (W - m.c.width * k) / 2, oy = (H - m.c.height * k) / 2;
   g.save(); g.imageSmoothingEnabled = false; g.shadowColor = 'rgba(226,68,92,0.35)'; g.shadowBlur = 18;
   g.drawImage(m.c, ox, oy, m.c.width * k, m.c.height * k); g.restore();
   const P = (x: number, y: number): [number, number] => [ox + (m.ox + x * m.s) * k, oy + (m.oy + y * m.s) * k];
-  const found = discovered(ctx.state), taken: { x: number; y: number; w: number; h: number }[] = [];
+  const found = air ? rxDiscovered(ctx.state) : discovered(ctx.state), taken: { x: number; y: number; w: number; h: number }[] = [];
   const free = (r: { x: number; y: number; w: number; h: number }) => !taken.some(q => r.x < q.x + q.w && r.x + r.w > q.x && r.y < q.y + q.h && r.y + r.h > q.y);
   const place = (text: string, x: number, y: number, o: Parameters<typeof tag>[4]) => {
     g.font = font(o?.size ?? 12, 800);
@@ -136,10 +149,19 @@ function drawRoom(cv: HTMLCanvasElement, ctx: Ctx) {
       place((done ? '관찰함 · ' : '취재 · ') + t.label, x, y, { color: done ? C.muted : C.gold, stroke: 'rgba(241,207,139,0.55)' });
       continue;
     }
-    if (!t.id.startsWith('hx-')) continue;
+    // D112: stops of the open air-port commission are marked like the Q001 stops.
+    const q11 = ctx.state.q011, q11Open = air && q11.accepted && !q11.publishedAt;
+    const scene = q11Open ? q11Text.notes.find(n => n.target === t.id && n.room === ctx.roomId) : undefined;
+    const observer = q11Open && q11NotesDone(ctx.state) && t.id === Q11_OBSERVER.target && ctx.roomId === Q11_OBSERVER.room && q11.compared.length < 3;
+    if ((scene && !q11.notes.includes(scene.id as never)) || observer) {
+      g.beginPath(); g.arc(x, y, 7, 0, Math.PI * 2); g.lineWidth = 2.5; g.strokeStyle = C.gold; g.stroke();
+      place('취재 · ' + (observer ? q11Text.observer.title : scene!.name.replace('장면 · ', '')), x, y, { color: C.gold, stroke: 'rgba(241,207,139,0.55)' });
+      continue;
+    }
+    if (!t.id.startsWith(air ? 'rx-' : 'hx-')) continue;
     if (found.includes(t.id)) {
       g.save(); g.translate(x, y); g.rotate(Math.PI / 4); g.fillStyle = C.scope; g.fillRect(-4, -4, 8, 8); g.restore();
-      place(discoveries[t.id]!.name, x, y, { color: '#e3fbf8', stroke: 'rgba(127,240,242,0.35)' });
+      place(air ? rxDiscoveries[t.id]!.name : discoveries[t.id]!.name, x, y, { color: '#e3fbf8', stroke: 'rgba(127,240,242,0.35)' });
     } else {
       g.beginPath(); g.arc(x, y, 5, 0, Math.PI * 2); g.setLineDash([2, 2]); g.lineWidth = 1.5; g.strokeStyle = 'rgba(247,236,221,0.55)'; g.stroke(); g.setLineDash([]);
     }
@@ -149,8 +171,14 @@ function drawRoom(cv: HTMLCanvasElement, ctx: Ctx) {
 }
 
 function roomInfo(ctx: Ctx): HTMLElement[] {
-  const ids = discoveryIds.filter(id => discoveries[id]!.room === ctx.roomId), found = discovered(ctx.state);
   const list = el('ul', 'chips');
+  if (ctx.room.airway) {
+    const found = rxDiscovered(ctx.state);
+    for (const id of rxIds.filter(i => rxDiscoveries[i]!.room === ctx.roomId)) list.append(el('li', found.includes(id) ? 'got' : 'unknown', found.includes(id) ? rxDiscoveries[id]!.name : '아직 모름'));
+    return [legend([['you', '지금 위치'], ['exit', '나가는 길'], ['pad', '귀환 장치'], ['got', '기록한 구조'], ['unknown', '아직 못 찾은 구조']]), list,
+      el('p', 'note', '공기는 들숨과 날숨으로 같은 길을 오가서 어느 문으로든 되돌아갈 수 있어요. 노란 선은 삼킬 때만 닫히는 문(목젖·후두덮개)이에요.')];
+  }
+  const ids = discoveryIds.filter(id => discoveries[id]!.room === ctx.roomId), found = discovered(ctx.state);
   for (const id of ids) list.append(el('li', found.includes(id) ? 'got' : 'unknown', found.includes(id) ? discoveries[id]!.name : '아직 모름'));
   return [legend([['you', '지금 위치'], ['exit', '나가는 길'], ['pad', '귀환 장치'], ['got', '기록한 구조'], ['unknown', '아직 못 찾은 구조']]), list,
     el('p', 'note', '판막 표시 가운데 밝은 쪽이 이 방에서 나가는 판막이고, 흐린 쪽은 들어온 판막이에요. 들어온 판막으로는 되돌아갈 수 없어요.')];
@@ -248,7 +276,7 @@ function drawBody(cv: HTMLCanvasElement, ctx: Ctx) {
   const left: { y: number; o: Organ; x: number }[] = [], right: { y: number; o: Organ; x: number }[] = [];
   for (const o of bodyMap.organs as Organ[]) {
     const [x, y] = T(o.x, o.y), rx = o.rx * s, ry = o.ry * s;
-    const open = o.state === 'open', part = o.state === 'partial', here = o.rooms.includes(ctx.roomId);
+    const state = stateOf(o, ctx.state), open = state === 'open', part = state === 'partial', here = o.rooms.includes(ctx.roomId);
     if (open || part) {
       const gr = g.createRadialGradient(x - rx * 0.3, y - ry * 0.35, 1, x, y, Math.max(rx, ry));
       gr.addColorStop(0, o.id === 'heart' ? '#ff8a98' : '#f4b4c0'); gr.addColorStop(1, o.id === 'heart' ? '#b8233d' : '#b4566b');
@@ -258,7 +286,7 @@ function drawBody(cv: HTMLCanvasElement, ctx: Ctx) {
       g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); g.setLineDash([3, 4]); g.lineWidth = 1.2; g.strokeStyle = 'rgba(247,236,221,0.28)'; g.stroke(); g.setLineDash([]);
     }
     if (here) { g.beginPath(); g.ellipse(x, y, rx + 6 + Math.sin(t) * 2, ry + 6 + Math.sin(t) * 2, 0, 0, Math.PI * 2); g.lineWidth = 2.5; g.strokeStyle = C.scope; g.stroke(); }
-    (o.x < 300 ? left : right).push({ y, o, x: x + (o.x < 300 ? -rx : rx) });
+    (o.x < 300 ? left : right).push({ y, o: { ...o, state }, x: x + (o.x < 300 ? -rx : rx) });
   }
   // Labels sit in the margins with leader lines, like an atlas plate (screen left = body right).
   for (const [side, list] of [[-1, left], [1, right]] as [number, typeof left][]) {
@@ -279,9 +307,8 @@ function drawBody(cv: HTMLCanvasElement, ctx: Ctx) {
 }
 
 function bodyInfo(ctx: Ctx): HTMLElement[] {
-  void ctx;
   return [legend([['open', '탐험할 수 있음'], ['part', '일부만 열림'], ['locked', '준비 중'], ['you', '지금 있는 기관']]),
-    el('p', '', '지금은 심장 속과 폐의 모세혈관 구역을 탐험할 수 있어요. 다른 기관은 취재가 열리면 하나씩 이어져요.'),
+    el('p', '', airwayOpen(ctx.state) ? '심장 속과 호흡기(콧구멍부터 폐포까지)를 탐험할 수 있어요. 폐포의 공기 쪽과 심장 탐사의 폐 모세혈관은 같은 폐포의 두 면이에요. 다른 기관은 취재가 열리면 하나씩 이어져요.' : '지금은 심장 속과 폐의 모세혈관 구역을 탐험할 수 있어요. 호흡기는 심장 졸업 특집호를 발행하면 열려요. 다른 기관은 취재가 열리면 하나씩 이어져요.'),
     el('p', 'note', bodyMap.note + ' ' + bodyMap.disclaimer)];
 }
 
@@ -289,4 +316,58 @@ function legend(items: [string, string][]): HTMLElement {
   const ul = el('ul', 'legend');
   for (const [k, text] of items) { const li = el('li'); li.append(el('i', 'sw ' + k), el('span', '', text)); ul.append(li); }
   return ul;
+}
+
+// ------------------------------------------------------------------ airway: the air path (D112)
+
+const airNames = Object.fromEntries(airContent.rooms.map(r => [r.id, r.name])) as Record<string, string>;
+
+/** The six airway rooms in the order air comes in, two-way links, the swallow gates, the food way and the heart's side of the alveolus. */
+function drawAirway(cv: HTMLCanvasElement, ctx: Ctx) {
+  const { g, W, H } = prepare(cv, 1.25, Math.round(window.innerHeight * 0.6));
+  // Left margin for the breath words, the path in the middle-left, notes in a right column (narrow phones included).
+  const n = airwayRoomIds.length, bw = Math.min(190, (W - 64) * 0.45), x = 58 + bw / 2, top = H * 0.09, step = (H * 0.84) / (n - 1), bh = Math.min(step * 0.62, 46);
+  const rx = x + bw / 2 + 10;
+  const note = (text: string, y: number, o: Parameters<typeof tag>[4]) => { g.font = font(o?.size ?? 10, 800); return tag(g, text, rx + (g.measureText(text).width + 14) / 2, y, { ...o, W }); };
+  const yOf = (i: number) => top + step * i;
+  // Two-way air between neighbouring rooms.
+  for (let i = 1; i < n; i++) {
+    const y0 = yOf(i - 1) + bh / 2, y1 = yOf(i) - bh / 2;
+    g.beginPath(); g.moveTo(x, y0); g.lineTo(x, y1); g.lineWidth = 6; g.strokeStyle = 'rgba(190,232,255,0.55)'; g.stroke();
+    for (const [yy, d] of [[y0 + 4, -1], [y1 - 4, 1]] as [number, number][]) { g.beginPath(); g.moveTo(x, yy + d * 6); g.lineTo(x - 6, yy); g.lineTo(x + 6, yy); g.closePath(); g.fillStyle = '#e2f6ff'; g.fill(); }
+  }
+  g.save(); g.font = font(11, 700); g.fillStyle = '#bfe8ff'; g.textAlign = 'right'; g.textBaseline = 'middle';
+  g.fillText('들숨 ↓', x - bw / 2 - 8, yOf(1) - step / 2); g.fillText('날숨 ↑', x - bw / 2 - 8, yOf(2) - step / 2); g.restore();
+  airwayRoomIds.forEach((id, i) => {
+    const y = yOf(i), pr = rxRoomProgress(ctx.state, id), rs = rxRoomStars(ctx.state, id), here = ctx.roomId === id;
+    g.beginPath(); g.roundRect(x - bw / 2, y - bh / 2, bw, bh, 12);
+    g.fillStyle = id === 'alveoli' ? 'rgba(234,214,220,0.16)' : 'rgba(201,107,122,0.22)'; g.fill();
+    g.lineWidth = here ? 3 : rs.medal ? 2.5 : 1.5; g.strokeStyle = here ? C.scope : rs.medal ? C.gold : 'rgba(255,190,200,0.45)'; g.stroke();
+    g.font = font(13, 800); g.fillStyle = C.ivory; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(airNames[id] ?? id, x, y - bh * 0.17);
+    g.font = font(11, 700); g.fillStyle = rs.medal ? C.gold : C.muted;
+    g.fillText('기록 ' + pr.found + '/' + pr.total + ' · ★' + rs.stars + '/' + rs.max, x, y + bh * 0.24);
+    if (here) you(g, x - bw / 2 + 2, y);
+  });
+  // Swallow gates and the food way: the oesophagus opening is never walked into.
+  const gate = (i: number, text: string) => note(text, yOf(i) - bh * 0.18, { color: '#2a1d08', fill: '#fff1bf', size: 10 });
+  gate(1, '삼킬 때 목젖이 닫힘'); gate(2, '삼킬 때 후두덮개가 닫힘');
+  g.beginPath(); g.moveTo(x + bw / 2, yOf(1) + bh * 0.25); g.lineTo(rx + 4, yOf(2) + step * 0.5); g.setLineDash([3, 4]); g.lineWidth = 2; g.strokeStyle = 'rgba(247,236,221,0.4)'; g.stroke(); g.setLineDash([]);
+  note('음식 길(식도) · 못 들어감', yOf(2) + step * 0.55, { color: C.muted, stroke: 'rgba(247,236,221,0.3)', size: 10 });
+  // Mucus always goes one way on the cilia.
+  note('점액 → 늘 목 쪽으로', yOf(0) + bh * 0.2, { color: '#f3e7b0', stroke: 'rgba(236,228,170,0.4)', size: 10 });
+  note('점액 → 늘 위쪽으로', yOf(3) + bh * 0.1, { color: '#f3e7b0', stroke: 'rgba(236,228,170,0.4)', size: 10 });
+  // The far side of the alveolus is the heart chapter's lung capillaries (same alveolus, not a copy).
+  const ya = yOf(n - 1);
+  g.beginPath(); g.moveTo(x + bw / 2, ya); g.lineTo(rx, ya); g.setLineDash([4, 3]); g.lineWidth = 2.5; g.strokeStyle = C.rich; g.stroke(); g.setLineDash([]);
+  note('건너편 = 심장의 폐 모세혈관', ya, { color: '#ffb7c1', stroke: 'rgba(226,68,92,0.6)', size: 10 });
+}
+
+function airwayInfo(ctx: Ctx): HTMLElement[] {
+  const lock = rxNextLocked(ctx.state), q = ctx.state.q011;
+  const out = [legend([['you', '지금 있는 곳'], ['got', '별을 모두 모은 방 = 금색 테두리']]),
+    el('p', '', '공기는 콧구멍에서 폐포까지 한 길을 들숨과 날숨으로 오가요. 삼킬 때만 목젖과 후두덮개가 길을 덮고, 점액은 숨과 상관없이 섬모를 타고 한쪽으로만 가요.' + (lock ? ' 다음 해금: ' + lock.title + ' · 호흡기 별 ' + rxTotalStars(ctx.state) + '/' + lock.unlockStars : ''))];
+  if (q.accepted && !q.publishedAt) out.push(el('p', '', 'Q011 공기 항구 · 코안의 장면 ' + q.notes.length + '/4 · 관찰기 공기 ' + q.compared.length + '/3'));
+  out.push(el('p', 'note', airContent.disclaimer + ' ' + airContent.simplification[0]));
+  return out;
 }

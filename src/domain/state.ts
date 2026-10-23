@@ -12,7 +12,7 @@ import { emptyQ7, validateQ7, type Q7State } from './q007-state';
 import { emptyQ8, validateQ8, type Q8State } from './q008-state';
 import { emptyQ9, validateQ9, type Q9State } from './q009-state';
 import { emptyQ10, validateQ10, type Q10State } from './q010-state';
-import { emptyQ11, validateQ11, type Q11State } from './q011-state';
+import { emptyQ11, q11Text, validateQ11, type Q11State } from './q011-state';
 import { emptyLunch, validateLunch, type LunchState } from './lunch';
 import { emptyShop, validateShop, type ShopState } from './shop';
 import { emptyMastery, recordKey, tiers, validateMastery, type Mastery } from './mastery';
@@ -173,7 +173,7 @@ export function validateState(value: unknown): GameState {
   if ((q010.accepted && !q009.publishedAt) || (q010.runDone && !((s.heartRun as { runs?: number } | undefined)?.runs)) || ((q010.claim || q010.checked || q010.publishedAt) && coreLeft) || (!!q010.publishedAt !== s.ledger.includes('quest.Q010.first'))) throw new Error('Q010 의뢰와 기사 발행 기록이 맞지 않습니다.');
   const q011 = validateQ11(s.q011);
   if ((q011.accepted && !q010.publishedAt) || (!!q011.publishedAt !== s.ledger.includes('quest.Q011.first'))) throw new Error('Q011 의뢰와 기사 발행 기록이 맞지 않습니다.');
-  if (q011.notes.some(id => !(s.inspected as string[]).includes('rx:' + ({ hairs: 'rx-vestibule', shelves: 'rx-inferior-concha', wall: 'rx-mucosa', mucus: 'rx-cilia-nose' } as const)[id]))) throw new Error('Q011 장면의 탐험 기록이 없습니다.');
+  if (q011.notes.some(id => !(s.inspected as string[]).includes('rx:' + q11Text.notes.find(n => n.id === id)!.target))) throw new Error('Q011 장면의 탐험 기록이 없습니다.');
   if (reactions.count && (!article.publishedAt || !s.ledger.includes('quest.Q001.first') || (lastReaction && lastReaction.xpAfter > s.totalXp))) throw new Error('발행과 독자 반응 기록이 맞지 않습니다.');
   if (reactions.results.some(r => r.questId === 'Q002' && !q002.publishedAt)) throw new Error('Q002 독자 반응의 발행 기사가 없습니다.');
   if (reactions.results.some(r => r.questId === 'Q003' && !q003.publishedAt)) throw new Error('Q003 독자 반응의 발행 기사가 없습니다.');

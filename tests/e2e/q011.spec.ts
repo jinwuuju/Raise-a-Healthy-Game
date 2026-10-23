@@ -134,6 +134,18 @@ test('Q011 after publication: observer replay at the back of the nose, phone wid
   expect(overflow).toBeLessThanOrEqual(0);
   await page.screenshot({ path: 'artifacts/d112-air-port-observer-390.png' });
   const s = await st(page); expect(s.q011.compared).toEqual(['cold', 'dust', 'virus']);
+  await page.keyboard.press('Escape'); await page.waitForTimeout(300);
+  // The Bodyscope map opens inside the airway too: this room, the air path and the body with the airway open.
+  await page.locator('#view').focus(); await page.keyboard.press('m');
+  const map = page.getByRole('dialog', { name: '바디스코프 지도' });
+  await expect(map).toBeVisible(); await expect(map).toContainText('이 방에서 찾은 구조');
+  await map.getByRole('button', { name: '호흡기', exact: true }).click();
+  await expect(map).toContainText('공기 길 · 콧구멍에서 폐포까지'); await page.waitForTimeout(300);
+  expect(await colours(page, '.atlas-sheet canvas')).toBeGreaterThan(20);
+  await page.screenshot({ path: 'artifacts/d112-airway-map-390.png' });
+  await map.getByRole('button', { name: '인체', exact: true }).click();
+  await expect(map).toContainText('호흡기(콧구멍부터 폐포까지)');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
   await page.keyboard.press('Escape');
   expect(errors).toEqual([]);
 });

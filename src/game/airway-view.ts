@@ -17,6 +17,8 @@ import { fillPoly } from './heart-view';
 type Track = { pts: Point[]; seg: number[]; total: number; d: Float32Array; off: Float32Array; width: number; speed: number };
 const arts = new Map<string, AirwayArt>();
 function art(room: Room): AirwayArt { let a = arts.get(room.id); if (!a) { a = bakeAirway(room); arts.set(room.id, a); } return a; }
+/** The baked room picture, shared with the nostril entry film (baked once per room). */
+export const airwayGround = (room: Room): HTMLCanvasElement => art(room).ground;
 
 function track(pts: Point[], n: number, width: number, speed: number, seed: number): Track {
   const seg: number[] = []; let total = 0;

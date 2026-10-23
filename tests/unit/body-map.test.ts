@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import body from '../../data/content/body-map.v0.1.json';
-import { heartRoomIds } from '../../src/world/types';
+import { airwayRoomIds, heartRoomIds } from '../../src/world/types';
 
 describe('body map (front view: screen left is the body right)', () => {
   const o = (id: string) => body.organs.find(x => x.id === id)!;
@@ -21,9 +21,12 @@ describe('body map (front view: screen left is the body right)', () => {
     expect(o('brain').y).toBeLessThan(o('heart').y);
     expect(o('heart').y).toBeLessThan(o('liver').y);
   });
-  it('only the heart is fully open; every open room belongs to the Bodyscope heart', () => {
+  it('only the heart is open from the start; the airway and lungs open with the airway (D112); every room is a Bodyscope room', () => {
     expect(body.organs.filter(x => x.state === 'open').map(x => x.id)).toEqual(['heart']);
-    for (const x of body.organs) for (const r of x.rooms) expect(heartRoomIds).toContain(r);
-    expect(new Set(body.organs.flatMap(x => x.rooms))).toEqual(new Set(heartRoomIds));
+    expect(body.organs.filter(x => 'opensWith' in x).map(x => x.id).sort()).toEqual(['airway', 'lung-left', 'lung-right']);
+    const all = [...heartRoomIds, ...airwayRoomIds] as string[];
+    for (const x of body.organs) for (const r of x.rooms) expect(all).toContain(r);
+    expect(new Set(body.organs.flatMap(x => x.rooms))).toEqual(new Set(all));
+    expect(o('airway').y).toBeLessThan(o('lung-right').y);
   });
 });

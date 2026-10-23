@@ -2,9 +2,9 @@
  "id": "content.body.map",
  "status": "draft_unreviewed",
  "review": null,
- "updatedAt": "2026-10-11",
+ "updatedAt": "2026-10-23",
  "disclaimer": "검수 전 모형 · 기관의 위치와 크기를 알아보기 쉽게 단순화한 앞모습 지도예요",
- "note": "사람을 앞에서 본 모습이라 화면의 왼쪽이 몸의 오른쪽이다. 기관 모양·크기·겹침은 단순화했다. 전체 인체 아틀라스(설계 v0.2의 12허브·148항목)로 확장할 때 이 파일을 부모 지도로 쓴다.",
+ "note": "사람을 앞에서 본 모습이라 화면의 왼쪽이 몸의 오른쪽이다. 기관 모양·크기·겹침은 단순화했다. 전체 인체 아틀라스(설계 v0.2의 12허브·148항목)로 확장할 때 이 파일을 부모 지도로 쓴다. D112: 기도와 폐는 심장 졸업(호흡기 열림) 뒤 열린 기관으로 그린다(opensWith).",
  "sources": [
   {
    "id": "nhlbi-anatomy",
@@ -31,6 +31,23 @@
    "rooms": []
   },
   {
+   "id": "airway",
+   "name": "기도(코·목·기관)",
+   "x": 300,
+   "y": 150,
+   "rx": 10,
+   "ry": 40,
+   "state": "locked",
+   "opensWith": "airway",
+   "rooms": [
+    "nose",
+    "pharynx",
+    "larynx",
+    "trachea"
+   ],
+   "note": "심장 졸업 뒤 바디스코프에서 호흡기를 고르면 콧구멍으로 들어가요"
+  },
+  {
    "id": "lung-right",
    "name": "오른폐",
    "x": 242,
@@ -39,9 +56,12 @@
    "ry": 92,
    "state": "partial",
    "rooms": [
-    "lung"
+    "lung",
+    "bronchi",
+    "alveoli"
    ],
-   "note": "폐포 모세혈관 구역만 탐사 가능"
+   "note": "심장 졸업 전에는 폐포 모세혈관 구역만, 졸업 뒤에는 기관지와 폐포의 공기 쪽까지",
+   "opensWith": "airway"
   },
   {
    "id": "lung-left",
@@ -52,9 +72,12 @@
    "ry": 86,
    "state": "partial",
    "rooms": [
-    "lung"
+    "lung",
+    "bronchi",
+    "alveoli"
    ],
-   "note": "폐포 모세혈관 구역만 탐사 가능"
+   "note": "심장 졸업 전에는 폐포 모세혈관 구역만, 졸업 뒤에는 기관지와 폐포의 공기 쪽까지",
+   "opensWith": "airway"
   },
   {
    "id": "heart",

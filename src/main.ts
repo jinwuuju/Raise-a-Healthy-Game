@@ -176,7 +176,7 @@ window.addEventListener('keydown', e => {
   else if (k === 'h') returnToEuro();
   else if (k === '+' || k === '=') { e.preventDefault(); setZoomStep(zoomStep + 1); }
   else if (k === '-' || k === '_') { e.preventDefault(); setZoomStep(zoomStep - 1); }
-  else if (k === 'm' && world && (world.roomId === 'district' || isHeartRoom(world.roomId))) openMap();
+  else if (k === 'm' && world && (world.roomId === 'district' || isBodyRoom(world.roomId))) openMap();
 });
 window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
 window.addEventListener('blur', pauseInput);
@@ -1079,7 +1079,7 @@ function editLook() {
 
 function openMap() {
   if (busy() || !world) return;
-  if (isHeartRoom(world.roomId)) { pauseInput(); openAtlas({ room: world.room, roomId: world.roomId, player: { x: world.player.x, y: world.player.y }, state: game.state }, 'room'); return; }
+  if (isHeartRoom(world.roomId) || isAirwayRoom(world.roomId)) { pauseInput(); openAtlas({ room: world.room, roomId: world.roomId, player: { x: world.player.x, y: world.player.y }, state: game.state }, 'room'); return; }
   if (world.roomId !== 'district') return;
   pauseInput();
   openSheet('동네 지도 · 유로프라자 주변', c => {
