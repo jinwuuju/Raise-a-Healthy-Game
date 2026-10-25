@@ -2,6 +2,8 @@
 
 > **redesign-1 (D037):** 게임 런타임은 Phaser 대신 자체 Canvas 2D 렌더러(`src/game/world.ts`)를 사용한다. 계층 원칙(도메인 상태는 application만 변경)은 그대로다. 아래 Phaser 관련 서술은 이전 결정 기록이다.
 
+> **D114 현재 구조:** 저장은 IndexedDB가 아니라 localStorage schema4 / redesign-1(현재 + 백업 2, 손상 원본 보관, 파일 내보내기·불러오기, D039)이다. 폴더는 `src/domain`(규칙)·`src/application`(상태 변경은 Game만)·`src/game`(월드·장기 화면)·`src/world`(방·충돌·동네 데이터)·`src/art`(코드로 그리는 픽셀)·`src/ui`(창·HUD)·`src/infrastructure/save.ts`(저장)다. 아래의 Phaser·IndexedDB 서술은 옛 결정 기록이며, 작업 규칙은 [AGENTS](../../AGENTS.md) 4절이 우선한다.
+
 ## 기술 선택과 확인 범위
 
 Phaser 4는 2D 월드·카메라·타일맵·캐릭터·애니메이션을 맡는다. TypeScript는 도메인 규칙과 콘텐츠 계약을, HTML/CSS는 대사·도감·기사·설정·학습 설명을 맡는다. 첫 UI는 프레임워크 없는 DOM 컴포넌트로 시작한다. React 등의 추가는 패널 규모와 상태 관리 비용이 확인된 뒤 결정한다.

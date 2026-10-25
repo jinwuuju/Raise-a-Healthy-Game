@@ -101,8 +101,8 @@ for relative in ['data/examples/concept.example.json', 'data/examples/quest.exam
 
 atlas = load('data/catalog/body-atlas.v0.2.json')
 require(len(atlas['hubs']) == 12, 'Expected 12 body hubs')
-require(len(atlas['entries']) == 148, 'Expected 148 initial coverage topics')
-require(len({e['id'] for e in atlas['entries']}) == 148, 'Duplicate anatomy IDs')
+require(len(atlas['entries']) == 157, 'Expected 157 coverage topics (D114)')
+require(len({e['id'] for e in atlas['entries']}) == 157, 'Duplicate anatomy IDs')
 diseases = load('data/catalog/diseases.v0.1.json')
 require(diseases['status'] == 'planned' and diseases['review'] is None, 'Disease catalog must remain planning-only')
 require(len({e['id'] for e in diseases['entries']}) == len(diseases['entries']), 'Duplicate disease IDs')
@@ -268,6 +268,25 @@ for row in rows:
     require(bool(row['lifeBeat']) and bool(row['journalismFocus']), 'Missing life/journalism level path')
 for spend in [250 + 600, 250 + 200 + 1500, 350 + 400 + 250, 0]:
     require(2270 - spend >= 0, 'Early life scenario cannot be afforded')
+
+# D114 (design 21): the whole body is planned, Korean priorities carry evidence, and the runtime advanced-only list rests on the disease catalog.
+hub_ids = {h['id'] for h in atlas['hubs']}
+require(all(any(e['hubId'] == h for e in atlas['entries']) for h in hub_ids), 'Every body hub needs atlas topics (D114: the whole body)')
+require(set(diseases['coverageHubs']) == hub_ids, 'Disease catalog must plan every body hub (design 21)')
+catalog_sources = {s['id']: s for s in diseases.get('sources', [])}
+require(len(catalog_sources) == len(diseases.get('sources', [])) and all(s['url'].startswith('https://') and s['title'] and s['checked'] for s in catalog_sources.values()), 'Disease catalog sources need unique ids, https URLs, titles and checked dates')
+for disease in diseases['entries']:
+    require(disease['depth'] in ('intro', 'advanced'), disease['id'] + ': depth must be intro or advanced')
+    korea = disease.get('korea')
+    if korea:
+        require(bool(korea['reason']) and bool(korea['sourceIds']) and all(i in catalog_sources for i in korea['sourceIds']), disease['id'] + ': Korean priority needs a reason and catalog sources (design 21)')
+require(len({e['name'] for e in diseases['entries']}) == len(diseases['entries']), 'Duplicate disease names in the catalog')
+require(sum(1 for e in diseases['entries'] if e.get('korea')) >= 15, 'Korean priority diseases missing from the catalog (design 21)')
+advanced_names = ' '.join(e['name'] for e in diseases['entries'] if e['depth'] == 'advanced')
+require(all(w in advanced_names for w in ADVANCED_ONLY), 'Every runtime advanced-only word must be an advanced disease in the catalog (design 19, 21)')
+require(any(e['id'] == 'disease.thyroid-cancer' and e['depth'] == 'advanced' and e['primaryHubId'] == 'endocrine' for e in diseases['entries']), 'Thyroid cancer belongs to the endocrine advanced course (design 21)')
+d21 = (ROOT / 'docs/design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md').read_text(encoding='utf-8')
+require('제안' in d21 and '갑상샘암' in d21 and '의대생' in d21, 'Design 21 must keep the chapter map labelled as a proposal, the thyroid cancer plan and the learning-level statement')
 
 links = 0
 for path in sorted(ROOT.rglob('*.md')):

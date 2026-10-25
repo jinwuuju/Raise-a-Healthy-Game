@@ -4,7 +4,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 > **지금 바로 플레이:** https://jinwuuju.github.io/Raise-a-Healthy-Game/ (설계실: [/design/](https://jinwuuju.github.io/Raise-a-Healthy-Game/design/))
 >
-> **현재 배포: redesign-1 + 심장 속 탐사 + 진입 연출 + 심장 기본 과정 Q001~Q010(졸업 특집호까지) + 호흡기 취재 Q011 공기 항구(출시 상한 30)·Q012 갈라지는 길 / 2026-10-23.** 심장 내부를 걸으며 첫 기사·네 방의 주소·판막질환 비교·두 순환 노선·박동 신호·심장 근육 공급을 취재하고, 기본 과정(일반인 난이도)으로 죽상동맥경화 기초(Q007)·고혈압 기초(Q008, 기준 숫자 없이)·처음 보는 그림에 순환 적용(Q009)·심장 졸업 특집호(Q010)까지 이어진다. 기본 XP 합계 2,700XP/Lv.10(출시 상한), Q010을 발행하면 심장 졸업·신입 기자 승진(완료 기록에서 파생). 혈류·심장 근육 배달 런으로 매번 골드를 받는다. 온몸 맵은 아직 없어 이동 축약을 표시한다. 의학 본문은 검수 전 모형이며 의학·아트·실사용자 평가는 별도다. [현재 상태](docs/production/STATUS.md) · [Q012](docs/production/Q012-FORK-REPORT.md) · [Q011](docs/production/Q011-AIR-PORT-REPORT.md) · [Q010](docs/production/Q010-GRADUATION-REPORT.md) · [Q009](docs/production/Q009-CIRCULATION-EXPLAINER-REPORT.md) · [Q008](docs/production/Q008-PRESSURE-REPORT.md) · [Q006](docs/production/Q006-SUPPLY-REPORT.md).
+> **현재 배포: redesign-1 + 심장 속 탐사 + 진입 연출 + 심장 기본 과정 Q001~Q010(졸업 특집호까지) + 호흡기 취재 Q011 공기 항구(출시 상한 30)·Q012 갈라지는 길 / 2026-10-23.** 심장 내부를 걸으며 첫 기사·네 방의 주소·판막질환 비교·두 순환 노선·박동 신호·심장 근육 공급을 취재하고, 기본 과정(일반인 난이도)으로 죽상동맥경화 기초(Q007)·고혈압 기초(Q008, 기준 숫자 없이)·처음 보는 그림에 순환 적용(Q009)·심장 졸업 특집호(Q010)까지 이어진다. 심장 기본 XP 합계 2,700XP/Lv.10, Q010을 발행하면 심장 졸업·신입 기자 승진(완료 기록에서 파생). 혈류·심장 근육 배달 런으로 매번 골드를 받는다. 온몸 맵은 아직 없어 이동 축약을 표시한다. 의학 본문은 검수 전 모형이며 의학·아트·실사용자 평가는 별도다. [현재 상태](docs/production/STATUS.md) · [Q012](docs/production/Q012-FORK-REPORT.md) · [Q011](docs/production/Q011-AIR-PORT-REPORT.md) · [Q010](docs/production/Q010-GRADUATION-REPORT.md) · [Q009](docs/production/Q009-CIRCULATION-EXPLAINER-REPORT.md) · [Q008](docs/production/Q008-PRESSURE-REPORT.md) · [Q006](docs/production/Q006-SUPPLY-REPORT.md).
 
 **추가 배포(D072~D074):** 약 4.2초 심장 진입 연출과 Q002 네 방 취재, Q003 판막질환 비교·6단계 취재·팩트체크 기사. [진입/Q002 기록](docs/production/ORGAN-ENTRY-AND-Q002.md) · [판막 취재 기록](docs/production/Q003-VALVE-REPORT.md).
 
@@ -15,9 +15,11 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 **호흡기 기본 장(D109 준비 · D111 공간 1차 구현):** [설계 20](docs/design/20-RESPIRATORY-BASIC.md) · [정확성·그림 정밀도 계약](docs/production/RESPIRATORY-INTERIOR.md). 코안·인두·후두·기관·기관지 나무·폐포를 걷고, 천식·폐렴·호흡기 바이러스(감기·독감·코로나19 구분)를 기본 과정으로 취재한다. 심장 졸업 뒤 바디스코프에서 호흡기를 골라 콧구멍 진입 연출과 함께 콧구멍부터 폐포까지 걸을 수 있다(숨·삼킴·섬모와 점액, 탐험 기록 44개와 확인 문제). 첫 취재 [Q011 공기 항구](docs/production/Q011-AIR-PORT-REPORT.md)(코안 네 장면·들어오는 공기만 바꾸는 관찰기·본 것과 코가 하는 일 잇기, 550XP·380G, Lv.11)와 [Q012 갈라지는 길](docs/production/Q012-FORK-REPORT.md)(인두·후두 네 장면·목을 지나는 것만 바꾸는 갈림길 관찰기·삼킴 한 번을 순서대로, 600XP·400G, Lv.12)를 공개했고 출시 상한은 30이다. 다음 작업은 Q013 두 개의 흐름이다.
 
-**기본·심화 과정(D108):** [장기마다 일반인도 이해할 만큼 쉬운 기본을 먼저 하고, 졸업하면 다음 장기로 가며 졸업한 장기는 언제든 다시 골라 심화를 배운다](docs/design/19-BASIC-AND-ADVANCED.md). 심장은 Q010 졸업 특집호까지, 다음은 호흡기(코부터). 기본 과정 Q007~Q010과 심장 졸업 표시는 구현됐고, 심화 내용과 바디스코프 장기 고르기는 아직이다.
+**기본·심화 과정(D108):** [장기마다 일반인도 이해할 만큼 쉬운 기본을 먼저 하고, 졸업하면 다음 장기로 가며 졸업한 장기는 언제든 다시 골라 심화를 배운다](docs/design/19-BASIC-AND-ADVANCED.md). 심장은 Q010 졸업 특집호까지, 다음은 호흡기(코부터). 기본 과정 Q007~Q010과 심장 졸업 표시, 바디스코프 장기 고르기(D111)는 구현됐고 심화 내용은 아직이다.
 
 **심장 학습 루프(D106 1차 구현):** [현장 확인(이름표 가린 문제·별)·핵심 12 먼저·혈류 배달 런(매번 보상)](docs/design/18-HEART-LEARNING-LOOP.md). 우심방의 안내 로봇 바디에게 말을 걸어 배달을 시작한다. D108: Q006을 마치면 관상동맥으로 심실 벽 근육에 산소를 나르는 심장 근육 배달이 열리고, 바디스코프 심장 지도에 방별 별과 메달이 채워진다.
+
+**전신 장 지도·한국 우선 질환(D114, 설계만):** [인체의 모든 부위를 장마다 차례로 다루고, 갑상샘암·위암·대장암·간암·결핵·뇌졸중·치매·우울증처럼 한국인에게 부담이 큰 질환을 장마다 넣는다](docs/design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md). 장 지도(장 순서·레벨 구간)는 제안이며 3장 착수 전에 확정한다. 어느 문서가 지금 기준인지는 [문서 지도](docs/00-DOCUMENT-MAP.md)에 있다.
 
 **추가 설계(D076, 구현 전):** [특종 잭팟·의학 미스터리·돌발 뉴스/비밀 제보·전국 취재 월드](docs/design/17-DYNAMIC-NEWS-AND-REGIONAL-WORLD.md). 현재 심장에서는 심장 관련 사건만, 새 기관마다 해당 사건을 동반하며 기본판 전체 입문/검수 및 Lv.99 달성 후 전 분야 무작위 심화 취재를 연다. 기존 '오늘의 점심' 기획은 별도 유지한다. **아직 게임 기능은 추가되지 않았다.**
 
@@ -32,6 +34,8 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 - 저장은 자동. 메뉴 → 기록·저장에서 파일로 내보내기/불러오기/백업 복구.
 
 ## 먼저 읽을 문서
+
+어느 문서가 지금 기준인지는 [문서 지도](docs/00-DOCUMENT-MAP.md)에서 먼저 확인한다.
 
 1. [전체 로드맵](docs/00-MASTER-ROADMAP.md) — 전체 목표, 출시 범위, 단계별 진행 순서와 완료 조건.
 2. [게임의 원칙과 핵심 루프](docs/design/01-GAME-VISION.md).
@@ -51,18 +55,23 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 16. [2.5D 아트 제작 기준](docs/design/14-2_5D-ART-PRODUCTION.md).
 17. [GitHub Pages 배포·갱신](docs/production/WEB-PUBLISHING.md).
 18. [질환 아카데미: 기관마다 함께 구현하는 질환 취재](docs/design/16-DISEASE-ACADEMY.md).
+19. [특종·돌발 뉴스·전국 취재 월드](docs/design/17-DYNAMIC-NEWS-AND-REGIONAL-WORLD.md).
+20. [심장 탐사 학습 루프](docs/design/18-HEART-LEARNING-LOOP.md).
+21. [기본 과정과 심화 과정](docs/design/19-BASIC-AND-ADVANCED.md).
+22. [호흡기 기본 장](docs/design/20-RESPIRATORY-BASIC.md).
+23. [전신 장 지도와 한국 건강 우선순위](docs/design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md).
 
 [HUD·모바일 UX 개발 원칙](docs/design/15-HUD-AND-MOBILE-UX.md)을 UI와 후속 기능에 적용한다.
 
 ## 작업을 이어갈 때
 
-[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 맨 앞 ‘현재 상태와 다음 작업’을 따른다(심장 기본 Q001~Q010 완료 → 호흡기 기본 장 Q011(D112)·Q012(D113) 완료 → Q013 · 점심 그림 확인 대기). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
+[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 2절 ‘지금 어디까지’를 따른다(심장 기본 Q001~Q010 완료 → 호흡기 기본 장 Q011(D112)·Q012(D113) 완료 → Q013 · 점심 그림 확인 대기). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
 
 - 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 이 Mac의 셸에 Node가 없으면 `bash tools/npm-local.sh run dev`.
 - 검증: `npm run typecheck`, `npm test`, `npm run test:e2e`, `npm run build`. 최신 실행 결과는 [현재 상태](docs/production/STATUS.md)와 [첫 기사 기록](docs/production/Q001-ARTICLE.md)에 남긴다. [기존 오류 점검](docs/production/CODE-AUDIT-2026-10-11.md) · [뒷모습·모바일 생성 화면](docs/production/MOBILE-CREATOR-AND-REAR-WALK.md).
 - 설계 검사: `python3 tools/check_design.py`. 수치 변경 시 data/balance 원본과 문서를 함께 고친다.
 - 배포: `main`에 push하면 GitHub Actions가 테스트·빌드 후 Pages에 게임(루트)과 설계실(/design/)을 올린다. 1~2분 뒤 같은 주소를 새로고침하면 최신 버전이다.
-- 의학 내용은 검수 전 초안이며 출처 확인과 검수 이후에만 공개 콘텐츠로 사용한다.
+- 의학 내용은 검수 전 초안이다. 공개 게임에는 ‘검수 전 모형’ 표시와 함께 시제품으로만 싣고, 공개 도감과 정식 출시는 출처 확인과 의학 검수 뒤에 한다.
 
 ## 폴더 안내
 

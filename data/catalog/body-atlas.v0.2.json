@@ -1,7 +1,7 @@
 {
   "version": "0.2",
   "status": "design_only",
-  "note": "해부 목록 초안. 실제 전체 구조의 총수나 검수 완료 콘텐츠가 아님. D108: 허브 심화는 레벨이 아니라 그 허브 기본 졸업 뒤 열린다(deepGate).",
+  "note": "해부 목록 초안. 실제 전체 구조의 총수나 검수 완료 콘텐츠가 아님. D108: 허브 심화는 레벨이 아니라 그 허브 기본 졸업 뒤 열린다(deepGate). D114: 인체 전 부위를 다루기 위해 9개 주제 추가(157개), 장 순서는 설계 21.",
   "hubs": [
     {
       "id": "whole",
@@ -1876,6 +1876,123 @@
       "status": "planned",
       "sourceIds": [],
       "review": null
+    },
+    {
+      "id": "anatomy.digestive.14",
+      "title": "충수",
+      "hubId": "digestive",
+      "introMin": 21,
+      "introMax": 30,
+      "informationAccess": "from_start_after_review",
+      "representation": "map_or_observation_or_diagram",
+      "status": "planned",
+      "sourceIds": [],
+      "review": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "anatomy.digestive.15",
+      "title": "장내 미생물",
+      "hubId": "digestive",
+      "introMin": 21,
+      "introMax": 30,
+      "informationAccess": "from_start_after_review",
+      "representation": "map_or_observation_or_diagram",
+      "status": "planned",
+      "sourceIds": [],
+      "review": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "anatomy.endocrine.09",
+      "title": "송과체",
+      "hubId": "endocrine",
+      "introMin": 25,
+      "introMax": 30,
+      "informationAccess": "from_start_after_review",
+      "representation": "map_or_observation_or_diagram",
+      "status": "planned",
+      "sourceIds": [],
+      "review": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "anatomy.neural.12",
+      "title": "뇌혈관",
+      "hubId": "neural",
+      "introMin": 41,
+      "introMax": 44,
+      "informationAccess": "from_start_after_review",
+      "representation": "map_or_observation_or_diagram",
+      "status": "planned",
+      "sourceIds": [],
+      "review": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "anatomy.senses.14",
+      "title": "눈꺼풀과 눈물샘",
+      "hubId": "senses",
+      "introMin": 41,
+      "introMax": 50,
+      "informationAccess": "from_start_after_review",
+      "representation": "map_or_observation_or_diagram",
+      "status": "planned",
+      "sourceIds": [],
+      "review": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "anatomy.senses.15",
+      "title": "방수 배출로",
+      "hubId": "senses",
+      "introMin": 41,
+      "introMax": 50,
+      "informationAccess": "from_start_after_review",
+      "representation": "map_or_observation_or_diagram",
+      "status": "planned",
+      "sourceIds": [],
+      "review": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "anatomy.movement.19",
+      "title": "추간판",
+      "hubId": "movement",
+      "introMin": 45,
+      "introMax": 50,
+      "informationAccess": "from_start_after_review",
+      "representation": "map_or_observation_or_diagram",
+      "status": "planned",
+      "sourceIds": [],
+      "review": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "anatomy.barrier.14",
+      "title": "피부 감각 수용기",
+      "hubId": "barrier",
+      "introMin": 51,
+      "introMax": 55,
+      "informationAccess": "from_start_after_review",
+      "representation": "map_or_observation_or_diagram",
+      "status": "planned",
+      "sourceIds": [],
+      "review": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "anatomy.barrier.15",
+      "title": "편도",
+      "hubId": "barrier",
+      "introMin": 51,
+      "introMax": 55,
+      "informationAccess": "from_start_after_review",
+      "representation": "map_or_observation_or_diagram",
+      "status": "planned",
+      "sourceIds": [],
+      "review": null,
+      "addedIn": "D114"
     }
   ]
 }

@@ -3,10 +3,20 @@
   "status": "planned",
   "review": null,
   "coverageHubs": [
+    "whole",
     "circulation",
-    "respiratory"
+    "respiratory",
+    "oral",
+    "digestive",
+    "endocrine",
+    "renal",
+    "neural",
+    "senses",
+    "movement",
+    "barrier",
+    "development"
   ],
-  "note": "D073/Q002 작업 단위의 순환 허브 장부 시작. 다른 허브는 아직 미배정이며 전체 질환 장부 완료가 아님. D077/Q005: 부정맥(심방세동) 기초 모듈 추가. D108/Q008: 고혈압 기초 모듈 추가. D109: 호흡·기도 허브 기본 질환 3개(호흡기 바이러스 감염·천식·폐렴) 계획·초안 추가, 구현 전.",
+  "note": "D073/Q002 작업 단위의 순환 허브 장부 시작. 다른 허브는 아직 미배정이며 전체 질환 장부 완료가 아님. D077/Q005: 부정맥(심방세동) 기초 모듈 추가. D108/Q008: 고혈압 기초 모듈 추가. D109: 호흡·기도 허브 기본 질환 3개(호흡기 바이러스 감염·천식·폐렴) 계획·초안 추가, 구현 전. D114(설계 21): 12허브 전부의 기본·심화 질환 계획과 한국 우선 이유(korea)·출처(sources)를 더했다. 새 항목은 계획만이며 초안·런타임 없음, 레벨은 장 지도 확정 전이라 null.",
   "entries": [
     {
       "id": "disease.valve",
@@ -207,7 +217,2264 @@
       "status": "planned",
       "review": null,
       "contentRef": "data/content/diseases/pneumonia.v0.1.json",
-      "questSlot": "Q017"
+      "questSlot": "Q017",
+      "korea": {
+        "reason": "폐렴은 사망원인 3위(2025)",
+        "sourceIds": [
+          "KR-DEATH-2025"
+        ]
+      }
+    },
+    {
+      "id": "disease.coronary",
+      "name": "협심증·심근경색",
+      "english": "Angina and myocardial infarction",
+      "tags": [
+        "퇴행",
+        "대사"
+      ],
+      "primaryHubId": "circulation",
+      "anatomyIds": [
+        "anatomy.circulation.08"
+      ],
+      "relatedSystemIds": [
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.circulation"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "심장 질환은 사망원인 2위(2025)",
+        "sourceIds": [
+          "KR-DEATH-2025"
+        ]
+      }
+    },
+    {
+      "id": "disease.heart-failure",
+      "name": "심부전",
+      "english": "Heart failure",
+      "tags": [
+        "퇴행",
+        "노화"
+      ],
+      "primaryHubId": "circulation",
+      "anatomyIds": [
+        "anatomy.circulation.01",
+        "anatomy.circulation.05"
+      ],
+      "relatedSystemIds": [
+        "circulation",
+        "renal"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.circulation"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.dyslipidemia",
+      "name": "이상지질혈증",
+      "english": "Dyslipidemia",
+      "tags": [
+        "대사"
+      ],
+      "primaryHubId": "circulation",
+      "anatomyIds": [
+        "anatomy.circulation.11",
+        "anatomy.circulation.14"
+      ],
+      "relatedSystemIds": [
+        "circulation",
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.circulation"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.anemia",
+      "name": "빈혈",
+      "english": "Anemia",
+      "tags": [
+        "대사"
+      ],
+      "primaryHubId": "circulation",
+      "anatomyIds": [
+        "anatomy.circulation.15",
+        "anatomy.circulation.14"
+      ],
+      "relatedSystemIds": [
+        "circulation",
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.circulation"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.copd",
+      "name": "만성폐쇄성폐질환",
+      "english": "Chronic obstructive pulmonary disease",
+      "tags": [
+        "퇴행",
+        "염증"
+      ],
+      "primaryHubId": "respiratory",
+      "anatomyIds": [
+        "anatomy.respiratory.07",
+        "anatomy.respiratory.09"
+      ],
+      "relatedSystemIds": [
+        "respiratory"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.respiratory"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.lung-cancer",
+      "name": "폐암",
+      "english": "Lung cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "respiratory",
+      "anatomyIds": [
+        "anatomy.respiratory.08",
+        "anatomy.respiratory.06"
+      ],
+      "relatedSystemIds": [
+        "respiratory",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.respiratory",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "암 사망률 1위(2025), 폐암 검진 대상 확대 추진",
+        "sourceIds": [
+          "KR-DEATH-2025-CANCER",
+          "KR-CANCER-PLAN-5"
+        ]
+      }
+    },
+    {
+      "id": "disease.tuberculosis",
+      "name": "결핵",
+      "english": "Tuberculosis",
+      "tags": [
+        "감염"
+      ],
+      "primaryHubId": "respiratory",
+      "anatomyIds": [
+        "anatomy.respiratory.08"
+      ],
+      "relatedSystemIds": [
+        "respiratory",
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.respiratory"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "OECD 발생률 2위·사망률 3위(2024 기준), 환자의 다수가 65세 이상",
+        "sourceIds": [
+          "KR-TB-2025"
+        ]
+      }
+    },
+    {
+      "id": "disease.sleep-apnea",
+      "name": "수면무호흡",
+      "english": "Obstructive sleep apnea",
+      "tags": [
+        "호흡"
+      ],
+      "primaryHubId": "respiratory",
+      "anatomyIds": [
+        "anatomy.respiratory.03"
+      ],
+      "relatedSystemIds": [
+        "respiratory",
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.respiratory"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.dental-caries",
+      "name": "충치",
+      "english": "Dental caries",
+      "tags": [
+        "감염"
+      ],
+      "primaryHubId": "oral",
+      "anatomyIds": [
+        "anatomy.oral.03"
+      ],
+      "relatedSystemIds": [
+        "oral"
+      ],
+      "prerequisiteConcepts": [
+        "oral.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.periodontal",
+      "name": "치주질환",
+      "english": "Periodontal disease",
+      "tags": [
+        "염증"
+      ],
+      "primaryHubId": "oral",
+      "anatomyIds": [
+        "anatomy.oral.04"
+      ],
+      "relatedSystemIds": [
+        "oral",
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "oral.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.oral-cancer",
+      "name": "구강암",
+      "english": "Oral cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "oral",
+      "anatomyIds": [
+        "anatomy.oral.02",
+        "anatomy.oral.05"
+      ],
+      "relatedSystemIds": [
+        "oral",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.oral",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.dry-mouth",
+      "name": "구강건조",
+      "english": "Dry mouth",
+      "tags": [
+        "노화"
+      ],
+      "primaryHubId": "oral",
+      "anatomyIds": [
+        "anatomy.oral.06"
+      ],
+      "relatedSystemIds": [
+        "oral"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.oral"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.gerd",
+      "name": "위식도역류질환",
+      "english": "Gastroesophageal reflux disease",
+      "tags": [
+        "염증"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.01",
+        "anatomy.digestive.02"
+      ],
+      "relatedSystemIds": [
+        "digestive"
+      ],
+      "prerequisiteConcepts": [
+        "digestive.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.gastritis-hpylori",
+      "name": "위염과 헬리코박터",
+      "english": "Gastritis and Helicobacter pylori",
+      "tags": [
+        "감염",
+        "염증"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.02"
+      ],
+      "relatedSystemIds": [
+        "digestive"
+      ],
+      "prerequisiteConcepts": [
+        "digestive.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "위암 국가검진과 이어지는 기초",
+        "sourceIds": [
+          "KR-SCREEN-6"
+        ]
+      }
+    },
+    {
+      "id": "disease.constipation-ibs",
+      "name": "변비·과민성장증후군",
+      "english": "Constipation and irritable bowel syndrome",
+      "tags": [
+        "기능"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.06"
+      ],
+      "relatedSystemIds": [
+        "digestive",
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "digestive.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.appendicitis",
+      "name": "충수염",
+      "english": "Appendicitis",
+      "tags": [
+        "염증"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.14"
+      ],
+      "relatedSystemIds": [
+        "digestive"
+      ],
+      "prerequisiteConcepts": [
+        "digestive.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.stomach-cancer",
+      "name": "위암",
+      "english": "Stomach cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.02"
+      ],
+      "relatedSystemIds": [
+        "digestive",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.digestive",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "국가암검진 6대암, 발생 상위 암",
+        "sourceIds": [
+          "KR-SCREEN-6",
+          "KR-CANCER-2023"
+        ]
+      }
+    },
+    {
+      "id": "disease.colorectal-cancer",
+      "name": "대장암",
+      "english": "Colorectal cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.06",
+        "anatomy.digestive.07"
+      ],
+      "relatedSystemIds": [
+        "digestive",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.digestive",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "발생 상위 암, 대장내시경 검진 전환 추진",
+        "sourceIds": [
+          "KR-CANCER-2023",
+          "KR-CANCER-PLAN-5"
+        ]
+      }
+    },
+    {
+      "id": "disease.liver-cancer",
+      "name": "간암",
+      "english": "Liver cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.09"
+      ],
+      "relatedSystemIds": [
+        "digestive",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.digestive",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "암 사망률 2위(2025), 고위험군 검진",
+        "sourceIds": [
+          "KR-DEATH-2025-CANCER",
+          "KR-SCREEN-6"
+        ]
+      }
+    },
+    {
+      "id": "disease.viral-hepatitis",
+      "name": "바이러스 간염(B형·C형)",
+      "english": "Viral hepatitis B and C",
+      "tags": [
+        "감염"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.09"
+      ],
+      "relatedSystemIds": [
+        "digestive",
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.digestive"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "간암 고위험군 검진과 이어짐",
+        "sourceIds": [
+          "KR-SCREEN-6"
+        ]
+      }
+    },
+    {
+      "id": "disease.fatty-liver",
+      "name": "지방간질환",
+      "english": "Steatotic liver disease",
+      "tags": [
+        "대사"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.09"
+      ],
+      "relatedSystemIds": [
+        "digestive",
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.digestive"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "간 질환은 사망원인 10위(2025)",
+        "sourceIds": [
+          "KR-DEATH-2025"
+        ]
+      }
+    },
+    {
+      "id": "disease.pancreatic-cancer",
+      "name": "췌장암",
+      "english": "Pancreatic cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.12"
+      ],
+      "relatedSystemIds": [
+        "digestive",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.digestive",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "5년 상대생존율이 가장 낮은 축, 암 사망률 4위(2025)",
+        "sourceIds": [
+          "KR-CANCER-2023",
+          "KR-DEATH-2025-CANCER"
+        ]
+      }
+    },
+    {
+      "id": "disease.gallstone",
+      "name": "담석",
+      "english": "Gallstones",
+      "tags": [
+        "대사"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.10",
+        "anatomy.digestive.11"
+      ],
+      "relatedSystemIds": [
+        "digestive"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.digestive"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.ibd",
+      "name": "염증성장질환",
+      "english": "Inflammatory bowel disease",
+      "tags": [
+        "염증",
+        "면역"
+      ],
+      "primaryHubId": "digestive",
+      "anatomyIds": [
+        "anatomy.digestive.06",
+        "anatomy.digestive.05"
+      ],
+      "relatedSystemIds": [
+        "digestive",
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.digestive"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.diabetes",
+      "name": "당뇨병",
+      "english": "Diabetes mellitus",
+      "tags": [
+        "대사"
+      ],
+      "primaryHubId": "endocrine",
+      "anatomyIds": [
+        "anatomy.endocrine.06",
+        "anatomy.endocrine.08"
+      ],
+      "relatedSystemIds": [
+        "endocrine",
+        "circulation",
+        "renal",
+        "senses"
+      ],
+      "prerequisiteConcepts": [
+        "endocrine.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "당뇨병은 사망원인 7위(2025)",
+        "sourceIds": [
+          "KR-DEATH-2025"
+        ]
+      }
+    },
+    {
+      "id": "disease.thyroid-function",
+      "name": "갑상샘 기능 저하·항진",
+      "english": "Hypothyroidism and hyperthyroidism",
+      "tags": [
+        "호르몬"
+      ],
+      "primaryHubId": "endocrine",
+      "anatomyIds": [
+        "anatomy.endocrine.03",
+        "anatomy.endocrine.02"
+      ],
+      "relatedSystemIds": [
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "endocrine.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.thyroid-cancer",
+      "name": "갑상샘암",
+      "english": "Thyroid cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "endocrine",
+      "anatomyIds": [
+        "anatomy.endocrine.03"
+      ],
+      "relatedSystemIds": [
+        "endocrine",
+        "respiratory",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.endocrine",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "발생 1위·10~40대 1위(2023), 상대생존율 100% 초과, 과잉진단 논쟁과 2015 검진 권고안",
+        "sourceIds": [
+          "KR-CANCER-2023",
+          "KR-THYROID-SCREEN-2015"
+        ]
+      }
+    },
+    {
+      "id": "disease.metabolic-syndrome",
+      "name": "대사증후군·비만(낙인 금지)",
+      "english": "Metabolic syndrome and obesity",
+      "tags": [
+        "대사"
+      ],
+      "primaryHubId": "endocrine",
+      "anatomyIds": [
+        "anatomy.endocrine.07"
+      ],
+      "relatedSystemIds": [
+        "endocrine",
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.endocrine"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.adrenal",
+      "name": "부신 질환",
+      "english": "Adrenal disorders",
+      "tags": [
+        "호르몬"
+      ],
+      "primaryHubId": "endocrine",
+      "anatomyIds": [
+        "anatomy.endocrine.05"
+      ],
+      "relatedSystemIds": [
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.endocrine"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.uti",
+      "name": "요로감염",
+      "english": "Urinary tract infection",
+      "tags": [
+        "감염"
+      ],
+      "primaryHubId": "renal",
+      "anatomyIds": [
+        "anatomy.renal.08",
+        "anatomy.renal.09"
+      ],
+      "relatedSystemIds": [
+        "renal"
+      ],
+      "prerequisiteConcepts": [
+        "renal.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.kidney-stone",
+      "name": "요로결석",
+      "english": "Urinary stones",
+      "tags": [
+        "대사"
+      ],
+      "primaryHubId": "renal",
+      "anatomyIds": [
+        "anatomy.renal.06",
+        "anatomy.renal.07"
+      ],
+      "relatedSystemIds": [
+        "renal"
+      ],
+      "prerequisiteConcepts": [
+        "renal.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.ckd",
+      "name": "만성콩팥병",
+      "english": "Chronic kidney disease",
+      "tags": [
+        "퇴행",
+        "대사"
+      ],
+      "primaryHubId": "renal",
+      "anatomyIds": [
+        "anatomy.renal.01",
+        "anatomy.renal.03"
+      ],
+      "relatedSystemIds": [
+        "renal",
+        "circulation",
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.renal"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.aki",
+      "name": "급성 신손상",
+      "english": "Acute kidney injury",
+      "tags": [
+        "손상"
+      ],
+      "primaryHubId": "renal",
+      "anatomyIds": [
+        "anatomy.renal.02",
+        "anatomy.renal.04"
+      ],
+      "relatedSystemIds": [
+        "renal"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.renal"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.bph",
+      "name": "전립선비대증",
+      "english": "Benign prostatic hyperplasia",
+      "tags": [
+        "노화"
+      ],
+      "primaryHubId": "renal",
+      "anatomyIds": [
+        "anatomy.renal.08",
+        "anatomy.renal.09"
+      ],
+      "relatedSystemIds": [
+        "renal",
+        "development"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.renal"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.stroke",
+      "name": "뇌졸중(뇌경색·뇌출혈)",
+      "english": "Stroke",
+      "tags": [
+        "퇴행",
+        "대사"
+      ],
+      "primaryHubId": "neural",
+      "anatomyIds": [
+        "anatomy.neural.12",
+        "anatomy.neural.01"
+      ],
+      "relatedSystemIds": [
+        "neural",
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "neural.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "뇌혈관 질환은 사망원인 4위(2025)",
+        "sourceIds": [
+          "KR-DEATH-2025"
+        ]
+      }
+    },
+    {
+      "id": "disease.headache",
+      "name": "두통·편두통",
+      "english": "Headache and migraine",
+      "tags": [
+        "신경"
+      ],
+      "primaryHubId": "neural",
+      "anatomyIds": [
+        "anatomy.neural.01",
+        "anatomy.neural.02"
+      ],
+      "relatedSystemIds": [
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "neural.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.dementia",
+      "name": "치매(알츠하이머병)",
+      "english": "Dementia and Alzheimer disease",
+      "tags": [
+        "퇴행",
+        "노화"
+      ],
+      "primaryHubId": "neural",
+      "anatomyIds": [
+        "anatomy.neural.01",
+        "anatomy.neural.10"
+      ],
+      "relatedSystemIds": [
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.neural"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "알츠하이머병은 사망원인 6위(2025), 치매 사망 증가",
+        "sourceIds": [
+          "KR-DEATH-2025",
+          "KR-DEATH-2025-CANCER"
+        ]
+      }
+    },
+    {
+      "id": "disease.depression-anxiety",
+      "name": "우울증·불안장애",
+      "english": "Depression and anxiety disorders",
+      "tags": [
+        "정신건강"
+      ],
+      "primaryHubId": "neural",
+      "anatomyIds": [
+        "anatomy.neural.02",
+        "anatomy.neural.11"
+      ],
+      "relatedSystemIds": [
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.neural"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "10~40대 사망원인 1위가 자살(2025), 자살예방 보도준칙 4.0",
+        "sourceIds": [
+          "KR-DEATH-2025",
+          "KR-SUICIDE-GUIDE-4"
+        ]
+      }
+    },
+    {
+      "id": "disease.parkinson",
+      "name": "파킨슨병",
+      "english": "Parkinson disease",
+      "tags": [
+        "퇴행"
+      ],
+      "primaryHubId": "neural",
+      "anatomyIds": [
+        "anatomy.neural.04",
+        "anatomy.neural.10"
+      ],
+      "relatedSystemIds": [
+        "neural",
+        "movement"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.neural"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.epilepsy",
+      "name": "뇌전증",
+      "english": "Epilepsy",
+      "tags": [
+        "신경"
+      ],
+      "primaryHubId": "neural",
+      "anatomyIds": [
+        "anatomy.neural.01",
+        "anatomy.neural.10"
+      ],
+      "relatedSystemIds": [
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.neural"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.addiction",
+      "name": "중독(알코올·약물)",
+      "english": "Substance use disorders",
+      "tags": [
+        "정신건강"
+      ],
+      "primaryHubId": "neural",
+      "anatomyIds": [
+        "anatomy.neural.02",
+        "anatomy.neural.11"
+      ],
+      "relatedSystemIds": [
+        "neural",
+        "digestive"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.neural"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.refractive",
+      "name": "굴절 이상(근시)과 노안",
+      "english": "Refractive error and presbyopia",
+      "tags": [
+        "감각"
+      ],
+      "primaryHubId": "senses",
+      "anatomyIds": [
+        "anatomy.senses.02",
+        "anatomy.senses.03"
+      ],
+      "relatedSystemIds": [
+        "senses"
+      ],
+      "prerequisiteConcepts": [
+        "senses.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.noise-hearing-loss",
+      "name": "소음성 난청",
+      "english": "Noise-induced hearing loss",
+      "tags": [
+        "감각",
+        "손상"
+      ],
+      "primaryHubId": "senses",
+      "anatomyIds": [
+        "anatomy.senses.10",
+        "anatomy.senses.09"
+      ],
+      "relatedSystemIds": [
+        "senses"
+      ],
+      "prerequisiteConcepts": [
+        "senses.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.dry-eye",
+      "name": "안구건조",
+      "english": "Dry eye",
+      "tags": [
+        "감각"
+      ],
+      "primaryHubId": "senses",
+      "anatomyIds": [
+        "anatomy.senses.14",
+        "anatomy.senses.02"
+      ],
+      "relatedSystemIds": [
+        "senses"
+      ],
+      "prerequisiteConcepts": [
+        "senses.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.cataract",
+      "name": "백내장",
+      "english": "Cataract",
+      "tags": [
+        "노화"
+      ],
+      "primaryHubId": "senses",
+      "anatomyIds": [
+        "anatomy.senses.03"
+      ],
+      "relatedSystemIds": [
+        "senses"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.senses"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.glaucoma",
+      "name": "녹내장",
+      "english": "Glaucoma",
+      "tags": [
+        "퇴행"
+      ],
+      "primaryHubId": "senses",
+      "anatomyIds": [
+        "anatomy.senses.15",
+        "anatomy.senses.06"
+      ],
+      "relatedSystemIds": [
+        "senses"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.senses"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.amd",
+      "name": "황반변성",
+      "english": "Age-related macular degeneration",
+      "tags": [
+        "노화"
+      ],
+      "primaryHubId": "senses",
+      "anatomyIds": [
+        "anatomy.senses.05"
+      ],
+      "relatedSystemIds": [
+        "senses"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.senses"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.bppv",
+      "name": "이석증(어지럼)",
+      "english": "Benign paroxysmal positional vertigo",
+      "tags": [
+        "감각"
+      ],
+      "primaryHubId": "senses",
+      "anatomyIds": [
+        "anatomy.senses.11"
+      ],
+      "relatedSystemIds": [
+        "senses",
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.senses"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.diabetic-retinopathy",
+      "name": "당뇨망막병증",
+      "english": "Diabetic retinopathy",
+      "tags": [
+        "대사"
+      ],
+      "primaryHubId": "senses",
+      "anatomyIds": [
+        "anatomy.senses.05"
+      ],
+      "relatedSystemIds": [
+        "senses",
+        "endocrine",
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.senses"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.sprain",
+      "name": "염좌 등 근골격 손상",
+      "english": "Sprains and musculoskeletal injuries",
+      "tags": [
+        "손상"
+      ],
+      "primaryHubId": "movement",
+      "anatomyIds": [
+        "anatomy.movement.16",
+        "anatomy.movement.18"
+      ],
+      "relatedSystemIds": [
+        "movement"
+      ],
+      "prerequisiteConcepts": [
+        "movement.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.back-neck-pain",
+      "name": "요통·목 통증",
+      "english": "Low back and neck pain",
+      "tags": [
+        "기능"
+      ],
+      "primaryHubId": "movement",
+      "anatomyIds": [
+        "anatomy.movement.02",
+        "anatomy.movement.14"
+      ],
+      "relatedSystemIds": [
+        "movement",
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "movement.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.osteoarthritis",
+      "name": "퇴행성관절염",
+      "english": "Osteoarthritis",
+      "tags": [
+        "퇴행",
+        "노화"
+      ],
+      "primaryHubId": "movement",
+      "anatomyIds": [
+        "anatomy.movement.11",
+        "anatomy.movement.17"
+      ],
+      "relatedSystemIds": [
+        "movement"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.movement"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.osteoporosis",
+      "name": "골다공증·골절",
+      "english": "Osteoporosis and fractures",
+      "tags": [
+        "노화",
+        "호르몬"
+      ],
+      "primaryHubId": "movement",
+      "anatomyIds": [
+        "anatomy.movement.09",
+        "anatomy.movement.02"
+      ],
+      "relatedSystemIds": [
+        "movement",
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.movement"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.disc-herniation",
+      "name": "추간판 탈출(허리디스크)",
+      "english": "Intervertebral disc herniation",
+      "tags": [
+        "퇴행"
+      ],
+      "primaryHubId": "movement",
+      "anatomyIds": [
+        "anatomy.movement.19",
+        "anatomy.movement.02"
+      ],
+      "relatedSystemIds": [
+        "movement",
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.movement"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.sarcopenia",
+      "name": "근감소증",
+      "english": "Sarcopenia",
+      "tags": [
+        "노화"
+      ],
+      "primaryHubId": "movement",
+      "anatomyIds": [
+        "anatomy.movement.14"
+      ],
+      "relatedSystemIds": [
+        "movement"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.movement"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.rheumatoid",
+      "name": "류마티스관절염",
+      "english": "Rheumatoid arthritis",
+      "tags": [
+        "면역"
+      ],
+      "primaryHubId": "movement",
+      "anatomyIds": [
+        "anatomy.movement.18"
+      ],
+      "relatedSystemIds": [
+        "movement",
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.movement"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.gout",
+      "name": "통풍",
+      "english": "Gout",
+      "tags": [
+        "대사"
+      ],
+      "primaryHubId": "movement",
+      "anatomyIds": [
+        "anatomy.movement.18",
+        "anatomy.movement.13"
+      ],
+      "relatedSystemIds": [
+        "movement",
+        "renal"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.movement"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.atopic",
+      "name": "아토피피부염",
+      "english": "Atopic dermatitis",
+      "tags": [
+        "염증",
+        "알레르기"
+      ],
+      "primaryHubId": "barrier",
+      "anatomyIds": [
+        "anatomy.barrier.01",
+        "anatomy.barrier.02"
+      ],
+      "relatedSystemIds": [
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "barrier.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.allergy",
+      "name": "알레르기(비염·식품)",
+      "english": "Allergic rhinitis and food allergy",
+      "tags": [
+        "알레르기"
+      ],
+      "primaryHubId": "barrier",
+      "anatomyIds": [
+        "anatomy.barrier.13"
+      ],
+      "relatedSystemIds": [
+        "barrier",
+        "respiratory",
+        "digestive"
+      ],
+      "prerequisiteConcepts": [
+        "barrier.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.wound-burn",
+      "name": "상처·화상 회복",
+      "english": "Wound and burn healing",
+      "tags": [
+        "손상"
+      ],
+      "primaryHubId": "barrier",
+      "anatomyIds": [
+        "anatomy.barrier.01",
+        "anatomy.barrier.02",
+        "anatomy.barrier.03"
+      ],
+      "relatedSystemIds": [
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "barrier.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.hair-loss",
+      "name": "탈모와 모발 주기",
+      "english": "Hair loss and the hair cycle",
+      "tags": [
+        "노화",
+        "호르몬"
+      ],
+      "primaryHubId": "barrier",
+      "anatomyIds": [
+        "anatomy.barrier.04"
+      ],
+      "relatedSystemIds": [
+        "barrier",
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "barrier.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.leukemia-lymphoma",
+      "name": "백혈병·림프종",
+      "english": "Leukemia and lymphoma",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "barrier",
+      "anatomyIds": [
+        "anatomy.barrier.12",
+        "anatomy.barrier.09"
+      ],
+      "relatedSystemIds": [
+        "barrier",
+        "circulation",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.barrier",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "0~9세에서 가장 많은 암이 백혈병(2023)",
+        "sourceIds": [
+          "KR-CANCER-2023"
+        ]
+      }
+    },
+    {
+      "id": "disease.shingles",
+      "name": "대상포진",
+      "english": "Herpes zoster",
+      "tags": [
+        "감염"
+      ],
+      "primaryHubId": "barrier",
+      "anatomyIds": [
+        "anatomy.barrier.01",
+        "anatomy.barrier.14"
+      ],
+      "relatedSystemIds": [
+        "barrier",
+        "neural"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.barrier"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.autoimmune",
+      "name": "자가면역질환",
+      "english": "Autoimmune diseases",
+      "tags": [
+        "면역"
+      ],
+      "primaryHubId": "barrier",
+      "anatomyIds": [
+        "anatomy.barrier.13",
+        "anatomy.barrier.11"
+      ],
+      "relatedSystemIds": [
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.barrier"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.psoriasis",
+      "name": "건선",
+      "english": "Psoriasis",
+      "tags": [
+        "면역",
+        "염증"
+      ],
+      "primaryHubId": "barrier",
+      "anatomyIds": [
+        "anatomy.barrier.01"
+      ],
+      "relatedSystemIds": [
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.barrier"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.skin-cancer",
+      "name": "피부암",
+      "english": "Skin cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "barrier",
+      "anatomyIds": [
+        "anatomy.barrier.01"
+      ],
+      "relatedSystemIds": [
+        "barrier",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.barrier",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.dysmenorrhea",
+      "name": "월경곤란증",
+      "english": "Dysmenorrhea",
+      "tags": [
+        "호르몬"
+      ],
+      "primaryHubId": "development",
+      "anatomyIds": [
+        "anatomy.development.03"
+      ],
+      "relatedSystemIds": [
+        "development",
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "development.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.sti-prevention",
+      "name": "성매개감염 예방(연령 적합성 별도 검토)",
+      "english": "Sexually transmitted infection prevention",
+      "tags": [
+        "감염"
+      ],
+      "primaryHubId": "development",
+      "anatomyIds": [
+        "anatomy.development.04",
+        "anatomy.development.12"
+      ],
+      "relatedSystemIds": [
+        "development",
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "development.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.breast-cancer",
+      "name": "유방암",
+      "english": "Breast cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "development",
+      "anatomyIds": [
+        "anatomy.development.14"
+      ],
+      "relatedSystemIds": [
+        "development",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.development",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "여성 발생 1위(2023), 국가암검진 6대암",
+        "sourceIds": [
+          "KR-CANCER-2023",
+          "KR-SCREEN-6"
+        ]
+      }
+    },
+    {
+      "id": "disease.cervical-cancer",
+      "name": "자궁경부암과 HPV",
+      "english": "Cervical cancer and HPV",
+      "tags": [
+        "암",
+        "감염"
+      ],
+      "primaryHubId": "development",
+      "anatomyIds": [
+        "anatomy.development.04"
+      ],
+      "relatedSystemIds": [
+        "development",
+        "barrier",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.development",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "국가암검진 6대암, HPV 예방접종",
+        "sourceIds": [
+          "KR-SCREEN-6"
+        ]
+      }
+    },
+    {
+      "id": "disease.prostate-cancer",
+      "name": "전립선암",
+      "english": "Prostate cancer",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "development",
+      "anatomyIds": [
+        "anatomy.development.11"
+      ],
+      "relatedSystemIds": [
+        "development",
+        "renal",
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.development",
+        "whole.cancer-basics"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114",
+      "korea": {
+        "reason": "남성 발생 1위가 처음으로 전립선암(2023)",
+        "sourceIds": [
+          "KR-CANCER-2023"
+        ]
+      }
+    },
+    {
+      "id": "disease.infertility",
+      "name": "난임",
+      "english": "Infertility",
+      "tags": [
+        "생애주기"
+      ],
+      "primaryHubId": "development",
+      "anatomyIds": [
+        "anatomy.development.01",
+        "anatomy.development.07"
+      ],
+      "relatedSystemIds": [
+        "development",
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.development"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.pregnancy-complications",
+      "name": "임신 합병증",
+      "english": "Pregnancy complications",
+      "tags": [
+        "생애주기"
+      ],
+      "primaryHubId": "development",
+      "anatomyIds": [
+        "anatomy.development.15"
+      ],
+      "relatedSystemIds": [
+        "development",
+        "circulation"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.development"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.menopause",
+      "name": "갱년기",
+      "english": "Menopause",
+      "tags": [
+        "호르몬",
+        "생애주기"
+      ],
+      "primaryHubId": "development",
+      "anatomyIds": [
+        "anatomy.development.17",
+        "anatomy.development.01"
+      ],
+      "relatedSystemIds": [
+        "development",
+        "endocrine"
+      ],
+      "prerequisiteConcepts": [
+        "graduation.development"
+      ],
+      "depth": "advanced",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.infection-basics",
+      "name": "감염의 기본(세균과 바이러스)",
+      "english": "Basics of infection: bacteria and viruses",
+      "tags": [
+        "감염"
+      ],
+      "primaryHubId": "whole",
+      "anatomyIds": [
+        "anatomy.whole.01",
+        "anatomy.whole.02"
+      ],
+      "relatedSystemIds": [
+        "whole",
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "whole.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.inflammation-basics",
+      "name": "염증의 기본",
+      "english": "Basics of inflammation",
+      "tags": [
+        "염증"
+      ],
+      "primaryHubId": "whole",
+      "anatomyIds": [
+        "anatomy.whole.06",
+        "anatomy.whole.09"
+      ],
+      "relatedSystemIds": [
+        "whole",
+        "barrier"
+      ],
+      "prerequisiteConcepts": [
+        "whole.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    },
+    {
+      "id": "disease.cancer-basics",
+      "name": "암의 기본 원리(세포 증식 조절 이상)",
+      "english": "Basics of cancer: loss of growth control",
+      "tags": [
+        "암"
+      ],
+      "primaryHubId": "whole",
+      "anatomyIds": [
+        "anatomy.whole.03",
+        "anatomy.whole.01"
+      ],
+      "relatedSystemIds": [
+        "whole"
+      ],
+      "prerequisiteConcepts": [
+        "whole.basic.normal"
+      ],
+      "depth": "intro",
+      "levelRange": null,
+      "status": "planned",
+      "review": null,
+      "contentRef": null,
+      "questSlot": null,
+      "addedIn": "D114"
+    }
+  ],
+  "sources": [
+    {
+      "id": "KR-CANCER-2023",
+      "title": "2023년 국가암등록통계 보도 (보건복지부·중앙암등록본부 발표 2026-01-20)",
+      "url": "https://www.kyeonggi.com/article/20260120580302",
+      "claim": "발생 순위, 성별·연령별 1위 암, 5년 상대생존율",
+      "checked": "2026-10-25",
+      "note": "보도·지표 확인. 장 착수 때 공식 원문(보도자료·보고서) 다시 확인"
+    },
+    {
+      "id": "KR-DEATH-2025",
+      "title": "2025년 사망원인통계 보도 (국가데이터처 발표 2026-09-22)",
+      "url": "https://www.wikitree.co.kr/articles/1161649",
+      "claim": "10대 사망원인 순위, 연령별 1위 사인",
+      "checked": "2026-10-25",
+      "note": "보도·지표 확인. 장 착수 때 공식 원문(보도자료·보고서) 다시 확인"
+    },
+    {
+      "id": "KR-DEATH-2025-CANCER",
+      "title": "2025년 사망원인통계 보도: 암종별 사망률",
+      "url": "https://news.mtn.co.kr/news-detail/2026092215271156528/share-modal",
+      "claim": "암 사망률 폐·간·대장·췌장·위 순, 치매 사망 증가",
+      "checked": "2026-10-25",
+      "note": "보도·지표 확인. 장 착수 때 공식 원문(보도자료·보고서) 다시 확인"
+    },
+    {
+      "id": "KR-DEATH-2024-INDEX",
+      "title": "e-나라지표 사망원인별 사망률 추이 (2024년 통계)",
+      "url": "https://www.index.go.kr/unify/idx-info.do?idxCd=1012",
+      "claim": "2024년 10대 사망원인과 자살률(공식 지표)",
+      "checked": "2026-10-25",
+      "note": "보도·지표 확인. 장 착수 때 공식 원문(보도자료·보고서) 다시 확인"
+    },
+    {
+      "id": "KR-SCREEN-6",
+      "title": "국가암검진 6대암 정책 안내 (대한민국 정책브리핑)",
+      "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148923727",
+      "claim": "6대암 검진 대상과 주기",
+      "checked": "2026-10-25",
+      "note": "보도·지표 확인. 장 착수 때 공식 원문(보도자료·보고서) 다시 확인"
+    },
+    {
+      "id": "KR-CANCER-PLAN-5",
+      "title": "제5차 암관리종합계획(2026~2030) 보도 (보건복지부 발표 2026-02-24)",
+      "url": "https://www.khan.co.kr/article/202602241730001",
+      "claim": "대장내시경 검진 전환·폐암 검진 대상 확대 추진(목표 2028)",
+      "checked": "2026-10-25",
+      "note": "보도·지표 확인. 장 착수 때 공식 원문(보도자료·보고서) 다시 확인"
+    },
+    {
+      "id": "KR-THYROID-SCREEN-2015",
+      "title": "갑상선암 검진 권고안 (국립암센터 주관 제정위원회, 2015)",
+      "url": "https://synapse.koreamed.org/articles/1042935",
+      "claim": "무증상 성인 초음파 선별검사의 근거 평가와 권고",
+      "checked": "2026-10-25",
+      "note": "보도·지표 확인. 장 착수 때 공식 원문(보도자료·보고서) 다시 확인"
+    },
+    {
+      "id": "KR-TB-2025",
+      "title": "2025년도 결핵환자 신고현황 보도 (질병관리청 발표 2026-03-24)",
+      "url": "https://www.mt.co.kr/thebio/2026/03/24/2026032410305819188",
+      "claim": "환자 수 감소, 65세 이상 비중, OECD 발생률 2위·사망률 3위",
+      "checked": "2026-10-25",
+      "note": "보도·지표 확인. 장 착수 때 공식 원문(보도자료·보고서) 다시 확인"
+    },
+    {
+      "id": "KR-SUICIDE-GUIDE-4",
+      "title": "자살예방 보도준칙 4.0 (한국기자협회·보건복지부·한국생명존중희망재단)",
+      "url": "https://journalist.or.kr/news/section4.html?p_num=12",
+      "claim": "자살 보도 원칙",
+      "checked": "2026-10-25",
+      "note": "보도·지표 확인. 장 착수 때 공식 원문(보도자료·보고서) 다시 확인"
     }
   ]
 }

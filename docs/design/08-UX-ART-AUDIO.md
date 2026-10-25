@@ -1,5 +1,7 @@
 # UI·조작·아트·오디오 가이드
 
+> **D114:** 인물 규격은 [CHARACTER-STYLE](../production/CHARACTER-STYLE.md), 렌더링 규격은 [14 아트 제작](14-2_5D-ART-PRODUCTION.md) 머리말이 우선한다. 아래 32×48 서술은 옛 가설이다.
+
 2026-10-10 사용자 UI 수정은 [HUD·모바일 UX 원칙](15-HUD-AND-MOBILE-UX.md)이 우선한다. 아래의 큰 옆 패널/화면 방향 버튼 후보를 현재 기본 HUD로 해석하지 않는다.
 
 ## 화면 구조
