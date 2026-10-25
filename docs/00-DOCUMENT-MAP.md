@@ -6,7 +6,7 @@
 
 1. 사용자 지시(대화). 결정 기록에 남긴다.
 2. [AGENTS.md](../AGENTS.md): 작업 규칙과 현재 위치.
-3. 최신 설계 지침: [설계 21](design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md)(전신 장 지도·한국 우선 질환, 2절 장 지도는 제안) → [설계 20](design/20-RESPIRATORY-BASIC.md)(호흡기 기본 장) → [설계 19](design/19-BASIC-AND-ADVANCED.md)(기본·심화).
+3. 최신 설계 지침: [설계 21](design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md)(전신 장 지도·한국 우선 질환, 장 지도 D115 확정) → [설계 20](design/20-RESPIRATORY-BASIC.md)(호흡기 기본 장) → [설계 19](design/19-BASIC-AND-ADVANCED.md)(기본·심화).
 4. 개별 설계 문서 01~18. 머리말에 ‘변경’ 상자가 있으면 그 상자가 본문보다 우선한다.
 5. 기록: STATUS·BACKLOG·DECISIONS·취재 보고서·ARCHIVE. 그때의 사실이며 지금 규칙이 아니다.
 
@@ -26,7 +26,7 @@
 |---|---|---|
 | [01 원칙과 핵심 루프](design/01-GAME-VISION.md) | 현행 | |
 | [02 진행](design/02-PROGRESSION.md) | 일부 대체 | 직급·숙련·심화 XP는 19 |
-| [02A 레벨 표](design/02A-LEVEL-CATALOG.md) | 자동 생성. Lv.21~60 활동 문구는 옛 배치 | 장 순서는 21(제안) |
+| [02A 레벨 표](design/02A-LEVEL-CATALOG.md) | 자동 생성(D115 장 지도 반영) | 원본은 levels.v0.2 |
 | [03 첫 10레벨](design/03-FIRST-TEN-LEVELS.md) | 일부 대체 | Q007~Q010은 19, 출시 상한은 30 |
 | [04 월드·퀘스트](design/04-WORLD-AND-QUESTS.md) | 기획 가설 | 장 순서는 21, 실제 월드는 DISTRICT-1KM·EUROPLAZA-INTERIOR |
 | [05 경제·편집국](design/05-ECONOMY-AND-NEWSROOM.md) | 현행, 편집국 확장 미구현 | |
@@ -45,7 +45,7 @@
 | [18 심장 학습 루프](design/18-HEART-LEARNING-LOOP.md) | 구현됨 | 졸업 특집호는 Q010 |
 | [19 기본·심화](design/19-BASIC-AND-ADVANCED.md) | 현행 지침 | |
 | [20 호흡기 기본 장](design/20-RESPIRATORY-BASIC.md) | 현행, 진행 중 | |
-| [21 장 지도·한국 우선](design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md) | 현행, 2절은 제안 | |
+| [21 장 지도·한국 우선](design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md) | 현행, 장 지도 확정(D115) | |
 
 ## 제작 문서 (production)
 

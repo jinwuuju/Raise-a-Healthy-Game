@@ -286,7 +286,18 @@ advanced_names = ' '.join(e['name'] for e in diseases['entries'] if e['depth'] =
 require(all(w in advanced_names for w in ADVANCED_ONLY), 'Every runtime advanced-only word must be an advanced disease in the catalog (design 19, 21)')
 require(any(e['id'] == 'disease.thyroid-cancer' and e['depth'] == 'advanced' and e['primaryHubId'] == 'endocrine' for e in diseases['entries']), 'Thyroid cancer belongs to the endocrine advanced course (design 21)')
 d21 = (ROOT / 'docs/design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md').read_text(encoding='utf-8')
-require('제안' in d21 and '갑상샘암' in d21 and '의대생' in d21, 'Design 21 must keep the chapter map labelled as a proposal, the thyroid cancer plan and the learning-level statement')
+require('확정' in d21 and '정확히 알고 쉽게 전한다' in d21 and '갑상샘암' in d21 and '의대생' in d21, 'Design 21 must keep the confirmed chapter map, the core principle, the thyroid cancer plan and the learning-level statement')
+
+# D115 (design 21 section 2, confirmed): basic chapters run one after another through Lv.21~60; the level table and atlas bands follow them.
+CHAPTERS = [(21, 28, ('oral', 'digestive')), (29, 32, ('endocrine',)), (33, 36, ('renal',)), (37, 43, ('neural',)), (44, 47, ('senses',)), (48, 52, ('movement',)), (53, 56, ('barrier',)), (57, 60, ('development',))]
+require([lo for lo, hi, hs in CHAPTERS] == [21] + [hi + 1 for lo, hi, hs in CHAPTERS[:-1]] and CHAPTERS[-1][1] == 60, 'Chapter map must cover Lv.21~60 without gaps or overlaps (D115)')
+atlas_hubs = {h['id']: h for h in atlas['hubs']}
+for lo, hi, hs in CHAPTERS:
+    require(all(hs[-1] in rows[lv - 1]['bodyHubIds'] for lv in range(lo, hi + 1)), 'Lv.' + str(lo) + '~' + str(hi) + ': level rows must follow the chapter map (D115)')
+    for hub in hs:
+        require((atlas_hubs[hub]['introMin'], atlas_hubs[hub]['introMax']) == (lo, hi), hub + ': atlas band must follow the chapter map (D115)')
+require(all((e['introMin'], e['introMax']) == (atlas_hubs[e['hubId']]['introMin'], atlas_hubs[e['hubId']]['introMax']) for e in atlas['entries']), 'Atlas topics must carry their hub band (D115)')
+require([rows[lv - 1]['unlockProposal'].count('승진 도전') for lv in (32, 43, 52, 60)] == [1, 1, 1, 1], 'Promotion challenges sit on chapter graduations 32, 43, 52 and 60 (D115)')
 
 links = 0
 for path in sorted(ROOT.rglob('*.md')):
