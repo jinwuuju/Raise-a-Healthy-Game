@@ -37,6 +37,7 @@ const FONT = "'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,san
 const font = (px: number, w = 700) => `${w} ${px}px ${FONT}`;
 
 export function openAtlas(ctx: Ctx, start: AtlasTab): void {
+  let stopResize = () => {};
   openSheet('바디스코프 지도', (c) => {
     c.parentElement?.classList.add('atlas-sheet');
     c.classList.add('keep-open');
@@ -46,7 +47,9 @@ export function openAtlas(ctx: Ctx, start: AtlasTab): void {
     const info = el('div', 'info');
     // D112: inside the airway the middle scale is the air path instead of the heart's two circuits.
     const tabs: [AtlasTab, string][] = ctx.room.airway ? [['body', '인체'], ['airway', '호흡기'], ['room', '이 방']] : [['body', '인체'], ['heart', '심장'], ['room', '이 방']];
+    let currentTab = start, raf = 0;
     const show = (tab: AtlasTab) => {
+      currentTab = tab; c.scrollTop = 0;
       scale.querySelectorAll('button').forEach((b, i) => { const on = tabs[i]![0] === tab; b.setAttribute('aria-pressed', String(on)); b.classList.toggle('on', on); });
       const cv = el('canvas'); cv.className = 'scope-canvas';
       stage.replaceChildren(cv);
@@ -60,7 +63,11 @@ export function openAtlas(ctx: Ctx, start: AtlasTab): void {
     });
     c.append(scale, head, stage, info);
     show(start);
-  });
+    // D116: phones rotate and windows resize while the map is open; redraw at the new size instead of stretching.
+    const onResize = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => show(currentTab)); };
+    window.addEventListener('resize', onResize);
+    stopResize = () => { cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); };
+  }, () => stopResize());
 }
 
 function placeLine(ctx: Ctx, tab: AtlasTab): HTMLElement[] {
@@ -80,10 +87,18 @@ function placeLine(ctx: Ctx, tab: AtlasTab): HTMLElement[] {
   return [el('h3', '', '인체'), el('span', 'meter', '탐험할 수 있는 기관 ' + (bodyMap.organs as Organ[]).filter(o => stateOf(o, ctx.state) !== 'locked').length + '/' + bodyMap.organs.length)];
 }
 
+/** D116: the canvas height the sheet shows at once, below the scale and the place line, so the whole drawing is visible without scrolling. */
+function fitHeight(cv: HTMLCanvasElement): number {
+  const stage = cv.parentElement!, content = stage.closest('.content') as HTMLElement | null;
+  if (!content) return Infinity;
+  const top = stage.getBoundingClientRect().top - content.getBoundingClientRect().top + content.scrollTop;
+  return Math.floor(content.clientHeight - (parseFloat(getComputedStyle(content).paddingBottom) || 0) - top - 2);
+}
+
 /** Canvas sized to its box at device resolution; returns a context in CSS pixels. */
 function prepare(cv: HTMLCanvasElement, aspect: number, maxH: number): { g: CanvasRenderingContext2D; W: number; H: number } {
-  const W = Math.max(260, cv.parentElement!.clientWidth);
-  const H = Math.min(Math.round(W * aspect), maxH);
+  const W = Math.max(240, cv.parentElement!.clientWidth);
+  const H = Math.max(180, Math.min(Math.round(W * aspect), maxH, fitHeight(cv)));
   const dpr = Math.min(3, window.devicePixelRatio || 1);
   cv.style.height = H + 'px';
   cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
@@ -274,7 +289,15 @@ function heartInfo(ctx: Ctx): HTMLElement[] {
 // ------------------------------------------------------------------ body
 function drawBody(cv: HTMLCanvasElement, ctx: Ctx) {
   const { g, W, H } = prepare(cv, 1.25, Math.round(window.innerHeight * 0.6));
-  const s = Math.min((W * 0.62) / 600, (H * 0.96) / 860), ox = W / 2 - 300 * s, oy = H / 2 - 430 * s;
+  // D116: labels must fit inside the canvas. Narrow screens drop the ‘준비 중’ words (the legend and the dashed outline say it).
+  const narrow = W < 480, labelFont = font(narrow ? 12 : 13, 800);
+  const labelOf = (o: Organ, state: string) => o.name + (state === 'partial' ? ' (일부)' : state === 'locked' && !narrow ? ' · 준비 중' : '');
+  g.font = labelFont;
+  let lw = 0, rw = 0;
+  for (const o of bodyMap.organs as Organ[]) { const w = g.measureText(labelOf(o, stateOf(o, ctx.state))).width; if (o.x < 300) lw = Math.max(lw, w); else rw = Math.max(rw, w); }
+  const s = Math.max(0.12, Math.min((W * 0.62) / 600, (H * 0.92) / 860, (W - lw - rw - 48) / 360));
+  const oxLo = lw + 24 - 120 * s, oxHi = W - 24 - rw - 480 * s;
+  const ox = Math.max(oxLo, Math.min(oxHi, W / 2 - 300 * s)), oy = (H - 22) / 2 - 430 * s;
   const T = (x: number, y: number): [number, number] => [ox + x * s, oy + y * s];
   // Silhouette: one smooth outline.
   const P = (pts: number[][]) => { g.beginPath(); const [x0, y0] = T(pts[0]![0]!, pts[0]![1]!); g.moveTo(x0, y0); for (const q of pts.slice(1)) { const [a, b] = T(q[0]!, q[1]!), [c, d] = T(q[2]!, q[3]!); g.quadraticCurveTo(a, b, c, d); } g.closePath(); };
@@ -302,16 +325,18 @@ function drawBody(cv: HTMLCanvasElement, ctx: Ctx) {
   // Labels sit in the margins with leader lines, like an atlas plate (screen left = body right).
   for (const [side, list] of [[-1, left], [1, right]] as [number, typeof left][]) {
     list.sort((a, b) => a.y - b.y);
+    // Spread the labels downwards, then pull them back up if the last one would leave the canvas.
+    const gap = narrow ? 20 : 24, ys: number[] = [];
     let last = -Infinity;
-    for (const it of list) {
-      const y = Math.max(it.y, last + 24); last = y;
-      const lx = side < 0 ? ox + 120 * s - 14 : ox + 480 * s + 14;
+    for (const it of list) { last = Math.max(it.y, last + gap); ys.push(last); }
+    for (let i = ys.length - 1; i >= 0; i--) ys[i] = Math.max(12, Math.min(ys[i]!, i === ys.length - 1 ? H - 32 : ys[i + 1]! - gap));
+    list.forEach((it, i) => {
+      const y = ys[i]!, lx = side < 0 ? ox + 120 * s - 14 : ox + 480 * s + 14;
       g.beginPath(); g.moveTo(it.x, it.y); g.lineTo(lx, y); g.lineWidth = 1; g.strokeStyle = 'rgba(247,236,221,0.3)'; g.stroke();
-      const open = it.o.state !== 'locked';
-      g.font = font(13, 800); g.textBaseline = 'middle'; g.textAlign = side < 0 ? 'right' : 'left';
+      g.font = labelFont; g.textBaseline = 'middle'; g.textAlign = side < 0 ? 'right' : 'left';
       g.fillStyle = it.o.state === 'open' ? C.ivory : it.o.state === 'partial' ? '#f4c6cf' : 'rgba(247,236,221,0.42)';
-      g.fillText(it.o.name + (it.o.state === 'partial' ? ' (일부)' : open ? '' : ' · 준비 중'), lx + side * 4, y);
-    }
+      g.fillText(labelOf(it.o, it.o.state), lx + side * 4, y);
+    });
   }
   g.font = font(11, 700); g.fillStyle = C.muted; g.textAlign = 'center';
   g.fillText('몸의 오른쪽', ox + 150 * s, H - 14); g.fillText('몸의 왼쪽', ox + 450 * s, H - 14);
@@ -354,10 +379,18 @@ function drawAirway(cv: HTMLCanvasElement, ctx: Ctx) {
     g.beginPath(); g.roundRect(x - bw / 2, y - bh / 2, bw, bh, 12);
     g.fillStyle = id === 'alveoli' ? 'rgba(234,214,220,0.16)' : 'rgba(201,107,122,0.22)'; g.fill();
     g.lineWidth = here ? 3 : rs.medal ? 2.5 : 1.5; g.strokeStyle = here ? C.scope : rs.medal ? C.gold : 'rgba(255,190,200,0.45)'; g.stroke();
-    g.font = font(13, 800); g.fillStyle = C.ivory; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText(airNames[id] ?? id, x, y - bh * 0.17);
-    g.font = font(11, 700); g.fillStyle = rs.medal ? C.gold : C.muted;
-    g.fillText('기록 ' + pr.found + '/' + pr.total + ' · ★' + rs.stars + '/' + rs.max, x, y + bh * 0.24);
+    if (bh >= 36) {
+      g.font = font(13, 800); g.fillStyle = C.ivory; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText(airNames[id] ?? id, x, y - bh * 0.17);
+      g.font = font(11, 700); g.fillStyle = rs.medal ? C.gold : C.muted;
+      g.fillText('기록 ' + pr.found + '/' + pr.total + ' · ★' + rs.stars + '/' + rs.max, x, y + bh * 0.24);
+    } else {
+      // D116: short canvases (phones on their side) get one line per room so the name and the record do not overlap.
+      const line = (airNames[id] ?? id) + ' · ' + pr.found + '/' + pr.total + ' · ★' + rs.stars + '/' + rs.max;
+      g.font = font(12, 800); if (g.measureText(line).width > bw - 10) g.font = font(10, 800);
+      g.fillStyle = rs.medal ? C.gold : C.ivory; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText(line, x, y);
+    }
     if (here) you(g, x - bw / 2 + 2, y);
   });
   // Swallow gates and the food way: the oesophagus opening is never walked into.
