@@ -10,6 +10,7 @@ import { publishQ9 } from './q009';
 import { publishQ10 } from './q010';
 import { publishQ11 } from './q011';
 import { publishQ12 } from './q012';
+import { publishQ13 } from './q013';
 import { bandFor, reactionBalance as b, reactionText as text, type QuestId, type Reaction } from './reaction-state';
 import type { GameState } from './state';
 
@@ -60,6 +61,9 @@ export function publishQ10WithReaction(s: GameState, random: Random = randomReac
 export function publishQ11WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
   const next = publishQ11(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q011');
 }
+export function publishQ13WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
+  const next = publishQ13(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q013');
+}
 export function publishQ12WithReaction(s: GameState, random: Random = randomReactionValue, now = new Date().toISOString()): GameState {
   const next = publishQ12(s, now); return next === s ? s : appendReaction(s, next, true, random, now, 'Q012');
 }
@@ -86,6 +90,7 @@ export function reprintArticle(s: GameState, expectedCount: number, random: Rand
   if (questId === 'Q005' && (!s.q005.publishedAt || !s.ledger.includes('quest.Q005.first'))) throw new Error('Q005 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q006' && (!s.q006.publishedAt || !s.ledger.includes('quest.Q006.first'))) throw new Error('Q006 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q011' && (!s.q011.publishedAt || !s.ledger.includes('quest.Q011.first'))) throw new Error('Q011 기사 발행을 먼저 마쳐 주세요.');
+  if (questId === 'Q013' && (!s.q013.publishedAt || !s.ledger.includes('quest.Q013.first'))) throw new Error('Q013 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q012' && (!s.q012.publishedAt || !s.ledger.includes('quest.Q012.first'))) throw new Error('Q012 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q010' && (!s.q010.publishedAt || !s.ledger.includes('quest.Q010.first'))) throw new Error('Q010 기사 발행을 먼저 마쳐 주세요.');
   if (questId === 'Q009' && (!s.q009.publishedAt || !s.ledger.includes('quest.Q009.first'))) throw new Error('Q009 기사 발행을 먼저 마쳐 주세요.');

@@ -24,6 +24,7 @@ import { coreIds, heartGraduated, q10CoreLeft, rankOf } from '../domain/q010';
 import { q10Text } from '../domain/q010-state';
 import { airModes, q11Evidence, q11Text, type Q11Evidence } from '../domain/q011-state';
 import { q12Evidence, q12Text, throatModes, type Q12Evidence } from '../domain/q012-state';
+import { breathModes, q13Evidence, q13Text, type Q13Evidence } from '../domain/q013-state';
 import { latestReaction, type Reaction } from '../domain/reaction-state';
 import { CRAVE_NAMES, lunchDate, lunchHudText } from '../domain/lunch';
 import { heartRoute } from '../world/heart-rooms';
@@ -37,7 +38,7 @@ import { openSheet } from './sheet';
 const tabs = ['지금 할 일', '취재 파일', '발행 기사', '인체 탐험', '동네·생활'] as const;
 let selectedTab = 0;
 const expanded = new Map<string, boolean>();
-type Actions = { article: () => void; q002: () => void; q003: () => void; q004: () => void; q005: () => void; q006: () => void; q007: () => void; q008: () => void; q009: () => void; q010: () => void; q011: () => void; q012: () => void; reaction: (r: Reaction) => void; map: () => void; lunch: (date?: string) => void; lunchDex: (target: HTMLElement) => void };
+type Actions = { article: () => void; q002: () => void; q003: () => void; q004: () => void; q005: () => void; q006: () => void; q007: () => void; q008: () => void; q009: () => void; q010: () => void; q011: () => void; q012: () => void; q013: () => void; reaction: (r: Reaction) => void; map: () => void; lunch: (date?: string) => void; lunchDex: (target: HTMLElement) => void };
 
 export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: number): void {
   if (tab !== undefined && tab >= 0 && tab < tabs.length) selectedTab = tab;
@@ -77,10 +78,11 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
     const current = panels[0]!;
     current.append(el('h3', '', '지금 할 일'), el('p', 'notebook-goal', objective(s, room)));
     const overview = el('div', 'notebook-overview');
-    overview.append(el('span', '', '취재 근거 ' + records.evidence.length + '/2' + (s.q002.accepted ? ' · Q002 ' + records.q2Evidence.length + '/4' : '') + (s.q004.accepted ? ' · Q004 '+s.q004.notes.length+'/6' : '') + (s.q005.accepted ? ' · Q005 ' + q5Normal.filter(id => s.q005.notes.includes(id)).length + '/5' : '') + (s.q006.accepted ? ' · Q006 ' + q6Normal.filter(id => s.q006.notes.includes(id)).length + '/5' : '') + (s.q007.accepted ? ' · Q007 ' + q7Normal.filter(id => s.q007.notes.includes(id)).length + '/2' : '') + (s.q008.accepted ? ' · Q008 ' + q8Normal.filter(id => s.q008.notes.includes(id)).length + '/2' : '') + (s.q009.accepted ? ' · Q009 ' + q9Evidence.filter(id => s.q009.notes.includes(id)).length + '/4' : '') + (s.q010.accepted && !s.q010.publishedAt ? ' · 졸업 특집 ' + (Number(s.q010.runDone) + Number(!q10CoreLeft(s).length)) + '/2' : '')), el('span', '', '탐험 구조 ' + Object.values(records.anatomy).flat().length + '/' + discoveryIds.length), el('span', '', '발행 기사 ' + (Number(!!s.article.publishedAt) + Number(!!s.q002.publishedAt) + Number(!!s.q003.publishedAt) + Number(!!s.q004.publishedAt) + Number(!!s.q005.publishedAt) + Number(!!s.q006.publishedAt) + Number(!!s.q007.publishedAt) + Number(!!s.q008.publishedAt) + Number(!!s.q009.publishedAt) + Number(!!s.q010.publishedAt) + Number(!!s.q011.publishedAt) + Number(!!s.q012.publishedAt)) + '편'));
+    overview.append(el('span', '', '취재 근거 ' + records.evidence.length + '/2' + (s.q002.accepted ? ' · Q002 ' + records.q2Evidence.length + '/4' : '') + (s.q004.accepted ? ' · Q004 '+s.q004.notes.length+'/6' : '') + (s.q005.accepted ? ' · Q005 ' + q5Normal.filter(id => s.q005.notes.includes(id)).length + '/5' : '') + (s.q006.accepted ? ' · Q006 ' + q6Normal.filter(id => s.q006.notes.includes(id)).length + '/5' : '') + (s.q007.accepted ? ' · Q007 ' + q7Normal.filter(id => s.q007.notes.includes(id)).length + '/2' : '') + (s.q008.accepted ? ' · Q008 ' + q8Normal.filter(id => s.q008.notes.includes(id)).length + '/2' : '') + (s.q009.accepted ? ' · Q009 ' + q9Evidence.filter(id => s.q009.notes.includes(id)).length + '/4' : '') + (s.q010.accepted && !s.q010.publishedAt ? ' · 졸업 특집 ' + (Number(s.q010.runDone) + Number(!q10CoreLeft(s).length)) + '/2' : '')), el('span', '', '탐험 구조 ' + Object.values(records.anatomy).flat().length + '/' + discoveryIds.length), el('span', '', '발행 기사 ' + (Number(!!s.article.publishedAt) + Number(!!s.q002.publishedAt) + Number(!!s.q003.publishedAt) + Number(!!s.q004.publishedAt) + Number(!!s.q005.publishedAt) + Number(!!s.q006.publishedAt) + Number(!!s.q007.publishedAt) + Number(!!s.q008.publishedAt) + Number(!!s.q009.publishedAt) + Number(!!s.q010.publishedAt) + Number(!!s.q011.publishedAt) + Number(!!s.q012.publishedAt) + Number(!!s.q013.publishedAt)) + '편'));
     if (s.q011.accepted && !s.q011.publishedAt) overview.append(el('span', '', 'Q011 장면 ' + q11Evidence.filter(id => s.q011.notes.includes(id)).length + '/' + q11Evidence.length + ' · 공기 ' + s.q011.compared.length + '/' + airModes.length));
+    if (s.q013.accepted && !s.q013.publishedAt) overview.append(el('span', '', 'Q013 장면 ' + q13Evidence.filter(id => s.q013.notes.includes(id)).length + '/' + q13Evidence.length + ' · 관찰기 ' + s.q013.compared.length + '/' + breathModes.length));
     if (s.q012.accepted && !s.q012.publishedAt) overview.append(el('span', '', 'Q012 장면 ' + q12Evidence.filter(id => s.q012.notes.includes(id)).length + '/' + q12Evidence.length + ' · 관찰기 ' + s.q012.compared.length + '/' + throatModes.length));
-    current.append(overview, el('p', 'muted', '직급 · ' + rankOf(s) + (heartGraduated(s) ? ' · 심장 졸업 · 심장 심화 과정(준비 중) · 다음 장기: 호흡기(바디스코프에서 호흡기를 골라 콧구멍으로' + (s.q012.publishedAt ? ', Q012 발행 · 다음 취재 준비 중)' : s.q012.accepted ? ', Q012 갈라지는 길 취재 중)' : s.q011.publishedAt ? ', Q011 발행 · 편집장에게 Q012 받기)' : s.q011.accepted ? ', Q011 공기 항구 취재 중)' : ', 편집장에게 Q011 받기)') : '')));
+    current.append(overview, el('p', 'muted', '직급 · ' + rankOf(s) + (heartGraduated(s) ? ' · 심장 졸업 · 심장 심화 과정(준비 중) · 다음 장기: 호흡기(바디스코프에서 호흡기를 골라 콧구멍으로' + (s.q013.publishedAt ? ', Q013 발행 · 다음 취재 준비 중)' : s.q013.accepted ? ', Q013 두 개의 흐름 취재 중)' : s.q012.publishedAt ? ', Q012 발행 · 편집장에게 Q013 받기)' : s.q012.accepted ? ', Q012 갈라지는 길 취재 중)' : s.q011.publishedAt ? ', Q011 발행 · 편집장에게 Q012 받기)' : s.q011.accepted ? ', Q011 공기 항구 취재 중)' : ', 편집장에게 Q011 받기)') : '')));
     if (s.flags.includes(Q1.briefed)) current.append(action(s.article.publishedAt ? '첫 기사와 독자 답장 읽기' : '첫 기사 쓰기 · 초안 이어서', actions.article));
     else current.append(button('row notebook-link', '취재 파일 확인하기', () => choose(1)));
     if (s.q002.reported) current.append(action(s.q002.publishedAt ? '네 방의 도해 기사 읽기' : '네 방의 도해 기사 쓰기 · 초안 이어서', actions.q002));
@@ -88,6 +90,7 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
     if(s.q004.accepted)current.append(action(s.q004.publishedAt?'두 순환 노선 기사 읽기':'두 순환 노선 기사 이어서',actions.q004));
     if (s.q005.accepted) current.append(action(s.q005.publishedAt ? '박동 신호 기사 읽기' : '박동 신호 자료와 기사 이어서', actions.q005));
     if (s.q006.accepted) current.append(action(s.q006.publishedAt ? '심장 근육 공급 기사 읽기' : '심장 근육 공급 자료와 기사 이어서', actions.q006));
+    if (s.q013.accepted) current.append(action(s.q013.publishedAt ? '두 개의 흐름 기사 읽기' : '두 개의 흐름 취재와 기사 이어서', actions.q013));
     if (s.q012.accepted) current.append(action(s.q012.publishedAt ? '갈라지는 길 기사 읽기' : '갈라지는 길 취재와 기사 이어서', actions.q012));
     if (s.q011.accepted) current.append(action(s.q011.publishedAt ? '공기 항구 기사 읽기' : '공기 항구 취재와 기사 이어서', actions.q011));
     if (s.q010.accepted) current.append(action(s.q010.publishedAt ? '졸업 특집 기사 읽기' : '졸업 특집호 이어서', actions.q010));
@@ -151,6 +154,15 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
       }
       for (const m of q5Text.materials.filter(m => s.q005.notes.includes(m.id as Q5Evidence))) fold(body, 'q005-' + m.id, m.title, detail => { detail.append(el('p', '', m.text)); m.cards.forEach(card => detail.append(el('h4', '', card.title), el('p', '', card.text))); sources(detail, m.src, q5Text.sources); });
       body.append(button('row notebook-link', '심방세동 비교 기록은 인체 탐험에서 보기', () => choose(3)), action(s.q005.publishedAt ? '박동 신호 기사 읽기' : '자료 취재·기사 이어서', actions.q005), el('p', 'muted', q5Text.disclaimer));
+    });
+    if (s.q013.accepted) fold(file, 'q013', 'Q013 · ' + q13Text.title + (s.q013.publishedAt ? ' · 발행 완료' : ' · 취재 중'), body => {
+      body.append(el('p', 'notebook-question', q13Text.question), el('p', '', '기관과 기관지의 장면 ' + q13Evidence.filter(id => s.q013.notes.includes(id)).length + '/' + q13Evidence.length + ' · 관찰기 ' + s.q013.compared.length + '/' + breathModes.length));
+      for (const note of q13Text.notes) {
+        if (!s.q013.notes.includes(note.id as Q13Evidence)) { body.append(el('p', 'muted', note.name + ' · 아직 (' + note.place + ')')); continue; }
+        fold(body, 'q013-' + note.id, note.name, detail => { detail.append(el('p', '', note.text)); sources(detail, note.src, q13Text.sources); });
+      }
+      for (const m of breathModes.filter(m => s.q013.compared.includes(m))) fold(body, 'q013-breath-' + m, '관찰기 · ' + q13Text.observer.modes[m].label, detail => { detail.append(el('p', '', q13Text.observer.modes[m].text), el('p', 'muted', q13Text.observer.limit)); sources(detail, q13Text.observer.modes[m].src, q13Text.sources); });
+      body.append(action(s.q013.publishedAt ? '두 개의 흐름 기사 읽기' : '두 개의 흐름 기사 이어서', actions.q013), el('p', 'muted', q13Text.disclaimer));
     });
     if (s.q012.accepted) fold(file, 'q012', 'Q012 · ' + q12Text.title + (s.q012.publishedAt ? ' · 발행 완료' : ' · 취재 중'), body => {
       body.append(el('p', 'notebook-question', q12Text.question), el('p', '', '목구멍과 공기 길 입구의 장면 ' + q12Evidence.filter(id => s.q012.notes.includes(id)).length + '/' + q12Evidence.length + ' · 관찰기 ' + s.q012.compared.length + '/' + throatModes.length));
@@ -220,6 +232,7 @@ export function openNotebook(game: Game, room: RoomId, actions: Actions, tab?: n
       if(s.q004.publishedAt)archive.append(el('p','','Q004 · '+q4Text.title),action('두 순환 노선 기사와 독자 답장 읽기',actions.q004));
       if (s.q005.publishedAt) archive.append(el('p', '', 'Q005 · ' + q5Text.title), action('박동 신호 기사와 독자 답장 읽기', actions.q005));
       if (s.q006.publishedAt) archive.append(el('p', '', 'Q006 · ' + q6Text.title), action('심장 근육 공급 기사와 독자 답장 읽기', actions.q006));
+      if (s.q013.publishedAt) archive.append(el('p', '', 'Q013 · ' + q13Text.title), action('두 개의 흐름 기사와 독자 답장 읽기', actions.q013));
       if (s.q012.publishedAt) archive.append(el('p', '', 'Q012 · ' + q12Text.title), action('갈라지는 길 기사와 독자 답장 읽기', actions.q012));
       if (s.q011.publishedAt) archive.append(el('p', '', 'Q011 · ' + q11Text.title), action('공기 항구 기사와 독자 답장 읽기', actions.q011));
       if (s.q010.publishedAt) archive.append(el('p', '', 'Q010 · ' + q10Text.title), action('졸업 특집 기사와 독자 답장 읽기', actions.q010));

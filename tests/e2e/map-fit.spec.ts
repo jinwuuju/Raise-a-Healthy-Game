@@ -89,6 +89,7 @@ const opens: [string, string][] = [
   ['/src/ui/valve-comparison.ts', 'openValveComparison'], ['/src/ui/rhythm-comparison.ts', 'openRhythmComparison'], ['/src/ui/supply-comparison.ts', 'openSupplyComparison'],
   ['/src/ui/passage-comparison.ts', 'openPassageComparison'], ['/src/ui/pressure-comparison.ts', 'openPressureComparison'], ['/src/ui/air-port-comparison.ts', 'openAirPortComparison'],
   ['/src/ui/fork-comparison.ts', 'openForkComparison'], ['/src/ui/q009.ts', 'openQ9'], ['/src/ui/q010.ts', 'openQ10'], ['/src/ui/q012.ts', 'openQ12'],
+  ['/src/ui/flow-comparison.ts', 'openFlowComparison'], ['/src/ui/q013.ts', 'openQ13'],
 ];
 test('Observers, desks and the notebook do not clip or leave the screen on phones (D116)', async ({ page }) => {
   test.setTimeout(180000);

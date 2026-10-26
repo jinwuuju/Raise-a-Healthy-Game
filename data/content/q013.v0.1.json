@@ -1,0 +1,288 @@
+{
+ "id": "content.Q013",
+ "status": "draft_unreviewed",
+ "review": null,
+ "updatedAt": "2026-10-26",
+ "tier": "basic",
+ "title": "두 개의 흐름",
+ "question": "숨을 들이쉬면 공기가 폐로 들어가잖아요. 그럼 목에 있는 가래도 숨에 딸려 폐로 내려가지 않나요?",
+ "offer": [
+  "갈라지는 길 기사, 반응이 좋아요. 다음 독자 질문이에요. 숨을 들이쉬면 공기가 폐로 들어가는데, 목에 있는 가래도 숨에 딸려 폐로 내려가지 않느냐고요.",
+  "성대 틈 아래는 숨관(기관)이고, 그 끝에서 길이 좌우 기관지로 갈라져요. 바디스코프에서 호흡기를 골라 기관과 기관지의 네 장면을 보고 와요. 기관 한가운데에 두 흐름 관찰기도 무료로 빌려 둘게요."
+ ],
+ "newNames": [
+  "기관",
+  "기관지",
+  "섬모"
+ ],
+ "disclaimer": "검수 전 모형 · 의학 전문가 검수 전 기관·기관지 취재 연습이에요. 실제 사람의 숨이나 가래를 진단하지 않아요.",
+ "sources": [
+  {
+   "id": "openstax-resp",
+   "title": "OpenStax Anatomy and Physiology 2e · 22.1 Organs and Structures of the Respiratory System",
+   "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system",
+   "checked": "2026-10-26",
+   "section": "Trachea / Bronchial Tree (stacked C-shaped hyaline cartilage keeps the trachea open, with the trachealis and elastic tissue at the back next to the oesophagus; the lining is ciliated epithelium with mucus-producing goblet cells; the trachea branches into the right and left main bronchi at the carina, a raised ridge whose nervous tissue triggers violent coughing when something touches it; the bronchi keep branching into smaller bronchi and bronchioles and are lined by the same ciliated epithelium)"
+  },
+  {
+   "id": "nhlbi-resp",
+   "title": "NHLBI · The Respiratory System",
+   "url": "https://www.nhlbi.nih.gov/health/lungs/respiratory-system",
+   "checked": "2026-10-26",
+   "section": "Airways / Air comes into your body (air goes down the windpipe and into the bronchial tubes of each lung, which branch into thousands of thinner tubes; breathing out sends the air back out the same way)"
+  },
+  {
+   "id": "clearance-model",
+   "title": "Theoretical model of clearance in the tracheobronchial airways of healthy subjects and smokers · Journal of Public Health and Emergency (AME)",
+   "url": "https://jphe.amegroups.org/article/view/4437/html",
+   "checked": "2026-10-26",
+   "section": "Introduction / clearance mechanisms (the cilia-driven mucus blanket is transported towards the trachea, where it is swallowed or expectorated; substances that harm the cilia impair their motion and the clearance becomes slower)"
+  },
+  {
+   "id": "mcc-review",
+   "title": "Adaptation of an amphibian mucociliary clearance model to evaluate early effects of tobacco smoke exposure · Respiratory Research (PMC517705)",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC517705",
+   "checked": "2026-10-26",
+   "section": "Background (mucociliary clearance is the first line of defence keeping the airways free of foreign bodies; it is impaired by damage to the airway lining, ciliary dysfunction, inflammation and changes in the mucus)"
+  }
+ ],
+ "notes": [
+  {
+   "id": "rings",
+   "room": "trachea",
+   "target": "rx-c-ring",
+   "name": "장면 · 늘 열려 있는 숨관",
+   "place": "기관 벽의 단단한 고리",
+   "card": "고리가 받친 관으로 공기가 들숨엔 내려가고 날숨엔 올라와요",
+   "text": "성대 틈 아래 숨관(기관)의 벽은 C자 모양 단단한 고리가 층층이 받치고 있어요. 그래서 관이 찌그러지지 않고 늘 열려 있어요. 이 관으로 공기는 들이쉴 때 폐 쪽으로 내려가고, 내쉴 때 목 쪽으로 올라와요.",
+   "src": [
+    "openstax-resp",
+    "nhlbi-resp"
+   ]
+  },
+  {
+   "id": "carpet",
+   "room": "trachea",
+   "target": "rx-escalator",
+   "name": "장면 · 위로만 가는 점액",
+   "place": "기관 안쪽 벽",
+   "card": "섬모가 숨과 상관없이 점액을 늘 목 쪽 위로 쓸어 올려요",
+   "text": "기관 안쪽 벽은 아주 가는 털(섬모)이 카펫처럼 덮고, 그 위를 끈끈한 점액이 덮고 있어요. 섬모가 한쪽으로 물결치듯 움직여 점액을 늘 목 쪽 위로 쓸어 올리고, 점액에 붙잡힌 먼지와 작은 알갱이도 함께 올라가요. 섬모 세포가 다치면 이 청소가 느려져요.",
+   "src": [
+    "openstax-resp",
+    "clearance-model",
+    "mcc-review"
+   ]
+  },
+  {
+   "id": "carina",
+   "room": "trachea",
+   "target": "rx-carina",
+   "name": "장면 · 좌우로 갈리는 능선",
+   "place": "기관 맨 아래",
+   "card": "기관 맨 아래 능선에서 길이 좌우 기관지로 갈라져요",
+   "text": "기관 맨 아래에서 관이 좌우 두 갈래(기관지)로 갈라져요. 갈라지는 자리에는 날 선 능선이 있고, 여기에 무언가 닿으면 세찬 기침이 나요. 들이쉰 공기는 이 능선에서 양쪽 폐로 나뉘어 들어가요.",
+   "src": [
+    "openstax-resp",
+    "nhlbi-resp"
+   ]
+  },
+  {
+   "id": "branches",
+   "room": "bronchi",
+   "target": "rx-lobar",
+   "name": "장면 · 모여 오르는 점액",
+   "place": "갈라지는 기관지 가지",
+   "card": "가는 가지에서 올라온 점액이 큰 가지로 모여 기관으로 올라가요",
+   "text": "기관지는 폐 속으로 들어가며 나뭇가지처럼 계속 갈라지고 점점 가늘어져요. 가지 벽에도 섬모와 점액이 깔려 있어서, 가지마다 올라온 점액이 큰 가지로 모여 기관으로 올라가요.",
+   "src": [
+    "openstax-resp",
+    "clearance-model"
+   ]
+  }
+ ],
+ "observer": {
+  "room": "trachea",
+  "target": "rx-goblet",
+  "title": "두 흐름 관찰기",
+  "intro": "기관 한가운데에서 기관과 그 아래 갈라지는 기관지를 앞에서 함께 봐요. 숨만 하나씩 바꾸고, 공기와 점액이 어느 쪽으로 가는지 따로 봐요.",
+  "singleVariable": "기관은 그대로 두고, 숨만 바꿔 비교해요.",
+  "views": {
+   "trachea": "앞에서 본 기관 · 위쪽이 목",
+   "bronchi": "앞에서 본 기관지 · 왼쪽이 몸의 오른쪽"
+  },
+  "flowNames": {
+   "air": "공기",
+   "mucus": "점액",
+   "cilia": "섬모"
+  },
+  "modes": {
+   "in": {
+    "label": "숨을 들이쉴 때",
+    "text": "들이쉬면 공기가 기관을 따라 아래로 내려가 갈림 능선에서 좌우 기관지로 나뉘어 들어가요. 그동안에도 벽의 점액은 섬모를 타고 목 쪽 위로 올라가요. 점액은 숨에 딸려 내려가지 않아요.",
+    "flows": {
+     "air": "아래로 · 폐 쪽",
+     "mucus": "위로 · 목 쪽",
+     "cilia": "쉬지 않고 위쪽으로 물결"
+    },
+    "air": "down",
+    "result": "공기는 폐 쪽으로 · 점액은 목 쪽으로",
+    "src": [
+     "openstax-resp",
+     "nhlbi-resp",
+     "clearance-model"
+    ]
+   },
+   "out": {
+    "label": "숨을 내쉴 때",
+    "text": "내쉬면 공기가 좌우 기관지에서 모여 기관을 따라 목 쪽 위로 올라와요. 점액도 위로 가지만, 숨이 밀어서가 아니라 섬모가 쓸어 올려서예요.",
+    "flows": {
+     "air": "위로 · 목 쪽",
+     "mucus": "위로 · 목 쪽",
+     "cilia": "쉬지 않고 위쪽으로 물결"
+    },
+    "air": "up",
+    "result": "공기는 목 쪽으로 · 점액도 목 쪽으로",
+    "src": [
+     "nhlbi-resp",
+     "clearance-model"
+    ]
+   },
+   "hold": {
+    "label": "숨을 잠깐 참을 때",
+    "text": "숨을 참으면 기관 속 공기는 멈춰요. 그래도 섬모는 쉬지 않고 물결쳐 점액을 목 쪽 위로 계속 올려요. 두 흐름은 서로 다른 힘으로 움직여요.",
+    "flows": {
+     "air": "멈춤",
+     "mucus": "위로 · 목 쪽",
+     "cilia": "쉬지 않고 위쪽으로 물결"
+    },
+    "air": "still",
+    "result": "공기는 멈춤 · 점액은 그래도 목 쪽으로",
+    "src": [
+     "openstax-resp",
+     "clearance-model"
+    ]
+   }
+  },
+  "limit": "관찰기는 숨을 아주 느리게 늦추고 섬모와 점액을 크게 그린 모형이에요. 측정값이 아니에요."
+ },
+ "board": {
+  "title": "두 흐름 나누기",
+  "intro": "기관과 기관지에서 본 움직임을 공기 흐름과 점액 흐름으로 나눠요. 기사는 독자가 두 흐름을 헷갈리지 않게 따로 설명해야 해요.",
+  "bins": [
+   {
+    "id": "air",
+    "label": "공기 흐름"
+   },
+   {
+    "id": "mucus",
+    "label": "점액 흐름"
+   }
+  ],
+  "cards": [
+   {
+    "id": "tide",
+    "bin": "air",
+    "card": "들이쉬면 폐 쪽으로 내려가고, 내쉬면 목 쪽으로 올라와요",
+    "scenes": [
+     "rings"
+    ]
+   },
+   {
+    "id": "divide",
+    "bin": "air",
+    "card": "기관 맨 아래 능선에서 좌우 기관지로 나뉘어 들어가요",
+    "scenes": [
+     "carina"
+    ]
+   },
+   {
+    "id": "up",
+    "bin": "mucus",
+    "card": "숨을 쉬든 참든 늘 목 쪽 위로만 가요",
+    "scenes": [
+     "carpet"
+    ]
+   },
+   {
+    "id": "gather",
+    "bin": "mucus",
+    "card": "가는 가지에서 올라온 것이 큰 가지로 모여 기관으로 올라가요",
+    "scenes": [
+     "branches"
+    ]
+   }
+  ],
+  "decoys": [
+   {
+    "id": "follow",
+    "card": "숨을 들이쉬면 같이 폐 쪽으로 빨려 내려가요",
+    "hint": "관찰기에서 숨을 들이쉴 때도 점액은 목 쪽 위로 올라갔어요. 점액은 숨이 아니라 섬모를 타고 움직여요."
+   }
+  ],
+  "wrong": "그 움직임은 다른 흐름이에요. ‘{scene}’ 장면에서 무엇이 그렇게 움직였는지 떠올려 봐요.",
+  "placed": "그 카드는 이미 나눴어요.",
+  "seen": "내가 본 장면"
+ },
+ "article": {
+  "leads": [
+   {
+    "id": "two",
+    "label": "두 흐름으로 시작",
+    "title": "기관 속 두 개의 흐름",
+    "text": "숨관(기관) 속에는 흐름이 둘 있어요. 공기는 숨에 따라 내려갔다 올라오고, 벽의 점액은 숨과 상관없이 늘 목 쪽으로 올라가요."
+   },
+   {
+    "id": "reader",
+    "label": "독자 질문으로 시작",
+    "title": "가래는 숨 따라 폐로 내려가지 않는다",
+    "text": "숨을 들이쉬어도 가래는 폐로 빨려 내려가지 않아요. 기도 벽의 점액은 숨이 아니라 아주 가는 털(섬모)을 타고 늘 목 쪽으로 올라가기 때문이에요."
+   },
+   {
+    "id": "empty",
+    "label": "텅 빈 관으로 시작",
+    "title": "기관은 공기만 지나는 빈 관",
+    "text": "기관은 공기만 오가는 텅 빈 관이에요.",
+    "hint": "기관 벽에서 섬모와 점액이 쉬지 않고 위로 움직이는 걸 봤어요. 본 것을 빼고 말하는 첫 문장은 쓰지 않아요."
+   }
+  ],
+  "analogies": [
+   {
+    "id": "escalator",
+    "label": "바람 부는 터널 속 에스컬레이터",
+    "text": "기관은 바람이 들고 나는 터널 같아요. 그 벽에는 늘 위로만 도는 에스컬레이터가 깔려 있어서, 바람이 어느 쪽으로 불든 짐(점액)은 위로 올라가요."
+   },
+   {
+    "id": "tree",
+    "label": "거꾸로 선 나무",
+    "text": "기관과 기관지는 거꾸로 선 나무 같아요. 줄기에서 굵은 가지, 가는 가지로 갈라지고, 가지마다 모인 점액은 줄기 쪽으로 올라와요."
+   },
+   {
+    "id": "straw",
+    "label": "빨대 하나",
+    "text": "기관은 빨대 같아서 들이쉬면 안에 있는 것이 모두 함께 빨려 들어가요.",
+    "hint": "관찰기에서 공기와 점액은 따로 움직였어요. 숨을 들이쉴 때도 점액은 위로 갔죠."
+   }
+  ],
+  "limitations": [
+   {
+    "id": "analogy",
+    "label": "비유의 한계로 마무리",
+    "text": "에스컬레이터와 나무는 비유예요. 실제 섬모는 아주 작은 털이 수없이 모여 물결처럼 함께 움직이고, 기관지는 모형보다 훨씬 여러 번 갈라져요. 섬모 세포가 다치면 이 청소가 느려질 수 있어요."
+   },
+   {
+    "id": "model",
+    "label": "모형의 한계로 마무리",
+    "text": "게임 속 기관과 기관지는 걸을 수 있게 넓히고 섬모와 점액을 크게 그린 모형이에요. 실제 숨은 훨씬 빠르고, 섬모는 눈에 보이지 않을 만큼 작아요."
+   }
+  ],
+  "factcheck": "‘기침을 해야만 기도가 깨끗해진다’는 정확하지 않아요. 평소에도 섬모가 쉬지 않고 점액을 목 쪽으로 올려 보내고, 목까지 올라온 점액은 삼켜지거나 뱉어져요. 기침은 점액이 많아지거나 무언가 닿았을 때 함께 돕는 길이에요.",
+  "next": "공기는 기관지의 가장 가는 가지를 지나 폐포에 닿아요. 산소가 피로 건너가는 창은 다음 호흡기 취재에서 봐요. 섬모 세포를 다치게 하는 바이러스 이야기는 그 뒤 호흡기 취재에서 이어져요.",
+  "reply": "가래가 숨 따라 폐로 내려가는 줄 알았는데, 섬모가 늘 목 쪽으로 올려 보내고 있었군요! 이제 기침이 왜 나는지도 조금 알 것 같아요."
+ },
+ "simplification": [
+  "기관과 기관지는 앞에서 본 한 면만 걸어요. 벽 뒤쪽 막과 그 뒤의 식도는 탐험 기록으로만 봐요.",
+  "숨은 관찰을 위해 아주 느리게 늦췄고, 섬모와 점액은 보이도록 크게 그렸어요. 측정값이 아니에요.",
+  "기관지는 실제로 훨씬 여러 번 갈라지지만 모형에서는 몇 갈래만 걸어요."
+ ]
+}

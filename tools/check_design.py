@@ -233,6 +233,27 @@ q12screen = ''.join([q12['question'], *q12['offer'], *(n['text'] + n['card'] + n
 require(not any(ch.isdigit() for ch in q12screen), 'Q012 basic screens must not carry numbers (design 19 section 3)')
 q12b = load('data/balance/q012.v0.1.json')
 require(q12b['publication']['key'] == 'quest.Q012.first' and q12b['publication']['xp'] == rows[10]['xpToNext'] and 0 < q12b['publication']['gold'] and q12b['repeatXp'] == 0 and q12b['repeatBaseGold'] == 0, 'Q012 reward must be E(11) XP once (Lv.11 to 12) with repeat XP 0')
+# D117 Q013: two flows in the windpipe (design 20 section 3). Scenes in the trachea and the bronchial tree, an observer
+# that changes only the breath (the air follows it, the mucus always goes up), movements sorted into the two flows, no
+# disease yet (the cilia link is one sentence; respiratory diseases come in their own quests).
+q13 = load('data/content/q013.v0.1.json')
+q13text = json.dumps(q13, ensure_ascii=False)
+q13src = {s['id'] for s in q13['sources']}
+q13notes = {n['id'] for n in q13['notes']}
+q13modes = q13['observer']['modes']
+require(q13['status'] == 'draft_unreviewed' and q13['review'] is None and q13['tier'] == 'basic' and len(q13['notes']) == 4 and len(q13['newNames']) <= 3, 'Q013 content boundary mismatch (basic course: at most three new names)')
+require(all(n['room'] in ('trachea', 'bronchi') and rx['discoveries'].get(n['target'], {}).get('room') == n['room'] and n['src'] and set(n['src']) <= q13src for n in q13['notes']) and {n['room'] for n in q13['notes']} == {'trachea', 'bronchi'}, 'Q013 scenes must stand in the trachea and the bronchial tree and carry sources')
+require({n['target'] for n in q13['notes']} >= {'rx-escalator', 'rx-carina'}, 'Q013 must show the mucus escalator and the split of the windpipe')
+require(rx['discoveries'].get(q13['observer']['target'], {}).get('room') == q13['observer']['room'] == 'trachea' and set(q13modes) == {'in', 'out', 'hold'} and all(m['src'] and set(m['src']) <= q13src for m in q13modes.values()), 'Q013 observer must sit in the trachea with three breaths')
+require([q13modes[k]['air'] for k in ('in', 'out', 'hold')] == ['down', 'up', 'still'] and len({m['flows']['mucus'] for m in q13modes.values()}) == 1 and '위로' in q13modes['in']['flows']['mucus'] and all(set(m['flows']) == {'air', 'mucus', 'cilia'} for m in q13modes.values()), 'Q013 observer: the air follows the breath, the mucus goes up in every breath (accuracy contract: mucus one way)')
+cards = q13['board']['cards']
+require({b['id'] for b in q13['board']['bins']} == {'air', 'mucus'} and sorted(c['bin'] for c in cards) == ['air', 'air', 'mucus', 'mucus'] and all(c['scenes'] and set(c['scenes']) <= q13notes for c in cards) and all(d.get('hint') for d in q13['board']['decoys']) and '{scene}' in q13['board']['wrong'], 'Q013 board: each movement rests on a recorded scene and belongs to one flow; decoys need hints')
+require(len([a for a in q13['article']['analogies'] if a.get('hint')]) == 1 and len([l for l in q13['article']['leads'] if l.get('hint')]) == 1, 'Q013 lead and analogy choices mismatch')
+require('검수 전 모형' in q13['disclaimer'] and not any(w in q13text for w in ADVANCED_ONLY) and not any(w in q13text for w in ('감기', '독감', '코로나', '폐렴', '천식', '기관지염', '기관지확장', '섬모운동이상', '낭성섬유', '흡연', '담배')), 'Q013 must stay a labelled basic draft; respiratory diseases come in their own quests (design 20)')
+q13screen = ''.join([q13['question'], *q13['offer'], *(n['text'] + n['card'] + n['name'] + n['place'] for n in q13['notes']), q13['observer']['intro'], q13['observer']['singleVariable'], q13['observer']['limit'], *q13['observer']['views'].values(), *q13['observer']['flowNames'].values(), *(m['label'] + m['text'] + m['result'] + ''.join(m['flows'].values()) for m in q13modes.values()), q13['board']['intro'], q13['board']['wrong'], q13['board']['placed'], *(b['label'] for b in q13['board']['bins']), *(d['card'] + d['hint'] for d in q13['board']['decoys']), *(c['card'] for c in cards), *(x['text'] + x.get('hint', '') for x in q13['article']['leads'] + q13['article']['analogies'] + q13['article']['limitations']), q13['article']['factcheck'], q13['article']['next'], q13['article']['reply'], *q13['simplification']])
+require(not any(ch.isdigit() for ch in q13screen), 'Q013 basic screens must not carry numbers (design 19 section 3)')
+q13b = load('data/balance/q013.v0.1.json')
+require(q13b['publication']['key'] == 'quest.Q013.first' and q13b['publication']['xp'] == rows[11]['xpToNext'] and q13b['publication']['gold'] > load('data/balance/q012.v0.1.json')['publication']['gold'] and q13b['repeatXp'] == 0 and q13b['repeatBaseGold'] == 0, 'Q013 reward must be E(12) XP once (Lv.12 to 13) with repeat XP 0')
 q10 = load('data/content/q010.v0.1.json')
 q10text = json.dumps(q10, ensure_ascii=False)
 q10ev = {e['id'] for e in q10['board']['evidence']}

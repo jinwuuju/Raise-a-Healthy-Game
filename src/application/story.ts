@@ -24,6 +24,8 @@ import { canOfferQ11, q11CompareDone, q11NotesDone } from '../domain/q011';
 import { airModes, q11Evidence, q11Text, type Q11Evidence } from '../domain/q011-state';
 import { canOfferQ12, q12CompareDone, q12NotesDone } from '../domain/q012';
 import { q12Evidence, q12Text, throatModes, type Q12Evidence } from '../domain/q012-state';
+import { canOfferQ13, q13CompareDone, q13NotesDone } from '../domain/q013';
+import { breathModes, q13Evidence, q13Text, type Q13Evidence } from '../domain/q013-state';
 import { discoveries } from '../domain/heart';
 import { q9Evidence, q9Text, type Q9Evidence } from '../domain/q009-state';
 import type { GameState } from '../domain/state';
@@ -32,7 +34,7 @@ import space from '../../data/content/respiratory-space.v0.1.json';
 import { rxCore, rxKey } from '../domain/airway';
 
 export type Line = { who: string; text: string; npc: string | null };
-export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' | 'offer-q5' | 'offer-q6' | 'offer-q7' | 'offer-q8' | 'offer-q9' | 'offer-q10' | 'offer-q11' | 'offer-q12' };
+export type Talk = { lines: Line[]; flag: string | null; action?: 'offer-q1' | 'brief-q1' | 'offer-q2' | 'brief-q2' | 'offer-q3' | 'offer-q4' | 'offer-q5' | 'offer-q6' | 'offer-q7' | 'offer-q8' | 'offer-q9' | 'offer-q10' | 'offer-q11' | 'offer-q12' | 'offer-q13' };
 export const q1Text = q1;
 export const heartText = heart;
 
@@ -57,6 +59,25 @@ export function objective(s: GameState, room: RoomId): string {
   }
   if (!has('reported-back')) return room === 'newsroom' ? '편집장에게 다녀왔다고 알리기' : '편집국으로 돌아가 편집장에게 알리기';
   if (!has(Q1.accepted)) return room === 'newsroom' ? '편집장에게 첫 취재 의뢰 받기' : '편집국으로 돌아가 편집장에게 첫 취재 받기';
+  // D117 Q013 (design 20 section 3): two flows in the windpipe, offered after the fork article.
+  if (canOfferQ13(s)) return isAirwayRoom(room) ? airwayObjective(s) + ' · 편집국 편집장에게 다음 호흡기 취재 받기' : '갈라지는 길 기사 발행 완료! 편집장에게 다음 호흡기 취재 ‘두 개의 흐름’ 받기 · 수첩에서 기사·반응 읽기';
+  if (s.q013.accepted) {
+    if (s.q013.publishedAt) return isAirwayRoom(room) ? airwayObjective(s) + ' · 다음 호흡기 취재는 준비 중' : '두 개의 흐름 기사 발행 완료! 수첩에서 기사·반응 읽기 · 바디스코프에서 호흡기를 골라 자유 탐험 · 다음 호흡기 취재는 준비 중';
+    if (!q13NotesDone(s)) {
+      const left = q13Text.notes.filter(n => !s.q013.notes.includes(n.id as Q13Evidence));
+      const note = left.find(n => n.room === room) ?? left[0]!;
+      const count = q13Evidence.filter(id => s.q013.notes.includes(id)).length + '/' + q13Evidence.length;
+      if (note.room === room) return note.name.replace('장면 · ', '') + ' 살펴보기 · ' + note.place + ' (' + count + ')';
+      if (room === 'trachea' || room === 'bronchi') return (note.room === 'bronchi' ? '기관 맨 아래에서 갈라지는 기관지 나무로 내려가 남은 장면 보기' : '위쪽 기관으로 올라가 남은 장면 보기') + ' (' + count + ')';
+      return isAirwayRoom(room) ? '공기 길 입구(후두) 아래 기관과 그 아래 기관지로 가서 네 장면 보기 (' + count + ')' : '바디스코프에서 호흡기를 골라 콧구멍 → 목구멍 → 공기 길 입구 → 기관으로 · 네 장면 보기 (' + count + ')';
+    }
+    if (!q13CompareDone(s)) {
+      const count = s.q013.compared.length + '/' + breathModes.length;
+      if (room === 'trachea') return '기관 한가운데 두 흐름 관찰기에서 숨을 하나씩 바꿔 보기 (' + count + ')';
+      return isAirwayRoom(room) ? '기관 한가운데 두 흐름 관찰기로 (' + count + ')' : '바디스코프로 들어가 기관 한가운데 두 흐름 관찰기에서 비교하기 (' + count + ')';
+    }
+    return room === 'newsroom' ? '내 자리에서 두 흐름을 나누고 두 개의 흐름 기사 쓰기' : '편집국 내 자리로 돌아가 두 개의 흐름 기사 쓰기';
+  }
   // D113 Q012 (design 20 section 3): the fork in the throat, offered after the air-port article.
   if (canOfferQ12(s)) return isAirwayRoom(room) ? airwayObjective(s) + ' · 편집국 편집장에게 다음 호흡기 취재 받기' : '공기 항구 기사 발행 완료! 편집장에게 다음 호흡기 취재 ‘갈라지는 길’ 받기 · 수첩에서 기사·반응 읽기';
   if (s.q012.accepted) {
@@ -246,6 +267,8 @@ export function talk(id: string, s: GameState): Talk {
   const has = (f: string) => s.flags.includes(f);
   switch (id) {
     case 'editor':
+      if (canOfferQ13(s)) return { flag: null, action: 'offer-q13', lines: say('편집장', 'editor', ...q13Text.offer) };
+      if (s.q013.accepted) return { flag: null, lines: say('편집장', 'editor', s.q013.publishedAt ? '두 개의 흐름 기사, 독자 반응이 좋아요. 다음 호흡기 취재는 준비하고 있어요. 그동안 호흡기를 자유롭게 둘러봐도 좋아요.' : objective(s, s.at.room)) };
       if (canOfferQ12(s)) return { flag: null, action: 'offer-q12', lines: say('편집장', 'editor', ...q12Text.offer) };
       if (s.q012.accepted) return { flag: null, lines: say('편집장', 'editor', s.q012.publishedAt ? '갈라지는 길 기사, 독자 반응이 좋아요. 다음 호흡기 취재는 준비하고 있어요. 그동안 호흡기를 자유롭게 둘러봐도 좋아요.' : objective(s, s.at.room)) };
       if (canOfferQ11(s)) return { flag: null, action: 'offer-q11', lines: say('편집장', 'editor', ...q11Text.offer) };

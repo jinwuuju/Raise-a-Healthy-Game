@@ -42,6 +42,8 @@ for path in dist.rglob('*'):
                 assert DISCLAIMER in text and 'draft_unreviewed' in text and '질환 레이어가 아니에요' in text, 'Q006 must remain a labelled normal-supply draft inside the quest'
             if 'content.Q007' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text and '질환 레이어' in text, 'Q007 must remain a labelled basic atherosclerosis draft inside the quest'
+            if 'content.Q013' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Q013 must remain a labelled basic two-flows draft inside the quest'
             if 'content.Q012' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Q012 must remain a labelled basic fork draft inside the quest'
             if 'content.Q011' in text:

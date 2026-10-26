@@ -1,0 +1,12 @@
+{
+ "id": "Q013",
+ "publication": {
+  "key": "quest.Q013.first",
+  "xp": 680,
+  "gold": 420
+ },
+ "repeatXp": 0,
+ "repeatBaseGold": 0,
+ "reactionBalanceRef": "article-reactions.v0.1.json",
+ "note": "D117: 호흡기 세 번째 취재. XP는 설계 02 E(12)=680(Lv.12→13), 골드는 Q012 400G 위 420G. 네 장면·관찰기·흐름 나누기에는 보상을 추가하지 않는다. 명시적 재발행의 추가 골드만 D066 적용."
+}
