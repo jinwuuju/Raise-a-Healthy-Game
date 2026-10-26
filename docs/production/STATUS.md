@@ -17,7 +17,7 @@
 - **저장:** 새 필드 `q013`(옛 저장은 빈 의뢰). 장면은 그 구조의 `rx:` 기록을, 관찰기는 `rx:rx-goblet`을 함께 남긴다. 테스트 저장 `tests/helpers/q014-fixture.ts`(Q013 발행 직후, Lv.13).
 - **검사 추가:** `tests/unit/q013.test.ts` 8개, `tests/e2e/q013.spec.ts` 2개(관찰기 공기·점액 화살표 색 검사 포함), map-fit 잘림 검사에 두 흐름 관찰기·Q013 내 자리 추가, check_design Q013 규칙(장면 방·출처, 세 숨·점액은 늘 위, 나누기 카드의 장면 근거·흐름, 숫자·질환 낱말 금지, 보상 E(12)), check_game_build 초안 표시. Q012 단위 검사의 ‘발행 뒤 다음 의뢰 없음’을 ‘Q013 의뢰’로 고침.
 - **검증:** 타입 검사, Vitest **533개**, 빌드·배포 경계(본체 `index-DDpjF0km.js`, 약 807KB·gzip 245KB, 취재 하나만큼 약 36KB 증가), check_design **1,757개**·build_site 71쪽·check_site, Playwright 전체 **133개 통과(' + mins + '분)**.
-- **배포 확인:** 아래 ‘Record verified D117 deployment’ 커밋에서 적는다.
+- **배포 확인:** `9b7d135` GitHub Actions 성공(2026-10-26 12:07). 공개 주소 본체 `index-DDpjF0km.js`가 로컬 빌드와 바이트 단위로 일치(SHA-256 앞자리 `4a62e2dc24c5b31d`).
 - **미확인:** 관찰기 두 화면과 화살표의 미감(작업자는 화면을 눈으로 보지 못함, 스크린샷 `artifacts/d117-*.png`), 의학 검수, 실제 휴대폰, 재미·학습 효과.
 
 ## 2026-10-25 / D116 바디스코프 지도 잘림 수정·화면 전체 점검
