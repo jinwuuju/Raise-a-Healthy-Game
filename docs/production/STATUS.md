@@ -18,6 +18,7 @@
 - **라이브러리:** three.js 0.186.1(MIT) 처음 도입, 3D 화면을 처음 열 때만 내려받는 지연 청크. 최소화가 라이선스 주석을 지우므로 화면 ‘오픈소스 고지’에 MIT 전문, [고지](../../THIRD_PARTY_NOTICES.md) 갱신.
 - **검사 추가:** `tests/unit/body3d.test.ts` 15개(메시·해부 관계·본문 계약·GPU 없이 생성), `tests/e2e/body3d.spec.ts` 2개(열기·범위·설명·누르기·돌리기·층·지도 왕복·잠김·휴대폰 화면), check_design 7개 규칙, check_game_build(three는 지연 청크에만, 초안 표시).
 - **검증:** 타입 검사, Vitest **548개**(새 15개), 빌드·배포 경계(본체 `index-Cvc75nz5.js` 약 808KB·gzip 246KB로 그대로, 3D 청크 `body3d-*.js` 약 625KB·gzip 163KB, three는 본체에 없음), check_design **1,773개**·build_site 72쪽·check_site, Playwright 전체 **135개 중 134개 통과(17.6분)**. 실패 1개는 전체 실행 도중 작업자가 3D 화면 소스(오픈소스 고지)를 고쳐 개발 서버가 페이지를 새로 고친 탓이며, 수정을 마친 뒤 `tests/e2e/body3d.spec.ts` 2개를 단독으로 다시 돌려 통과.
+- **배포 확인:** `b7ff310` GitHub Actions 성공(2026-10-29 12:15). 공개 주소의 본체 `index-Cvc75nz5.js`와 3D 청크 `body3d-BoFXlfw2.js`가 로컬 빌드와 바이트 단위로 일치(SHA-256 앞자리 `97ecb495fa1b893d`, `5617a2e95fc71b74`).
 - **미확인:** 화면 미감(작업자는 화면을 눈으로 보지 못한다, 스크린샷 `artifacts/d118-body3d-*.png`), 실제 휴대폰 WebGL 성능·발열(특히 iOS Safari), 의학 검수.
 
 ## 2026-10-26 / D117 Q013 두 개의 흐름 (호흡기 기본 세 번째 취재)
