@@ -6,7 +6,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 > **지금 바로 플레이:** https://jinwuuju.github.io/Raise-a-Healthy-Game/ (설계실: [/design/](https://jinwuuju.github.io/Raise-a-Healthy-Game/design/))
 >
-> **현재 배포: redesign-1 + 심장 속 탐사 + 진입 연출 + 심장 기본 과정 Q001~Q010(졸업 특집호까지) + 호흡기 취재 Q011 공기 항구(출시 상한 30)·Q012 갈라지는 길·Q013 두 개의 흐름 / 2026-10-26.** 심장 내부를 걸으며 첫 기사·네 방의 주소·판막질환 비교·두 순환 노선·박동 신호·심장 근육 공급을 취재하고, 기본 과정(일반인 난이도)으로 죽상동맥경화 기초(Q007)·고혈압 기초(Q008, 기준 숫자 없이)·처음 보는 그림에 순환 적용(Q009)·심장 졸업 특집호(Q010)까지 이어진다. 심장 기본 XP 합계 2,700XP/Lv.10, Q010을 발행하면 심장 졸업·신입 기자 승진(완료 기록에서 파생). 혈류·심장 근육 배달 런으로 매번 골드를 받는다. 온몸 맵은 아직 없어 이동 축약을 표시한다. 의학 본문은 검수 전 모형이며 의학·아트·실사용자 평가는 별도다. [현재 상태](docs/production/STATUS.md) · [Q013](docs/production/Q013-TWO-FLOWS-REPORT.md) · [Q012](docs/production/Q012-FORK-REPORT.md) · [Q011](docs/production/Q011-AIR-PORT-REPORT.md) · [Q010](docs/production/Q010-GRADUATION-REPORT.md) · [Q009](docs/production/Q009-CIRCULATION-EXPLAINER-REPORT.md) · [Q008](docs/production/Q008-PRESSURE-REPORT.md) · [Q006](docs/production/Q006-SUPPLY-REPORT.md).
+> **현재 배포: redesign-1 + 심장 속 탐사 + 진입 연출 + 심장 기본 과정 Q001~Q010(졸업 특집호까지) + 호흡기 취재 Q011 공기 항구(출시 상한 30)·Q012 갈라지는 길·Q013 두 개의 흐름 / 2026-10-26.** 심장 내부를 걸으며 첫 기사·네 방의 주소·판막질환 비교·두 순환 노선·박동 신호·심장 근육 공급을 취재하고, 기본 과정(일반인 난이도)으로 죽상동맥경화 기초(Q007)·고혈압 기초(Q008, 기준 숫자 없이)·처음 보는 그림에 순환 적용(Q009)·심장 졸업 특집호(Q010)까지 이어진다. 심장 기본 XP 합계 2,700XP/Lv.10, Q010을 발행하면 심장 졸업·신입 기자 승진(완료 기록에서 파생). 혈류·심장 근육 배달 런으로 매번 골드를 받는다. 온몸 맵은 아직 없어 이동 축약을 표시한다. 의학 본문은 검수 전 모형이며 의학·아트·실사용자 평가는 별도다. **바디스코프 3D 외형 모형(D118):** 장기 속을 걷기 전에, 또는 지도에서 ‘자세히 보기’로 심장·큰 혈관·관상동맥, 코부터 기관지 나무까지의 기도, 엽이 나뉜 폐, 횡격막, 갈비뼈·척추를 반투명한 몸 안에서 돌려 보고 눌러서 설명을 읽는다([설계 22](docs/design/22-BODYSCOPE-3D-MODEL.md)). [현재 상태](docs/production/STATUS.md) · [Q013](docs/production/Q013-TWO-FLOWS-REPORT.md) · [Q012](docs/production/Q012-FORK-REPORT.md) · [Q011](docs/production/Q011-AIR-PORT-REPORT.md) · [Q010](docs/production/Q010-GRADUATION-REPORT.md) · [Q009](docs/production/Q009-CIRCULATION-EXPLAINER-REPORT.md) · [Q008](docs/production/Q008-PRESSURE-REPORT.md) · [Q006](docs/production/Q006-SUPPLY-REPORT.md).
 
 **추가 배포(D072~D074):** 약 4.2초 심장 진입 연출과 Q002 네 방 취재, Q003 판막질환 비교·6단계 취재·팩트체크 기사. [진입/Q002 기록](docs/production/ORGAN-ENTRY-AND-Q002.md) · [판막 취재 기록](docs/production/Q003-VALVE-REPORT.md).
 
@@ -67,7 +67,7 @@ TypeScript + Canvas 2D로 만드는 **2.5D 픽셀아트 건강기자 생활·탐
 
 ## 작업을 이어갈 때
 
-[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 2절 ‘지금 어디까지’를 따른다(심장 기본 Q001~Q010 완료 → 호흡기 기본 장 Q011(D112)·Q012(D113)·Q013(D117) 완료 → Q014 · 점심 그림 확인 대기). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
+[현재 상태](docs/production/STATUS.md) → [결정 기록](docs/decisions/DECISIONS.md) → [작업 큐](docs/production/BACKLOG.md)를 읽는다. 다음 순서는 AGENTS.md 2절 ‘지금 어디까지’를 따른다(심장 기본 Q001~Q010 완료 → 호흡기 기본 장 Q011(D112)·Q012(D113)·Q013(D117) 완료 → 바디스코프 3D 외형 모형(D118) → Q014 · 점심 그림 확인 대기). 심장 탐사·기사 플레이 피드백과 의학·아트 검수는 별도 게이트다.
 
 - 실행: Node 24.19.0 / npm 12.2.0에서 `npm ci` → `npm run dev`. 이 Mac의 셸에 Node가 없으면 `bash tools/npm-local.sh run dev`.
 - 검증: `npm run typecheck`, `npm test`, `npm run test:e2e`, `npm run build`. 최신 실행 결과는 [현재 상태](docs/production/STATUS.md)와 [첫 기사 기록](docs/production/Q001-ARTICLE.md)에 남긴다. [기존 오류 점검](docs/production/CODE-AUDIT-2026-10-11.md) · [뒷모습·모바일 생성 화면](docs/production/MOBILE-CREATOR-AND-REAR-WALK.md).

@@ -10,9 +10,11 @@
 - 읽는 순서: 이 파일 → [현재 상태](docs/production/STATUS.md) 맨 위 → [작업 큐](docs/production/BACKLOG.md) 맨 위 → 진행 중인 장의 설계(지금은 [설계 20](docs/design/20-RESPIRATORY-BASIC.md)) → 필요하면 [결정 기록](docs/decisions/DECISIONS.md).
 - 사용자가 지정한 범위를 우선한다. 하지 않은 구현·검수·테스트를 완료라고 기록하지 않는다.
 
-## 2. 지금 어디까지 (D117, 2026-10-26)
+## 2. 지금 어디까지 (D118, 2026-10-29)
 
 - 공개 게임: 심장 기본 Q001~Q010(졸업), 호흡기 기본 Q011 공기 항구·Q012 갈라지는 길·Q013 두 개의 흐름. 출시 상한 Lv.30, 정상 진행으로 Lv.13. 주소 https://jinwuuju.github.io/Raise-a-Healthy-Game/
+- 바디스코프 3D 외형 모형(D118, [설계 22](docs/design/22-BODYSCOPE-3D-MODEL.md)): 장기 속(내부)의 짝으로 바깥 모양을 돌려 보는 읽기 전용 화면. 편집국 바디스코프 선택지와 지도의 ‘자세히 보기’로 연다. three.js 지연 청크(`src/ui/body3d.ts`·`src/body3d/`). 새 장기를 열면 이 모형에도 그 장기의 외형·설명을 더한다.
+- Q014 작업은 2026-10-29 사용자 지시로 멈췄고, 미완성 코드는 로컬 브랜치 `wip/q014-exchange-window`에만 있다(원격에 없음, 전체 테스트 전). 이어 할 때 그 브랜치를 main 위로 옮기고 결정 번호를 D119로 고친다.
 - 진행 중인 장: 호흡기 기본([설계 20](docs/design/20-RESPIRATORY-BASIC.md)). 다음은 Q014 ‘교환의 창’(폐포: 산소가 피로, 이산화탄소가 공기로 건너가는 호흡막, 심장 장의 폐 모세혈관 방과 같은 폐포의 반대쪽 면임을 걸어서 확인, 설계 20 2절 ‘기존 폐 방과 잇기’) + 산소 배달 런(설계 20 4절, Q014 발행 뒤 열림). 질환 없음. 테스트 저장은 `tests/helpers/q014-fixture.ts`.
 - 그다음: Q015 움직이는 바람 → Q016 천식 → Q017 폐렴(+숨에서 몸까지 이어 달리기) → Q018 감기·독감·코로나19 → Q019 처음 보는 항구 → Q020 호흡기 졸업 → 심장 심화 → D076 EVT-01 → 3장 입·소화 Lv.21~28([설계 21](docs/design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md) 장 지도, D115 확정).
 - 사용자에게 열린 질문: Q020 졸업 특집호 XP(Q019 전), 우울증 기초를 기본 과정에 둘지(지금은 심화, 6장 착수 전).
@@ -31,6 +33,7 @@
 - 계층: 규칙은 `src/domain/`, 상태 변경은 `src/application/game.ts`(Game)만, 화면 `src/ui/`·`src/game/`은 읽기만 한다. 연출·건너뛰기·다시 보기는 상태를 바꾸지 않는다.
 - 저장: localStorage schema4 / redesign-1(현재 + 백업 2, 손상 원본 보관, 파일 내보내기·불러오기, D039). 새 필드는 옛 저장에 없으면 빈 기록으로 읽는다. 졸업처럼 완료 기록에서 파생할 수 있는 것은 새 필드를 만들지 않는다.
 - 시간: 기기 시계를 Asia/Seoul로 읽는 곳은 `src/domain/clock.ts` 하나뿐이다(`getHours()` 직접 사용 금지).
+- 3D 외형 모형(D118): 해부 좌표·형상 `src/body3d/anatomy.ts`(three 없이 시험 가능), 표면망 메셔 `src/body3d/sdf.ts`, three 메시 `src/body3d/model.ts`, 화면 `src/ui/body3d.ts`, 설명 `data/content/body3d.v0.1.json`. three.js는 이 화면에서만 지연 로딩하고 본체 청크에 넣지 않는다(check_game_build). 정확성 관계는 `tests/unit/body3d.test.ts`가 지킨다.
 - 장기 공간: 심장 `src/world/heart-rooms.ts`·`src/game/heart-view.ts`, 호흡기 `src/world/airway-rooms.ts`·`src/art/airway.ts`·`src/game/airway-view.ts`·`src/domain/breath.ts`. 탐험 기록은 저장 `inspected`(호흡기는 `rx:` 접두), 별은 `mastery`를 장기별로 센다(`totalStars`는 심장만).
 - 취재 하나의 묶음: `src/domain/qNNN.ts`(규칙)·`qNNN-state.ts`(저장 검증)·`src/ui/qNNN.ts`(내 자리)·관찰기 UI·`data/content/qNNN.v0.1.json`(초안)·`data/balance/qNNN.v0.1.json`(보상)·단위/브라우저 테스트·다음 취재용 테스트 저장 `tests/helpers/qNNN-fixture.ts`·`docs/production/`의 취재 보고서.
 

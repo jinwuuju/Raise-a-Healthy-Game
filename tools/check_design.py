@@ -254,6 +254,18 @@ q13screen = ''.join([q13['question'], *q13['offer'], *(n['text'] + n['card'] + n
 require(not any(ch.isdigit() for ch in q13screen), 'Q013 basic screens must not carry numbers (design 19 section 3)')
 q13b = load('data/balance/q013.v0.1.json')
 require(q13b['publication']['key'] == 'quest.Q013.first' and q13b['publication']['xp'] == rows[11]['xpToNext'] and q13b['publication']['gold'] > load('data/balance/q012.v0.1.json')['publication']['gold'] and q13b['repeatXp'] == 0 and q13b['repeatBaseGold'] == 0, 'Q013 reward must be E(12) XP once (Lv.12 to 13) with repeat XP 0')
+# D118 Bodyscope 3D outer model (design 22): a labelled draft, every note sourced, no numbers or disease names on screen,
+# the airway notes kept for after the heart graduation (one locked note), views and layers as the viewer expects.
+b3 = load('data/content/body3d.v0.1.json')
+b3src = {s['id'] for s in b3['sources']}
+b3ids = [s['id'] for s in b3['spots']]
+require(b3['status'] == 'draft_unreviewed' and b3['review'] is None and '검수 전 모형' in b3['disclaimer'], 'Body 3D model must stay a labelled unreviewed draft')
+require(len(b3ids) == len(set(b3ids)) and all(s['src'] and set(s['src']) <= b3src and s['text'] and s['name'] for s in b3['spots']), 'Body 3D notes need unique ids, names, texts and known sources')
+require({v['id'] for v in b3['views']} == {'body', 'chest', 'heart', 'airway'} and set(b3['viewLayers']) == {'body', 'chest', 'heart', 'airway'} and {l['id'] for l in b3['layers']} == {'skin', 'bones', 'heart', 'lungs', 'airway', 'diaphragm'}, 'Body 3D views and layers mismatch')
+require(all(set(s['views']) <= {'body', 'chest', 'heart', 'airway'} for s in b3['spots']) and 'airway-locked' in b3ids, 'Body 3D note views mismatch (and the locked airway note must exist)')
+b3screen = ''.join([b3['title'], b3['disclaimer'], b3['intro'], b3['help'], b3['colours'], b3['locked'], b3['noWebgl'], *(s['name'] + s['text'] for s in b3['spots']), *b3['simplification'], *(l['label'] for l in b3['layers']), *(v['label'] for v in b3['views'])]).replace('3D', '')
+require(not any(ch.isdigit() for ch in b3screen), 'Body 3D screens must not carry numbers (design 19 section 3)')
+require(not any(w in b3screen for w in (*ADVANCED_ONLY, '폐렴', '천식', '코로나', '감기', '독감')), 'Body 3D model is anatomy only: no disease names')
 q10 = load('data/content/q010.v0.1.json')
 q10text = json.dumps(q10, ensure_ascii=False)
 q10ev = {e['id'] for e in q10['board']['evidence']}

@@ -1,0 +1,674 @@
+{
+ "id": "content.body3d",
+ "status": "draft_unreviewed",
+ "review": null,
+ "updatedAt": "2026-10-29",
+ "title": "바디스코프 3D 외형 모형",
+ "disclaimer": "검수 전 모형 · 해부학 자료를 바탕으로 단순하게 만든 3D 외형 모형이에요. 실제 사람마다 모양과 크기가 다르고, 진단에 쓰지 않아요.",
+ "intro": "들어가서 걷는 곳이 장기의 속이라면, 여기서는 바깥 모양을 돌려 보며 위치와 관계를 봐요. 점을 누르거나 구조를 직접 누르면 설명이 떠요.",
+ "help": "끌어서 돌리기 · 휠이나 두 손가락으로 확대 · 오른쪽 버튼이나 두 손가락으로 끌어 옮기기 · 점이나 구조를 눌러 설명 보기",
+ "loading": "모형을 만드는 중이에요",
+ "noWebgl": "이 기기나 브라우저에서는 3D 화면을 그릴 수 없어요. 인체 지도와 장기 속 탐험은 그대로 쓸 수 있어요.",
+ "views": [
+  {
+   "id": "body",
+   "label": "전신",
+   "target": [
+    0,
+    -34,
+    0
+   ],
+   "camera": [
+    70,
+    -10,
+    300
+   ]
+  },
+  {
+   "id": "chest",
+   "label": "가슴 속",
+   "target": [
+    0,
+    4,
+    0
+   ],
+   "camera": [
+    34,
+    20,
+    78
+   ]
+  },
+  {
+   "id": "heart",
+   "label": "심장",
+   "target": [
+    2.2,
+    0,
+    1.0
+   ],
+   "camera": [
+    12,
+    8,
+    36
+   ]
+  },
+  {
+   "id": "airway",
+   "label": "호흡기",
+   "target": [
+    0,
+    15,
+    -1
+   ],
+   "camera": [
+    34,
+    24,
+    80
+   ]
+  }
+ ],
+ "layers": [
+  {
+   "id": "skin",
+   "label": "몸 윤곽"
+  },
+  {
+   "id": "bones",
+   "label": "뼈대"
+  },
+  {
+   "id": "heart",
+   "label": "심장·혈관"
+  },
+  {
+   "id": "lungs",
+   "label": "폐"
+  },
+  {
+   "id": "airway",
+   "label": "기도·식도"
+  },
+  {
+   "id": "diaphragm",
+   "label": "횡격막"
+  }
+ ],
+ "viewLayers": {
+  "body": [
+   "skin",
+   "bones",
+   "heart",
+   "lungs",
+   "airway",
+   "diaphragm"
+  ],
+  "chest": [
+   "bones",
+   "heart",
+   "lungs",
+   "airway",
+   "diaphragm"
+  ],
+  "heart": [
+   "heart"
+  ],
+  "airway": [
+   "heart",
+   "lungs",
+   "airway",
+   "diaphragm"
+  ]
+ },
+ "colours": "붉은 길은 산소가 많은 피, 파란 길은 산소가 적은 피예요. 실제 혈관 색이 아니라 구분을 위한 약속이에요.",
+ "locked": "호흡기 · 심장 졸업 뒤 열려요",
+ "sources": [
+  {
+   "id": "openstax-heart",
+   "title": "OpenStax Anatomy and Physiology 2e · 19.1 Heart Anatomy",
+   "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/19-1-heart-anatomy",
+   "checked": "2026-10-29",
+   "section": "Location of the Heart / Shape and Size / Chambers / Membranes, Surface Features (the apex points inferiorly, anteriorly and to the left; auricles on the atria; the coronary sulcus and the interventricular sulci; the great vessels) / Coronary Circulation (right coronary artery and circumflex in the coronary sulcus, anterior interventricular artery in the anterior interventricular sulcus)"
+  },
+  {
+   "id": "openstax-vessels",
+   "title": "OpenStax Anatomy and Physiology 2e · 20.5 Circulatory Pathways",
+   "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/20-5-circulatory-pathways",
+   "checked": "2026-10-29",
+   "section": "Pulmonary Circulation / The Aorta (ascending aorta, aortic arch, descending aorta) / branches of the aortic arch (brachiocephalic artery, left common carotid artery, left subclavian artery) / superior and inferior venae cavae"
+  },
+  {
+   "id": "openstax-resp",
+   "title": "OpenStax Anatomy and Physiology 2e · 22.1 Organs and Structures of the Respiratory System",
+   "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system",
+   "checked": "2026-10-29",
+   "section": "The Nose and its Adjacent Structures (septum, three conchae) / The Pharynx / The Larynx (thyroid cartilage with the laryngeal prominence, cricoid cartilage, epiglottis) / The Trachea (C-shaped cartilage, trachealis next to the oesophagus, carina) / Bronchial Tree"
+  },
+  {
+   "id": "openstax-lungs",
+   "title": "OpenStax Anatomy and Physiology 2e · 22.2 The Lungs",
+   "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-2-the-lungs",
+   "checked": "2026-10-29",
+   "section": "Gross Anatomy of the Lungs (the right lung is shorter and wider and has three lobes, the left has two; fissures between lobes; apex and base; the cardiac notch of the left lung; the hilum where bronchi, vessels and nerves enter) / Blood Supply and Nervous Innervation of the Lungs (the pulmonary arteries branch along with the bronchi; pulmonary veins return oxygenated blood to the heart)"
+  },
+  {
+   "id": "openstax-breathing",
+   "title": "OpenStax Anatomy and Physiology 2e · 22.3 The Process of Breathing",
+   "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-3-the-process-of-breathing",
+   "checked": "2026-10-29",
+   "section": "Mechanisms of Breathing (the dome-shaped diaphragm contracts and flattens during inhalation and relaxes upward during exhalation)"
+  },
+  {
+   "id": "openstax-thorax",
+   "title": "OpenStax Anatomy and Physiology 2e · 7.5 The Thoracic Cage",
+   "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-5-the-thoracic-cage",
+   "checked": "2026-10-29",
+   "section": "Sternum (manubrium, body, xiphoid process) / Ribs (true ribs attach to the sternum by their own costal cartilage, false ribs indirectly or not at all, floating ribs end in the muscles)"
+  },
+  {
+   "id": "openstax-spine",
+   "title": "OpenStax Anatomy and Physiology 2e · 7.3 The Vertebral Column",
+   "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-3-the-vertebral-column",
+   "checked": "2026-10-29",
+   "section": "Regions of the Vertebral Column (cervical, thoracic, lumbar, sacrum, coccyx; the vertebral body in front, the arch and spinous process behind)"
+  },
+  {
+   "id": "imaios-rmb",
+   "title": "IMAIOS e-Anatomy · Right main bronchus",
+   "url": "https://www.imaios.cn/en/e-anatomy/anatomical-structures/bronchus-principalis-dexter-1541212876",
+   "checked": "2026-10-29",
+   "section": "Right main bronchus (shorter, wider and more vertical than the left)"
+  }
+ ],
+ "spots": [
+  {
+   "id": "heart",
+   "name": "심장",
+   "views": [
+    "body",
+    "chest"
+   ],
+   "text": "가슴 한가운데에서 조금 왼쪽에 있는 주먹만 한 근육 펌프예요. 뾰족한 끝이 왼쪽 아래 앞을 향하고, 아래는 횡격막 위에 얹혀 있어요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "ra",
+   "name": "우심방",
+   "views": [
+    "heart"
+   ],
+   "text": "심장의 오른쪽 위에 있는 방이에요. 온몸을 돌고 온 피가 위대정맥과 아래대정맥으로 이 방에 들어와요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "rv",
+   "name": "우심실",
+   "views": [
+    "heart"
+   ],
+   "text": "심장 앞면에서 넓게 보이는 방이에요. 피를 폐동맥줄기로 내보내 폐로 보내요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "la",
+   "name": "좌심방",
+   "views": [
+    "heart"
+   ],
+   "text": "심장의 뒤쪽 위에 있어서 앞에서는 잘 보이지 않아요. 돌려서 뒤에서 보면 폐정맥이 들어오는 모습이 보여요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "lv",
+   "name": "좌심실",
+   "views": [
+    "heart"
+   ],
+   "text": "심장의 왼쪽 아래를 이루는 방이에요. 벽이 가장 두껍고, 피를 대동맥으로 내보내 온몸으로 보내요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "apex",
+   "name": "심첨",
+   "views": [
+    "heart"
+   ],
+   "text": "심장의 뾰족한 끝이에요. 왼쪽 아래 앞을 향하고, 좌심실이 만들어요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "auricle",
+   "name": "심방귀",
+   "views": [
+    "heart"
+   ],
+   "text": "심방에서 귀처럼 튀어나온 작은 주머니예요. 좌우 심방에 하나씩 있어 큰 혈관 옆으로 살짝 보여요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "aorta",
+   "name": "대동맥",
+   "views": [
+    "heart",
+    "chest"
+   ],
+   "text": "좌심실에서 위로 올라가다가(오름대동맥) 활처럼 왼쪽 뒤로 휘고(대동맥활) 척추 앞을 따라 배까지 내려가요(내림대동맥).",
+   "src": [
+    "openstax-vessels",
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "arch-branches",
+   "name": "대동맥활의 세 가지",
+   "views": [
+    "heart",
+    "chest"
+   ],
+   "text": "대동맥활 위에서 머리와 팔로 가는 큰 동맥 세 개가 갈라져요. 오른쪽부터 팔머리동맥, 왼온목동맥, 왼빗장밑동맥이에요.",
+   "src": [
+    "openstax-vessels"
+   ]
+  },
+  {
+   "id": "pulmonary-trunk",
+   "name": "폐동맥줄기와 폐동맥",
+   "views": [
+    "heart",
+    "chest"
+   ],
+   "text": "우심실에서 나와 대동맥 앞을 지나 올라가다 좌우 폐동맥으로 갈라져요. 산소가 적은 피를 폐로 보내요. 모형에서는 산소가 적은 피의 길을 파란색으로 칠했어요.",
+   "src": [
+    "openstax-vessels",
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "svc",
+   "name": "위대정맥",
+   "views": [
+    "heart",
+    "chest"
+   ],
+   "text": "머리와 팔에서 돌아온 피를 모아 우심방으로 보내요. 좌우 팔머리정맥이 모여 만들어져요.",
+   "src": [
+    "openstax-vessels"
+   ]
+  },
+  {
+   "id": "ivc",
+   "name": "아래대정맥",
+   "views": [
+    "heart",
+    "chest"
+   ],
+   "text": "배와 다리에서 돌아온 피를 우심방으로 보내요. 횡격막을 지나 위로 올라와요.",
+   "src": [
+    "openstax-vessels"
+   ]
+  },
+  {
+   "id": "pulmonary-veins",
+   "name": "폐정맥",
+   "views": [
+    "heart",
+    "chest"
+   ],
+   "text": "폐에서 산소를 받은 피를 좌심방으로 보내요. 보통 좌우에 두 개씩 있어요. 모형에서는 산소가 많은 피의 길을 붉은색으로 칠했어요.",
+   "src": [
+    "openstax-heart",
+    "openstax-vessels"
+   ]
+  },
+  {
+   "id": "rca",
+   "name": "오른관상동맥",
+   "views": [
+    "heart"
+   ],
+   "text": "대동맥 뿌리에서 나와 심방과 심실 사이의 홈을 따라 오른쪽으로 돌아가며 심장 근육에 피를 줘요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "lad",
+   "name": "앞심실사이가지",
+   "views": [
+    "heart"
+   ],
+   "text": "왼관상동맥에서 갈라져 앞면의 두 심실 사이 홈을 따라 심첨 쪽으로 내려가요. 심장 앞벽 근육에 피를 줘요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "lcx",
+   "name": "휘돌이가지",
+   "views": [
+    "heart"
+   ],
+   "text": "왼관상동맥에서 갈라져 왼쪽 심방과 심실 사이의 홈을 따라 뒤쪽으로 돌아가요.",
+   "src": [
+    "openstax-heart"
+   ]
+  },
+  {
+   "id": "nose",
+   "name": "코안",
+   "views": [
+    "airway"
+   ],
+   "text": "콧구멍에서 목 뒤쪽까지 이어지는 공간이에요. 가운데 벽(코중격)이 좌우로 나눠요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "conchae",
+   "name": "코선반",
+   "views": [
+    "airway"
+   ],
+   "text": "코안 바깥 벽에서 선반처럼 튀어나온 세 겹 구조예요. 공기가 부딪히며 지나가 데워지고 적셔져요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "pharynx",
+   "name": "인두",
+   "views": [
+    "airway"
+   ],
+   "text": "코와 입 뒤쪽의 공통 통로예요. 아래에서 앞쪽 후두(공기 길)와 뒤쪽 식도(음식 길)로 갈라져요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "epiglottis",
+   "name": "후두덮개",
+   "views": [
+    "airway"
+   ],
+   "text": "후두 입구 위에 선 잎 모양 연골이에요. 삼킬 때 뒤로 젖혀져 공기 길 입구를 덮어요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "thyroid-cartilage",
+   "name": "갑상연골",
+   "views": [
+    "airway",
+    "body"
+   ],
+   "text": "후두 앞쪽을 방패처럼 감싼 큰 연골이에요. 목 앞에서 만져지는 튀어나온 부분이 이 연골이에요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "cricoid",
+   "name": "반지연골",
+   "views": [
+    "airway"
+   ],
+   "text": "후두 맨 아래의 반지 모양 연골이에요. 뒤쪽이 더 높아요. 그 아래로 기관이 이어져요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "trachea",
+   "name": "기관",
+   "views": [
+    "airway",
+    "body",
+    "chest"
+   ],
+   "text": "후두 아래에서 가슴 속으로 내려가는 숨관이에요. 식도 바로 앞에 있어요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "rings",
+   "name": "C자 연골 고리",
+   "views": [
+    "airway"
+   ],
+   "text": "기관의 앞과 옆을 받쳐 늘 열려 있게 하는 고리예요. 뒤쪽은 열려 있고 근육 막이 식도와 맞닿아 있어요. 돌려서 뒤에서 보면 열린 쪽이 보여요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "oesophagus",
+   "name": "식도",
+   "views": [
+    "airway",
+    "chest"
+   ],
+   "text": "기관 바로 뒤에서 위로 내려가는 음식 길이에요. 공기 길이 아니에요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "carina",
+   "name": "기관용골",
+   "views": [
+    "airway"
+   ],
+   "text": "기관이 좌우 주기관지로 갈라지는 자리예요. 안쪽에 날 선 능선이 있어요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "right-main",
+   "name": "오른주기관지",
+   "views": [
+    "airway"
+   ],
+   "text": "왼쪽보다 짧고 굵고 더 곧게 내려가요.",
+   "src": [
+    "openstax-resp",
+    "imaios-rmb"
+   ]
+  },
+  {
+   "id": "left-main",
+   "name": "왼주기관지",
+   "views": [
+    "airway"
+   ],
+   "text": "대동맥활 아래를 지나 오른쪽보다 길고 비스듬하게 가요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "bronchial-tree",
+   "name": "기관지 나무",
+   "views": [
+    "airway"
+   ],
+   "text": "주기관지가 엽기관지, 구역기관지로 갈라지며 점점 가늘어져 폐 깊은 곳까지 퍼져요. 모형은 실제보다 훨씬 적은 가지만 그렸어요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "right-lung",
+   "name": "오른폐",
+   "views": [
+    "airway",
+    "body",
+    "chest"
+   ],
+   "text": "위엽·중간엽·아래엽, 세 엽으로 나뉘어요. 왼폐보다 짧고 넓어요.",
+   "src": [
+    "openstax-lungs"
+   ]
+  },
+  {
+   "id": "left-lung",
+   "name": "왼폐",
+   "views": [
+    "airway",
+    "body",
+    "chest"
+   ],
+   "text": "위엽·아래엽, 두 엽으로 나뉘어요. 심장이 왼쪽으로 치우쳐 있어 오른폐보다 작아요.",
+   "src": [
+    "openstax-lungs"
+   ]
+  },
+  {
+   "id": "fissures",
+   "name": "엽 사이 틈새",
+   "views": [
+    "airway"
+   ],
+   "text": "엽과 엽 사이의 틈이에요. 오른폐에는 빗틈새와 수평틈새, 왼폐에는 빗틈새가 있어요. 모형에서는 진한 선으로 보여요.",
+   "src": [
+    "openstax-lungs"
+   ]
+  },
+  {
+   "id": "hilum",
+   "name": "폐문",
+   "views": [
+    "airway"
+   ],
+   "text": "기관지와 폐동맥·폐정맥이 폐로 드나드는 안쪽 면의 자리예요.",
+   "src": [
+    "openstax-lungs"
+   ]
+  },
+  {
+   "id": "lung-vessels",
+   "name": "폐 속 혈관 가지",
+   "views": [
+    "airway"
+   ],
+   "text": "폐동맥 가지는 기관지를 따라 함께 갈라지며 폐 깊은 곳까지 피를 보내고, 폐정맥은 산소를 받은 피를 모아 폐문 쪽으로 돌아와요. 모형은 굵은 가지 몇 단계만 그렸어요.",
+   "src": [
+    "openstax-lungs"
+   ]
+  },
+  {
+   "id": "lung-apex",
+   "name": "폐첨",
+   "views": [
+    "airway"
+   ],
+   "text": "폐의 맨 위 끝이에요. 목 아래 가까이까지 올라와요.",
+   "src": [
+    "openstax-lungs"
+   ]
+  },
+  {
+   "id": "cardiac-notch",
+   "name": "심장 패임",
+   "views": [
+    "airway"
+   ],
+   "text": "왼폐 앞쪽 아래가 심장 자리만큼 오목하게 파인 곳이에요.",
+   "src": [
+    "openstax-lungs"
+   ]
+  },
+  {
+   "id": "diaphragm",
+   "name": "횡격막",
+   "views": [
+    "airway",
+    "body",
+    "chest"
+   ],
+   "text": "가슴과 배를 나누는 돔 모양 근육이에요. 숨을 들이쉴 때 수축해 아래로 내려가며 납작해지고, 내쉴 때 다시 올라가요. 가운데 밝은 부분은 힘줄이에요.",
+   "src": [
+    "openstax-breathing"
+   ]
+  },
+  {
+   "id": "ribs",
+   "name": "갈비뼈",
+   "views": [
+    "body",
+    "chest"
+   ],
+   "text": "심장과 폐를 감싸 보호해요. 위쪽 갈비뼈는 연골로 가슴뼈에 직접 붙고, 아래쪽은 위 연골에 붙거나 앞이 떠 있어요. 연골은 푸른빛으로 칠했어요.",
+   "src": [
+    "openstax-thorax"
+   ]
+  },
+  {
+   "id": "sternum",
+   "name": "가슴뼈",
+   "views": [
+    "body",
+    "chest"
+   ],
+   "text": "가슴 앞 가운데의 납작한 뼈예요. 위에서부터 손잡이, 몸통, 칼돌기로 이어져요.",
+   "src": [
+    "openstax-thorax"
+   ]
+  },
+  {
+   "id": "spine",
+   "name": "척추",
+   "views": [
+    "body",
+    "chest"
+   ],
+   "text": "목뼈, 등뼈, 허리뼈가 이어진 기둥이에요. 앞쪽의 둥근 몸통과 뒤쪽의 고리로 이루어져요.",
+   "src": [
+    "openstax-spine"
+   ]
+  },
+  {
+   "id": "hyoid",
+   "name": "목뿔뼈",
+   "views": [],
+   "text": "후두 위쪽의 말굽 모양 뼈예요. 다른 뼈와 관절을 이루지 않아요.",
+   "src": [
+    "openstax-resp"
+   ]
+  },
+  {
+   "id": "airway-locked",
+   "name": "호흡기",
+   "views": [
+    "body",
+    "chest"
+   ],
+   "text": "호흡기는 심장 졸업 특집호를 발행하면 열려요. 그때 이 모형에서도 기관과 폐의 설명을 볼 수 있어요.",
+   "src": [
+    "openstax-lungs"
+   ]
+  }
+ ],
+ "simplification": [
+  "장기와 혈관의 모양은 해부학 자료의 평균적인 모습을 단순한 도형으로 다시 만든 모형이에요. 사람마다 크기와 위치가 조금씩 달라요.",
+  "기관지는 실제로 훨씬 여러 번 갈라지지만 모형에서는 앞쪽 몇 단계만 그렸어요. 폐 속 혈관 가지와 신경, 림프관, 근육은 생략했어요.",
+  "다른 기관(소화기관, 콩팥, 뇌 등)은 취재가 열리면 하나씩 더해요."
+ ]
+}

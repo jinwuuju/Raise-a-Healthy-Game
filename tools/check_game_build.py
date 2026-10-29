@@ -42,6 +42,8 @@ for path in dist.rglob('*'):
                 assert DISCLAIMER in text and 'draft_unreviewed' in text and '질환 레이어가 아니에요' in text, 'Q006 must remain a labelled normal-supply draft inside the quest'
             if 'content.Q007' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text and '질환 레이어' in text, 'Q007 must remain a labelled basic atherosclerosis draft inside the quest'
+            if 'content.body3d' in text:
+                assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Body 3D model must remain a labelled draft'
             if 'content.Q013' in text:
                 assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Q013 must remain a labelled basic two-flows draft inside the quest'
             if 'content.Q012' in text:
@@ -77,3 +79,10 @@ for path in dist.rglob('*'):
                 assert DISCLAIMER in text and 'draft_unreviewed' in text, 'Lunch menus (D068) must carry the unreviewed disclaimer'
                 assert 'medical_reviewed' not in text, 'Lunch menus must not claim review'
 print('Game build boundary passed: Q001 and the heart interior are labelled as unreviewed drafts; no catalogs, examples or raw/source files')
+
+# D118: three.js (the 3D outer model) is a lazy chunk; the entry bundle must not carry it.
+entry = [p for p in (dist / 'assets').glob('index-*.js')]
+assert entry, 'Missing entry bundle'
+for p in entry:
+    assert 'WebGLRenderer' not in p.read_text(), f'three.js leaked into the entry bundle: {p.name}'
+assert any('WebGLRenderer' in p.read_text() for p in (dist / 'assets').glob('*.js')), 'The 3D model chunk is missing'

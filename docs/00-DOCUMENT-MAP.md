@@ -46,6 +46,7 @@
 | [19 기본·심화](design/19-BASIC-AND-ADVANCED.md) | 현행 지침 | |
 | [20 호흡기 기본 장](design/20-RESPIRATORY-BASIC.md) | 현행, 진행 중 | |
 | [21 장 지도·한국 우선](design/21-WHOLE-BODY-CHAPTERS-AND-KOREA.md) | 현행, 장 지도 확정(D115) | |
+| [22 바디스코프 3D 외형 모형](design/22-BODYSCOPE-3D-MODEL.md) | 현행, 구현(D118) | 장기 속(내부)의 짝인 외형 모형 |
 
 ## 제작 문서 (production)
 

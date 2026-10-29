@@ -729,6 +729,11 @@ function again(kind: RunKind): void {
 async function say(lines: Line[]) { if (lines.length) await dialog.show(lines); }
 
 /** D110: a published commission keeps its observer as an extra choice on the structure; the field check stays the default (D106). */
+/** D118: the Bodyscope 3D outer model (lazy chunk with three.js; read-only, never changes the save). */
+function open3dModel(): void {
+  pauseInput();
+  void import('./ui/body3d').then(m => m.openBody3d({ airwayOpen: airwayOpen(game.state), start: airwayOpen(game.state) ? 'body' : 'heart' })).catch(() => hud.toast('3D 모형을 불러오지 못했어요. 연결을 확인하고 다시 시도해 주세요.', true));
+}
 function observerReplay(id: string, room: RoomId): { label: string; open: () => void } | null {
   const s = game.state;
   if (id === 'hx-tricuspid' && room === 'heart' && s.q003.publishedAt) return { label: 'Q003 판막 비교', open: () => openValveComparison(game) };
@@ -893,15 +898,19 @@ async function interact(t: Target) {
       const dv = airSpace.device;
       const go = await dialog.show([{ who: '바디스코프', text: dv.text, npc: null }], [
         { id: 'enter', label: dv.heart, sub: dv.heartSub, disabled: false },
-        { id: 'airway', label: dv.airway, sub: dv.airwaySub, disabled: false }]);
+        { id: 'airway', label: dv.airway, sub: dv.airwaySub, disabled: false },
+        { id: 'model', label: '3D 외형 모형 보기', sub: '들어가기 전에 심장과 호흡기의 바깥 모양을 돌려 보며 살펴봐요', disabled: false }]);
       game.inspect(t.id);
       if (go === 'enter') travel({ to: 'heart', arrive: rooms.heart.spawn, facing: rooms.heart.spawnFacing, mode: 'scope-in', card: heartText.entryCard });
       else if (go === 'airway') travel({ to: 'nose', arrive: rooms.nose.spawn, facing: rooms.nose.spawnFacing, mode: 'scope-in', organ: 'airway' });
+      else if (go === 'model') open3dModel();
     } else if (t.id === 'device' && !canEnterHeart(game.state)) {
       const go = await dialog.show([{ who: '바디스코프', text: q1Text.deviceReady, npc: null }],
-        [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false }]);
+        [{ id: 'enter', label: q1Text.deviceChoices.enter, sub: q1Text.deviceChoices.enterSub, disabled: false },
+        { id: 'model', label: '3D 외형 모형 보기', sub: '들어가기 전에 심장의 바깥 모양을 돌려 보며 살펴봐요', disabled: false }]);
       game.inspect(t.id);
       if (go === 'enter') travel({ to: 'heart', arrive: rooms.heart.spawn, facing: rooms.heart.spawnFacing, mode: 'scope-in', card: heartText.entryCard });
+      else if (go === 'model') open3dModel();
     } else if (t.id === 'heart-out' || t.id === 'heart-in') {
       const obs = q1Text.observations[t.id];
       await say([{ who: t.label, text: obs.text, npc: null }]);

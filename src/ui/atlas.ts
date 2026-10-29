@@ -57,6 +57,8 @@ export function openAtlas(ctx: Ctx, start: AtlasTab): void {
       stage.replaceChildren(cv);
       head.replaceChildren(...placeLine(ctx, tab));
       info.replaceChildren(...(tab === 'room' ? roomInfo(ctx) : tab === 'heart' ? heartInfo(ctx) : tab === 'airway' ? airwayInfo(ctx) : bodyInfo(ctx)));
+      // D118: the outside of the same body as a 3D model (the walkable rooms are the inside).
+      if (tab !== 'room') info.prepend(button('primary body3d-open', '자세히 보기 · 3D 외형 모형', () => open3d(ctx, tab === 'heart' ? 'heart' : tab === 'airway' ? 'airway' : 'body')));
       requestAnimationFrame(() => (tab === 'room' ? drawRoom : tab === 'heart' ? drawHeart : tab === 'airway' ? drawAirway : drawBody)(cv, ctx));
     };
     tabs.forEach(([id, label], i) => {
@@ -70,6 +72,12 @@ export function openAtlas(ctx: Ctx, start: AtlasTab): void {
     window.addEventListener('resize', onResize);
     stopResize = () => { cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); };
   }, () => stopResize());
+}
+
+/** D118: opens the Bodyscope 3D outer model (three.js loads only now); back returns to this map. */
+export function open3d(ctx: Ctx, start: 'body' | 'heart' | 'airway'): void {
+  void import('./body3d').then(m => m.openBody3d({ airwayOpen: airwayOpen(ctx.state), start, back: () => openAtlas(ctx, start === 'body' ? 'body' : start === 'heart' && !ctx.room.airway ? 'heart' : start === 'airway' && ctx.room.airway ? 'airway' : 'body') }))
+    .catch(() => window.alert('3D 모형을 불러오지 못했어요. 연결을 확인하고 다시 눌러 주세요.'));
 }
 
 function placeLine(ctx: Ctx, tab: AtlasTab): HTMLElement[] {

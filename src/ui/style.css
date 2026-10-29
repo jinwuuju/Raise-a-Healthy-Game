@@ -651,3 +651,36 @@ a.row { color: var(--text); text-decoration: none; }
 .run-sighting p { margin: 4px 0 0; font-size: .875rem; line-height: 1.45; }
 /* Phones: the run panel shares the left edge with the movement ball (164 px + margin); keep it above the ball. */
 .hud.touch .quest .run-box { max-height: calc(100dvh - 310px - var(--safe-t) - var(--safe-b)); min-height: 0; }
+
+/* D118 Bodyscope 3D outer model (design 22). No overflow clipping around the canvas (D116); markers stay inside the stage. */
+.sheet.body3d-sheet { width: min(1180px, calc(100vw - 16px)); height: min(94dvh, 980px); max-height: min(94dvh, 980px); background: linear-gradient(180deg, #1f1729 0%, #150f1c 100%); border-color: rgba(127,240,242,0.28); }
+.body3d-sheet header h2 { font-size: 15px; font-weight: 800; color: #a9f6f3; letter-spacing: 0; }
+.body3d-sheet .content { gap: 10px; padding: 12px 14px 18px; align-content: start; }
+.body3d-main { display: grid; gap: 12px; min-width: 0; }
+.body3d-left, .body3d-side { display: grid; gap: 8px; align-content: start; min-width: 0; }
+@media (min-width: 900px) { .body3d-main { grid-template-columns: minmax(0, 1fr) 320px; } }
+.body3d-views { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(0,0,0,0.28); border: 1px solid rgba(127,240,242,0.12); }
+.body3d-views button { flex: 1; min-height: 42px; border: 0; border-radius: 10px; background: transparent; color: #a99fb8; font-size: 15px; font-weight: 800; cursor: pointer; }
+.body3d-views button.on { background: linear-gradient(180deg, rgba(127,240,242,0.22), rgba(127,240,242,0.10)); color: #f7ecdd; box-shadow: inset 0 0 0 1px rgba(127,240,242,0.45); }
+.body3d-views button:disabled { opacity: .5; cursor: not-allowed; }
+.body3d-layers, .body3d-list, .body3d-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.body3d-sheet .b3-chip { min-height: 44px; min-width: 44px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(127,240,242,0.3); background: rgba(127,240,242,0.06); color: #f7ecdd; font-weight: 800; font-size: 14px; cursor: pointer; }
+.body3d-sheet .b3-chip[aria-pressed=false] { opacity: .55; border-style: dashed; }
+.body3d-list .b3-chip[aria-pressed=false] { opacity: 1; border-style: solid; }
+.body3d-list .b3-chip.on { background: rgba(241,207,139,0.2); border-color: #f1cf8b; }
+.body3d-tools button { min-width: 44px; min-height: 44px; }
+.body3d-stage { position: relative; width: 100%; border-radius: 14px; background: #150e1d; box-shadow: inset 0 0 0 1px rgba(127,240,242,0.18); }
+.body3d-stage canvas { display: block; width: 100%; border-radius: 14px; touch-action: none; cursor: grab; }
+.body3d-stage canvas:active { cursor: grabbing; }
+.body3d-stage canvas:focus-visible { outline: 2px solid #7ff0f2; outline-offset: 2px; }
+.body3d-marks { position: absolute; inset: 0; pointer-events: none; }
+.body3d-mark { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; width: 30px; height: 30px; padding: 0; border: 0; background: transparent; display: grid; place-items: center; cursor: pointer; }
+.body3d-mark i { width: 13px; height: 13px; border-radius: 50%; background: #7ff0f2; border: 2px solid #120c18; box-shadow: 0 0 0 3px rgba(127,240,242,0.35); transition: transform .15s; }
+.body3d-mark:hover i, .body3d-mark:focus-visible i { transform: scale(1.3); }
+.body3d-mark.behind i { opacity: .4; box-shadow: none; }
+.body3d-mark[aria-pressed=true] i { background: #f1cf8b; box-shadow: 0 0 0 4px rgba(241,207,139,0.5); opacity: 1; }
+.body3d-tag { position: absolute; pointer-events: none; padding: 3px 10px; border-radius: 10px; background: rgba(18,12,24,0.92); color: #f7ecdd; font-size: 13px; font-weight: 800; white-space: nowrap; border: 1px solid rgba(241,207,139,0.6); }
+.body3d-status { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 32px); text-align: center; padding: 10px 14px; border-radius: 12px; background: rgba(18,12,24,0.85); color: #a9f6f3 !important; font-weight: 800; }
+.body3d-note { border: 1px solid rgba(127,240,242,0.3); border-radius: 12px; padding: 10px 12px; display: grid; gap: 8px; background: rgba(127,240,242,0.04); }
+.body3d-list-wrap > summary { min-height: 40px; cursor: pointer; font-weight: 800; color: #f1cf8b; padding: 8px 0; }
+.body3d-license { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; line-height: 1.5; color: var(--muted); margin: 6px 0 0; }
