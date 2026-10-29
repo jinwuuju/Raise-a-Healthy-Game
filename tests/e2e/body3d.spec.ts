@@ -54,16 +54,19 @@ test('3D outer model from the Bodyscope: views, notes by list and by tapping, tu
   await sheet.locator('.body3d-views').getByRole('button', { name: '심장', exact: true }).click(); await page.waitForTimeout(600);
   s = await b3(page); expect(s.layers).toEqual(['heart']);
   const box = (await sheet.locator('.body3d-stage canvas').boundingBox())!;
-  expect(s.markers.length).toBeGreaterThan(8);
-  for (const m of s.markers) { expect(m.x).toBeGreaterThan(0); expect(m.x).toBeLessThan(box.width); expect(m.y).toBeGreaterThan(0); expect(m.y).toBeLessThan(box.height); }
+  // No standing dots (user feedback): nothing is marked until a structure is chosen.
+  expect(s.markers.length).toBe(0);
   const c = await colours(page); expect(c.colours).toBeGreaterThan(60); expect(c.lit).toBeGreaterThan(0.08);
   await sheet.locator('.body3d-list').getByRole('button', { name: '좌심실', exact: true }).click();
   await expect(sheet.locator('.body3d-note')).toContainText('좌심실'); await expect(sheet.locator('.body3d-note')).toContainText('대동맥');
   expect((await b3(page)).selected).toBe('lv');
+  await page.waitForTimeout(700);
+  const marked = (await b3(page)).markers; expect(marked.map(m => m.id)).toEqual(['lv']);
+  for (const m of marked) { expect(m.x).toBeGreaterThan(0); expect(m.x).toBeLessThan(box.width); expect(m.y).toBeGreaterThan(0); expect(m.y).toBeLessThan(box.height); }
   await page.screenshot({ path: 'artifacts/d118-body3d-heart.png' });
   await sheet.locator('.body3d-tools').getByRole('button', { name: '이 범위의 처음 시점으로' }).click(); await page.waitForTimeout(400);
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2); await page.waitForTimeout(300);
-  const tapped = (await b3(page)).selected; expect(['lv', 'rv', 'ra', 'la', 'auricle', 'aorta', 'pulmonary-trunk', 'lad', 'rca', 'lcx', 'svc', 'ivc', 'pulmonary-veins']).toContain(tapped);
+  const tapped = (await b3(page)).selected; expect((await b3(page)).markers.map(m => m.id)).toEqual([tapped]); expect(['lv', 'rv', 'ra', 'la', 'auricle', 'aorta', 'pulmonary-trunk', 'lad', 'rca', 'lcx', 'svc', 'ivc', 'pulmonary-veins']).toContain(tapped);
   // Dragging turns the model; the tools turn it too.
   const before = (await b3(page)).cam;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down(); await page.mouse.move(box.x + box.width / 2 + 160, box.y + box.height / 2 + 20, { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(300);

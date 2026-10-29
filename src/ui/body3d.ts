@@ -150,9 +150,9 @@ export function openBody3d(opts: { airwayOpen: boolean; start?: ViewId; back?: (
       for (const src of content.sources.filter(x => s.src.includes(x.id))) { const a = el('a', '', src.title); a.href = src.url; a.target = '_blank'; a.rel = 'noopener'; r.append(a, el('p', 'muted', src.section + ' · 확인 ' + src.checked)); }
       note.append(r, button('secondary', '설명 닫기', () => { selected = null; highlight(null); showIntro(); fillList(); }));
       highlight(id); fillList();
-      if (fly) focus(id);
+      if (fly) { focus(id); stage.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' }); }
     };
-    const showIntro = () => note.replaceChildren(el('h3', '', '구조 설명'), el('p', 'muted', '모형의 점이나 구조를 누르면 여기에 설명이 떠요.'));
+    const showIntro = () => note.replaceChildren(el('h3', '', '구조 설명'), el('p', 'muted', '구조 목록에서 고르거나 모형의 구조를 직접 누르면, 모형에 그 위치가 표시되고 여기에 설명이 떠요.'));
     showIntro();
 
     // ---------- tools
@@ -182,7 +182,8 @@ export function openBody3d(opts: { airwayOpen: boolean; start?: ViewId; back?: (
       for (const s of spots) {
         let m = markerEls.get(s.id);
         const a = model.anchors[s.id];
-        if (!a || !visibleSpot(s.id)) { if (m) m.hidden = true; continue; }
+        // D118 follow-up (user, 13:33): no standing dots; only the structure chosen from the list or tapped shows where it is.
+        if (!a || s.id !== selected || !visibleSpot(s.id)) { if (m) m.hidden = true; continue; }
         if (!m) {
           m = button('body3d-mark', '', () => select(s.id), s.name); m.append(el('i')); m.title = s.name;
           markerEls.set(s.id, m); marks.append(m);

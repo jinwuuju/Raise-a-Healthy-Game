@@ -684,3 +684,8 @@ a.row { color: var(--text); text-decoration: none; }
 .body3d-note { border: 1px solid rgba(127,240,242,0.3); border-radius: 12px; padding: 10px 12px; display: grid; gap: 8px; background: rgba(127,240,242,0.04); }
 .body3d-list-wrap > summary { min-height: 40px; cursor: pointer; font-weight: 800; color: #f1cf8b; padding: 8px 0; }
 .body3d-license { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; line-height: 1.5; color: var(--muted); margin: 6px 0 0; }
+/* D118 follow-up: only the chosen structure is marked, so its marker can be clearly visible. */
+.body3d-mark[aria-pressed=true] i { width: 16px; height: 16px; }
+.body3d-mark[aria-pressed=true]::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(241,207,139,0.85); animation: b3pulse 1.6s ease-out infinite; pointer-events: none; }
+@keyframes b3pulse { from { transform: scale(0.6); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .body3d-mark[aria-pressed=true]::after { animation: none; opacity: .8; } }
